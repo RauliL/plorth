@@ -1,4 +1,5 @@
 #include "plorth.hpp"
+#include "unicode.hpp"
 
 namespace plorth
 {
@@ -59,6 +60,39 @@ namespace plorth
       *buffer++ = static_cast<char>(0x80 | (cp & 0x3f));
     }
     *buffer = 0;
+
+    return true;
+  }
+
+  bool unicode_encode(unsigned int cp, std::string& buffer)
+  {
+    if (cp > 0x10ffff
+        || (cp & 0xfffe) == 0xfffe
+        || (cp >= 0xd800 && cp <= 0xdfff)
+        || (cp >= 0xfdd0 && cp <= 0xfdef))
+    {
+      return false;
+    }
+    else if (cp <= 0x7f)
+    {
+      buffer.append(1, static_cast<char>(cp));
+    }
+    else if (cp <= 0x07ff)
+    {
+      buffer.append(1, static_cast<char>(0xc0 | ((cp & 0x7c0) >> 6)));
+      buffer.append(1, static_cast<char>(0x80 | (cp & 0x3f)));
+    }
+    else if (cp <= 0xffff)
+    {
+      buffer.append(1, static_cast<char>(0xe0 | ((cp & 0xf000)) >> 12));
+      buffer.append(1, static_cast<char>(0x80 | ((cp & 0xfc0)) >> 6));
+      buffer.append(1, static_cast<char>(0x80 | (cp & 0x3f)));
+    } else {
+      buffer.append(1, static_cast<char>(0xf0 | ((cp & 0x1c0000) >> 18)));
+      buffer.append(1, static_cast<char>(0x80 | ((cp & 0x3f000) >> 12)));
+      buffer.append(1, static_cast<char>(0x80 | ((cp & 0xfc0) >> 6)));
+      buffer.append(1, static_cast<char>(0x80 | (cp & 0x3f)));
+    }
 
     return true;
   }

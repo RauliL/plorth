@@ -4,6 +4,7 @@
 #include "state.hpp"
 #include "string.hpp"
 #include "token.hpp"
+#include "unicode.hpp"
 #include "utils.hpp"
 
 namespace plorth
@@ -262,7 +263,45 @@ namespace plorth
             buffer.append(1, c);
             break;
 
-          // TODO: Unicode hex escapes.
+          case 'u':
+          {
+            unsigned int result = 0;
+
+            for (int i = 0; i < 4; ++i)
+            {
+              int hex;
+
+              if (current == end || !std::isxdigit(hex = *current++))
+              {
+                state->SetError(
+                  Error::ERROR_CODE_SYNTAX,
+                  "Illegal Unicode hex escape sequence."
+                );
+
+                return false;
+              }
+              else if (hex >= 'A' && hex <= 'F')
+              {
+                result = result * 16 + (hex - 'A' + 10);
+              }
+              else if (hex >= 'a' && hex <= 'f')
+              {
+                result = result * 16 + (hex - 'a' + 10);
+              } else {
+                result = result * 16 + (hex - '0');
+              }
+            }
+            if (!unicode_encode(result, buffer))
+            {
+              state->SetError(
+                Error::ERROR_CODE_SYNTAX,
+                "Illegal Unicode hex escape sequence."
+              );
+
+              return false;
+            }
+            break;
+          }
 
           default:
             state->SetError(
