@@ -28,7 +28,7 @@ namespace plorth
   {
     const auto entry = m_entries.find(name);
 
-    if (entry != m_entries.end())
+    if (entry != end(m_entries))
     {
       return entry->second;
     }
@@ -53,7 +53,7 @@ namespace plorth
     {
       const auto other_entry = other->m_entries.find(entry.first);
 
-      if (other_entry == other->m_entries.end()
+      if (other_entry == end(other->m_entries)
           || !entry.second->Equals(other_entry->second))
       {
         return false;

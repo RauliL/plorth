@@ -108,7 +108,7 @@ namespace plorth
   {
     const auto entry = m_dictionary.find(name);
 
-    if (entry != m_dictionary.end())
+    if (entry != end(m_dictionary))
     {
       slot = entry->second;
 

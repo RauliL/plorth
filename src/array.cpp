@@ -485,8 +485,8 @@ namespace plorth
       std::vector<Ref<Value>> result;
 
       result.reserve(a.size() + b.size());
-      result.insert(result.end(), b.begin(), b.end());
-      result.insert(result.end(), a.begin(), a.end());
+      result.insert(end(result), begin(b), end(b));
+      result.insert(end(result), begin(a), end(a));
       state->PushArray(result);
     }
   }
@@ -514,9 +514,9 @@ namespace plorth
       for (std::int64_t i = 0; i < times; ++i)
       {
         result.insert(
-          result.end(),
-          array->GetElements().begin(),
-          array->GetElements().end()
+          end(result),
+          begin(array->GetElements()),
+          end(array->GetElements())
         );
       }
     } else {
@@ -525,9 +525,9 @@ namespace plorth
       for (mpz_class i = 0; i < times; ++i)
       {
         result.insert(
-          result.end(),
-          array->GetElements().begin(),
-          array->GetElements().end()
+          end(result),
+          begin(array->GetElements()),
+          end(array->GetElements())
         );
       }
     }
