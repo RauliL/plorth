@@ -402,6 +402,39 @@ namespace plorth
   }
 
   /**
+   * reverse ( str -- str )
+   *
+   * Returns reversed copy of the string.
+   */
+  static void w_reverse(const Ref<State>& state)
+  {
+    Ref<String> string;
+
+    if (state->PopString(string))
+    {
+      const char* input = string->GetValue().c_str();
+      std::string output;
+      char buffer[5];
+
+      while (input && *input)
+      {
+        unsigned int rune;
+        std::size_t size;
+
+        if (!unicode_decode(input, rune) || !unicode_encode(rune, buffer))
+        {
+          break;
+        }
+        size = unicode_size(rune);
+        input += size;
+        buffer[size] = 0;
+        output.insert(0, buffer);
+      }
+      state->PushString(output);
+    }
+  }
+
+  /**
    * = ( str str -- bool )
    *
    * Tests whether two strings are equal.
@@ -487,6 +520,7 @@ namespace plorth
       { "lower", w_to_lower },
       { "upper", w_to_upper },
       { "capitalize", w_capitalize },
+      { "reverse", w_reverse },
 
       { "=", w_eq },
       { "+", w_plus },
