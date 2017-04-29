@@ -1,5 +1,5 @@
 #include "bool.hpp"
-#include "state.hpp"
+#include "context.hpp"
 
 namespace plorth
 {
@@ -38,9 +38,9 @@ namespace plorth
    *
    * Inserts true value on top of the stack.
    */
-  static void w_true(const Ref<State>& state)
+  static void w_true(const Ref<Context>& context)
   {
-    state->PushBool(true);
+    context->PushBool(true);
   }
 
   /**
@@ -48,9 +48,9 @@ namespace plorth
    *
    * Inserts false value on top of the stack.
    */
-  static void w_false(const Ref<State>& state)
+  static void w_false(const Ref<Context>& context)
   {
-    state->PushBool(false);
+    context->PushBool(false);
   }
 
   /**
@@ -58,13 +58,13 @@ namespace plorth
    *
    * Returns true if given value is boolean.
    */
-  static void w_is_bool(const Ref<State>& state)
+  static void w_is_bool(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Peek(value))
+    if (context->Peek(value))
     {
-      state->PushBool(value->GetType() == Value::TYPE_BOOL);
+      context->PushBool(value->GetType() == Value::TYPE_BOOL);
     }
   }
 
@@ -74,19 +74,19 @@ namespace plorth
    * Converts value from top of the stack into boolean. Null and false values
    * becomes false while everything else becomes true.
    */
-  static void w_to_bool(const Ref<State>& state)
+  static void w_to_bool(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (!state->Pop(value))
+    if (!context->Pop(value))
     {
       return;
     }
     if (value->GetType() == Value::TYPE_BOOL)
     {
-      state->PushBool(value);
+      context->PushBool(value);
     } else {
-      state->PushBool(value->GetType() != Value::TYPE_NULL);
+      context->PushBool(value->GetType() != Value::TYPE_NULL);
     }
   }
 
@@ -95,16 +95,14 @@ namespace plorth
    *
    * Executes quote if the boolean value is true.
    */
-  static void w_if(const Ref<State>& state)
+  static void w_if(const Ref<Context>& context)
   {
-    Ref<Bool> condition;
+    bool condition;
     Ref<Quote> quote;
 
-    if (state->PopQuote(quote)
-        && state->PopBool(condition)
-        && condition->GetValue())
+    if (context->PopQuote(quote) && context->PopBool(condition) && condition)
     {
-      quote->Call(state);
+      quote->Call(context);
     }
   }
 
@@ -113,23 +111,23 @@ namespace plorth
    *
    * Calls first quote if boolean value is true, second quote otherwise.
    */
-  static void w_if_else(const Ref<State>& state)
+  static void w_if_else(const Ref<Context>& context)
   {
-    Ref<Bool> condition;
+    bool condition;
     Ref<Quote> then_quote;
     Ref<Quote> else_quote;
 
-    if (!state->PopQuote(else_quote)
-        || !state->PopQuote(then_quote)
-        || !state->PopBool(condition))
+    if (!context->PopQuote(else_quote)
+        || !context->PopQuote(then_quote)
+        || !context->PopBool(condition))
     {
       return;
     }
-    if (condition->GetValue())
+    if (condition)
     {
-      then_quote->Call(state);
+      then_quote->Call(context);
     } else {
-      else_quote->Call(state);
+      else_quote->Call(context);
     }
   }
 
@@ -138,18 +136,18 @@ namespace plorth
    *
    * Executes given quote while top of the stack value is true.
    */
-  static void w_while(const Ref<State>& state)
+  static void w_while(const Ref<Context>& context)
   {
-    Ref<Bool> condition;
+    bool condition;
     Ref<Quote> quote;
 
-    if (!state->PopQuote(quote) || !state->PopBool(condition))
+    if (!context->PopQuote(quote) || !context->PopBool(condition))
     {
       return;
     }
-    while (condition->GetValue())
+    while (condition)
     {
-      if (!quote->Call(state) || !state->PopBool(condition))
+      if (!quote->Call(context) || !context->PopBool(condition))
       {
         return;
       }
@@ -161,14 +159,14 @@ namespace plorth
    *
    * Logical AND. Returns true if both values are true.
    */
-  static void w_and(const Ref<State>& state)
+  static void w_and(const Ref<Context>& context)
   {
-    Ref<Bool> a;
-    Ref<Bool> b;
+    bool a;
+    bool b;
 
-    if (state->PopBool(a) && state->PopBool(b))
+    if (context->PopBool(a) && context->PopBool(b))
     {
-      state->PushBool(b->GetValue() && a->GetValue());
+      context->PushBool(b && a);
     }
   }
 
@@ -177,14 +175,14 @@ namespace plorth
    *
    * Logical OR. Returns true if either one of the values are true.
    */
-  static void w_or(const Ref<State>& state)
+  static void w_or(const Ref<Context>& context)
   {
-    Ref<Bool> a;
-    Ref<Bool> b;
+    bool a;
+    bool b;
 
-    if (state->PopBool(a) && state->PopBool(b))
+    if (context->PopBool(a) && context->PopBool(b))
     {
-      state->PushBool(b->GetValue() || a->GetValue());
+      context->PushBool(b || a);
     }
   }
 
@@ -193,17 +191,14 @@ namespace plorth
    *
    * Exclusive OR.
    */
-  static void w_xor(const Ref<State>& state)
+  static void w_xor(const Ref<Context>& context)
   {
-    Ref<Bool> a;
-    Ref<Bool> b;
+    bool a;
+    bool b;
 
-    if (state->PopBool(a) && state->PopBool(b))
+    if (context->PopBool(a) && context->PopBool(b))
     {
-      const bool x = b->GetValue();
-      const bool y = a->GetValue();
-
-      state->PushBool(x != y && (x || y));
+      context->PushBool(b != a && (b || a));
     }
   }
 
@@ -212,13 +207,13 @@ namespace plorth
    *
    * Negates given boolean value.
    */
-  static void w_not(const Ref<State>& state)
+  static void w_not(const Ref<Context>& context)
   {
-    Ref<Bool> value;
+    bool value;
 
-    if (state->PopBool(value))
+    if (context->PopBool(value))
     {
-      state->PushBool(!value->GetValue());
+      context->PushBool(!value);
     }
   }
 

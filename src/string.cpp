@@ -1,4 +1,4 @@
-#include "state.hpp"
+#include "context.hpp"
 #include "string.hpp"
 #include "unicode.hpp"
 #include "utils.hpp"
@@ -45,13 +45,13 @@ namespace plorth
    *
    * Returns true if given value is string.
    */
-  static void w_is_str(const Ref<State>& state)
+  static void w_is_str(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Peek(value))
+    if (context->Peek(value))
     {
-      state->PushBool(value->GetType() == Value::TYPE_STRING);
+      context->PushBool(value->GetType() == Value::TYPE_STRING);
     }
   }
 
@@ -60,13 +60,13 @@ namespace plorth
    *
    * Converts value from top of the stack into string.
    */
-  static void w_to_str(const Ref<State>& state)
+  static void w_to_str(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Pop(value))
+    if (context->Pop(value))
     {
-      state->PushString(value->ToString());
+      context->PushString(value->ToString());
     }
   }
 
@@ -75,13 +75,13 @@ namespace plorth
    *
    * Returns length of the string.
    */
-  static void w_len(const Ref<State>& state)
+  static void w_len(const Ref<Context>& context)
   {
     Ref<String> string;
 
-    if (state->PeekString(string))
+    if (context->PeekString(string))
     {
-      state->PushNumber(static_cast<std::int64_t>(utf8_strlen(string->GetValue().c_str())));
+      context->PushNumber(static_cast<std::int64_t>(utf8_strlen(string->GetValue().c_str())));
     }
   }
 
@@ -92,13 +92,13 @@ namespace plorth
    * number of characters given by "len" words, because Plorth uses UTF-8
    * encoding.
    */
-  static void w_size(const Ref<State>& state)
+  static void w_size(const Ref<Context>& context)
   {
     Ref<String> string;
 
-    if (state->PeekString(string))
+    if (context->PeekString(string))
     {
-      state->PushNumber(static_cast<std::int64_t>(string->GetValue().length()));
+      context->PushNumber(static_cast<std::int64_t>(string->GetValue().length()));
     }
   }
 
@@ -107,13 +107,13 @@ namespace plorth
    *
    * Returns true if the string is empty.
    */
-  static void w_is_empty(const Ref<State>& state)
+  static void w_is_empty(const Ref<Context>& context)
   {
     Ref<String> string;
 
-    if (state->PeekString(string))
+    if (context->PeekString(string))
     {
-      state->PushBool(string->IsEmpty());
+      context->PushBool(string->IsEmpty());
     }
   }
 
@@ -123,29 +123,29 @@ namespace plorth
    * Returns true if the string is empty or contains only whitespace
    * characters.
    */
-  static void w_is_blank(const Ref<State>& state)
+  static void w_is_blank(const Ref<Context>& context)
   {
     Ref<String> string;
 
-    if (state->PeekString(string))
+    if (context->PeekString(string))
     {
       const std::string& s = string->GetValue();
       const std::size_t length = s.length();
 
       if (!length)
       {
-        state->PushBool(true);
+        context->PushBool(true);
         return;
       }
       for (std::size_t i = 0; i < length; ++i)
       {
         if (!std::isspace(s[i]))
         {
-          state->PushBool(false);
+          context->PushBool(false);
           return;
         }
       }
-      state->PushBool(true);
+      context->PushBool(true);
     }
   }
 
@@ -155,11 +155,11 @@ namespace plorth
    * Extracts characters from the string and returns them in an array of
    * substrings.
    */
-  static void w_chars(const Ref<State>& state)
+  static void w_chars(const Ref<Context>& context)
   {
     Ref<String> string;
 
-    if (state->PeekString(string))
+    if (context->PeekString(string))
     {
       const char* input = string->GetValue().c_str();
       char buffer[5];
@@ -176,10 +176,10 @@ namespace plorth
         input += unicode_size(cp);
         if (unicode_encode(cp, buffer))
         {
-          result.push_back(state->GetRuntime()->NewString(buffer));
+          result.push_back(context->GetRuntime()->NewString(buffer));
         }
       }
-      state->PushArray(result);
+      context->PushArray(result);
     }
   }
 
@@ -189,11 +189,11 @@ namespace plorth
    * Extracts Unicode code points from the string and returns them in an array
    * of numbers.
    */
-  static void w_runes(const Ref<State>& state)
+  static void w_runes(const Ref<Context>& context)
   {
     Ref<String> string;
 
-    if (state->PeekString(string))
+    if (context->PeekString(string))
     {
       const char* input = string->GetValue().c_str();
       std::vector<Ref<Value>> result;
@@ -207,9 +207,9 @@ namespace plorth
           break;
         }
         input += unicode_size(cp);
-        result.push_back(state->GetRuntime()->NewNumber(static_cast<std::int64_t>(cp)));
+        result.push_back(context->GetRuntime()->NewNumber(static_cast<std::int64_t>(cp)));
       }
-      state->PushArray(result);
+      context->PushArray(result);
     }
   }
 
@@ -218,11 +218,11 @@ namespace plorth
    *
    * Extracts lines from the string and returns them in array.
    */
-  static void w_lines(const Ref<State>& state)
+  static void w_lines(const Ref<Context>& context)
   {
     Ref<String> value;
 
-    if (state->PeekString(value))
+    if (context->PeekString(value))
     {
       const std::string& str = value->GetValue();
       const std::size_t length = str.length();
@@ -234,12 +234,12 @@ namespace plorth
       {
         if (i + 1 < length && str[i] == '\r' && str[i + 1] == '\n')
         {
-          result.push_back(state->GetRuntime()->NewString(str.substr(begin, end - begin)));
+          result.push_back(context->GetRuntime()->NewString(str.substr(begin, end - begin)));
           begin = end = ++i + 1;
         }
         else if (str[i] == '\n' || str[i] == '\r')
         {
-          result.push_back(state->GetRuntime()->NewString(str.substr(begin, end - begin)));
+          result.push_back(context->GetRuntime()->NewString(str.substr(begin, end - begin)));
           begin = end = i + 1;
         } else {
           ++end;
@@ -247,9 +247,9 @@ namespace plorth
       }
       if (end - begin > 0)
       {
-        result.push_back(state->GetRuntime()->NewString(str.substr(begin, end - begin)));
+        result.push_back(context->GetRuntime()->NewString(str.substr(begin, end - begin)));
       }
-      state->PushArray(result);
+      context->PushArray(result);
     }
   }
 
@@ -258,11 +258,11 @@ namespace plorth
    *
    * Extracts words from the string and returns them in array.
    */
-  static void w_words(const Ref<State>& state)
+  static void w_words(const Ref<Context>& context)
   {
     Ref<String> value;
 
-    if (state->PeekString(value))
+    if (context->PeekString(value))
     {
       const std::string& str = value->GetValue();
       const std::size_t length = str.length();
@@ -276,7 +276,7 @@ namespace plorth
         {
           if (end - begin > 0)
           {
-            result.push_back(state->GetRuntime()->NewString(str.substr(begin, end - begin)));
+            result.push_back(context->GetRuntime()->NewString(str.substr(begin, end - begin)));
           }
           begin = end = i + 1;
         } else {
@@ -285,9 +285,9 @@ namespace plorth
       }
       if (end - begin > 0)
       {
-        result.push_back(state->GetRuntime()->NewString(str.substr(begin, end - begin)));
+        result.push_back(context->GetRuntime()->NewString(str.substr(begin, end - begin)));
       }
-      state->PushArray(result);
+      context->PushArray(result);
     }
   }
 
@@ -296,11 +296,11 @@ namespace plorth
    *
    * Converts string to lower case.
    */
-  static void w_to_lower(const Ref<State>& state)
+  static void w_to_lower(const Ref<Context>& context)
   {
     Ref<String> string;
 
-    if (state->PopString(string))
+    if (context->PopString(string))
     {
       const char* input = string->GetValue().c_str();
       char buffer[5];
@@ -321,7 +321,7 @@ namespace plorth
           result += buffer;
         }
       }
-      state->PushString(result);
+      context->PushString(result);
     }
   }
 
@@ -330,11 +330,11 @@ namespace plorth
    *
    * Converts string to upper case.
    */
-  static void w_to_upper(const Ref<State>& state)
+  static void w_to_upper(const Ref<Context>& context)
   {
     Ref<String> string;
 
-    if (state->PopString(string))
+    if (context->PopString(string))
     {
       const char* input = string->GetValue().c_str();
       char buffer[5];
@@ -355,7 +355,7 @@ namespace plorth
           result += buffer;
         }
       }
-      state->PushString(result);
+      context->PushString(result);
     }
   }
 
@@ -365,11 +365,11 @@ namespace plorth
    * Converts first character of the string into upper case and remaining to
    * lower case.
    */
-  static void w_capitalize(const Ref<State>& state)
+  static void w_capitalize(const Ref<Context>& context)
   {
     Ref<String> string;
 
-    if (state->PopString(string))
+    if (context->PopString(string))
     {
       const char* input = string->GetValue().c_str();
       bool first = true;
@@ -397,7 +397,7 @@ namespace plorth
           result += buffer;
         }
       }
-      state->PushString(result);
+      context->PushString(result);
     }
   }
 
@@ -406,11 +406,11 @@ namespace plorth
    *
    * Returns reversed copy of the string.
    */
-  static void w_reverse(const Ref<State>& state)
+  static void w_reverse(const Ref<Context>& context)
   {
     Ref<String> string;
 
-    if (state->PopString(string))
+    if (context->PopString(string))
     {
       const char* input = string->GetValue().c_str();
       std::string output;
@@ -430,7 +430,7 @@ namespace plorth
         buffer[size] = 0;
         output.insert(0, buffer);
       }
-      state->PushString(output);
+      context->PushString(output);
     }
   }
 
@@ -439,14 +439,14 @@ namespace plorth
    *
    * Tests whether two strings are equal.
    */
-  static void w_eq(const Ref<State>& state)
+  static void w_eq(const Ref<Context>& context)
   {
     Ref<String> a;
     Ref<String> b;
 
-    if (state->PopString(a) && state->PopString(b))
+    if (context->PopString(a) && context->PopString(b))
     {
-      state->PushBool(!a->GetValue().compare(b->GetValue()));
+      context->PushBool(!a->GetValue().compare(b->GetValue()));
     }
   }
 
@@ -455,14 +455,14 @@ namespace plorth
    *
    * Concatenates contents of two strings into one.
    */
-  static void w_plus(const Ref<State>& state)
+  static void w_plus(const Ref<Context>& context)
   {
     Ref<String> a;
     Ref<String> b;
 
-    if (state->PopString(a) && state->PopString(b))
+    if (context->PopString(a) && context->PopString(b))
     {
-      state->Push(state->GetRuntime()->NewString(b->GetValue() + a->GetValue()));
+      context->Push(context->GetRuntime()->NewString(b->GetValue() + a->GetValue()));
     }
   }
 
@@ -471,13 +471,13 @@ namespace plorth
    *
    * Repeats string given number of times.
    */
-  static void w_times(const Ref<State>& state)
+  static void w_times(const Ref<Context>& context)
   {
     Ref<String> string;
     Ref<Number> number;
     std::string result;
 
-    if (!state->PopString(string) || !state->PopNumber(number))
+    if (!context->PopString(string) || !context->PopNumber(number))
     {
       return;
     }
@@ -497,7 +497,7 @@ namespace plorth
         result += string->GetValue();
       }
     }
-    state->PushString(result);
+    context->PushString(result);
   }
 
   void api_init_string(Runtime* runtime)

@@ -1,4 +1,4 @@
-#include "state.hpp"
+#include "context.hpp"
 
 namespace plorth
 {
@@ -7,13 +7,13 @@ namespace plorth
    *
    * Returns true if item on top of the stack is null.
    */
-  static void w_is_null(const Ref<State>& state)
+  static void w_is_null(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Peek(value))
+    if (context->Peek(value))
     {
-      state->PushBool(value->GetType() == Value::TYPE_NULL);
+      context->PushBool(value->GetType() == Value::TYPE_NULL);
     }
   }
 
@@ -22,16 +22,16 @@ namespace plorth
    *
    * Does nothing. Can be used to construct empty quotes.
    */
-  static void w_nop(const Ref<State>& state) {}
+  static void w_nop(const Ref<Context>& context) {}
 
   /**
    * clear ( -- )
    *
    * Clears the entire stack.
    */
-  static void w_clear(const Ref<State>& state)
+  static void w_clear(const Ref<Context>& context)
   {
-    state->GetDataStack().clear();
+    context->ClearStack();
   }
 
   /**
@@ -39,9 +39,9 @@ namespace plorth
    *
    * Returns current depth of the stack.
    */
-  static void w_depth(const Ref<State>& state)
+  static void w_depth(const Ref<Context>& context)
   {
-    state->PushNumber(static_cast<std::int64_t>(state->GetDataStack().size()));
+    context->PushNumber(static_cast<std::int64_t>(context->GetStack().size()));
   }
 
   /**
@@ -49,9 +49,9 @@ namespace plorth
    *
    * Discards top-most value of the stack.
    */
-  static void w_drop(const Ref<State>& state)
+  static void w_drop(const Ref<Context>& context)
   {
-    state->Pop();
+    context->Pop();
   }
 
   /**
@@ -59,11 +59,11 @@ namespace plorth
    *
    * Discards two top-most values of the stack.
    */
-  static void w_drop2(const Ref<State>& state)
+  static void w_drop2(const Ref<Context>& context)
   {
-    if (state->Pop())
+    if (context->Pop())
     {
-      state->Pop();
+      context->Pop();
     }
   }
 
@@ -72,13 +72,13 @@ namespace plorth
    *
    * Duplicates top-most value of the stack.
    */
-  static void w_dup(const Ref<State>& state)
+  static void w_dup(const Ref<Context>& context)
   {
-    if (state->GetDataStack().empty())
+    if (context->GetStack().empty())
     {
-      state->SetError(Error::ERROR_CODE_RANGE, "Stack underflow");
+      context->SetError(Error::ERROR_CODE_RANGE, "Stack underflow");
     } else {
-      state->Push(state->GetDataStack().back());
+      context->Push(context->GetStack().back());
     }
   }
 
@@ -87,17 +87,17 @@ namespace plorth
    *
    * Duplicates two top-most values on the stack.
    */
-  static void w_dup2(const Ref<State>& state)
+  static void w_dup2(const Ref<Context>& context)
   {
     Ref<Value> a;
     Ref<Value> b;
 
-    if (state->Pop(a) && state->Pop(b))
+    if (context->Pop(a) && context->Pop(b))
     {
-      state->Push(b);
-      state->Push(a);
-      state->Push(b);
-      state->Push(a);
+      context->Push(b);
+      context->Push(a);
+      context->Push(b);
+      context->Push(a);
     }
   }
 
@@ -106,13 +106,13 @@ namespace plorth
    *
    * Drops the first value and pushes second value on the stack.
    */
-  static void w_nip(const Ref<State>& state)
+  static void w_nip(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Pop(value) && state->Pop())
+    if (context->Pop(value) && context->Pop())
     {
-      state->Push(value);
+      context->Push(value);
     }
   }
 
@@ -122,16 +122,16 @@ namespace plorth
    * Copies second top-most value from the stack into top-most value of the
    * stack.
    */
-  static void w_over(const Ref<State>& state)
+  static void w_over(const Ref<Context>& context)
   {
     Ref<Value> a;
     Ref<Value> b;
 
-    if (state->Pop(a) && state->Pop(b))
+    if (context->Pop(a) && context->Pop(b))
     {
-      state->Push(b);
-      state->Push(a);
-      state->Push(b);
+      context->Push(b);
+      context->Push(a);
+      context->Push(b);
     }
   }
 
@@ -140,17 +140,17 @@ namespace plorth
    *
    * Rotates three top-most values on the stack.
    */
-  static void w_rot(const Ref<State>& state)
+  static void w_rot(const Ref<Context>& context)
   {
     Ref<Value> a;
     Ref<Value> b;
     Ref<Value> c;
 
-    if (state->Pop(a) && state->Pop(b) && state->Pop(c))
+    if (context->Pop(a) && context->Pop(b) && context->Pop(c))
     {
-      state->Push(b);
-      state->Push(a);
-      state->Push(c);
+      context->Push(b);
+      context->Push(a);
+      context->Push(c);
     }
   }
 
@@ -159,15 +159,15 @@ namespace plorth
    *
    * Swaps positions of two top-most values on the stack.
    */
-  static void w_swap(const Ref<State>& state)
+  static void w_swap(const Ref<Context>& context)
   {
     Ref<Value> a;
     Ref<Value> b;
 
-    if (state->Pop(a) && state->Pop(b))
+    if (context->Pop(a) && context->Pop(b))
     {
-      state->Push(a);
-      state->Push(b);
+      context->Push(a);
+      context->Push(b);
     }
   }
 

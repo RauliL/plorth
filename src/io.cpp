@@ -1,4 +1,4 @@
-#include "state.hpp"
+#include "context.hpp"
 #include "unicode.hpp"
 
 namespace plorth
@@ -8,11 +8,11 @@ namespace plorth
    *
    * Prints top-most value of the stack to stdout.
    */
-  static void w_print(const Ref<State>& state)
+  static void w_print(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Pop(value))
+    if (context->Pop(value))
     {
       std::cout << value;
     }
@@ -23,11 +23,11 @@ namespace plorth
    *
    * Prints top-most value of the stack to stdout with terminating new line.
    */
-  static void w_println(const Ref<State>& state)
+  static void w_println(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Pop(value))
+    if (context->Pop(value))
     {
       std::cout << value << std::endl;
     }
@@ -38,11 +38,11 @@ namespace plorth
    *
    * Pretty prints value from top of the stack into standard output stream.
    */
-  static void w_dot(const Ref<State>& state)
+  static void w_dot(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Pop(value))
+    if (context->Pop(value))
     {
       std::cout << value->ToSource() << std::endl;
     }
@@ -53,7 +53,7 @@ namespace plorth
    *
    * Outputs whitespace into the standard output stream.
    */
-  static void w_bl(const Ref<State>& state)
+  static void w_bl(const Ref<Context>& context)
   {
     std::cout << ' ';
   }
@@ -63,7 +63,7 @@ namespace plorth
    *
    * Outputs new line into the standard output stream.
    */
-  static void w_nl(const Ref<State>& state)
+  static void w_nl(const Ref<Context>& context)
   {
     std::cout << std::endl;
   }
@@ -73,11 +73,11 @@ namespace plorth
    *
    * Outputs given Unicode code point into the standard output stream.
    */
-  static void w_emit(const Ref<State>& state)
+  static void w_emit(const Ref<Context>& context)
   {
     Ref<Number> value;
 
-    if (state->PopNumber(value))
+    if (context->PopNumber(value))
     {
       char buffer[5];
 

@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "state.hpp"
+#include "context.hpp"
 
 namespace plorth
 {
@@ -87,13 +87,13 @@ namespace plorth
    *
    * Returns true if given value is error.
    */
-  static void w_is_error(const Ref<State>& state)
+  static void w_is_error(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Peek(value))
+    if (context->Peek(value))
     {
-      state->PushBool(value->GetType() == Value::TYPE_ERROR);
+      context->PushBool(value->GetType() == Value::TYPE_ERROR);
     }
   }
 
@@ -103,20 +103,20 @@ namespace plorth
    * Executes first quote and if it throws an error, calls second quote with
    * the error on top of the stack.
    */
-  static void w_try(const Ref<State>& state)
+  static void w_try(const Ref<Context>& context)
   {
     Ref<Quote> try_block;
     Ref<Quote> catch_block;
 
-    if (!state->PopQuote(catch_block) || !state->PopQuote(try_block))
+    if (!context->PopQuote(catch_block) || !context->PopQuote(try_block))
     {
       return;
     }
-    if (!try_block->Call(state))
+    if (!try_block->Call(context))
     {
-      state->Push(state->GetError());
-      state->ClearError();
-      catch_block->Call(state);
+      context->Push(context->GetError());
+      context->ClearError();
+      catch_block->Call(context);
     }
   }
 
@@ -125,13 +125,13 @@ namespace plorth
    *
    * Returns error code extracted from the error in numeric form.
    */
-  static void w_code(const Ref<State>& state)
+  static void w_code(const Ref<Context>& context)
   {
     Ref<Error> error;
 
-    if (state->PeekError(error))
+    if (context->PeekError(error))
     {
-      state->PushNumber(static_cast<std::int64_t>(error->GetCode()));
+      context->PushNumber(static_cast<std::int64_t>(error->GetCode()));
     }
   }
 
@@ -141,19 +141,19 @@ namespace plorth
    * Returns error message extracted from the error, or null if the error does
    * not have any error message.
    */
-  static void w_message(const Ref<State>& state)
+  static void w_message(const Ref<Context>& context)
   {
     Ref<Error> error;
 
-    if (state->PeekError(error))
+    if (context->PeekError(error))
     {
       const std::string& message = error->GetMessage();
 
       if (message.empty())
       {
-        state->PushNull();
+        context->PushNull();
       } else {
-        state->PushString(message);
+        context->PushString(message);
       }
     }
   }
@@ -161,15 +161,15 @@ namespace plorth
   /**
    * throw ( error -- )
    *
-   * Sets given error as current error of the execution state.
+   * Sets given error as current error of the execution context.
    */
-  static void w_throw(const Ref<State>& state)
+  static void w_throw(const Ref<Context>& context)
   {
     Ref<Error> error;
 
-    if (state->PopError(error))
+    if (context->PopError(error))
     {
-      state->SetError(error);
+      context->SetError(error);
     }
   }
 

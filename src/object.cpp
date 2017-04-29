@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "state.hpp"
+#include "context.hpp"
 #include "string.hpp"
 #include "utils.hpp"
 
@@ -111,9 +111,9 @@ namespace plorth
    *
    * Returns null value.
    */
-  static void w_null(const Ref<State>& state)
+  static void w_null(const Ref<Context>& context)
   {
-    state->PushNull();
+    context->PushNull();
   }
 
   /**
@@ -121,13 +121,13 @@ namespace plorth
    *
    * Returns true if given value is object.
    */
-  static void w_is_obj(const Ref<State>& state)
+  static void w_is_obj(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Peek(value))
+    if (context->Peek(value))
     {
-      state->PushBool(value->GetType() == Value::TYPE_OBJECT);
+      context->PushBool(value->GetType() == Value::TYPE_OBJECT);
     }
   }
 
@@ -136,16 +136,16 @@ namespace plorth
    *
    * Returns name of the type of given value as string.
    */
-  static void w_typeof(const Ref<State>& state)
+  static void w_typeof(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Peek(value))
+    if (context->Peek(value))
     {
       std::stringstream ss;
 
       ss << value->GetType();
-      state->PushString(ss.str());
+      context->PushString(ss.str());
     }
   }
 
@@ -155,19 +155,19 @@ namespace plorth
    * Returns prototype of the value, or null if prototype cannot be determined
    * for some reason.
    */
-  static void w_proto(const Ref<State>& state)
+  static void w_proto(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Pop(value))
+    if (context->Pop(value))
     {
-      const Ref<Object> prototype = value->GetPrototype(state->GetRuntime());
+      const Ref<Object> prototype = value->GetPrototype(context->GetRuntime());
 
       if (prototype)
       {
-        state->Push(prototype);
+        context->Push(prototype);
       } else {
-        state->PushNull();
+        context->PushNull();
       }
     }
   }
@@ -177,13 +177,13 @@ namespace plorth
    *
    * Returns source code representation of the value.
    */
-  static void w_repr(const Ref<State>& state)
+  static void w_repr(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Pop(value))
+    if (context->Pop(value))
     {
-      state->PushString(value->ToSource());
+      context->PushString(value->ToSource());
     }
   }
 
@@ -192,13 +192,13 @@ namespace plorth
    *
    * Returns the number of key-value pairs from the object.
    */
-  static void w_len(const Ref<State>& state)
+  static void w_len(const Ref<Context>& context)
   {
     Ref<Object> object;
 
-    if (state->PeekObject(object))
+    if (context->PeekObject(object))
     {
-      state->PushNumber(static_cast<std::int64_t>(object->GetOwnProperties().size()));
+      context->PushNumber(static_cast<std::int64_t>(object->GetOwnProperties().size()));
     }
   }
 
@@ -207,20 +207,20 @@ namespace plorth
    *
    * Retrieves all keys from the object and returns them in an array.
    */
-  static void w_keys(const Ref<State>& state)
+  static void w_keys(const Ref<Context>& context)
   {
     Ref<Object> object;
     std::vector<Ref<Value>> result;
 
-    if (!state->PeekObject(object))
+    if (!context->PeekObject(object))
     {
       return;
     }
     for (const auto& property : object->GetOwnProperties())
     {
-      result.push_back(state->GetRuntime()->NewString(property.first));
+      result.push_back(context->GetRuntime()->NewString(property.first));
     }
-    state->PushArray(result);
+    context->PushArray(result);
   }
 
   /**
@@ -228,12 +228,12 @@ namespace plorth
    *
    * Retrieves all values from the object and returns them in an array.
    */
-  static void w_values(const Ref<State>& state)
+  static void w_values(const Ref<Context>& context)
   {
     Ref<Object> object;
     std::vector<Ref<Value>> result;
 
-    if (!state->PeekObject(object))
+    if (!context->PeekObject(object))
     {
       return;
     }
@@ -241,7 +241,7 @@ namespace plorth
     {
       result.push_back(property.second);
     }
-    state->PushArray(result);
+    context->PushArray(result);
   }
 
   /**
@@ -249,16 +249,16 @@ namespace plorth
    *
    * Tests whether value identified by given string exists in the object.
    */
-  static void w_has(const Ref<State>& state)
+  static void w_has(const Ref<Context>& context)
   {
     Ref<Object> object;
     Ref<String> key;
 
-    if (state->PopObject(object) && state->PopString(key))
+    if (context->PopObject(object) && context->PopString(key))
     {
       const Ref<Value> value = object->GetOwnProperty(key->GetValue());
 
-      state->PushBool(!!value);
+      context->PushBool(!!value);
     }
   }
 
@@ -268,20 +268,20 @@ namespace plorth
    * Retrieves value identified by given string from the object. If the object
    * does not have value for the identifier, null is returned instead.
    */
-  static void w_get(const Ref<State>& state)
+  static void w_get(const Ref<Context>& context)
   {
     Ref<Object> object;
     Ref<String> key;
 
-    if (state->PopObject(object) && state->PopString(key))
+    if (context->PopObject(object) && context->PopString(key))
     {
       const Ref<Value> value = object->GetOwnProperty(key->GetValue());
 
       if (value)
       {
-        state->Push(value);
+        context->Push(value);
       } else {
-        state->Push(state->GetRuntime()->GetNullValue());
+        context->Push(context->GetRuntime()->GetNullValue());
       }
     }
   }
@@ -291,20 +291,20 @@ namespace plorth
    *
    * Assigns named value to the object and returns result.
    */
-  static void w_set(const Ref<State>& state)
+  static void w_set(const Ref<Context>& context)
   {
     Ref<Object> object;
     Ref<String> key;
     Ref<Value> value;
 
-    if (state->PopObject(object)
-        && state->PopString(key)
-        && state->Pop(value))
+    if (context->PopObject(object)
+        && context->PopString(key)
+        && context->Pop(value))
     {
       Object::Dictionary properties = object->GetOwnProperties();
 
       properties[key->GetValue()] = value;
-      state->PushObject(properties);
+      context->PushObject(properties);
     }
   }
 
@@ -313,12 +313,12 @@ namespace plorth
    *
    * Combines contents of two objects together and returns result.
    */
-  static void w_plus(const Ref<State>& state)
+  static void w_plus(const Ref<Context>& context)
   {
     Ref<Object> obj_a;
     Ref<Object> obj_b;
 
-    if (state->PopObject(obj_a) && state->PopObject(obj_b))
+    if (context->PopObject(obj_a) && context->PopObject(obj_b))
     {
       Object::Dictionary result = obj_b->GetOwnProperties();
 
@@ -326,7 +326,7 @@ namespace plorth
       {
         result[property.first] = property.second;
       }
-      state->PushObject(result);
+      context->PushObject(result);
     }
   }
 

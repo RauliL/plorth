@@ -1,5 +1,5 @@
-#ifndef PLORTH_STATE_HPP_GUARD
-#define PLORTH_STATE_HPP_GUARD
+#ifndef PLORTH_CONTEXT_HPP_GUARD
+#define PLORTH_CONTEXT_HPP_GUARD
 
 #include "runtime.hpp"
 
@@ -8,21 +8,21 @@ namespace plorth
   /**
    * Represents program execution state.
    */
-  class State : public ManagedObject
+  class Context : public ManagedObject
   {
   public:
-    typedef Runtime::Dictionary Dictionary;
-    typedef std::vector<Ref<Value>> Stack;
+    using Dictionary = Runtime::Dictionary;
+    using Stack = std::vector<Ref<Value>>;
 
     /**
-     * Constructs new execution state.
+     * Constructs new context.
      *
-     * \param runtime Runtime associated with this state.
+     * \param runtime Runtime associated with this context.
      */
-    explicit State(const Ref<Runtime>& runtime);
+    explicit Context(const Ref<Runtime>& runtime);
 
     /**
-     * Returns the runtime associated with this execution state.
+     * Returns the runtime associated with this context.
      */
     inline const Ref<Runtime>& GetRuntime() const
     {
@@ -30,8 +30,16 @@ namespace plorth
     }
 
     /**
-     * Returns reference to currently uncaught error, or null reference if
-     * there isn't any.
+     * Returns true if the execution context has uncaught error.
+     */
+    inline bool HasError() const
+    {
+      return !!m_error;
+    }
+
+    /**
+     * Returns reference to currently uncaught error in this context, or null
+     * reference if the context does not have one.
      */
     inline const Ref<Error>& GetError() const
     {
@@ -57,44 +65,51 @@ namespace plorth
      */
     void ClearError();
 
+    /**
+     * Returns the dictionary used by this context to store words.
+     */
     inline const Dictionary& GetDictionary() const
     {
       return m_dictionary;
     }
 
-    Ref<Value> FindWord(const std::string& name) const;
+    /**
+     * Returns the data stack used by this context to store values.
+     */
+    inline const Stack& GetStack() const
+    {
+      return m_stack;
+    }
 
-    void AddWord(const std::string& name, const Ref<Value>& value);
+    /**
+     * Removes all values from the data stack.
+     */
+    void ClearStack()
+    {
+      m_stack.clear();
+    }
 
     bool CallWord(const std::string& name);
 
-    /**
-     * Returns the data stack associated with this execution state.
-     */
-    inline Stack& GetDataStack()
-    {
-      return m_data;
-    }
-
-    /**
-     * Returns the data stack associated with this execution state.
-     */
-    inline const Stack& GetDataStack() const
-    {
-      return m_data;
-    }
+    void AddWord(const std::string& name, const Ref<Value>& value);
 
     bool Peek(Ref<Value>& slot);
 
     bool Peek(Ref<Value>& slot, Value::Type type);
 
-    bool PeekString(Ref<String>& slot);
-
     bool PeekArray(Ref<Array>& slot);
+
+    bool PeekBool(bool& slot);
+
+    bool PeekError(Ref<Error>& slot);
+
+    bool PeekNumber(Ref<Number>& slot);
 
     bool PeekObject(Ref<Object>& slot);
 
-    bool PeekError(Ref<Error>& slot);
+    bool PeekQuote(Ref<Quote>& slot);
+
+    bool PeekString(Ref<String>& slot);
 
     /**
      * Pushes given value into the data stack.
@@ -103,10 +118,7 @@ namespace plorth
      */
     void Push(const Ref<Value>& value);
 
-    /**
-     * Pushes null value as top of the data stack.
-     */
-    void PushNull();
+    void PushArray(const std::vector<Ref<Value>>& elements);
 
     /**
      * Pushes given boolean value into the data stack.
@@ -114,6 +126,11 @@ namespace plorth
      * \param value Value to insert as top of the stack value.
      */
     void PushBool(bool value);
+
+    /**
+     * Pushes null value as top of the data stack.
+     */
+    void PushNull();
 
     void PushNumber(std::int64_t value);
 
@@ -123,13 +140,11 @@ namespace plorth
 
     void PushNumber(const std::string& value);
 
-    void PushString(const std::string& value);
-
-    void PushArray(const std::vector<Ref<Value>>& elements);
-
     void PushObject();
 
     void PushObject(const Object::Dictionary& properties);
+
+    void PushString(const std::string& value);
 
     bool Pop();
 
@@ -137,30 +152,30 @@ namespace plorth
 
     bool Pop(Ref<Value>& slot, Value::Type type);
 
-    bool PopBool(Ref<Bool>& slot);
+    bool PopArray(Ref<Array>& slot);
+
+    bool PopBool(bool& slot);
+
+    bool PopError(Ref<Error>& slot);
 
     bool PopNumber(Ref<Number>& slot);
-
-    bool PopString(Ref<String>& slot);
-
-    bool PopArray(Ref<Array>& slot);
 
     bool PopObject(Ref<Object>& slot);
 
     bool PopQuote(Ref<Quote>& slot);
 
-    bool PopError(Ref<Error>& slot);
+    bool PopString(Ref<String>& slot);
 
   private:
-    /** Runtime associated with this execution state. */
+    /** Runtime associated with this context. */
     const Ref<Runtime> m_runtime;
     /** Currently uncaught error. */
     Ref<Error> m_error;
-    /** Container for words associated with this execution state. */
+    /** Container for words associated with this context. */
     Dictionary m_dictionary;
-    /** Data stack associated with this execution state. */
-    Stack m_data;
+    /** Data stack used for storing values in this context. */
+    Stack m_stack;
   };
 }
 
-#endif /* !PLORTH_STATE_HPP_GUARD */
+#endif /* !PLORTH_CONTEXT_HPP_GUARD */

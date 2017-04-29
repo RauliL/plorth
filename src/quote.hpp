@@ -14,8 +14,13 @@ namespace plorth
   class Quote : public Value
   {
   public:
+    /**
+     * Signature of C++ function that can be used as native quote.
+     */
+    using CallbackSignature = void(*)(const Ref<Context>&);
+
     static Ref<Quote> Compile(
-      const Ref<State>& state,
+      const Ref<Context>& context,
       const std::string& source
     );
 
@@ -28,35 +33,7 @@ namespace plorth
 
     bool Equals(const Ref<Value>& that) const;
 
-    virtual bool Call(const Ref<State>& state) const = 0;
-  };
-
-  class CompiledQuote : public Quote
-  {
-  public:
-    explicit CompiledQuote(const std::vector<Token>& tokens);
-
-    bool Call(const Ref<State>& state) const;
-
-    std::string ToString() const;
-
-  private:
-    const std::vector<Token> m_tokens;
-  };
-
-  class NativeQuote : public Quote
-  {
-  public:
-    typedef void (*CallbackSignature)(const Ref<State>&);
-
-    explicit NativeQuote(CallbackSignature callback);
-
-    bool Call(const Ref<State>& state) const;
-
-    std::string ToString() const;
-
-  private:
-    const CallbackSignature m_callback;
+    virtual bool Call(const Ref<Context>& context) const = 0;
   };
 }
 

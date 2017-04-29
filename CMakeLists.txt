@@ -65,6 +65,7 @@ ADD_LIBRARY(
   SHARED
   src/array.cpp
   src/bool.cpp
+  src/context.cpp
   src/error.cpp
   src/io.cpp
   src/memory.cpp
@@ -73,7 +74,6 @@ ADD_LIBRARY(
   src/quote.cpp
   src/runtime.cpp
   src/stack.cpp
-  src/state.cpp
   src/string.cpp
   src/token.cpp
   src/unicode.cpp

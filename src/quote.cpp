@@ -1,7 +1,7 @@
 #include <sstream>
 
 #include "array.hpp"
-#include "state.hpp"
+#include "context.hpp"
 #include "string.hpp"
 #include "token.hpp"
 #include "unicode.hpp"
@@ -9,22 +9,111 @@
 
 namespace plorth
 {
-  static bool compile_string(const Ref<State>&,
+  static bool compile_string(const Ref<Context>&,
                              const char,
                              std::string::const_iterator&,
                              const std::string::const_iterator&,
                              std::vector<Token>&,
                              std::string&);
-  static Ref<Value> parse_value(const Ref<State>&,
+  static Ref<Value> parse_value(const Ref<Context>&,
                                 const std::vector<Token>&,
                                 std::size_t&,
                                 const std::size_t);
-  static bool parse_declaration(const Ref<State>&,
+  static bool parse_declaration(const Ref<Context>&,
                                 const std::vector<Token>&,
                                 std::size_t&,
                                 const std::size_t);
 
-  Ref<Quote> Quote::Compile(const Ref<State>& state, const std::string& source)
+  namespace
+  {
+    class CompiledQuote : public Quote
+    {
+    public:
+      explicit CompiledQuote(const std::vector<Token>& tokens)
+        : m_tokens(tokens) {}
+
+      bool Call(const Ref<Context>& context) const
+      {
+        const std::size_t size = m_tokens.size();
+
+        for (std::size_t i = 0; i < size;)
+        {
+          const Token& token = m_tokens[i];
+
+          switch (token.GetType())
+          {
+            case Token::TYPE_STRING:
+            case Token::TYPE_LBRACK:
+            case Token::TYPE_LBRACE:
+            {
+              const Ref<Value> value = parse_value(context, m_tokens, i, size);
+
+              if (!value)
+              {
+                return false;
+              }
+              context->Push(value);
+              break;
+            }
+
+            case Token::TYPE_COLON:
+              if (!parse_declaration(context, m_tokens, ++i, size))
+              {
+                return false;
+              }
+              break;
+
+            case Token::TYPE_WORD:
+              ++i;
+              if (!context->CallWord(token.GetData()))
+              {
+                return false;
+              }
+              break;
+
+            case Token::TYPE_LPAREN:
+            case Token::TYPE_RPAREN:
+            case Token::TYPE_RBRACK:
+            case Token::TYPE_RBRACE:
+            case Token::TYPE_COMMA:
+            {
+              std::stringstream ss;
+
+              ss << "Unexpected " << token.GetType();
+              context->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
+
+              return false;
+            }
+          }
+        }
+
+        return true;
+      }
+
+      std::string ToString() const
+      {
+        std::string result;
+
+        result += "{";
+        for (std::size_t i = 0; i < m_tokens.size(); ++i)
+        {
+          if (i > 0)
+          {
+            result += " ";
+          }
+          result += m_tokens[i].ToSource();
+        }
+        result += "}";
+
+        return result;
+      }
+
+    private:
+      const std::vector<Token> m_tokens;
+    };
+  }
+
+  Ref<Quote> Quote::Compile(const Ref<Context>& context, const std::string& source)
   {
     std::vector<Token> tokens;
     std::string buffer;
@@ -80,7 +169,7 @@ namespace plorth
         {
           const char separator = *current++;
 
-          if (!compile_string(state, separator, current, end, tokens, buffer))
+          if (!compile_string(context, separator, current, end, tokens, buffer))
           {
             return Ref<Quote>();
           }
@@ -97,7 +186,7 @@ namespace plorth
       }
     }
 
-    return state->GetRuntime()->NewQuote(tokens);
+    return new (context->GetRuntime()) CompiledQuote(tokens);
   }
 
   Ref<Object> Quote::GetPrototype(const Ref<Runtime>& runtime) const
@@ -117,101 +206,7 @@ namespace plorth
     return false; // TODO: Implement equality testing for native quotes.
   }
 
-  CompiledQuote::CompiledQuote(const std::vector<Token>& tokens)
-    : m_tokens(tokens) {}
-
-  bool CompiledQuote::Call(const Ref<State>& state) const
-  {
-    const std::size_t size = m_tokens.size();
-
-    for (std::size_t i = 0; i < size;)
-    {
-      const Token& token = m_tokens[i];
-
-      switch (token.GetType())
-      {
-        case Token::TYPE_STRING:
-        case Token::TYPE_LBRACK:
-        case Token::TYPE_LBRACE:
-        {
-          const Ref<Value> value = parse_value(state, m_tokens, i, size);
-
-          if (!value)
-          {
-            return false;
-          }
-          state->Push(value);
-          break;
-        }
-
-        case Token::TYPE_COLON:
-          if (!parse_declaration(state, m_tokens, ++i, size))
-          {
-            return false;
-          }
-          break;
-
-        case Token::TYPE_WORD:
-          ++i;
-          if (!state->CallWord(token.GetData()))
-          {
-            return false;
-          }
-          break;
-
-        case Token::TYPE_LPAREN:
-        case Token::TYPE_RPAREN:
-        case Token::TYPE_RBRACK:
-        case Token::TYPE_RBRACE:
-        case Token::TYPE_COMMA:
-        {
-          std::stringstream ss;
-
-          ss << "Unexpected " << token.GetType();
-          state->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
-
-          return false;
-        }
-      }
-    }
-
-    return true;
-  }
-
-  std::string CompiledQuote::ToString() const
-  {
-    std::string result;
-
-    result += "{";
-    for (std::size_t i = 0; i < m_tokens.size(); ++i)
-    {
-      if (i > 0)
-      {
-        result += " ";
-      }
-      result += m_tokens[i].ToSource();
-    }
-    result += "}";
-
-    return result;
-  }
-
-  NativeQuote::NativeQuote(CallbackSignature callback)
-    : m_callback(callback) {}
-
-  bool NativeQuote::Call(const Ref<State>& state) const
-  {
-    m_callback(state);
-
-    return !state->GetError();
-  }
-
-  std::string NativeQuote::ToString() const
-  {
-    return "<native quote>";
-  }
-
-  static bool compile_string(const Ref<State>& state,
+  static bool compile_string(const Ref<Context>& context,
                              const char separator,
                              std::string::const_iterator& current,
                              const std::string::const_iterator& end,
@@ -227,7 +222,7 @@ namespace plorth
 
         if (++current == end)
         {
-          state->SetError(
+          context->SetError(
             Error::ERROR_CODE_SYNTAX,
             "Unterminated string literal."
           );
@@ -273,7 +268,7 @@ namespace plorth
 
               if (current == end || !std::isxdigit(hex = *current++))
               {
-                state->SetError(
+                context->SetError(
                   Error::ERROR_CODE_SYNTAX,
                   "Illegal Unicode hex escape sequence."
                 );
@@ -293,7 +288,7 @@ namespace plorth
             }
             if (!unicode_encode(result, buffer))
             {
-              state->SetError(
+              context->SetError(
                 Error::ERROR_CODE_SYNTAX,
                 "Illegal Unicode hex escape sequence."
               );
@@ -304,7 +299,7 @@ namespace plorth
           }
 
           default:
-            state->SetError(
+            context->SetError(
               Error::ERROR_CODE_SYNTAX,
               "Illegal escape sequence in string literal."
             );
@@ -317,7 +312,7 @@ namespace plorth
     }
     if (current >= end)
     {
-      state->SetError(
+      context->SetError(
         Error::ERROR_CODE_SYNTAX,
         "Unterminated string literal."
       );
@@ -330,7 +325,7 @@ namespace plorth
     return true;
   }
 
-  static Ref<Value> parse_array(const Ref<State>& state,
+  static Ref<Value> parse_array(const Ref<Context>& context,
                                 const std::vector<Token>& tokens,
                                 std::size_t& index,
                                 const std::size_t size)
@@ -341,7 +336,7 @@ namespace plorth
     {
       if (index >= size)
       {
-        state->SetError(
+        context->SetError(
           Error::ERROR_CODE_SYNTAX,
           "Unterminated array literal."
         );
@@ -353,7 +348,7 @@ namespace plorth
         ++index;
         break;
       } else {
-        const Ref<Value> value = parse_value(state, tokens, index, size);
+        const Ref<Value> value = parse_value(context, tokens, index, size);
 
         if (!value)
         {
@@ -362,7 +357,7 @@ namespace plorth
         elements.push_back(value);
         if (index >= size)
         {
-          state->SetError(
+          context->SetError(
             Error::ERROR_CODE_SYNTAX,
             "Unterminated array literal: Missing `]'"
           );
@@ -378,17 +373,17 @@ namespace plorth
           std::stringstream ss;
 
           ss << "Unexpected " << tokens[index].GetType() << "; Missing `]'";
-          state->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
+          context->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
 
           return Ref<Value>();
         }
       }
     }
 
-    return state->GetRuntime()->NewArray(elements);
+    return context->GetRuntime()->NewArray(elements);
   }
 
-  static Ref<Value> parse_object(const Ref<State>& state,
+  static Ref<Value> parse_object(const Ref<Context>& context,
                                  const std::vector<Token>& tokens,
                                  std::size_t& index,
                                  const std::size_t size)
@@ -402,7 +397,7 @@ namespace plorth
 
       if (index >= size)
       {
-        state->SetError(
+        context->SetError(
           Error::ERROR_CODE_SYNTAX,
           "Missing key for object literal: Missing `}'"
         );
@@ -416,7 +411,7 @@ namespace plorth
       }
       else if (tokens[index].GetType() != Token::TYPE_STRING)
       {
-        state->SetError(
+        context->SetError(
           Error::ERROR_CODE_SYNTAX,
           "Missing key for object literal."
         );
@@ -426,21 +421,21 @@ namespace plorth
       key = tokens[index++].GetData();
       if (index >= size || tokens[index].GetType() != Token::TYPE_COLON)
       {
-        state->SetError(
+        context->SetError(
           Error::ERROR_CODE_SYNTAX,
           "Missing `:' after key of an object."
         );
 
         return Ref<Value>();
       }
-      else if (!(value = parse_value(state, tokens, ++index, size)))
+      else if (!(value = parse_value(context, tokens, ++index, size)))
       {
         return Ref<Value>();
       }
       properties[key] = value;
       if (index >= size)
       {
-        state->SetError(
+        context->SetError(
           Error::ERROR_CODE_SYNTAX,
           "Unterminated object literal: Missing `}'"
         );
@@ -456,16 +451,16 @@ namespace plorth
         std::stringstream ss;
 
         ss << "Unexpected " << tokens[index].GetType() << "; Missing `]'";
-        state->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
+        context->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
 
         return Ref<Value>();
       }
     }
 
-    return state->GetRuntime()->NewObject(properties);
+    return context->GetRuntime()->NewObject(properties);
   }
 
-  static Ref<Quote> parse_quote(const Ref<State>& state,
+  static Ref<Quote> parse_quote(const Ref<Context>& context,
                                 const std::vector<Token>& tokens,
                                 std::size_t& index,
                                 const std::size_t size)
@@ -489,15 +484,15 @@ namespace plorth
     }
     if (counter > 0)
     {
-      state->SetError(Error::ERROR_CODE_SYNTAX, "Unterminated quote.");
+      context->SetError(Error::ERROR_CODE_SYNTAX, "Unterminated quote.");
 
       return Ref<Quote>();
     }
 
-    return state->GetRuntime()->NewQuote(result);
+    return new (context->GetRuntime()) CompiledQuote(result);
   }
 
-  static Ref<Value> parse_value(const Ref<State>& state,
+  static Ref<Value> parse_value(const Ref<Context>& context,
                                 const std::vector<Token>& tokens,
                                 std::size_t& index,
                                 const std::size_t size)
@@ -507,10 +502,10 @@ namespace plorth
     switch (token.GetType())
     {
       case Token::TYPE_STRING:
-        return state->GetRuntime()->NewString(token.GetData());
+        return context->GetRuntime()->NewString(token.GetData());
 
       case Token::TYPE_LBRACK:
-        return parse_array(state, tokens, index, size);
+        return parse_array(context, tokens, index, size);
 
       case Token::TYPE_LBRACE:
         // Empty object literal?
@@ -519,16 +514,16 @@ namespace plorth
         {
           ++index;
 
-          return state->GetRuntime()->NewObject(std::unordered_map<std::string, Ref<Value>>());
+          return context->GetRuntime()->NewObject();
         }
         // Object literal?
         else if (index + 1 < size
                 && tokens[index].GetType() == Token::TYPE_STRING
                 && tokens[index + 1].GetType() == Token::TYPE_COLON)
         {
-          return parse_object(state, tokens, index, size);
+          return parse_object(context, tokens, index, size);
         } else {
-          return parse_quote(state, tokens, index, size);
+          return parse_quote(context, tokens, index, size);
         }
 
       case Token::TYPE_WORD:
@@ -537,19 +532,19 @@ namespace plorth
 
         if (!text.compare("null"))
         {
-          return state->GetRuntime()->GetNullValue();
+          return context->GetRuntime()->GetNullValue();
         }
         else if (!text.compare("true"))
         {
-          return state->GetRuntime()->GetTrueValue();
+          return context->GetRuntime()->GetTrueValue();
         }
         else if (!text.compare("false"))
         {
-          return state->GetRuntime()->GetFalseValue();
+          return context->GetRuntime()->GetFalseValue();
         }
         else if (str_is_number(text))
         {
-          return state->GetRuntime()->NewNumber(text);
+          return context->GetRuntime()->NewNumber(text);
         }
       }
 
@@ -558,14 +553,14 @@ namespace plorth
         std::stringstream ss;
 
         ss << "Unexpected " << token.GetType() << "; Missing value.";
-        state->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
+        context->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
 
         return Ref<Value>();
       }
     }
   }
 
-  static bool parse_declaration(const Ref<State>& state,
+  static bool parse_declaration(const Ref<Context>& context,
                                 const std::vector<Token>& tokens,
                                 std::size_t& index,
                                 const std::size_t size)
@@ -575,7 +570,7 @@ namespace plorth
 
     if (index >= size || tokens[index].GetType() != Token::TYPE_WORD)
     {
-      state->SetError(
+      context->SetError(
         Error::ERROR_CODE_SYNTAX,
         "Missing name after word declaration."
       );
@@ -583,11 +578,11 @@ namespace plorth
       return false;
     }
     name = tokens[index++].GetData();
-    if (!(value = parse_value(state, tokens, index, size)))
+    if (!(value = parse_value(context, tokens, index, size)))
     {
       return false;
     }
-    state->AddWord(name, value);
+    context->AddWord(name, value);
 
     return true;
   }
@@ -597,13 +592,13 @@ namespace plorth
    *
    * Returns true if given value is quote.
    */
-  static void w_is_quote(const Ref<State>& state)
+  static void w_is_quote(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Peek(value))
+    if (context->Peek(value))
     {
-      state->PushBool(value->GetType() == Value::TYPE_QUOTE);
+      context->PushBool(value->GetType() == Value::TYPE_QUOTE);
     }
   }
 
@@ -612,17 +607,17 @@ namespace plorth
    *
    * Compiles given string into quote.
    */
-  static void w_compile(const Ref<State>& state)
+  static void w_compile(const Ref<Context>& context)
   {
     Ref<String> source;
 
-    if (state->PopString(source))
+    if (context->PopString(source))
     {
-      const Ref<Quote> quote = Quote::Compile(state, source->GetValue());
+      const Ref<Quote> quote = Quote::Compile(context, source->GetValue());
 
       if (quote)
       {
-        state->Push(quote);
+        context->Push(quote);
       }
     }
   }
@@ -632,19 +627,19 @@ namespace plorth
    *
    * Returns global dictionary as object.
    */
-  static void w_globals(const Ref<State>& state)
+  static void w_globals(const Ref<Context>& context)
   {
-    state->PushObject(state->GetRuntime()->GetDictionary());
+    context->PushObject(context->GetRuntime()->GetDictionary());
   }
 
   /**
    * locals ( -- obj )
    *
-   * Returns local dictionary of current program execution state as object.
+   * Returns local dictionary of current program execution context as object.
    */
-  static void w_locals(const Ref<State>& state)
+  static void w_locals(const Ref<Context>& context)
   {
-    state->PushObject(state->GetDictionary());
+    context->PushObject(context->GetDictionary());
   }
 
   /**
@@ -652,13 +647,13 @@ namespace plorth
    *
    * Executes quote taken from top of the stack.
    */
-  static void w_call(const Ref<State>& state)
+  static void w_call(const Ref<Context>& context)
   {
     Ref<Quote> quote;
 
-    if (state->PopQuote(quote))
+    if (context->PopQuote(quote))
     {
-      quote->Call(state);
+      quote->Call(context);
     }
   }
 
@@ -670,15 +665,15 @@ namespace plorth
       explicit NegatedQuote(const Ref<Quote>& delegate)
         : m_delegate(delegate) {}
 
-      bool Call(const Ref<State>& state) const
+      bool Call(const Ref<Context>& context) const
       {
-        Ref<Bool> value;
+        bool value;
 
-        if (!m_delegate->Call(state) || !state->PopBool(value))
+        if (!m_delegate->Call(context) || !context->PopBool(value))
         {
           return false;
         }
-        state->PushBool(!value->GetValue());
+        context->PushBool(!value);
 
         return true;
       }
@@ -705,13 +700,13 @@ namespace plorth
    * Constructs new quote which negates boolean result returned by the original
    * quote.
    */
-  static void w_negate(const Ref<State>& state)
+  static void w_negate(const Ref<Context>& context)
   {
     Ref<Quote> delegate;
 
-    if (state->PopQuote(delegate))
+    if (context->PopQuote(delegate))
     {
-      state->Push(new (state->GetRuntime()) NegatedQuote(delegate));
+      context->Push(new (context->GetRuntime()) NegatedQuote(delegate));
     }
   }
 
@@ -724,9 +719,9 @@ namespace plorth
         : m_first(first)
         , m_second(second) {}
 
-      bool Call(const Ref<State>& state) const
+      bool Call(const Ref<Context>& context) const
       {
-        return m_first->Call(state) && m_second->Call(state);
+        return m_first->Call(context) && m_second->Call(context);
       }
 
       std::string ToString() const
@@ -753,14 +748,14 @@ namespace plorth
    *
    * Constructs quote which calls two quotes in sequence.
    */
-  static void w_plus(const Ref<State>& state)
+  static void w_plus(const Ref<Context>& context)
   {
     Ref<Quote> first;
     Ref<Quote> second;
 
-    if (state->PopQuote(second) && state->PopQuote(first))
+    if (context->PopQuote(second) && context->PopQuote(first))
     {
-      state->Push(new (state->GetRuntime()) JoinedQuote(first, second));
+      context->Push(new (context->GetRuntime()) JoinedQuote(first, second));
     }
   }
 

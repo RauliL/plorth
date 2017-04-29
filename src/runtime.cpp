@@ -1,5 +1,5 @@
 #include "array.hpp"
-#include "state.hpp"
+#include "context.hpp"
 #include "string.hpp"
 #include "token.hpp"
 
@@ -44,11 +44,6 @@ namespace plorth
     } else {
       return Ref<Object>();
     }
-  }
-
-  Ref<State> Runtime::CreateState()
-  {
-    return new (m_memory_manager) State(this);
   }
 
   Ref<Bool> Runtime::NewBool(bool value) const
@@ -110,9 +105,34 @@ namespace plorth
     return new (m_memory_manager) Object(properties);
   }
 
-  Ref<Quote> Runtime::NewQuote(const std::vector<Token>& tokens) const
+  namespace
   {
-    return new (m_memory_manager) CompiledQuote(tokens);
+    class NativeQuote : public Quote
+    {
+    public:
+      explicit NativeQuote(CallbackSignature callback)
+        : m_callback(callback) {}
+
+      bool Call(const Ref<Context>& context) const
+      {
+        m_callback(context);
+
+        return !context->HasError();
+      }
+
+      std::string ToString() const
+      {
+        return "<native quote>";
+      }
+
+    private:
+      const CallbackSignature m_callback;
+    };
+  }
+
+  Ref<Quote> Runtime::NewNativeQuote(Quote::CallbackSignature callback) const
+  {
+    return new (m_memory_manager) NativeQuote(callback);
   }
 
   Ref<Error> Runtime::NewError(Error::ErrorCode code,

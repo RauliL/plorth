@@ -1,7 +1,7 @@
 #include <cmath>
 #include <limits>
 
-#include "state.hpp"
+#include "context.hpp"
 
 #define FITS_TO_INT64(x) \
   ((x) <= INT64_MAX && (x) >= INT64_MIN)
@@ -177,13 +177,13 @@ namespace plorth
    *
    * Returns true if given value is number.
    */
-  static void w_is_num(const Ref<State>& state)
+  static void w_is_num(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Peek(value))
+    if (context->Peek(value))
     {
-      state->PushBool(value->GetType() == Value::TYPE_NUMBER);
+      context->PushBool(value->GetType() == Value::TYPE_NUMBER);
     }
   }
 
@@ -192,9 +192,9 @@ namespace plorth
    *
    * Returns Eulers number.
    */
-  static void w_e(const Ref<State>& state)
+  static void w_e(const Ref<Context>& context)
   {
-    state->PushNumber(M_E);
+    context->PushNumber(M_E);
   }
 
   /**
@@ -202,9 +202,9 @@ namespace plorth
    *
    * Returns value of PI.
    */
-  static void w_pi(const Ref<State>& state)
+  static void w_pi(const Ref<Context>& context)
   {
-    state->PushNumber(M_PI);
+    context->PushNumber(M_PI);
   }
 
   /**
@@ -212,13 +212,13 @@ namespace plorth
    *
    * Returns true if given number if NaN.
    */
-  static void w_is_nan(const Ref<State>& state)
+  static void w_is_nan(const Ref<Context>& context)
   {
     Ref<Number> number;
 
-    if (state->PopNumber(number))
+    if (context->PopNumber(number))
     {
-      state->PushBool(
+      context->PushBool(
         number->GetNumberType() == Number::NUMBER_TYPE_FLOAT
         && std::isnan(number.As<FloatNumber>()->GetValue())
       );
@@ -230,17 +230,17 @@ namespace plorth
    *
    * Returns true if given number is finite.
    */
-  static void w_is_finite(const Ref<State>& state)
+  static void w_is_finite(const Ref<Context>& context)
   {
     Ref<Number> number;
 
-    if (state->PopNumber(number))
+    if (context->PopNumber(number))
     {
       if (number->GetNumberType() == Number::NUMBER_TYPE_FLOAT)
       {
-        state->PushBool(!std::isinf(number.As<FloatNumber>()->GetValue()));
+        context->PushBool(!std::isinf(number.As<FloatNumber>()->GetValue()));
       } else {
-        state->PushBool(true);
+        context->PushBool(true);
       }
     }
   }
@@ -250,13 +250,13 @@ namespace plorth
    *
    * Returns true if given number is infinity.
    */
-  static void w_is_inf(const Ref<State>& state)
+  static void w_is_inf(const Ref<Context>& context)
   {
     Ref<Number> number;
 
-    if (state->PopNumber(number))
+    if (context->PopNumber(number))
     {
-      state->PushBool(
+      context->PushBool(
         number->GetNumberType() == Number::NUMBER_TYPE_FLOAT
         && std::isinf(number.As<FloatNumber>()->GetValue())
       );
@@ -268,19 +268,19 @@ namespace plorth
    *
    * Tests whether given number is even.
    */
-  static void w_is_even(const Ref<State>& state)
+  static void w_is_even(const Ref<Context>& context)
   {
     Ref<Number> value;
 
-    if (!state->PopNumber(value))
+    if (!context->PopNumber(value))
     {
       return;
     }
     else if (value->GetNumberType() == Number::NUMBER_TYPE_BIG_INT)
     {
-      state->PushBool((value->AsBigInt() & 1) == 0);
+      context->PushBool((value->AsBigInt() & 1) == 0);
     } else {
-      state->PushBool((value->AsInt() & 1) == 0);
+      context->PushBool((value->AsInt() & 1) == 0);
     }
   }
 
@@ -289,19 +289,19 @@ namespace plorth
    *
    * Tests whether given number is odd.
    */
-  static void w_is_odd(const Ref<State>& state)
+  static void w_is_odd(const Ref<Context>& context)
   {
     Ref<Number> value;
 
-    if (!state->PopNumber(value))
+    if (!context->PopNumber(value))
     {
       return;
     }
     else if (value->GetNumberType() == Number::NUMBER_TYPE_BIG_INT)
     {
-      state->PushBool((value->AsBigInt() & 1) != 0);
+      context->PushBool((value->AsBigInt() & 1) != 0);
     } else {
-      state->PushBool((value->AsInt() & 1) != 0);
+      context->PushBool((value->AsInt() & 1) != 0);
     }
   }
 
@@ -310,14 +310,14 @@ namespace plorth
    *
    * Performs addition on the two given numbers.
    */
-  static void w_add(const Ref<State>& state)
+  static void w_add(const Ref<Context>& context)
   {
     Ref<Number> a;
     Ref<Number> b;
     Number::NumberType type_a;
     Number::NumberType type_b;
 
-    if (!state->PopNumber(a) || !state->PopNumber(b))
+    if (!context->PopNumber(a) || !context->PopNumber(b))
     {
       return;
     }
@@ -330,7 +330,7 @@ namespace plorth
       const double y = a->AsFloat();
 
       // TODO: Limit testing.
-      state->PushNumber(x + y);
+      context->PushNumber(x + y);
     }
     else if (type_a == Number::NUMBER_TYPE_BIG_INT
             || type_b == Number::NUMBER_TYPE_BIG_INT)
@@ -338,16 +338,16 @@ namespace plorth
       const mpz_class x = b->AsBigInt();
       const mpz_class y = a->AsBigInt();
 
-      state->PushNumber(x + y);
+      context->PushNumber(x + y);
     } else {
       const std::int64_t x = b->AsInt();
       const std::int64_t y = a->AsInt();
 
       if (FITS_TO_INT64(x + y))
       {
-        state->PushNumber(x + y);
+        context->PushNumber(x + y);
       } else {
-        state->PushNumber(mpz_class(x) + mpz_class(y));
+        context->PushNumber(mpz_class(x) + mpz_class(y));
       }
     }
   }
@@ -357,14 +357,14 @@ namespace plorth
    *
    * Performs substraction on the two given numbers.
    */
-  static void w_sub(const Ref<State>& state)
+  static void w_sub(const Ref<Context>& context)
   {
     Ref<Number> a;
     Ref<Number> b;
     Number::NumberType type_a;
     Number::NumberType type_b;
 
-    if (!state->PopNumber(a) || !state->PopNumber(b))
+    if (!context->PopNumber(a) || !context->PopNumber(b))
     {
       return;
     }
@@ -377,7 +377,7 @@ namespace plorth
       const double y = a->AsFloat();
 
       // TODO: Limit testing.
-      state->PushNumber(x - y);
+      context->PushNumber(x - y);
     }
     else if (type_a == Number::NUMBER_TYPE_BIG_INT
             || type_b == Number::NUMBER_TYPE_BIG_INT)
@@ -385,16 +385,16 @@ namespace plorth
       const mpz_class x = b->AsBigInt();
       const mpz_class y = a->AsBigInt();
 
-      state->PushNumber(x - y);
+      context->PushNumber(x - y);
     } else {
       const std::int64_t x = b->AsInt();
       const std::int64_t y = a->AsInt();
 
       if (FITS_TO_INT64(x - y))
       {
-        state->PushNumber(x - y);
+        context->PushNumber(x - y);
       } else {
-        state->PushNumber(mpz_class(x) - mpz_class(y));
+        context->PushNumber(mpz_class(x) - mpz_class(y));
       }
     }
   }
@@ -404,14 +404,14 @@ namespace plorth
    *
    * Performs multiplication on the two given numbers.
    */
-  static void w_mul(const Ref<State>& state)
+  static void w_mul(const Ref<Context>& context)
   {
     Ref<Number> a;
     Ref<Number> b;
     Number::NumberType type_a;
     Number::NumberType type_b;
 
-    if (!state->PopNumber(a) || !state->PopNumber(b))
+    if (!context->PopNumber(a) || !context->PopNumber(b))
     {
       return;
     }
@@ -423,7 +423,7 @@ namespace plorth
       const double x = b->AsFloat();
       const double y = a->AsFloat();
 
-      state->PushNumber(x * y);
+      context->PushNumber(x * y);
     }
     else if (type_a == Number::NUMBER_TYPE_BIG_INT
             || type_b == Number::NUMBER_TYPE_BIG_INT)
@@ -431,16 +431,16 @@ namespace plorth
       const mpz_class x = b->AsBigInt();
       const mpz_class y = a->AsBigInt();
 
-      state->PushNumber(x * y);
+      context->PushNumber(x * y);
     } else {
       const std::int64_t x = b->AsInt();
       const std::int64_t y = a->AsInt();
 
       if (FITS_TO_INT64(x * y))
       {
-        state->PushNumber(x * y);
+        context->PushNumber(x * y);
       } else {
-        state->PushNumber(mpz_class(x) * mpz_class(y));
+        context->PushNumber(mpz_class(x) * mpz_class(y));
       }
     }
   }
@@ -450,14 +450,14 @@ namespace plorth
    *
    * Performs division on the two given numbers.
    */
-  static void w_div(const Ref<State>& state)
+  static void w_div(const Ref<Context>& context)
   {
     Ref<Number> a;
     Ref<Number> b;
     Number::NumberType type_a;
     Number::NumberType type_b;
 
-    if (!state->PopNumber(a) || !state->PopNumber(b))
+    if (!context->PopNumber(a) || !context->PopNumber(b))
     {
       return;
     }
@@ -471,9 +471,9 @@ namespace plorth
 
       if (y == 0.0)
       {
-        state->PushNumber(std::numeric_limits<double>::infinity());
+        context->PushNumber(std::numeric_limits<double>::infinity());
       } else {
-        state->PushNumber(x / y);
+        context->PushNumber(x / y);
       }
     }
     else if (type_a == Number::NUMBER_TYPE_BIG_INT
@@ -484,9 +484,9 @@ namespace plorth
 
       if (y == mpz_class(0))
       {
-        state->PushNumber(std::numeric_limits<double>::infinity());
+        context->PushNumber(std::numeric_limits<double>::infinity());
       } else {
-        state->PushNumber(x / y);
+        context->PushNumber(x / y);
       }
     } else {
       const std::int64_t x = b->AsInt();
@@ -494,9 +494,9 @@ namespace plorth
 
       if (y == 0)
       {
-        state->PushNumber(std::numeric_limits<double>::infinity());
+        context->PushNumber(std::numeric_limits<double>::infinity());
       } else {
-        state->PushNumber(x / y);
+        context->PushNumber(x / y);
       }
     }
   }
@@ -506,14 +506,14 @@ namespace plorth
    *
    * Tests whether two numbers are equal.
    */
-  static void w_eq(const Ref<State>& state)
+  static void w_eq(const Ref<Context>& context)
   {
     Ref<Number> a;
     Ref<Number> b;
     Number::NumberType type_a;
     Number::NumberType type_b;
 
-    if (!state->PopNumber(a) || !state->PopNumber(b))
+    if (!context->PopNumber(a) || !context->PopNumber(b))
     {
       return;
     }
@@ -525,7 +525,7 @@ namespace plorth
       const double x = b->AsFloat();
       const double y = a->AsFloat();
 
-      state->PushBool(x == y);
+      context->PushBool(x == y);
     }
     else if (type_a == Number::NUMBER_TYPE_BIG_INT
             || type_b == Number::NUMBER_TYPE_BIG_INT)
@@ -533,23 +533,23 @@ namespace plorth
       const mpz_class x = b->AsBigInt();
       const mpz_class y = a->AsBigInt();
 
-      state->PushBool(x == y);
+      context->PushBool(x == y);
     } else {
       const std::int64_t x = b->AsInt();
       const std::int64_t y = a->AsInt();
 
-      state->PushBool(x == y);
+      context->PushBool(x == y);
     }
   }
 
-  static void w_lt(const Ref<State>& state)
+  static void w_lt(const Ref<Context>& context)
   {
     Ref<Number> a;
     Ref<Number> b;
     Number::NumberType type_a;
     Number::NumberType type_b;
 
-    if (!state->PopNumber(a) || !state->PopNumber(b))
+    if (!context->PopNumber(a) || !context->PopNumber(b))
     {
       return;
     }
@@ -561,7 +561,7 @@ namespace plorth
       const double x = b->AsFloat();
       const double y = a->AsFloat();
 
-      state->PushBool(x < y);
+      context->PushBool(x < y);
     }
     else if (type_a == Number::NUMBER_TYPE_BIG_INT
             || type_b == Number::NUMBER_TYPE_BIG_INT)
@@ -569,23 +569,23 @@ namespace plorth
       const mpz_class x = b->AsBigInt();
       const mpz_class y = a->AsBigInt();
 
-      state->PushBool(x < y);
+      context->PushBool(x < y);
     } else {
       const std::int64_t x = b->AsInt();
       const std::int64_t y = a->AsInt();
 
-      state->PushBool(x < y);
+      context->PushBool(x < y);
     }
   }
 
-  static void w_gt(const Ref<State>& state)
+  static void w_gt(const Ref<Context>& context)
   {
     Ref<Number> a;
     Ref<Number> b;
     Number::NumberType type_a;
     Number::NumberType type_b;
 
-    if (!state->PopNumber(a) || !state->PopNumber(b))
+    if (!context->PopNumber(a) || !context->PopNumber(b))
     {
       return;
     }
@@ -597,7 +597,7 @@ namespace plorth
       const double x = b->AsFloat();
       const double y = a->AsFloat();
 
-      state->PushBool(x > y);
+      context->PushBool(x > y);
     }
     else if (type_a == Number::NUMBER_TYPE_BIG_INT
             || type_b == Number::NUMBER_TYPE_BIG_INT)
@@ -605,23 +605,23 @@ namespace plorth
       const mpz_class x = b->AsBigInt();
       const mpz_class y = a->AsBigInt();
 
-      state->PushBool(x > y);
+      context->PushBool(x > y);
     } else {
       const std::int64_t x = b->AsInt();
       const std::int64_t y = a->AsInt();
 
-      state->PushBool(x > y);
+      context->PushBool(x > y);
     }
   }
 
-  static void w_lte(const Ref<State>& state)
+  static void w_lte(const Ref<Context>& context)
   {
     Ref<Number> a;
     Ref<Number> b;
     Number::NumberType type_a;
     Number::NumberType type_b;
 
-    if (!state->PopNumber(a) || !state->PopNumber(b))
+    if (!context->PopNumber(a) || !context->PopNumber(b))
     {
       return;
     }
@@ -633,7 +633,7 @@ namespace plorth
       const double x = b->AsFloat();
       const double y = a->AsFloat();
 
-      state->PushBool(x <= y);
+      context->PushBool(x <= y);
     }
     else if (type_a == Number::NUMBER_TYPE_BIG_INT
             || type_b == Number::NUMBER_TYPE_BIG_INT)
@@ -641,23 +641,23 @@ namespace plorth
       const mpz_class x = b->AsBigInt();
       const mpz_class y = a->AsBigInt();
 
-      state->PushBool(x <= y);
+      context->PushBool(x <= y);
     } else {
       const std::int64_t x = b->AsInt();
       const std::int64_t y = a->AsInt();
 
-      state->PushBool(x <= y);
+      context->PushBool(x <= y);
     }
   }
 
-  static void w_gte(const Ref<State>& state)
+  static void w_gte(const Ref<Context>& context)
   {
     Ref<Number> a;
     Ref<Number> b;
     Number::NumberType type_a;
     Number::NumberType type_b;
 
-    if (!state->PopNumber(a) || !state->PopNumber(b))
+    if (!context->PopNumber(a) || !context->PopNumber(b))
     {
       return;
     }
@@ -669,7 +669,7 @@ namespace plorth
       const double x = b->AsFloat();
       const double y = a->AsFloat();
 
-      state->PushBool(x >= y);
+      context->PushBool(x >= y);
     }
     else if (type_a == Number::NUMBER_TYPE_BIG_INT
             || type_b == Number::NUMBER_TYPE_BIG_INT)
@@ -677,12 +677,12 @@ namespace plorth
       const mpz_class x = b->AsBigInt();
       const mpz_class y = a->AsBigInt();
 
-      state->PushBool(x >= y);
+      context->PushBool(x >= y);
     } else {
       const std::int64_t x = b->AsInt();
       const std::int64_t y = a->AsInt();
 
-      state->PushBool(x >= y);
+      context->PushBool(x >= y);
     }
   }
 
@@ -691,13 +691,13 @@ namespace plorth
    *
    * Executes quote given number of times.
    */
-  static void w_times(const Ref<State>& state)
+  static void w_times(const Ref<Context>& context)
   {
     Ref<Number> number;
     Ref<Quote> quote;
     mpz_class times;
 
-    if (!state->PopNumber(number) || !state->PopQuote(quote))
+    if (!context->PopNumber(number) || !context->PopQuote(quote))
     {
       return;
     }
@@ -711,7 +711,7 @@ namespace plorth
       }
       while (times-- > 0)
       {
-        if (!quote->Call(state))
+        if (!quote->Call(context))
         {
           return;
         }
@@ -725,7 +725,7 @@ namespace plorth
       }
       while (times-- > 0)
       {
-        if (!quote->Call(state))
+        if (!quote->Call(context))
         {
           return;
         }

@@ -44,11 +44,6 @@ namespace plorth
 
     Ref<Object> GetObjectProperty() const;
 
-    /**
-     * Constructs new program execution state associated with this runtime.
-     */
-    Ref<State> CreateState();
-
     Ref<Bool> NewBool(bool value) const;
 
     Ref<Number> NewNumber(std::int64_t value) const;
@@ -67,7 +62,7 @@ namespace plorth
 
     Ref<Object> NewObject(const Object::Dictionary& properties) const;
 
-    Ref<Quote> NewQuote(const std::vector<Token>& tokens) const;
+    Ref<Quote> NewNativeQuote(Quote::CallbackSignature callback) const;
 
     Ref<Error> NewError(Error::ErrorCode code, const std::string& message) const;
 
@@ -83,14 +78,14 @@ namespace plorth
 
     void AddWord(
       const std::string& name,
-      NativeQuote::CallbackSignature callback
+      Quote::CallbackSignature callback
     );
 
     void AddWord(const std::string& name, const Ref<Quote>& quote);
 
     void AddNamespace(
       const std::string& name,
-      const std::unordered_map<std::string, NativeQuote::CallbackSignature>& entries
+      const std::unordered_map<std::string, Quote::CallbackSignature>& entries
     );
 
   private:

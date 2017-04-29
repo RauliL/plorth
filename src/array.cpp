@@ -1,5 +1,5 @@
 #include "array.hpp"
-#include "state.hpp"
+#include "context.hpp"
 #include "string.hpp"
 
 namespace plorth
@@ -82,13 +82,13 @@ namespace plorth
    *
    * Returns true if given value is array.
    */
-  static void w_is_ary(const Ref<State>& state)
+  static void w_is_ary(const Ref<Context>& context)
   {
     Ref<Value> value;
 
-    if (state->Peek(value))
+    if (context->Peek(value))
     {
-      state->PushBool(value->GetType() == Value::TYPE_ARRAY);
+      context->PushBool(value->GetType() == Value::TYPE_ARRAY);
     }
   }
 
@@ -97,13 +97,13 @@ namespace plorth
    *
    * Returns number of elements in the array.
    */
-  static void w_len(const Ref<State>& state)
+  static void w_len(const Ref<Context>& context)
   {
     Ref<Array> array;
 
-    if (state->PeekArray(array))
+    if (context->PeekArray(array))
     {
-      state->PushNumber(static_cast<std::int64_t>(array->GetSize()));
+      context->PushNumber(static_cast<std::int64_t>(array->GetSize()));
     }
   }
 
@@ -112,13 +112,13 @@ namespace plorth
    *
    * Returns true if the array is empty.
    */
-  static void w_is_empty(const Ref<State>& state)
+  static void w_is_empty(const Ref<Context>& context)
   {
     Ref<Array> array;
 
-    if (state->PeekArray(array))
+    if (context->PeekArray(array))
     {
-      state->PushBool(array->IsEmpty());
+      context->PushBool(array->IsEmpty());
     }
   }
 
@@ -128,31 +128,31 @@ namespace plorth
    * Tests whether all elements in the array passes the test implemented by the
    * provided quote.
    */
-  static void w_every(const Ref<State>& state)
+  static void w_every(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<Quote> quote;
 
-    if (!state->PopArray(array) || !state->PopQuote(quote))
+    if (!context->PopArray(array) || !context->PopQuote(quote))
     {
       return;
     }
     for (std::size_t i = 0; i < array->GetSize(); ++i)
     {
-      Ref<Bool> result;
+      bool result;
 
-      state->Push(array->Get(i));
-      if (!quote->Call(state) || !state->PopBool(result))
+      context->Push(array->Get(i));
+      if (!quote->Call(context) || !context->PopBool(result))
       {
         return;
       }
-      else if (!result->GetValue())
+      else if (!result)
       {
-        state->PushBool(false);
+        context->PushBool(false);
         return;
       }
     }
-    state->PushBool(true);
+    context->PushBool(true);
   }
 
   /**
@@ -161,31 +161,31 @@ namespace plorth
    * Tests whether any element in the array passes the test implemented by the
    * provided quote.
    */
-  static void w_some(const Ref<State>& state)
+  static void w_some(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<Quote> quote;
 
-    if (!state->PopArray(array) || !state->PopQuote(quote))
+    if (!context->PopArray(array) || !context->PopQuote(quote))
     {
       return;
     }
     for (std::size_t i = 0; i < array->GetSize(); ++i)
     {
-      Ref<Bool> result;
+      bool result;
 
-      state->Push(array->Get(i));
-      if (!quote->Call(state) || !state->PopBool(result))
+      context->Push(array->Get(i));
+      if (!quote->Call(context) || !context->PopBool(result))
       {
         return;
       }
-      else if (result->GetValue())
+      else if (result)
       {
-        state->PushBool(true);
+        context->PushBool(true);
         return;
       }
     }
-    state->PushBool(false);
+    context->PushBool(false);
   }
 
   /**
@@ -194,12 +194,12 @@ namespace plorth
    * Attempts to find given value from the array and returns index of it, if it
    * exists in the array, otherwise null.
    */
-  static void w_index_of(const Ref<State>& state)
+  static void w_index_of(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<Value> value;
 
-    if (!state->PopArray(array) || !state->Pop(value))
+    if (!context->PopArray(array) || !context->Pop(value))
     {
       return;
     }
@@ -207,11 +207,11 @@ namespace plorth
     {
       if (array->Get(i)->Equals(value))
       {
-        state->PushNumber(static_cast<std::int64_t>(i));
+        context->PushNumber(static_cast<std::int64_t>(i));
         return;
       }
     }
-    state->PushNull();
+    context->PushNull();
   }
 
   /**
@@ -220,12 +220,12 @@ namespace plorth
    * Concatenates all elements from the array into single string, delimited by
    * the given separator string.
    */
-  static void w_join(const Ref<State>& state)
+  static void w_join(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<String> separator;
 
-    if (state->PopArray(array) && state->PopString(separator))
+    if (context->PopArray(array) && context->PopString(separator))
     {
       std::string result;
       bool first = true;
@@ -240,7 +240,7 @@ namespace plorth
         }
         result += element->ToString();
       }
-      state->PushString(result);
+      context->PushString(result);
     }
   }
 
@@ -249,19 +249,19 @@ namespace plorth
    *
    * Runs quote once for every element in the array.
    */
-  static void w_for_each(const Ref<State>& state)
+  static void w_for_each(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<Quote> quote;
 
-    if (state->PopArray(array) && state->PopQuote(quote))
+    if (context->PopArray(array) && context->PopQuote(quote))
     {
       const std::size_t size = array->GetSize();
 
       for (std::size_t i = 0; i < size; ++i)
       {
-        state->Push(array->Get(i));
-        if (!quote->Call(state))
+        context->Push(array->Get(i));
+        if (!quote->Call(context))
         {
           return;
         }
@@ -275,31 +275,31 @@ namespace plorth
    * Applies quote once for each element in the array and constructs new array
    * from ones which passed the test.
    */
-  static void w_filter(const Ref<State>& state)
+  static void w_filter(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<Quote> quote;
     std::vector<Ref<Value>> result;
 
-    if (!state->PopArray(array) || !state->PopQuote(quote))
+    if (!context->PopArray(array) || !context->PopQuote(quote))
     {
       return;
     }
     for (std::size_t i = 0; i < array->GetSize(); ++i)
     {
-      Ref<Bool> quote_result;
+      bool quote_result;
 
-      state->Push(array->Get(i));
-      if (!quote->Call(state) || !state->PopBool(quote_result))
+      context->Push(array->Get(i));
+      if (!quote->Call(context) || !context->PopBool(quote_result))
       {
         return;
       }
-      else if (quote_result->GetValue())
+      else if (quote_result)
       {
         result.push_back(array->Get(i));
       }
     }
-    state->PushArray(result);
+    context->PushArray(result);
   }
 
   /**
@@ -308,13 +308,13 @@ namespace plorth
    * Applies quote once for each element in the array and constructs new array
    * from values returned by the quote.
    */
-  static void w_map(const Ref<State>& state)
+  static void w_map(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<Quote> quote;
     std::vector<Ref<Value>> result;
 
-    if (!state->PopArray(array) || !state->PopQuote(quote))
+    if (!context->PopArray(array) || !context->PopQuote(quote))
     {
       return;
     }
@@ -322,14 +322,14 @@ namespace plorth
     {
       Ref<Value> quote_result;
 
-      state->Push(array->Get(i));
-      if (!quote->Call(state) || !state->Pop(quote_result))
+      context->Push(array->Get(i));
+      if (!quote->Call(context) || !context->Pop(quote_result))
       {
         return;
       }
       result.push_back(quote_result);
     }
-    state->PushArray(result);
+    context->PushArray(result);
   }
 
   /**
@@ -338,31 +338,31 @@ namespace plorth
    * Returns index of the element in the array which passes test implemented by
    * the given quote, or null if no such element exists in the array.
    */
-  static void w_find(const Ref<State>& state)
+  static void w_find(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<Quote> quote;
 
-    if (!state->PopArray(array) || !state->PopQuote(quote))
+    if (!context->PopArray(array) || !context->PopQuote(quote))
     {
       return;
     }
     for (std::size_t i = 0; i < array->GetSize(); ++i)
     {
-      Ref<Bool> result;
+      bool result;
 
-      state->Push(array->Get(i));
-      if (!quote->Call(state) || !state->PopBool(result))
+      context->Push(array->Get(i));
+      if (!quote->Call(context) || !context->PopBool(result))
       {
         return;
       }
-      else if (result->GetValue())
+      else if (result)
       {
-        state->PushNumber(static_cast<std::int64_t>(i));
+        context->PushNumber(static_cast<std::int64_t>(i));
         return;
       }
     }
-    state->PushNull();
+    context->PushNull();
   }
 
   /**
@@ -370,15 +370,15 @@ namespace plorth
    *
    * Returns copy of the array in reversed order.
    */
-  static void w_reverse(const Ref<State>& state)
+  static void w_reverse(const Ref<Context>& context)
   {
     Ref<Array> array;
 
-    if (state->PopArray(array))
+    if (context->PopArray(array))
     {
       const std::vector<Ref<Value>>& elements = array->GetElements();
 
-      state->PushArray(
+      context->PushArray(
         std::vector<Ref<Value>>(
           elements.rbegin(),
           elements.rend()
@@ -392,17 +392,17 @@ namespace plorth
    *
    * Extracts all values from the array and pushes them to the stack.
    */
-  static void w_extract(const Ref<State>& state)
+  static void w_extract(const Ref<Context>& context)
   {
     Ref<Array> array;
 
-    if (state->PopArray(array))
+    if (context->PopArray(array))
     {
       const std::vector<Ref<Value>>& elements = array->GetElements();
 
       for (std::size_t i = 0; i < elements.size(); ++i)
       {
-        state->Push(elements[i]);
+        context->Push(elements[i]);
       }
     }
   }
@@ -413,12 +413,12 @@ namespace plorth
    * Retrieves value from array at given index. Negative indexes count
    * backwards.
    */
-  static void w_get(const Ref<State>& state)
+  static void w_get(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<Number> index;
 
-    if (state->PopArray(array) && state->PopNumber(index))
+    if (context->PopArray(array) && context->PopNumber(index))
     {
       const std::vector<Ref<Value>>& elements = array->GetElements();
       std::int64_t i = index->AsInt();
@@ -429,10 +429,10 @@ namespace plorth
       }
       if (i < 0 || static_cast<std::size_t>(i) >= elements.size())
       {
-        state->SetError(Error::ERROR_CODE_RANGE, "Array index out of bounds.");
+        context->SetError(Error::ERROR_CODE_RANGE, "Array index out of bounds.");
         return;
       }
-      state->Push(elements[i]);
+      context->Push(elements[i]);
     }
   }
 
@@ -443,13 +443,13 @@ namespace plorth
    * If index is larger than number of elements in the array, value will be
    * appended as the last element of the array.
    */
-  static void w_set(const Ref<State>& state)
+  static void w_set(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<Number> index;
     Ref<Value> value;
 
-    if (state->PopArray(array) && state->PopNumber(index) && state->Pop(value))
+    if (context->PopArray(array) && context->PopNumber(index) && context->Pop(value))
     {
       std::vector<Ref<Value>> elements = array->GetElements();
       std::int64_t i = index->AsInt();
@@ -464,7 +464,7 @@ namespace plorth
       } else {
         elements[i] = value;
       }
-      state->PushArray(elements);
+      context->PushArray(elements);
     }
   }
 
@@ -473,12 +473,12 @@ namespace plorth
    *
    * Combines contents of two arrays together.
    */
-  static void w_plus(const Ref<State>& state)
+  static void w_plus(const Ref<Context>& context)
   {
     Ref<Array> array_a;
     Ref<Array> array_b;
 
-    if (state->PopArray(array_a) && state->PopArray(array_b))
+    if (context->PopArray(array_a) && context->PopArray(array_b))
     {
       const std::vector<Ref<Value>>& a = array_a->GetElements();
       const std::vector<Ref<Value>>& b = array_b->GetElements();
@@ -487,7 +487,7 @@ namespace plorth
       result.reserve(a.size() + b.size());
       result.insert(end(result), begin(b), end(b));
       result.insert(end(result), begin(a), end(a));
-      state->PushArray(result);
+      context->PushArray(result);
     }
   }
 
@@ -496,13 +496,13 @@ namespace plorth
    *
    * Repeats array given number of times.
    */
-  static void w_times(const Ref<State>& state)
+  static void w_times(const Ref<Context>& context)
   {
     Ref<Array> array;
     Ref<Number> number;
     std::vector<Ref<Value>> result;
 
-    if (!state->PopArray(array) || !state->PopNumber(number))
+    if (!context->PopArray(array) || !context->PopNumber(number))
     {
       return;
     }
@@ -531,7 +531,7 @@ namespace plorth
         );
       }
     }
-    state->PushArray(result);
+    context->PushArray(result);
   }
 
   void api_init_array(Runtime* runtime)

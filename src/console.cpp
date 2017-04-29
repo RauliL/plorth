@@ -1,19 +1,19 @@
 #include <stack>
 
-#include "state.hpp"
+#include "context.hpp"
 
 namespace plorth
 {
   static void api_init_console(const Ref<Runtime>&);
   static void count_open_braces(const std::string&, std::stack<char>&);
 
-  void console_loop(const Ref<State>& state)
+  void console_loop(const Ref<Context>& context)
   {
     int line_counter = 0;
     std::string source;
     std::stack<char> open_braces;
 
-    api_init_console(state->GetRuntime());
+    api_init_console(context->GetRuntime());
     while (std::cin.good())
     {
       std::string line;
@@ -21,7 +21,7 @@ namespace plorth
       std::cout << "plorth:"
                 << ++line_counter
                 << ":"
-                << state->GetDataStack().size()
+                << context->GetStack().size()
                 << "> ";
       if (!std::getline(std::cin, line))
       {
@@ -33,17 +33,17 @@ namespace plorth
         source.append(line).append(1, '\n');
         if (open_braces.empty())
         {
-          const Ref<Quote> quote = Quote::Compile(state, source);
+          const Ref<Quote> quote = Quote::Compile(context, source);
 
           source.clear();
           if (quote)
           {
-            quote->Call(state);
+            quote->Call(context);
           }
-          if (state->GetError())
+          if (context->GetError())
           {
-            std::cout << state->GetError()->GetMessage() << std::endl;
-            state->ClearError();
+            std::cout << context->GetError()->GetMessage() << std::endl;
+            context->ClearError();
           }
         }
       }
@@ -106,7 +106,7 @@ namespace plorth
    *
    * Exits the interpreter.
    */
-  static void w_quit(const Ref<State>& state)
+  static void w_quit(const Ref<Context>& context)
   {
     std::exit(EXIT_SUCCESS);
   }
@@ -116,9 +116,9 @@ namespace plorth
    *
    * Outputs contents of the stack.
    */
-  static void w_stack(const Ref<State>& state)
+  static void w_stack(const Ref<Context>& context)
   {
-    const std::vector<Ref<Value>>& stack = state->GetDataStack();
+    const Context::Stack& stack = context->GetStack();
     const std::size_t size = stack.size();
 
     if (stack.empty())
