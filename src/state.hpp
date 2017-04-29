@@ -127,7 +127,9 @@ namespace plorth
 
     void PushArray(const std::vector<Ref<Value>>& elements);
 
-    void PushObject(const std::unordered_map<std::string, Ref<Value>>& entries);
+    void PushObject();
+
+    void PushObject(const Object::Dictionary& properties);
 
     bool Pop();
 

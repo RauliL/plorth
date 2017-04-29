@@ -6,29 +6,28 @@
 
 namespace plorth
 {
-  Object::Object(const std::unordered_map<std::string, Ref<Value>>& entries)
-    : m_entries(entries) {}
+  Object::Object() {}
+
+  Object::Object(const Dictionary& properties)
+    : m_properties(properties) {}
 
   Ref<Object> Object::GetPrototype(const Ref<Runtime>& runtime) const
   {
-    Ref<Value> value = Find("__proto__");
+    const Ref<Value> value = GetOwnProperty("__proto__");
 
-    if (!value || value->GetType() != TYPE_OBJECT)
+    if (value && value->GetType() == TYPE_OBJECT)
     {
-      if (!runtime->FindWord("obj", value) || value->GetType() != TYPE_OBJECT)
-      {
-        return Ref<Object>();
-      }
+      return value.As<Object>();
+    } else {
+      return runtime->GetObjectProperty();
     }
-
-    return value.As<Object>();
   }
 
-  Ref<Value> Object::Find(const std::string& name) const
+  Ref<Value> Object::GetOwnProperty(const std::string& name) const
   {
-    const auto entry = m_entries.find(name);
+    const auto entry = m_properties.find(name);
 
-    if (entry != end(m_entries))
+    if (entry != end(m_properties))
     {
       return entry->second;
     }
@@ -45,16 +44,16 @@ namespace plorth
       return false;
     }
     other = that.As<Object>();
-    if (m_entries.size() != other->m_entries.size())
+    if (m_properties.size() != other->m_properties.size())
     {
       return false;
     }
-    for (auto& entry : m_entries)
+    for (auto& property : m_properties)
     {
-      const auto other_entry = other->m_entries.find(entry.first);
+      const auto other_property = other->m_properties.find(property.first);
 
-      if (other_entry == end(other->m_entries)
-          || !entry.second->Equals(other_entry->second))
+      if (other_property == end(other->m_properties)
+          || !property.second->Equals(other_property->second))
       {
         return false;
       }
@@ -68,7 +67,7 @@ namespace plorth
     std::string result;
     bool first = true;
 
-    for (auto& entry : m_entries)
+    for (auto& property : m_properties)
     {
       if (first)
       {
@@ -76,9 +75,9 @@ namespace plorth
       } else {
         result += ", ";
       }
-      result += entry.first;
+      result += property.first;
       result += "=";
-      result += entry.second->ToString();
+      result += property.second->ToString();
     }
 
     return result;
@@ -90,7 +89,7 @@ namespace plorth
     bool first = true;
 
     result += "{";
-    for (auto& entry : m_entries)
+    for (auto& property : m_properties)
     {
       if (first)
       {
@@ -98,9 +97,9 @@ namespace plorth
       } else {
         result += ", ";
       }
-      result += to_json_string(entry.first);
+      result += to_json_string(property.first);
       result += ": ";
-      result += entry.second->ToSource();
+      result += property.second->ToSource();
     }
     result += "}";
 
@@ -199,7 +198,7 @@ namespace plorth
 
     if (state->PeekObject(object))
     {
-      state->PushNumber(static_cast<std::int64_t>(object->GetSize()));
+      state->PushNumber(static_cast<std::int64_t>(object->GetOwnProperties().size()));
     }
   }
 
@@ -217,9 +216,9 @@ namespace plorth
     {
       return;
     }
-    for (auto& entry : object->GetEntries())
+    for (const auto& property : object->GetOwnProperties())
     {
-      result.push_back(state->GetRuntime()->NewString(entry.first));
+      result.push_back(state->GetRuntime()->NewString(property.first));
     }
     state->PushArray(result);
   }
@@ -238,9 +237,9 @@ namespace plorth
     {
       return;
     }
-    for (auto& entry : object->GetEntries())
+    for (const auto& property : object->GetOwnProperties())
     {
-      result.push_back(entry.second);
+      result.push_back(property.second);
     }
     state->PushArray(result);
   }
@@ -257,7 +256,7 @@ namespace plorth
 
     if (state->PopObject(object) && state->PopString(key))
     {
-      const Ref<Value> value = object->Find(key->GetValue());
+      const Ref<Value> value = object->GetOwnProperty(key->GetValue());
 
       state->PushBool(!!value);
     }
@@ -276,7 +275,7 @@ namespace plorth
 
     if (state->PopObject(object) && state->PopString(key))
     {
-      const Ref<Value> value = object->Find(key->GetValue());
+      const Ref<Value> value = object->GetOwnProperty(key->GetValue());
 
       if (value)
       {
@@ -302,10 +301,10 @@ namespace plorth
         && state->PopString(key)
         && state->Pop(value))
     {
-      std::unordered_map<std::string, Ref<Value>> entries = object->GetEntries();
+      Object::Dictionary properties = object->GetOwnProperties();
 
-      entries[key->GetValue()] = value;
-      state->PushObject(entries);
+      properties[key->GetValue()] = value;
+      state->PushObject(properties);
     }
   }
 
@@ -321,11 +320,11 @@ namespace plorth
 
     if (state->PopObject(obj_a) && state->PopObject(obj_b))
     {
-      std::unordered_map<std::string, Ref<Value>> result = obj_b->GetEntries();
+      Object::Dictionary result = obj_b->GetOwnProperties();
 
-      for (auto& entry : obj_a->GetEntries())
+      for (const auto& property : obj_a->GetOwnProperties())
       {
-        result[entry.first] = entry.second;
+        result[property.first] = property.second;
       }
       state->PushObject(result);
     }

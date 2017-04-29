@@ -34,6 +34,18 @@ namespace plorth
 
   Runtime::~Runtime() {}
 
+  Ref<Object> Runtime::GetObjectProperty() const
+  {
+    Ref<Value> value;
+
+    if (FindWord("obj", value) && value->GetType() == Value::TYPE_OBJECT)
+    {
+      return value.As<Object>();
+    } else {
+      return Ref<Object>();
+    }
+  }
+
   Ref<State> Runtime::CreateState()
   {
     return new (m_memory_manager) State(this);
@@ -88,9 +100,14 @@ namespace plorth
     return new (m_memory_manager) Array(elements);
   }
 
-  Ref<Object> Runtime::NewObject(const std::unordered_map<std::string, Ref<Value>>& entries) const
+  Ref<Object> Runtime::NewObject() const
   {
-    return new (m_memory_manager) Object(entries);
+    return new (m_memory_manager) Object();
+  }
+
+  Ref<Object> Runtime::NewObject(const Object::Dictionary& properties) const
+  {
+    return new (m_memory_manager) Object(properties);
   }
 
   Ref<Quote> Runtime::NewQuote(const std::vector<Token>& tokens) const

@@ -46,7 +46,7 @@ namespace plorth
     {
       const Ref<Object> prototype = m_data.back()->GetPrototype(m_runtime);
 
-      if (prototype && (value = prototype->Find(name)))
+      if (prototype && (value = prototype->GetOwnProperty(name)))
       {
         if (value->GetType() == Value::TYPE_QUOTE)
         {
@@ -233,9 +233,14 @@ namespace plorth
     Push(m_runtime->NewArray(elements));
   }
 
-  void State::PushObject(const std::unordered_map<std::string, Ref<Value>>& entries)
+  void State::PushObject()
   {
-    Push(m_runtime->NewObject(entries));
+    Push(m_runtime->NewObject());
+  }
+
+  void State::PushObject(const Object::Dictionary& properties)
+  {
+    Push(m_runtime->NewObject(properties));
   }
 
   bool State::Pop()

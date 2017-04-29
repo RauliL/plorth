@@ -393,7 +393,7 @@ namespace plorth
                                  std::size_t& index,
                                  const std::size_t size)
   {
-    std::unordered_map<std::string, Ref<Value>> entries;
+    Object::Dictionary properties;
 
     for (;;)
     {
@@ -406,6 +406,8 @@ namespace plorth
           Error::ERROR_CODE_SYNTAX,
           "Missing key for object literal: Missing `}'"
         );
+
+        return Ref<Value>();
       }
       else if (tokens[index].GetType() == Token::TYPE_RBRACE)
       {
@@ -418,6 +420,8 @@ namespace plorth
           Error::ERROR_CODE_SYNTAX,
           "Missing key for object literal."
         );
+
+        return Ref<Value>();
       }
       key = tokens[index++].GetData();
       if (index >= size || tokens[index].GetType() != Token::TYPE_COLON)
@@ -433,13 +437,15 @@ namespace plorth
       {
         return Ref<Value>();
       }
-      entries[key] = value;
+      properties[key] = value;
       if (index >= size)
       {
         state->SetError(
           Error::ERROR_CODE_SYNTAX,
           "Unterminated object literal: Missing `}'"
         );
+
+        return Ref<Value>();
       }
       else if (tokens[index].GetType() == Token::TYPE_COMMA)
       {
@@ -456,7 +462,7 @@ namespace plorth
       }
     }
 
-    return state->GetRuntime()->NewObject(entries);
+    return state->GetRuntime()->NewObject(properties);
   }
 
   static Ref<Quote> parse_quote(const Ref<State>& state,

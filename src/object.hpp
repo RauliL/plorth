@@ -10,26 +10,25 @@ namespace plorth
   class Object : public Value
   {
   public:
-    explicit Object(const std::unordered_map<std::string, Ref<Value>>& entries);
+    using Dictionary = std::unordered_map<std::string, Ref<Value>>;
+
+    explicit Object();
+
+    explicit Object(const Dictionary& properties);
 
     inline Type GetType() const
     {
       return TYPE_OBJECT;
     }
 
-    inline std::size_t GetSize() const
+    inline const Dictionary& GetOwnProperties() const
     {
-      return m_entries.size();
-    }
-
-    inline const std::unordered_map<std::string, Ref<Value>>& GetEntries() const
-    {
-      return m_entries;
+      return m_properties;
     }
 
     Ref<Object> GetPrototype(const Ref<Runtime>& runtime) const;
 
-    Ref<Value> Find(const std::string& name) const;
+    Ref<Value> GetOwnProperty(const std::string& name) const;
 
     bool Equals(const Ref<Value>& that) const;
 
@@ -38,7 +37,7 @@ namespace plorth
     std::string ToSource() const;
 
   private:
-    const std::unordered_map<std::string, Ref<Value>> m_entries;
+    const Dictionary m_properties;
   };
 }
 

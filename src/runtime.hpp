@@ -42,6 +42,8 @@ namespace plorth
       return m_false_value;
     }
 
+    Ref<Object> GetObjectProperty() const;
+
     /**
      * Constructs new program execution state associated with this runtime.
      */
@@ -61,7 +63,9 @@ namespace plorth
 
     Ref<Array> NewArray(const std::vector<Ref<Value>>& elements) const;
 
-    Ref<Object> NewObject(const std::unordered_map<std::string, Ref<Value>>& entries) const;
+    Ref<Object> NewObject() const;
+
+    Ref<Object> NewObject(const Object::Dictionary& properties) const;
 
     Ref<Quote> NewQuote(const std::vector<Token>& tokens) const;
 
