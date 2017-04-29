@@ -2,7 +2,7 @@
 
 # Declare word "hello-world".
 : hello-world {
-    "Hello, World!" print
+    "Hello, World!" println
 }
 
 # And invoke it.
