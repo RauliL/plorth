@@ -1,4 +1,5 @@
 #include <cmath>
+#include <fstream>
 #include <sstream>
 
 #include <plorth/plorth-context.hpp>
@@ -636,6 +637,55 @@ namespace plorth
     }
   }
 
+  /**
+   * import ( str -- )
+   *
+   * Imports and executes code from given file, placing all of the words
+   * declared in it to current execution context's dictionary.
+   */
+  static void w_import(const Ref<Context>& context)
+  {
+    Ref<String> filename;
+    Ref<Quote> quote;
+
+    if (!context->PopString(filename))
+    {
+      return;
+    }
+
+    std::fstream is(filename->GetValue().c_str());
+    if (!is.good())
+    {
+      context->SetError(
+        Error::ERROR_CODE_IMPORT,
+        "Unable to import `" + filename->GetValue() + "'"
+      );
+      return;
+    }
+
+    const std::string source = std::string(
+      std::istreambuf_iterator<char>(is),
+      std::istreambuf_iterator<char>()
+    );
+    is.close();
+
+    quote = Quote::Compile(context, source);
+    if (quote)
+    {
+      const Ref<Context> import_context = new (context->GetRuntime()) Context(context->GetRuntime());
+
+      if (!quote->Call(import_context))
+      {
+        context->SetError(import_context->GetError());
+        return;
+      }
+      for (const auto& property : import_context->GetDictionary())
+      {
+        context->AddWord(property.first, property.second);
+      }
+    }
+  }
+
   void init_global_dictionary(Runtime* runtime)
   {
     runtime->AddWord("ary?", w_is_ary);
@@ -681,6 +731,7 @@ namespace plorth
     runtime->AddWord("compile", w_compile);
     runtime->AddWord("globals", w_globals);
     runtime->AddWord("locals", w_locals);
+    runtime->AddWord("import", w_import);
 
     runtime->AddWord("print", w_print);
     runtime->AddWord("println", w_println);

@@ -238,6 +238,10 @@ namespace plorth
         description = "range error";
         break;
 
+      case Error::ERROR_CODE_IMPORT:
+        description = "import error";
+        break;
+
       case Error::ERROR_CODE_UNKNOWN:
         description = "unknown error";
         break;

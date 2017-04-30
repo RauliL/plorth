@@ -114,6 +114,8 @@ namespace plorth
       ERROR_CODE_TYPE = 3,
       /** Range error. */
       ERROR_CODE_RANGE = 4,
+      /** Import error. */
+      ERROR_CODE_IMPORT = 5,
       /** Unknown error. */
       ERROR_CODE_UNKNOWN = 100
     };
