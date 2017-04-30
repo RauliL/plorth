@@ -37,7 +37,7 @@ namespace plorth
       return m_true_value;
     }
 
-    inline Ref<Bool> GetFalseValue() const
+    inline const Ref<Bool>& GetFalseValue() const
     {
       return m_false_value;
     }
