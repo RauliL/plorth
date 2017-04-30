@@ -67,7 +67,6 @@ ADD_LIBRARY(
   src/bool.cpp
   src/context.cpp
   src/error.cpp
-  src/io.cpp
   src/memory.cpp
   src/number.cpp
   src/object.cpp
@@ -75,12 +74,12 @@ ADD_LIBRARY(
   src/runtime.cpp
   src/runtime-array.cpp
   src/runtime-bool.cpp
+  src/runtime-dictionary.cpp
   src/runtime-error.cpp
   src/runtime-number.cpp
   src/runtime-object.cpp
   src/runtime-quote.cpp
   src/runtime-string.cpp
-  src/stack.cpp
   src/string.cpp
   src/token.cpp
   src/unicode.cpp

@@ -74,48 +74,4 @@ namespace plorth
 
     return os;
   }
-
-  /**
-   * error? ( any -- any bool )
-   *
-   * Returns true if given value is error.
-   */
-  static void w_is_error(const Ref<Context>& context)
-  {
-    Ref<Value> value;
-
-    if (context->Peek(value))
-    {
-      context->PushBool(value->GetType() == Value::TYPE_ERROR);
-    }
-  }
-
-  /**
-   * try ( quote quote -- )
-   *
-   * Executes first quote and if it throws an error, calls second quote with
-   * the error on top of the stack.
-   */
-  static void w_try(const Ref<Context>& context)
-  {
-    Ref<Quote> try_block;
-    Ref<Quote> catch_block;
-
-    if (!context->PopQuote(catch_block) || !context->PopQuote(try_block))
-    {
-      return;
-    }
-    if (!try_block->Call(context))
-    {
-      context->Push(context->GetError());
-      context->ClearError();
-      catch_block->Call(context);
-    }
-  }
-
-  void api_init_error(Runtime* runtime)
-  {
-    runtime->AddWord("error?", w_is_error);
-    runtime->AddWord("try", w_try);
-  }
 }

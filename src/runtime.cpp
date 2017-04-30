@@ -5,16 +5,7 @@
 
 namespace plorth
 {
-  void api_init_array(Runtime*);
-  void api_init_bool(Runtime*);
-  void api_init_error(Runtime*);
-  void api_init_io(Runtime*);
-  void api_init_number(Runtime*);
-  void api_init_object(Runtime*);
-  void api_init_quote(Runtime*);
-  void api_init_stack(Runtime*);
-  void api_init_string(Runtime*);
-
+  void init_global_dictionary(Runtime*);
   Ref<Object> make_array_prototype(Runtime*);
   Ref<Object> make_bool_prototype(Runtime*);
   Ref<Object> make_error_prototype(Runtime*);
@@ -29,15 +20,7 @@ namespace plorth
     , m_true_value(new (memory_manager) Bool(true))
     , m_false_value(new (memory_manager) Bool(false))
   {
-    api_init_stack(this);
-    api_init_bool(this);
-    api_init_number(this);
-    api_init_string(this);
-    api_init_array(this);
-    api_init_object(this);
-    api_init_quote(this);
-    api_init_error(this);
-    api_init_io(this);
+    init_global_dictionary(this);
 
     m_array_prototype = make_array_prototype(this);
     m_bool_prototype = make_bool_prototype(this);

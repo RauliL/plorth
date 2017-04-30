@@ -1,4 +1,4 @@
-#include "context.hpp"
+#include "runtime.hpp"
 #include "string.hpp"
 #include "utils.hpp"
 
@@ -30,41 +30,5 @@ namespace plorth
   std::string String::ToSource() const
   {
     return to_json_string(m_value);
-  }
-
-  /**
-   * str? ( any -- any bool )
-   *
-   * Returns true if given value is string.
-   */
-  static void w_is_str(const Ref<Context>& context)
-  {
-    Ref<Value> value;
-
-    if (context->Peek(value))
-    {
-      context->PushBool(value->GetType() == Value::TYPE_STRING);
-    }
-  }
-
-  /**
-   * >str ( any -- str )
-   *
-   * Converts value from top of the stack into string.
-   */
-  static void w_to_str(const Ref<Context>& context)
-  {
-    Ref<Value> value;
-
-    if (context->Pop(value))
-    {
-      context->PushString(value->ToString());
-    }
-  }
-
-  void api_init_string(Runtime* runtime)
-  {
-    runtime->AddWord("str?", w_is_str);
-    runtime->AddWord(">str", w_to_str);
   }
 }

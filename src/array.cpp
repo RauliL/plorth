@@ -1,5 +1,5 @@
 #include "array.hpp"
-#include "context.hpp"
+#include "runtime.hpp"
 
 namespace plorth
 {
@@ -67,25 +67,5 @@ namespace plorth
     result += "]";
 
     return result;
-  }
-
-  /**
-   * ary? ( any -- any bool )
-   *
-   * Returns true if given value is array.
-   */
-  static void w_is_ary(const Ref<Context>& context)
-  {
-    Ref<Value> value;
-
-    if (context->Peek(value))
-    {
-      context->PushBool(value->GetType() == Value::TYPE_ARRAY);
-    }
-  }
-
-  void api_init_array(Runtime* runtime)
-  {
-    runtime->AddWord("ary?", w_is_ary);
   }
 }

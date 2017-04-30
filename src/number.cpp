@@ -1,5 +1,4 @@
 #include <cmath>
-#include <limits>
 
 #include "context.hpp"
 
@@ -7,14 +6,7 @@ namespace plorth
 {
   Ref<Object> Number::GetPrototype(const Ref<Runtime>& runtime) const
   {
-    Ref<Value> value;
-
-    if (runtime->FindWord("num", value) && value->GetType() == TYPE_OBJECT)
-    {
-      return value.As<Object>();
-    } else {
-      return Ref<Object>();
-    }
+    return runtime->GetNumberPrototype();
   }
 
   IntNumber::IntNumber(std::int64_t value)
@@ -167,49 +159,5 @@ namespace plorth
   std::string BigIntNumber::ToString() const
   {
     return m_value.get_str(10);
-  }
-
-  /**
-   * num? ( any -- any bool )
-   *
-   * Returns true if given value is number.
-   */
-  static void w_is_num(const Ref<Context>& context)
-  {
-    Ref<Value> value;
-
-    if (context->Peek(value))
-    {
-      context->PushBool(value->GetType() == Value::TYPE_NUMBER);
-    }
-  }
-
-  /**
-   * e ( -- num )
-   *
-   * Returns Eulers number.
-   */
-  static void w_e(const Ref<Context>& context)
-  {
-    context->PushNumber(M_E);
-  }
-
-  /**
-   * pi ( -- num )
-   *
-   * Returns value of PI.
-   */
-  static void w_pi(const Ref<Context>& context)
-  {
-    context->PushNumber(M_PI);
-  }
-
-  void api_init_number(Runtime* runtime)
-  {
-    runtime->AddWord("num?", w_is_num);
-
-    // Constants.
-    runtime->AddWord("e", w_e);
-    runtime->AddWord("pi", w_pi);
   }
 }
