@@ -243,6 +243,42 @@ namespace plorth
   }
 
   /**
+   * reduce ( quote ary -- any )
+   *
+   * Applies given quote against an acculumator and each element in array to
+   * reduce it into single value.
+   */
+  static void w_reduce(const Ref<Context>& context)
+  {
+    Ref<Array> array;
+    Ref<Quote> quote;
+    Ref<Value> result;
+    std::size_t size;
+
+    if (!context->PopArray(array) || !context->PopQuote(quote))
+    {
+      return;
+    }
+    size = array->GetElements().size();
+    if (size == 0)
+    {
+      context->SetError(Error::ERROR_CODE_RANGE, "Cannot reduce empty array.");
+      return;
+    }
+    result = array->GetElements()[0];
+    for (std::size_t i = 1; i < size; ++i)
+    {
+      context->Push(result);
+      context->Push(array->GetElements()[i]);
+      if (!quote->Call(context) || !context->Pop(result))
+      {
+        return;
+      }
+    }
+    context->Push(result);
+  }
+
+  /**
    * find ( quote ary -- num|null )
    *
    * Returns index of the element in the array which passes test implemented by
@@ -460,6 +496,7 @@ namespace plorth
       { "for-each", w_for_each },
       { "filter", w_filter },
       { "map", w_map },
+      { "reduce", w_reduce },
       { "find", w_find },
 
       { "reverse", w_reverse },
