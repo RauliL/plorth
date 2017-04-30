@@ -303,24 +303,36 @@ namespace plorth
 
   bool Context::Pop(Ref<Value>& slot, Value::Type type)
   {
-    if (!Peek(slot, type))
+    if (!Peek(slot))
     {
       return false;
     }
     m_stack.pop_back();
+    if (slot->GetType() != type)
+    {
+      std::stringstream ss;
+
+      ss << "Expected " << type << ", got " << slot->GetType() << " instead.";
+      SetError(Error::ERROR_CODE_TYPE, ss.str());
+
+      return false;
+    }
 
     return true;
   }
 
   bool Context::PopArray(Ref<Array>& slot)
   {
-    if (!PeekArray(slot))
-    {
-      return false;
-    }
-    m_stack.pop_back();
+    Ref<Value> value;
 
-    return true;
+    if (Pop(value, Value::TYPE_ARRAY))
+    {
+      slot = value.As<Array>();
+
+      return true;
+    }
+
+    return false;
   }
 
   bool Context::PopBool(bool& slot)
@@ -339,56 +351,71 @@ namespace plorth
 
   bool Context::PopError(Ref<Error>& slot)
   {
-    if (!PeekError(slot))
-    {
-      return false;
-    }
-    m_stack.pop_back();
+    Ref<Value> value;
 
-    return true;
+    if (Pop(value, Value::TYPE_ERROR))
+    {
+      slot = value.As<Error>();
+
+      return true;
+    }
+
+    return false;
   }
 
   bool Context::PopNumber(Ref<Number>& slot)
   {
-    if (!PeekNumber(slot))
-    {
-      return false;
-    }
-    m_stack.pop_back();
+    Ref<Value> value;
 
-    return true;
+    if (Pop(value, Value::TYPE_NUMBER))
+    {
+      slot = value.As<Number>();
+
+      return true;
+    }
+
+    return false;
   }
 
   bool Context::PopObject(Ref<Object>& slot)
   {
-    if (!PeekObject(slot))
-    {
-      return false;
-    }
-    m_stack.pop_back();
+    Ref<Value> value;
 
-    return true;
+    if (Pop(value, Value::TYPE_OBJECT))
+    {
+      slot = value.As<Object>();
+
+      return true;
+    }
+
+    return false;
   }
 
   bool Context::PopQuote(Ref<Quote>& slot)
   {
-    if (!PeekQuote(slot))
-    {
-      return false;
-    }
-    m_stack.pop_back();
+    Ref<Value> value;
 
-    return true;
+    if (Pop(value, Value::TYPE_QUOTE))
+    {
+      slot = value.As<Quote>();
+
+      return true;
+    }
+
+    return false;
   }
 
   bool Context::PopString(Ref<String>& slot)
   {
-    if (!PeekString(slot))
-    {
-      return false;
-    }
-    m_stack.pop_back();
+    Ref<Value> value;
 
-    return true;
+    if (Pop(value, Value::TYPE_STRING))
+    {
+      slot = value.As<String>();
+
+      return true;
+    }
+
+    return false;
   }
 }
