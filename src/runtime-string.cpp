@@ -1,6 +1,5 @@
-#include "context.hpp"
-#include "string.hpp"
-#include "unicode.hpp"
+#include <plorth/plorth-context.hpp>
+#include "./unicode.hpp"
 
 namespace plorth
 {
@@ -417,14 +416,14 @@ namespace plorth
     }
     else if (number->GetNumberType() == Number::NUMBER_TYPE_INT)
     {
-      std::int64_t times = number.As<IntNumber>()->GetValue();
+      const std::int64_t times = number->AsInt();
 
       for (std::int64_t i = 0; i < times; ++i)
       {
         result += string->GetValue();
       }
     } else {
-      mpz_class times = number->AsBigInt();
+      const mpz_class times = number->AsBigInt();
 
       for (mpz_class i = 0; i < times; ++i)
       {

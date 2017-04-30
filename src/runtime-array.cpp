@@ -1,6 +1,4 @@
-#include "array.hpp"
-#include "context.hpp"
-#include "string.hpp"
+#include <plorth/plorth-context.hpp>
 
 namespace plorth
 {
@@ -15,7 +13,7 @@ namespace plorth
 
     if (context->PeekArray(array))
     {
-      context->PushNumber(static_cast<std::int64_t>(array->GetSize()));
+      context->PushNumber(static_cast<std::int64_t>(array->GetElements().size()));
     }
   }
 
@@ -30,7 +28,7 @@ namespace plorth
 
     if (context->PeekArray(array))
     {
-      context->PushBool(array->IsEmpty());
+      context->PushBool(array->GetElements().empty());
     }
   }
 
@@ -49,11 +47,11 @@ namespace plorth
     {
       return;
     }
-    for (std::size_t i = 0; i < array->GetSize(); ++i)
+    for (const auto& element : array->GetElements())
     {
       bool result;
 
-      context->Push(array->Get(i));
+      context->Push(element);
       if (!quote->Call(context) || !context->PopBool(result))
       {
         return;
@@ -82,11 +80,11 @@ namespace plorth
     {
       return;
     }
-    for (std::size_t i = 0; i < array->GetSize(); ++i)
+    for (const auto& element : array->GetElements())
     {
       bool result;
 
-      context->Push(array->Get(i));
+      context->Push(element);
       if (!quote->Call(context) || !context->PopBool(result))
       {
         return;
@@ -115,9 +113,11 @@ namespace plorth
     {
       return;
     }
-    for (std::size_t i = 0; i < array->GetSize(); ++i)
+    for (std::size_t i = 0; i < array->GetElements().size(); ++i)
     {
-      if (array->Get(i)->Equals(value))
+      const Ref<Value>& element = array->GetElements()[i];
+
+      if (element->Equals(value))
       {
         context->PushNumber(static_cast<std::int64_t>(i));
         return;
@@ -168,11 +168,9 @@ namespace plorth
 
     if (context->PopArray(array) && context->PopQuote(quote))
     {
-      const std::size_t size = array->GetSize();
-
-      for (std::size_t i = 0; i < size; ++i)
+      for (const auto& element : array->GetElements())
       {
-        context->Push(array->Get(i));
+        context->Push(element);
         if (!quote->Call(context))
         {
           return;
@@ -197,18 +195,18 @@ namespace plorth
     {
       return;
     }
-    for (std::size_t i = 0; i < array->GetSize(); ++i)
+    for (const auto& element : array->GetElements())
     {
       bool quote_result;
 
-      context->Push(array->Get(i));
+      context->Push(element);
       if (!quote->Call(context) || !context->PopBool(quote_result))
       {
         return;
       }
       else if (quote_result)
       {
-        result.push_back(array->Get(i));
+        result.push_back(element);
       }
     }
     context->PushArray(result);
@@ -230,11 +228,11 @@ namespace plorth
     {
       return;
     }
-    for (std::size_t i = 0; i < array->GetSize(); ++i)
+    for (const auto& element : array->GetElements())
     {
       Ref<Value> quote_result;
 
-      context->Push(array->Get(i));
+      context->Push(element);
       if (!quote->Call(context) || !context->Pop(quote_result))
       {
         return;
@@ -259,11 +257,12 @@ namespace plorth
     {
       return;
     }
-    for (std::size_t i = 0; i < array->GetSize(); ++i)
+    for (std::size_t i = 0; i < array->GetElements().size(); ++i)
     {
+      const Ref<Value>& element = array->GetElements()[i];
       bool result;
 
-      context->Push(array->Get(i));
+      context->Push(element);
       if (!quote->Call(context) || !context->PopBool(result))
       {
         return;
@@ -420,7 +419,7 @@ namespace plorth
     }
     else if (number->GetNumberType() == Number::NUMBER_TYPE_INT)
     {
-      std::int64_t times = number.As<IntNumber>()->GetValue();
+      std::int64_t times = number->AsInt();
 
       result.reserve(array->GetElements().size() * times);
       for (std::int64_t i = 0; i < times; ++i)

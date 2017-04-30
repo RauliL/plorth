@@ -1,4 +1,4 @@
-#include "context.hpp"
+#include <plorth/plorth-context.hpp>
 
 namespace plorth
 {

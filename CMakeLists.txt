@@ -57,20 +57,16 @@ CONFIGURE_FILE(
 INCLUDE_DIRECTORIES(
   "${GMP_INCLUDE_DIR}"
   "${GMPXX_INCLUDE_DIR}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 ADD_LIBRARY(
   plorth
   SHARED
-  src/array.cpp
-  src/bool.cpp
+  src/compiler.cpp
   src/context.cpp
-  src/error.cpp
   src/memory.cpp
   src/number.cpp
-  src/object.cpp
-  src/quote.cpp
   src/runtime.cpp
   src/runtime-array.cpp
   src/runtime-bool.cpp
@@ -80,7 +76,6 @@ ADD_LIBRARY(
   src/runtime-object.cpp
   src/runtime-quote.cpp
   src/runtime-string.cpp
-  src/string.cpp
   src/token.cpp
   src/unicode.cpp
   src/utils.cpp

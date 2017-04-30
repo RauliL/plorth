@@ -1,7 +1,4 @@
-#include "array.hpp"
-#include "context.hpp"
-#include "string.hpp"
-#include "token.hpp"
+#include <plorth/plorth-context.hpp>
 
 namespace plorth
 {
@@ -46,20 +43,6 @@ namespace plorth
     return value ? m_true_value : m_false_value;
   }
 
-  Ref<Number> Runtime::NewNumber(std::int64_t value) const
-  {
-    return new (m_memory_manager) IntNumber(value);
-  }
-
-  Ref<Number> Runtime::NewNumber(double value) const
-  {
-    return new (m_memory_manager) FloatNumber(value);
-  }
-
-  Ref<Number> Runtime::NewNumber(const mpz_class& value) const
-  {
-    return new (m_memory_manager) BigIntNumber(value);
-  }
 
   Ref<Number> Runtime::NewNumber(const std::string& value) const
   {

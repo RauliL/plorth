@@ -1,7 +1,7 @@
 #ifndef PLORTH_CONTEXT_HPP_GUARD
 #define PLORTH_CONTEXT_HPP_GUARD
 
-#include "runtime.hpp"
+#include <plorth/plorth-runtime.hpp>
 
 namespace plorth
 {

@@ -1,9 +1,8 @@
 #include <sstream>
 
-#include "array.hpp"
-#include "context.hpp"
-#include "string.hpp"
-#include "utils.hpp"
+#include <plorth/plorth-context.hpp>
+
+#include "./utils.hpp"
 
 namespace plorth
 {

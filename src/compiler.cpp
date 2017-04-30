@@ -1,11 +1,10 @@
 #include <sstream>
 
-#include "array.hpp"
-#include "context.hpp"
-#include "string.hpp"
-#include "token.hpp"
-#include "unicode.hpp"
-#include "utils.hpp"
+#include <plorth/plorth-context.hpp>
+#include <plorth/plorth-token.hpp>
+
+#include "./unicode.hpp"
+#include "./utils.hpp"
 
 namespace plorth
 {
@@ -187,16 +186,6 @@ namespace plorth
     }
 
     return new (context->GetRuntime()) CompiledQuote(tokens);
-  }
-
-  Ref<Object> Quote::GetPrototype(const Ref<Runtime>& runtime) const
-  {
-    return runtime->GetQuotePrototype();
-  }
-
-  bool Quote::Equals(const Ref<Value>& that) const
-  {
-    return false; // TODO: Implement equality testing for native quotes.
   }
 
   static bool compile_string(const Ref<Context>& context,

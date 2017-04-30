@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "context.hpp"
+#include <plorth/plorth-context.hpp>
 
 #define FITS_TO_INT64(x) ((x) <= INT64_MAX && (x) >= INT64_MIN)
 
@@ -19,7 +19,7 @@ namespace plorth
     {
       context->PushBool(
         number->GetNumberType() == Number::NUMBER_TYPE_FLOAT
-        && std::isnan(number.As<FloatNumber>()->GetValue())
+        && std::isnan(number->AsFloat())
       );
     }
   }
@@ -37,7 +37,7 @@ namespace plorth
     {
       if (number->GetNumberType() == Number::NUMBER_TYPE_FLOAT)
       {
-        context->PushBool(!std::isinf(number.As<FloatNumber>()->GetValue()));
+        context->PushBool(!std::isinf(number->AsFloat()));
       } else {
         context->PushBool(true);
       }
@@ -57,7 +57,7 @@ namespace plorth
     {
       context->PushBool(
         number->GetNumberType() == Number::NUMBER_TYPE_FLOAT
-        && std::isinf(number.As<FloatNumber>()->GetValue())
+        && std::isinf(number->AsFloat())
       );
     }
   }
@@ -502,7 +502,7 @@ namespace plorth
     }
     if (number->GetNumberType() == Number::NUMBER_TYPE_INT)
     {
-      std::int64_t times = number.As<IntNumber>()->GetValue();
+      std::int64_t times = number->AsInt();
 
       if (times < 0)
       {

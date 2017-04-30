@@ -1,10 +1,11 @@
+#include "./config.hpp"
+
 #include <fstream>
-
-#include "context.hpp"
-
 #if defined(PLORTH_HAVE_UNISTD_H)
 # include <unistd.h>
 #endif
+
+#include <plorth/plorth-context.hpp>
 
 using namespace plorth;
 

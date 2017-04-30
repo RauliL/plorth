@@ -3,12 +3,7 @@
 
 #include <gmpxx.h>
 
-#include "bool.hpp"
-#include "error.hpp"
-#include "null.hpp"
-#include "number.hpp"
-#include "object.hpp"
-#include "quote.hpp"
+#include <plorth/plorth-value.hpp>
 
 namespace plorth
 {

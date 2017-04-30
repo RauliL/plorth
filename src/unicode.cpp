@@ -1,5 +1,6 @@
-#include "plorth.hpp"
-#include "unicode.hpp"
+#include <plorth/plorth.hpp>
+
+#include "./unicode.hpp"
 
 namespace plorth
 {

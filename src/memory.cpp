@@ -1,6 +1,8 @@
+#include "./config.hpp"
+
 #include <cassert>
 
-#include "runtime.hpp"
+#include <plorth/plorth-runtime.hpp>
 
 namespace plorth
 {

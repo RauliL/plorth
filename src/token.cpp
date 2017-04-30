@@ -1,5 +1,6 @@
-#include "token.hpp"
-#include "utils.hpp"
+#include <plorth/plorth-token.hpp>
+
+#include "./utils.hpp"
 
 namespace plorth
 {

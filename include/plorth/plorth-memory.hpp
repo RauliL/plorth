@@ -1,7 +1,7 @@
 #ifndef PLORTH_MEMORY_HPP_GUARD
 #define PLORTH_MEMORY_HPP_GUARD
 
-#include "plorth.hpp"
+#include <plorth/plorth.hpp>
 
 namespace plorth
 {

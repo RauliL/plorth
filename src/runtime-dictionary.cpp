@@ -1,9 +1,9 @@
 #include <cmath>
 #include <sstream>
 
-#include "context.hpp"
-#include "string.hpp"
-#include "unicode.hpp"
+#include <plorth/plorth-context.hpp>
+
+#include "./unicode.hpp"
 
 namespace plorth
 {

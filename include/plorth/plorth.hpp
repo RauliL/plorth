@@ -3,17 +3,12 @@
 
 #include <cstdlib>
 
-#include "config.hpp"
-
 namespace plorth
 {
   class Array;
-  class BigIntNumber;
   class Bool;
   class Context;
   class Error;
-  class FloatNumber;
-  class IntNumber;
   class ManagedObject;
   class MemoryManager;
   class Null;
