@@ -1,0 +1,7 @@
+#!/usr/bin/env plorth
+
+# Reduce an array of integers into single value.
+{ + } [0, 1, 2, 3] reduce
+
+# This should print "6" into stdout.
+println
