@@ -31,13 +31,13 @@ int main(int argc, char** argv)
 
       if (is.good())
       {
-        compile_and_run(
-          context,
-          std::string(
-            std::istreambuf_iterator<char>(is),
-            std::istreambuf_iterator<char>()
-          )
+        const std::string source = std::string(
+          std::istreambuf_iterator<char>(is),
+          std::istreambuf_iterator<char>()
         );
+
+        is.close();
+        compile_and_run(context, source);
       } else {
         std::cerr << "unable to open file `" << argv[i] << "' for reading" << std::endl;
         std::exit(EXIT_FAILURE);
