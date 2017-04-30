@@ -42,7 +42,40 @@ namespace plorth
       return m_false_value;
     }
 
-    Ref<Object> GetObjectProperty() const;
+    inline const Ref<Object>& GetArrayPrototype() const
+    {
+      return m_array_prototype;
+    }
+
+    inline const Ref<Object>& GetBoolPrototype() const
+    {
+      return m_bool_prototype;
+    }
+
+    inline const Ref<Object>& GetErrorPrototype() const
+    {
+      return m_error_prototype;
+    }
+
+    inline const Ref<Object>& GetNumberPrototype() const
+    {
+      return m_number_prototype;
+    }
+
+    inline const Ref<Object>& GetObjectPrototype() const
+    {
+      return m_object_prototype;
+    }
+
+    inline const Ref<Object>& GetQuotePrototype() const
+    {
+      return m_quote_prototype;
+    }
+
+    inline const Ref<Object>& GetStringPrototype() const
+    {
+      return m_string_prototype;
+    }
 
     Ref<Bool> NewBool(bool value) const;
 
@@ -65,6 +98,10 @@ namespace plorth
     Ref<Quote> NewNativeQuote(Quote::CallbackSignature callback) const;
 
     Ref<Error> NewError(Error::ErrorCode code, const std::string& message) const;
+
+    Ref<Object> NewPrototype(
+      const std::unordered_map<std::string, Quote::CallbackSignature>& properties
+    );
 
     /**
      * Returns the dictionary used to store global words.
@@ -100,6 +137,13 @@ namespace plorth
     const Ref<Null> m_null_value;
     const Ref<Bool> m_true_value;
     const Ref<Bool> m_false_value;
+    Ref<Object> m_array_prototype;
+    Ref<Object> m_bool_prototype;
+    Ref<Object> m_error_prototype;
+    Ref<Object> m_number_prototype;
+    Ref<Object> m_object_prototype;
+    Ref<Object> m_quote_prototype;
+    Ref<Object> m_string_prototype;
   };
 
 }

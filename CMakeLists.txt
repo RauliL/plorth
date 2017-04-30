@@ -73,6 +73,13 @@ ADD_LIBRARY(
   src/object.cpp
   src/quote.cpp
   src/runtime.cpp
+  src/runtime-array.cpp
+  src/runtime-bool.cpp
+  src/runtime-error.cpp
+  src/runtime-number.cpp
+  src/runtime-object.cpp
+  src/runtime-quote.cpp
+  src/runtime-string.cpp
   src/stack.cpp
   src/string.cpp
   src/token.cpp

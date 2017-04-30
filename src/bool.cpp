@@ -8,14 +8,7 @@ namespace plorth
 
   Ref<Object> Bool::GetPrototype(const Ref<Runtime>& runtime) const
   {
-    Ref<Value> value;
-
-    if (runtime->FindWord("bool", value) && value->GetType() == TYPE_OBJECT)
-    {
-      return value.As<Object>();
-    } else {
-      return Ref<Object>();
-    }
+    return runtime->GetBoolPrototype();
   }
 
   bool Bool::Equals(const Ref<Value>& that) const
@@ -154,69 +147,6 @@ namespace plorth
     }
   }
 
-  /**
-   * and ( bool bool -- bool )
-   *
-   * Logical AND. Returns true if both values are true.
-   */
-  static void w_and(const Ref<Context>& context)
-  {
-    bool a;
-    bool b;
-
-    if (context->PopBool(a) && context->PopBool(b))
-    {
-      context->PushBool(b && a);
-    }
-  }
-
-  /**
-   * or ( bool bool -- bool )
-   *
-   * Logical OR. Returns true if either one of the values are true.
-   */
-  static void w_or(const Ref<Context>& context)
-  {
-    bool a;
-    bool b;
-
-    if (context->PopBool(a) && context->PopBool(b))
-    {
-      context->PushBool(b || a);
-    }
-  }
-
-  /**
-   * xor ( bool bool -- bool )
-   *
-   * Exclusive OR.
-   */
-  static void w_xor(const Ref<Context>& context)
-  {
-    bool a;
-    bool b;
-
-    if (context->PopBool(a) && context->PopBool(b))
-    {
-      context->PushBool(b != a && (b || a));
-    }
-  }
-
-  /**
-   * not ( bool -- bool )
-   *
-   * Negates given boolean value.
-   */
-  static void w_not(const Ref<Context>& context)
-  {
-    bool value;
-
-    if (context->PopBool(value))
-    {
-      context->PushBool(!value);
-    }
-  }
-
   void api_init_bool(Runtime* runtime)
   {
     runtime->AddWord("true", w_true);
@@ -228,13 +158,5 @@ namespace plorth
     runtime->AddWord("if", w_if);
     runtime->AddWord("if-else", w_if_else);
     runtime->AddWord("while", w_while);
-
-    runtime->AddNamespace("bool", {
-        { "and", w_and },
-        { "or", w_or },
-        { "xor", w_xor },
-        { "not", w_not },
-      }
-    );
   }
 }

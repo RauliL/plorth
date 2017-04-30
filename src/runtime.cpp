@@ -15,6 +15,14 @@ namespace plorth
   void api_init_stack(Runtime*);
   void api_init_string(Runtime*);
 
+  Ref<Object> make_array_prototype(Runtime*);
+  Ref<Object> make_bool_prototype(Runtime*);
+  Ref<Object> make_error_prototype(Runtime*);
+  Ref<Object> make_number_prototype(Runtime*);
+  Ref<Object> make_object_prototype(Runtime*);
+  Ref<Object> make_quote_prototype(Runtime*);
+  Ref<Object> make_string_prototype(Runtime*);
+
   Runtime::Runtime(MemoryManager* memory_manager)
     : m_memory_manager(memory_manager)
     , m_null_value(new (memory_manager) Null())
@@ -30,21 +38,25 @@ namespace plorth
     api_init_quote(this);
     api_init_error(this);
     api_init_io(this);
+
+    m_array_prototype = make_array_prototype(this);
+    m_bool_prototype = make_bool_prototype(this);
+    m_error_prototype = make_error_prototype(this);
+    m_number_prototype = make_number_prototype(this);
+    m_object_prototype = make_object_prototype(this);
+    m_quote_prototype = make_quote_prototype(this);
+    m_string_prototype = make_string_prototype(this);
+
+    m_dictionary["ary"] = m_array_prototype;
+    m_dictionary["bool"] = m_bool_prototype;
+    m_dictionary["error"] = m_error_prototype;
+    m_dictionary["num"] = m_number_prototype;
+    m_dictionary["obj"] = m_object_prototype;
+    m_dictionary["quote"] = m_quote_prototype;
+    m_dictionary["str"] = m_string_prototype;
   }
 
   Runtime::~Runtime() {}
-
-  Ref<Object> Runtime::GetObjectProperty() const
-  {
-    Ref<Value> value;
-
-    if (FindWord("obj", value) && value->GetType() == Value::TYPE_OBJECT)
-    {
-      return value.As<Object>();
-    } else {
-      return Ref<Object>();
-    }
-  }
 
   Ref<Bool> Runtime::NewBool(bool value) const
   {
@@ -139,6 +151,18 @@ namespace plorth
                                const std::string& message) const
   {
     return new (m_memory_manager) Error(code, message);
+  }
+
+  Ref<Object> Runtime::NewPrototype(const std::unordered_map<std::string, Quote::CallbackSignature>& properties)
+  {
+    Object::Dictionary result;
+
+    for (const auto& property : properties)
+    {
+      result[property.first] = NewNativeQuote(property.second);
+    }
+
+    return NewObject(result);
   }
 
   bool Runtime::FindWord(const std::string& name, Ref<Value>& slot) const

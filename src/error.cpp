@@ -10,14 +10,7 @@ namespace plorth
 
   Ref<Object> Error::GetPrototype(const Ref<Runtime>& runtime) const
   {
-    Ref<Value> value;
-
-    if (runtime->FindWord("error", value) && value->GetType() == TYPE_OBJECT)
-    {
-      return value.As<Object>();
-    } else {
-      return Ref<Object>();
-    }
+    return runtime->GetErrorPrototype();
   }
 
   bool Error::Equals(const Ref<Value>& that) const
@@ -120,68 +113,9 @@ namespace plorth
     }
   }
 
-  /**
-   * code ( error -- error num )
-   *
-   * Returns error code extracted from the error in numeric form.
-   */
-  static void w_code(const Ref<Context>& context)
-  {
-    Ref<Error> error;
-
-    if (context->PeekError(error))
-    {
-      context->PushNumber(static_cast<std::int64_t>(error->GetCode()));
-    }
-  }
-
-  /**
-   * message ( error -- error str|null )
-   *
-   * Returns error message extracted from the error, or null if the error does
-   * not have any error message.
-   */
-  static void w_message(const Ref<Context>& context)
-  {
-    Ref<Error> error;
-
-    if (context->PeekError(error))
-    {
-      const std::string& message = error->GetMessage();
-
-      if (message.empty())
-      {
-        context->PushNull();
-      } else {
-        context->PushString(message);
-      }
-    }
-  }
-
-  /**
-   * throw ( error -- )
-   *
-   * Sets given error as current error of the execution context.
-   */
-  static void w_throw(const Ref<Context>& context)
-  {
-    Ref<Error> error;
-
-    if (context->PopError(error))
-    {
-      context->SetError(error);
-    }
-  }
-
   void api_init_error(Runtime* runtime)
   {
     runtime->AddWord("error?", w_is_error);
     runtime->AddWord("try", w_try);
-
-    runtime->AddNamespace("error", {
-      { "code", w_code },
-      { "message", w_message },
-      { "throw", w_throw },
-    });
   }
 }
