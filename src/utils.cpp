@@ -1,33 +1,82 @@
-#include <iostream>
-
-#include "unicode.hpp"
-#include "utils.hpp"
+#include <plorth/unicode.hpp>
 
 namespace plorth
 {
-  bool is_word_part(char c)
+  unistring json_stringify(const unistring& input)
   {
-    return c != '('
-      && c != ')'
-      && c != '['
-      && c != ']'
-      && c != '{'
-      && c != '}'
-      && c != ':'
-      && c != ','
-      && !std::isspace(c);
+    unistring result;
+
+    result.reserve(input.length() + 2);
+    result.append(1, '"');
+
+    for (const auto& c : input)
+    {
+      switch (c)
+      {
+        case 010:
+          result.append(1, '\\');
+          result.append(1, 'b');
+          break;
+
+        case 011:
+          result.append(1, '\\');
+          result.append(1, 't');
+          break;
+
+        case 012:
+          result.append(1, '\\');
+          result.append(1, 'n');
+          break;
+
+        case 014:
+          result.append(1, '\\');
+          result.append(1, 'f');
+          break;
+
+        case 015:
+          result.append(1, '\\');
+          result.append(1, 'r');
+          break;
+
+        case '"':
+        case '\\':
+        case '/':
+          result.append(1, '\\');
+          result.append(1, c);
+          break;
+
+        default:
+          if (unichar_iscntrl(c))
+          {
+            char buffer[7];
+
+            std::snprintf(buffer, 7, "\\u%04x", c);
+            for (const char* p = buffer; *p; ++p)
+            {
+              result.append(1, static_cast<unichar>(*p));
+            }
+          } else {
+            result.append(1, c);
+          }
+      }
+    }
+
+    result.append(1, '"');
+
+    return result;
   }
 
-  bool str_is_number(const std::string& input)
+  bool is_number(const unistring& input)
   {
-    const std::string::size_type length = input.length();
-    std::string::size_type start;
+    const auto length = input.length();
+    unistring::size_type start;
     bool dot_seen = false;
 
     if (!length)
     {
       return false;
     }
+
     if (input[0] == '+' || input[0] == '-')
     {
       start = 1;
@@ -38,9 +87,10 @@ namespace plorth
     } else {
       start = 0;
     }
-    for (std::string::size_type i = start; i < length; ++i)
+
+    for (auto i = start; i < length; ++i)
     {
-      const char c = input[i];
+      const auto c = input[i];
 
       if (c == '.')
       {
@@ -57,71 +107,5 @@ namespace plorth
     }
 
     return true;
-  }
-
-  std::string to_json_string(const std::string& input)
-  {
-    std::string result;
-    const char* pointer = input.c_str();
-
-    result += "\"";
-    while (*pointer)
-    {
-      unsigned int cp;
-
-      if (!unicode_decode(pointer, cp))
-      {
-        break;
-      }
-      pointer += unicode_size(cp);
-      switch (cp)
-      {
-        case 010:
-          result += "\\b";
-          break;
-
-        case 011:
-          result += "\\t";
-          break;
-
-        case 012:
-          result += "\\n";
-          break;
-
-        case 014:
-          result += "\\f";
-          break;
-
-        case 015:
-          result += "\\r";
-          break;
-
-        case '"':
-        case '\\':
-        case '/':
-          result += "\\";
-          result += static_cast<char>(cp);
-          break;
-
-        default:
-          {
-            char buffer[7];
-
-            if (unicode_is_cntrl(cp))
-            {
-              std::snprintf(buffer, 7, "\\u%04x", cp);
-              result += buffer;
-            }
-            else if (unicode_encode(cp, buffer))
-            {
-              result += buffer;
-            }
-          }
-          break;
-      }
-    }
-    result += "\"";
-
-    return result;
   }
 }

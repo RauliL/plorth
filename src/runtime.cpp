@@ -1,170 +1,70 @@
-#include <plorth/plorth-context.hpp>
+#include <plorth/context.hpp>
+#include <plorth/value-error.hpp>
+#include <plorth/value-quote.hpp>
+
+#include <cassert>
 
 namespace plorth
 {
-  void init_global_dictionary(Runtime*);
-  Ref<Object> make_array_prototype(Runtime*);
-  Ref<Object> make_bool_prototype(Runtime*);
-  Ref<Object> make_error_prototype(Runtime*);
-  Ref<Object> make_number_prototype(Runtime*);
-  Ref<Object> make_object_prototype(Runtime*);
-  Ref<Object> make_quote_prototype(Runtime*);
-  Ref<Object> make_string_prototype(Runtime*);
+  namespace api
+  {
+    runtime::prototype_definition global_dictionary();
+    runtime::prototype_definition array_prototype();
+    runtime::prototype_definition boolean_prototype();
+    runtime::prototype_definition error_prototype();
+    runtime::prototype_definition number_prototype();
+    runtime::prototype_definition object_prototype();
+    runtime::prototype_definition quote_prototype();
+    runtime::prototype_definition string_prototype();
+  }
 
-  Runtime::Runtime(MemoryManager* memory_manager)
+  static inline ref<object> make_prototype(runtime*, const char*, const runtime::prototype_definition&);
+
+  runtime::runtime(memory::manager* memory_manager)
     : m_memory_manager(memory_manager)
-    , m_null_value(new (memory_manager) Null())
-    , m_true_value(new (memory_manager) Bool(true))
-    , m_false_value(new (memory_manager) Bool(false))
   {
-    init_global_dictionary(this);
+    assert(memory_manager);
 
-    m_array_prototype = make_array_prototype(this);
-    m_bool_prototype = make_bool_prototype(this);
-    m_error_prototype = make_error_prototype(this);
-    m_number_prototype = make_number_prototype(this);
-    m_object_prototype = make_object_prototype(this);
-    m_quote_prototype = make_quote_prototype(this);
-    m_string_prototype = make_string_prototype(this);
+    m_null_value = new (*m_memory_manager) class null();
+    m_true_value = new (*m_memory_manager) class boolean(true);
+    m_false_value = new (*m_memory_manager) class boolean(false);
 
-    m_dictionary["ary"] = m_array_prototype;
-    m_dictionary["bool"] = m_bool_prototype;
-    m_dictionary["error"] = m_error_prototype;
-    m_dictionary["num"] = m_number_prototype;
-    m_dictionary["obj"] = m_object_prototype;
-    m_dictionary["quote"] = m_quote_prototype;
-    m_dictionary["str"] = m_string_prototype;
-  }
-
-  Runtime::~Runtime() {}
-
-  Ref<Bool> Runtime::NewBool(bool value) const
-  {
-    return value ? m_true_value : m_false_value;
-  }
-
-
-  Ref<Number> Runtime::NewNumber(const std::string& value) const
-  {
-    const std::string::size_type dot_index = value.find('.');
-
-    if (dot_index == std::string::npos)
+    for (auto& entry : api::global_dictionary())
     {
-      const std::int64_t i = std::strtoll(value.c_str(), nullptr, 10);
-
-      if (errno == ERANGE)
-      {
-        return NewNumber(mpz_class(value));
-      } else {
-        return NewNumber(i);
-      }
-    } else {
-      return NewNumber(std::strtod(value.c_str(), nullptr));
-    }
-  }
-
-  Ref<String> Runtime::NewString(const std::string& value) const
-  {
-    return new (m_memory_manager) String(value);
-  }
-
-  Ref<Array> Runtime::NewArray(const std::vector<Ref<Value>>& elements) const
-  {
-    return new (m_memory_manager) Array(elements);
-  }
-
-  Ref<Object> Runtime::NewObject() const
-  {
-    return new (m_memory_manager) Object();
-  }
-
-  Ref<Object> Runtime::NewObject(const Object::Dictionary& properties) const
-  {
-    return new (m_memory_manager) Object(properties);
-  }
-
-  namespace
-  {
-    class NativeQuote : public Quote
-    {
-    public:
-      explicit NativeQuote(CallbackSignature callback)
-        : m_callback(callback) {}
-
-      bool Call(const Ref<Context>& context) const
-      {
-        m_callback(context);
-
-        return !context->HasError();
-      }
-
-      std::string ToString() const
-      {
-        return "<native quote>";
-      }
-
-    private:
-      const CallbackSignature m_callback;
-    };
-  }
-
-  Ref<Quote> Runtime::NewNativeQuote(Quote::CallbackSignature callback) const
-  {
-    return new (m_memory_manager) NativeQuote(callback);
-  }
-
-  Ref<Error> Runtime::NewError(Error::ErrorCode code,
-                               const std::string& message) const
-  {
-    return new (m_memory_manager) Error(code, message);
-  }
-
-  Ref<Object> Runtime::NewPrototype(const std::unordered_map<std::string, Quote::CallbackSignature>& properties)
-  {
-    Object::Dictionary result;
-
-    for (const auto& property : properties)
-    {
-      result[property.first] = NewNativeQuote(property.second);
+      m_dictionary[utf8_decode(entry.first)] = quote(entry.second);
     }
 
-    return NewObject(result);
+    m_array_prototype = make_prototype(this, "array", api::array_prototype());
+    m_boolean_prototype = make_prototype(this, "boolean", api::boolean_prototype());
+    m_error_prototype = make_prototype(this, "error", api::error_prototype());
+    m_number_prototype = make_prototype(this, "number", api::number_prototype());
+    m_object_prototype = make_prototype(this, "object", api::object_prototype());
+    m_quote_prototype = make_prototype(this, "quote", api::quote_prototype());
+    m_string_prototype = make_prototype(this, "string", api::string_prototype());
   }
 
-  bool Runtime::FindWord(const std::string& name, Ref<Value>& slot) const
+  ref<context> runtime::new_context()
   {
-    const auto entry = m_dictionary.find(name);
+    return new (*m_memory_manager) context(this);
+  }
 
-    if (entry != end(m_dictionary))
+  static inline ref<object> make_prototype(class runtime* runtime,
+                                           const char* name,
+                                           const runtime::prototype_definition& definition)
+  {
+    object::container_type properties;
+    ref<object> prototype;
+
+    for (auto& entry : definition)
     {
-      slot = entry->second;
-
-      return true;
+      properties[utf8_decode(entry.first)] = runtime->quote(entry.second);
     }
 
-    return false;
-  }
+    prototype = runtime->value<object>(properties);
+    runtime->dictionary()[utf8_decode(name)] = runtime->value<object>(object::container_type({
+      { utf8_decode("prototype"), prototype }
+    }));
 
-  void Runtime::AddWord(const std::string& name,
-                        NativeQuote::CallbackSignature callback)
-  {
-    m_dictionary[name] = new (m_memory_manager) NativeQuote(callback);
-  }
-
-  void Runtime::AddWord(const std::string& name, const Ref<Quote>& quote)
-  {
-    m_dictionary[name] = quote;
-  }
-
-  void Runtime::AddNamespace(const std::string& name,
-                             const std::unordered_map<std::string, NativeQuote::CallbackSignature>& entries)
-  {
-    std::unordered_map<std::string, Ref<Value>> translated;
-
-    for (auto& entry : entries)
-    {
-      translated[entry.first] = new (m_memory_manager) NativeQuote(entry.second);
-    }
-    m_dictionary[name] = new (m_memory_manager) Object(translated);
+    return prototype;
   }
 }

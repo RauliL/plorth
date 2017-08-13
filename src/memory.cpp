@@ -1,223 +1,119 @@
-#include "./config.hpp"
+#include <plorth/runtime.hpp>
 
-#include <cassert>
-
-#include <plorth/plorth-runtime.hpp>
+#include <cstdlib>
 
 namespace plorth
 {
-  /** Size of single garbage collector pool. */
-  static const std::size_t kPoolSize = 4096 * 32;
-
-  struct MemoryPool
+  namespace memory
   {
-    std::size_t index;
-    /** Pointer to next pool in memory manager. */
-    MemoryPool* next;
-    /** Pointer to previous pool in memory manager. */
-    MemoryPool* prev;
-    /** Amount of bytes still available in this pool. */
-    std::size_t remaining;
-    /** Pointer to data allocated by the pool. */
-    char* data;
-    /** Pointer to the first free slot in the pool. */
-    MemorySlot* free_head;
-    /** Pointer to the last free slot in the pool. */
-    MemorySlot* free_tail;
-    /** Pointer to the first used slot in the pool. */
-    MemorySlot* used_head;
-    /** Pointer to the last used slot in the pool. */
-    MemorySlot* used_tail;
-  };
+    /** Size of single garbage collector pool. */
+    static const std::size_t POOL_SIZE = 4096 * 32;
 
-  struct MemorySlot
-  {
-    /** Pointer to the memory pool where this slot belongs to. */
-    MemoryPool* pool;
-    /** Pointer to next slot allocated by the pool. */
-    MemorySlot* next;
-    /** Pointer to previous slot allocated by the pool. */
-    MemorySlot* prev;
-    /** Size of the slot. */
-    std::size_t size;
-    /** Pointer to the allocated data. */
-    char* data;
-  };
+    static pool* pool_create();
+    static slot* pool_allocate(pool*, std::size_t);
 
-  static MemoryPool* pool_create(std::size_t);
-  static MemorySlot* pool_allocate(MemoryPool*, std::size_t);
+    manager::manager()
+      : m_pool_head(nullptr)
+      , m_pool_tail(nullptr) {}
 
-  ManagedObject::ManagedObject()
-    : m_reference_count(0) {}
-
-  ManagedObject::~ManagedObject() {}
-
-  void ManagedObject::DecReferenceCount()
-  {
-    if (!--m_reference_count)
+    manager::~manager()
     {
-      delete this;
-    }
-  }
+      pool* current;
+      pool* prev;
 
-  void* ManagedObject::operator new(std::size_t size, MemoryManager* memory_manager)
-  {
-    return static_cast<void*>(memory_manager->Allocate(size)->data);
-  }
-
-  void* ManagedObject::operator new(std::size_t size, const Ref<Runtime>& runtime)
-  {
-    return static_cast<void*>(runtime->GetMemoryManager()->Allocate(size)->data);
-  }
-
-  void ManagedObject::operator delete(void* pointer)
-  {
-    MemorySlot* slot = reinterpret_cast<MemorySlot*>(
-      static_cast<char*>(pointer) - sizeof(MemorySlot)
-    );
-    MemoryPool* pool = slot->pool;
-
-    if (slot->next && slot->prev)
-    {
-      slot->next->prev = slot->prev;
-      slot->prev->next = slot->next;
-    }
-    else if (slot->next)
-    {
-      slot->next->prev = nullptr;
-      pool->used_head = slot->next;
-    }
-    else if (slot->prev)
-    {
-      slot->prev->next = nullptr;
-      pool->used_tail = slot->prev;
-    } else {
-      pool->used_head = nullptr;
-      pool->used_tail = nullptr;
-    }
-
-    slot->next = nullptr;
-    if ((slot->prev = slot->pool->free_tail))
-    {
-      pool->free_tail->next = slot;
-    } else {
-      pool->free_head = slot;
-    }
-    pool->free_tail = slot;
-
-    // Remove the pool if it's no longer used.
-    if (pool->next && pool->prev && !pool->used_head && !pool->used_tail)
-    {
-      pool->next->prev = pool->prev;
-      pool->prev->next = pool->next;
-#if defined(PLORTH_GC_DEBUG)
-      std::fprintf(stderr, "GC: Pool removed: %ld\n", pool->index);
-#endif
-      std::free(static_cast<void*>(pool));
-    }
-  }
-
-  MemoryManager::MemoryManager()
-    : m_next_pool_index(0)
-    , m_pool_head(nullptr)
-    , m_pool_tail(nullptr) {}
-
-  MemoryManager::~MemoryManager()
-  {
-    MemoryPool* current;
-    MemoryPool* next;
-
-    for (current = m_pool_head; current; current = next)
-    {
-      next = current->next;
-      for (MemorySlot* slot = current->used_head; slot; slot = slot->next)
+      for (current = m_pool_tail; current; current = prev)
       {
-        delete (ManagedObject*) slot->data;
-      }
-      std::free(static_cast<void*>(current));
-    }
-  }
-
-  Ref<Runtime> MemoryManager::CreateRuntime()
-  {
-    return new (this) Runtime(this);
-  }
-
-  MemorySlot* MemoryManager::Allocate(std::size_t size)
-  {
-    const std::size_t remainder = size % 8;
-    MemoryPool* pool;
-    MemorySlot* slot;
-
-    if (remainder)
-    {
-      size += 8 - remainder;
-    }
-
-    for (pool = m_pool_tail; pool; pool = pool->prev)
-    {
-      if ((slot = pool_allocate(pool, size)))
-      {
-        return slot;
+        prev = current->prev;
+        for (struct slot* slot = current->used_head; slot; slot = slot->next)
+        {
+          delete reinterpret_cast<managed*>(slot->memory);
+        }
+        std::free(static_cast<void*>(current));
       }
     }
 
-    pool = pool_create(m_next_pool_index++);
-    if ((pool->prev = m_pool_tail))
+    void* manager::allocate(std::size_t size)
     {
-      m_pool_tail->next = pool;
-    } else {
-      m_pool_head = pool;
-    }
-    m_pool_tail = pool;
+      const std::size_t remainder = size % 8;
+      struct pool* pool;
+      struct slot* slot;
+
+      if (remainder)
+      {
+        size += 8 - remainder;
+      }
+
+      // First go through existing memory pools and check whether we can slice
+      // a slot from any of them.
+      for (pool = m_pool_tail; pool; pool = pool->prev)
+      {
+        if ((slot = pool_allocate(pool, size)))
+        {
+          return static_cast<void*>(slot->memory);
+        }
+      }
+
+      // If all existing pools are full, create a new one. If that one fails,
+      // abort the entire process as it's a signal that we are out of memory.
+      if (!(pool = pool_create()))
+      {
+        std::abort();
+      }
 
 #if defined(PLORTH_GC_DEBUG)
-    std::fprintf(stderr, "GC: Allocated pool: %ld\n", pool->index);
+      std::fprintf(stderr, "GC: Memory pool allocated.\n");
 #endif
 
-    if (!(slot = pool_allocate(pool, size)))
-    {
-      std::abort();
-    }
-
-    return slot;
-  }
-
-  static MemoryPool* pool_create(std::size_t index)
-  {
-    char* data = static_cast<char*>(std::malloc(sizeof(MemoryPool) + kPoolSize));
-    MemoryPool* pool;
-
-    if (!data)
-    {
-      std::abort();
-    }
-    pool = reinterpret_cast<MemoryPool*>(data);
-    pool->index = index;
-    pool->next = nullptr;
-    pool->prev = nullptr;
-    pool->remaining = kPoolSize;
-    pool->data = data + sizeof(MemoryPool);
-    pool->free_head = nullptr;
-    pool->free_tail = nullptr;
-    pool->used_head = nullptr;
-    pool->used_tail = nullptr;
-
-    return pool;
-  }
-
-  static MemorySlot* pool_allocate(MemoryPool* pool, std::size_t size)
-  {
-    MemorySlot* slot;
-    char* data;
-
-    for (slot = pool->free_head; slot; slot = slot->next)
-    {
-      if (slot->size < size)
+      // Place the newly created pool into linked list of memory pools.
+      if ((pool->prev = m_pool_tail))
       {
-        continue;
+        m_pool_tail->next = pool;
+      } else {
+        m_pool_head = pool;
       }
-      else if (slot->next && slot->prev)
+      m_pool_tail = pool;
+
+      // Try to allocate slot from the freshly created memory pool. If even
+      // that is not possible, crash and burn as something is seriously wrong
+      // now.
+      if (!(slot = pool_allocate(pool, size)))
+      {
+        std::abort();
+      }
+
+      return static_cast<void*>(slot->memory);
+    }
+
+    ref<runtime> manager::new_runtime()
+    {
+      return new (*this) runtime(this);
+    }
+
+    managed::managed()
+      : m_ref_count(0) {}
+
+    managed::~managed() {}
+
+    void* managed::operator new(std::size_t size, class manager& manager)
+    {
+      return manager.allocate(size);
+    }
+
+    void managed::operator delete(void* pointer)
+    {
+      struct slot* slot;
+      struct pool* pool;
+
+      if (!pointer)
+      {
+        return;
+      }
+
+      slot = reinterpret_cast<struct slot*>(static_cast<char*>(pointer) - sizeof(struct slot));
+      pool = slot->pool;
+
+      // Remove the slot from the linked of list of used slots in the pool.
+      if (slot->next && slot->prev)
       {
         slot->next->prev = slot->prev;
         slot->prev->next = slot->next;
@@ -225,16 +121,115 @@ namespace plorth
       else if (slot->next)
       {
         slot->next->prev = nullptr;
-        pool->free_head = slot->next;
+        pool->used_head = slot->next;
       }
       else if (slot->prev)
       {
         slot->prev->next = nullptr;
-        pool->free_tail = slot->prev;
+        pool->used_tail = slot->prev;
       } else {
-        pool->free_head = nullptr;
-        pool->free_tail = nullptr;
+        pool->used_head = nullptr;
+        pool->used_tail = nullptr;
       }
+
+      // Then place the slot into linked of list of free slots in the pool.
+      slot->next = nullptr;
+      if ((slot->prev = slot->pool->free_tail))
+      {
+        pool->free_tail->next = slot;
+      } else {
+        pool->free_head = slot;
+      }
+      pool->free_tail = slot;
+
+      // Remove the pool if it's no longer used.
+      if (pool->next && pool->prev && !pool->used_head && !pool->used_tail)
+      {
+        pool->next->prev = pool->prev;
+        pool->prev->next = pool->next;
+#if defined(PLORTH_GC_DEBUG)
+        std::fprintf(stderr, "GC: Memory pool removed.\n");
+#endif
+        std::free(static_cast<void*>(pool));
+      }
+    }
+
+    static pool* pool_create()
+    {
+      char* memory = static_cast<char*>(std::malloc(sizeof(struct pool) + POOL_SIZE));
+      struct pool* pool;
+
+      if (!memory)
+      {
+        return nullptr;
+      }
+
+      pool = reinterpret_cast<struct pool*>(memory);
+      pool->next = nullptr;
+      pool->prev = nullptr;
+      pool->remaining = POOL_SIZE;
+      pool->memory = memory + sizeof(struct pool);
+      pool->free_head = nullptr;
+      pool->free_tail = nullptr;
+      pool->used_head = nullptr;
+      pool->used_tail = nullptr;
+
+      return pool;
+    }
+
+    static slot* pool_allocate(struct pool* pool, std::size_t size)
+    {
+      struct slot* slot;
+      char* memory;
+
+      for (slot = pool->free_head; slot; slot = slot->next)
+      {
+        if (slot->size < size)
+        {
+          continue;
+        }
+
+        if (slot->next && slot->prev)
+        {
+          slot->next->prev = slot->prev;
+          slot->prev->next = slot->next;
+        }
+        else if (slot->next)
+        {
+          slot->next->prev = nullptr;
+          pool->free_head = slot->next;
+        }
+        else if (slot->prev)
+        {
+          slot->prev->next = nullptr;
+          pool->free_tail = slot->prev;
+        } else {
+          pool->free_head = nullptr;
+          pool->free_tail = nullptr;
+        }
+
+        slot->next = nullptr;
+        if ((slot->prev = pool->used_tail))
+        {
+          slot->prev->next = slot;
+        } else {
+          pool->used_head = slot;
+        }
+        pool->used_tail = slot;
+
+        return slot;
+      }
+
+      if (pool->remaining < size + sizeof(struct slot))
+      {
+        return nullptr;
+      }
+
+      memory = pool->memory + (POOL_SIZE - pool->remaining);
+      pool->remaining -= size + sizeof(struct slot);
+
+      slot = reinterpret_cast<struct slot*>(memory);
+      slot->pool = pool;
       slot->next = nullptr;
       if ((slot->prev = pool->used_tail))
       {
@@ -243,30 +238,10 @@ namespace plorth
         pool->used_head = slot;
       }
       pool->used_tail = slot;
+      slot->size = size;
+      slot->memory = memory + sizeof(struct slot);
 
       return slot;
     }
-
-    if (pool->remaining < sizeof(MemorySlot) + size)
-    {
-      return nullptr;
-    }
-
-    data = pool->data + (kPoolSize - pool->remaining);
-    pool->remaining -= size + sizeof(MemorySlot);
-    slot = (MemorySlot*) data;
-    slot->pool = pool;
-    slot->next = nullptr;
-    if ((slot->prev = pool->used_tail))
-    {
-      slot->prev->next = slot;
-    } else {
-      pool->used_head = slot;
-    }
-    pool->used_tail = slot;
-    slot->size = size;
-    slot->data = data + sizeof(MemorySlot);
-
-    return slot;
   }
 }
