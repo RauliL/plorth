@@ -639,6 +639,65 @@ namespace plorth
     }
   }
 
+  static void make_error(const ref<context>& ctx, enum error::code code)
+  {
+    ref<value> val;
+    unistring message;
+
+    if (!ctx->pop(val))
+    {
+      return;
+    }
+
+    if (val->is(value::type_string))
+    {
+      message = val.cast<string>()->value();
+    }
+    else if (!val->is(value::type_null))
+    {
+      std::stringstream ss;
+
+      ss << "Expected string, got " << val->type() << " instead.";
+      ctx->error(error::code_type, utf8_decode(ss.str()));
+      return;
+    }
+
+    ctx->push(ctx->runtime()->value<error>(code, message));
+  }
+
+  /**
+   * type-error ( string|null -- error )
+   *
+   * Construct instance of reference with with given optional error message and
+   * places it on the stack.
+   */
+  static void w_type_error(const ref<context>& ctx)
+  {
+    make_error(ctx, error::code_type);
+  }
+
+  /**
+   * range-error ( string|null -- error )
+   *
+   * Construct instance of reference with with given optional error message and
+   * places it on the stack.
+   */
+  static void w_range_error(const ref<context>& ctx)
+  {
+    make_error(ctx, error::code_range);
+  }
+
+  /**
+   * unknown-error ( string|null -- error )
+   *
+   * Construct instance of reference with with given optional error message and
+   * places it on the stack.
+   */
+  static void w_unknown_error(const ref<context>& ctx)
+  {
+    make_error(ctx, error::code_unknown);
+  }
+
 	/**
 	 * println ( any -- )
 	 *
@@ -776,6 +835,11 @@ namespace plorth
 				{ "globals", w_globals },
 				{ "locals", w_locals },
         { "const", w_const },
+
+        // Different types of errors.
+        { "type-error", w_type_error },
+        { "range-error", w_range_error },
+        { "unknown-error", w_unknown_error },
 
 				// I/O related.
 				{ "print", w_print },
