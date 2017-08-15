@@ -1,57 +1,55 @@
-#include <sstream>
-
-#include <plorth/plorth-context.hpp>
+#include <plorth/context.hpp>
+#include <plorth/value-number.hpp>
+#include <plorth/value-quote.hpp>
+#include <plorth/value-string.hpp>
 
 #include "./utils.hpp"
 
+#include <sstream>
+
 namespace plorth
 {
-  Context::Context(const Ref<Runtime>& runtime)
+  context::context(const ref<class runtime>& runtime)
     : m_runtime(runtime) {}
 
-  void Context::SetError(Error::ErrorCode code, const std::string& message)
+  void context::error(enum error::code code, const unistring& message)
   {
-    m_error = new (m_runtime) Error(code, message);
+    m_error = new (m_runtime->memory_manager()) class error(code, message);
   }
 
-  void Context::ClearError()
+  bool context::call(const unistring& word)
   {
-    m_error.Clear();
-  }
+    ref<class value> value;
 
-  bool Context::CallWord(const std::string& name)
-  {
-    Ref<Value> value;
-
-    // Look from prototype of current item.
-    if (!m_stack.empty())
+    // Look from prototype of the current item.
+    if (!m_data.empty())
     {
-      const Ref<Object> prototype = m_stack.back()->GetPrototype(m_runtime);
+      const ref<object> prototype = m_data.back()->prototype(m_runtime);
 
-      if (prototype && (value = prototype->GetOwnProperty(name)))
+      if (prototype && (value = prototype->property(word)))
       {
-        if (value->GetType() == Value::TYPE_QUOTE)
+        if (value->is(value::type_quote))
         {
-          return value.As<Quote>()->Call(this);
+          return value.cast<quote>()->call(this);
         }
-        m_stack.push_back(value);
+        m_data.push_back(value);
 
         return true;
       }
     }
 
-    // Look for word from dictionary of current context.
+    // Look for a word from dictionary of current context.
     {
-      const auto word = m_dictionary.find(name);
+      const auto entry = m_dictionary.find(word);
 
-      if (word != end(m_dictionary))
+      if (entry != std::end(m_dictionary))
       {
-        value = word->second;
-        if (value->GetType() == Value::TYPE_QUOTE)
+        value = entry->second;
+        if (value->is(value::type_quote))
         {
-          return value.As<Quote>()->Call(this);
+          return value.cast<quote>()->call(this);
         }
-        m_stack.push_back(value);
+        m_data.push_back(value);
 
         return true;
       }
@@ -62,360 +60,221 @@ namespace plorth
     // for that from the specified namespace.
 
     // Look from global dictionary.
-    if (m_runtime->FindWord(name, value))
     {
-      if (value->GetType() == Value::TYPE_QUOTE)
-      {
-        return value.As<Quote>()->Call(this);
-      }
-      m_stack.push_back(value);
+      const auto& global_dictionary = m_runtime->dictionary();
+      const auto entry = global_dictionary.find(word);
 
-      return true;
+      if (entry != std::end(global_dictionary))
+      {
+        value = entry->second;
+        if (value->is(value::type_quote))
+        {
+          return value.cast<quote>()->call(this);
+        }
+        m_data.push_back(value);
+
+        return true;
+      }
     }
 
     // If the name of the word can be converted into number, then do just that.
-    if (str_is_number(name))
+    if (is_number(word))
     {
-      PushNumber(name);
+      m_data.push_back(m_runtime->value<number>(std::stod(utf8_encode(word))));
 
       return true;
     }
 
     // Otherwise it's reference error.
-    SetError(Error::ERROR_CODE_REFERENCE, "Unrecognized word: `" + name + "'");
+    error(error::code_reference, "Unrecognized word: `" + word + "'");
 
     return false;
   }
 
-  void Context::AddWord(const std::string& name, const Ref<Value>& value)
+  void context::declare(const unistring& word, const ref<class quote>& quote)
   {
-    m_dictionary[name] = value;
+    m_dictionary[word] = quote;
   }
 
-  bool Context::Peek(Ref<Value>& slot)
+  void context::push_null()
   {
-    if (m_stack.empty())
-    {
-      SetError(Error::ERROR_CODE_RANGE, "Stack underflow.");
+    push(m_runtime->null());
+  }
 
+  void context::push_boolean(bool value)
+  {
+    push(m_runtime->boolean(value));
+  }
+
+  void context::push_number(double value)
+  {
+    push(m_runtime->value<number>(value));
+  }
+
+  void context::push_string(const unistring& value)
+  {
+    push(m_runtime->value<string>(value));
+  }
+
+  void context::push_array(const array::container_type& elements)
+  {
+    push(m_runtime->value<array>(elements));
+  }
+
+  void context::push_object(const object::container_type& properties)
+  {
+    push(m_runtime->value<object>(properties));
+  }
+
+  bool context::pop()
+  {
+    if (!m_data.empty())
+    {
+      m_data.pop_back();
+
+      return true;
+    }
+    error(error::code_range, "Stack underflow.");
+
+    return false;
+  }
+
+  bool context::pop(enum value::type type)
+  {
+    if (!m_data.empty())
+    {
+      const ref<class value>& value = m_data.back();
+
+      if (!value->is(type))
+      {
+        std::stringstream ss;
+
+        ss << "Expected " << type << ", got " << value->type() << " instead.";
+        error(error::code_type, ss.str().c_str());
+
+        return false;
+      }
+      m_data.pop_back();
+
+      return true;
+    }
+    error(error::code_range, "Stack underflow.");
+
+    return false;
+  }
+
+  bool context::pop(ref<value>& slot)
+  {
+    if (!m_data.empty())
+    {
+      slot = m_data.back();
+      m_data.pop_back();
+
+      return true;
+    }
+    error(error::code_range, "Stack underflow.");
+
+    return false;
+  }
+
+  bool context::pop(ref<value>& slot, enum value::type type)
+  {
+    if (!m_data.empty())
+    {
+      slot = m_data.back();
+      if (!slot->is(type))
+      {
+        std::stringstream ss;
+
+        ss << "Expected " << type << ", got " << slot->type() << " instead.";
+        error(error::code_type, ss.str().c_str());
+
+        return false;
+      }
+      m_data.pop_back();
+
+      return true;
+    }
+    error(error::code_range, "Stack underflow.");
+
+    return false;
+  }
+
+  bool context::pop_boolean(bool& slot)
+  {
+    ref<class value> value;
+
+    if (!pop(value, value::type_boolean))
+    {
       return false;
     }
-    slot = m_stack.back();
+    slot = value.cast<boolean>()->value();
 
     return true;
   }
 
-  bool Context::Peek(Ref<Value>& slot, Value::Type type)
+  bool context::pop_number(double& slot)
   {
-    if (!Peek(slot))
+    ref<class value> value;
+
+    if (!pop(value, value::type_number))
     {
       return false;
     }
-    else if (slot->GetType() != type)
-    {
-      std::stringstream ss;
-
-      ss << "Expected " << type << ", got " << slot->GetType() << " instead.";
-      SetError(Error::ERROR_CODE_TYPE, ss.str());
-
-      return false;
-    }
+    slot = value.cast<number>()->value();
 
     return true;
   }
 
-  bool Context::PeekArray(Ref<Array>& slot)
+  bool context::pop_string(ref<string>& slot)
   {
-    Ref<Value> value;
+    ref<class value> value;
 
-    if (Peek(value, Value::TYPE_ARRAY))
+    if (!pop(value, value::type_string))
     {
-      slot = value.As<Array>();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PeekBool(bool& slot)
-  {
-    Ref<Value> value;
-
-    if (Peek(value, Value::TYPE_BOOL))
-    {
-      slot = value.As<Bool>()->GetValue();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PeekError(Ref<Error>& slot)
-  {
-    Ref<Value> value;
-
-    if (Peek(value, Value::TYPE_ERROR))
-    {
-      slot = value.As<Error>();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PeekNumber(Ref<Number>& slot)
-  {
-    Ref<Value> value;
-
-    if (Peek(value, Value::TYPE_NUMBER))
-    {
-      slot = value.As<Number>();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PeekObject(Ref<Object>& slot)
-  {
-    Ref<Value> value;
-
-    if (Peek(value, Value::TYPE_OBJECT))
-    {
-      slot = value.As<Object>();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PeekQuote(Ref<Quote>& slot)
-  {
-    Ref<Value> value;
-
-    if (Peek(value, Value::TYPE_QUOTE))
-    {
-      slot = value.As<Quote>();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PeekString(Ref<String>& slot)
-  {
-    Ref<Value> value;
-
-    if (Peek(value, Value::TYPE_STRING))
-    {
-      slot = value.As<String>();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  void Context::Push(const Ref<Value>& value)
-  {
-    m_stack.push_back(value);
-  }
-
-  void Context::PushArray(const std::vector<Ref<Value>>& elements)
-  {
-    m_stack.push_back(m_runtime->NewArray(elements));
-  }
-
-  void Context::PushBool(bool value)
-  {
-    m_stack.push_back(value ? m_runtime->GetTrueValue() : m_runtime->GetFalseValue());
-  }
-
-  void Context::PushNull()
-  {
-    m_stack.push_back(m_runtime->GetNullValue());
-  }
-
-  void Context::PushNumber(std::int64_t value)
-  {
-    m_stack.push_back(m_runtime->NewNumber(value));
-  }
-
-  void Context::PushNumber(double value)
-  {
-    m_stack.push_back(m_runtime->NewNumber(value));
-  }
-
-  void Context::PushNumber(const mpz_class& value)
-  {
-    m_stack.push_back(m_runtime->NewNumber(value));
-  }
-
-  void Context::PushNumber(const std::string& value)
-  {
-    m_stack.push_back(m_runtime->NewNumber(value));
-  }
-
-  void Context::PushObject()
-  {
-    m_stack.push_back(m_runtime->NewObject());
-  }
-
-  void Context::PushObject(const Object::Dictionary& properties)
-  {
-    m_stack.push_back(m_runtime->NewObject(properties));
-  }
-
-  void Context::PushString(const std::string& value)
-  {
-    m_stack.push_back(m_runtime->NewString(value));
-  }
-
-  bool Context::Pop()
-  {
-    if (m_stack.empty())
-    {
-      SetError(Error::ERROR_CODE_RANGE, "Stack underflow.");
-
       return false;
     }
-    m_stack.pop_back();
+    slot = value.cast<string>();
 
     return true;
   }
 
-  bool Context::Pop(Ref<Value>& slot)
+  bool context::pop_array(ref<array>& slot)
   {
-    if (!Peek(slot))
+    ref<class value> value;
+
+    if (!pop(value, value::type_array))
     {
       return false;
     }
-    m_stack.pop_back();
+    slot = value.cast<array>();
 
     return true;
   }
 
-  bool Context::Pop(Ref<Value>& slot, Value::Type type)
+  bool context::pop_object(ref<object>& slot)
   {
-    if (!Peek(slot))
+    ref<class value> value;
+
+    if (!pop(value, value::type_object))
     {
       return false;
     }
-    m_stack.pop_back();
-    if (slot->GetType() != type)
-    {
-      std::stringstream ss;
-
-      ss << "Expected " << type << ", got " << slot->GetType() << " instead.";
-      SetError(Error::ERROR_CODE_TYPE, ss.str());
-
-      return false;
-    }
+    slot = value.cast<object>();
 
     return true;
   }
 
-  bool Context::PopArray(Ref<Array>& slot)
+  bool context::pop_quote(ref<quote>& slot)
   {
-    Ref<Value> value;
+    ref<class value> value;
 
-    if (Pop(value, Value::TYPE_ARRAY))
+    if (!pop(value, value::type_quote))
     {
-      slot = value.As<Array>();
-
-      return true;
+      return false;
     }
+    slot = value.cast<quote>();
 
-    return false;
-  }
-
-  bool Context::PopBool(bool& slot)
-  {
-    Ref<Value> value;
-
-    if (Pop(value, Value::TYPE_BOOL))
-    {
-      slot = value.As<Bool>()->GetValue();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PopError(Ref<Error>& slot)
-  {
-    Ref<Value> value;
-
-    if (Pop(value, Value::TYPE_ERROR))
-    {
-      slot = value.As<Error>();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PopNumber(Ref<Number>& slot)
-  {
-    Ref<Value> value;
-
-    if (Pop(value, Value::TYPE_NUMBER))
-    {
-      slot = value.As<Number>();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PopObject(Ref<Object>& slot)
-  {
-    Ref<Value> value;
-
-    if (Pop(value, Value::TYPE_OBJECT))
-    {
-      slot = value.As<Object>();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PopQuote(Ref<Quote>& slot)
-  {
-    Ref<Value> value;
-
-    if (Pop(value, Value::TYPE_QUOTE))
-    {
-      slot = value.As<Quote>();
-
-      return true;
-    }
-
-    return false;
-  }
-
-  bool Context::PopString(Ref<String>& slot)
-  {
-    Ref<Value> value;
-
-    if (Pop(value, Value::TYPE_STRING))
-    {
-      slot = value.As<String>();
-
-      return true;
-    }
-
-    return false;
+    return true;
   }
 }

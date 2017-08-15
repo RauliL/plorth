@@ -22,41 +22,15 @@ ELSE()
   MESSAGE(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
 ENDIF()
 
-FIND_PATH(
-  GMP_INCLUDE_DIR
-  NAMES gmp.h
-  DOC "The directory containing GMP include files."
-)
-FIND_PATH(
-  GMPXX_INCLUDE_DIR
-  NAMES gmpxx.h
-  DOC "The directory containing GMPXX include files."
-)
-FIND_LIBRARY(
-  GMP_LIBRARIES
-  NAMES gmp libgmp
-  DOC "Path to the GMP library."
-)
-FIND_LIBRARY(
-  GMPXX_LIBRARIES
-  NAMES gmpxx libgmpxx
-  DOC "Path to the GMPXX library."
-)
-IF(NOT GMP_LIBRARIES OR NOT GMPXX_LIBRARIES)
-  MESSAGE(FATAL_ERROR "Could not find GMPXX library.")
-ENDIF()
-
 CHECK_INCLUDE_FILE(unistd.h PLORTH_HAVE_UNISTD_H)
 CHECK_FUNCTION_EXISTS(isatty PLORTH_HAVE_ISATTY)
 
 CONFIGURE_FILE(
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/config.hpp.in"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/config.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp"
 )
 
 INCLUDE_DIRECTORIES(
-  "${GMP_INCLUDE_DIR}"
-  "${GMPXX_INCLUDE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
@@ -65,33 +39,26 @@ ADD_LIBRARY(
   SHARED
   src/compiler.cpp
   src/context.cpp
+  src/globals.cpp
   src/memory.cpp
-  src/number.cpp
   src/runtime.cpp
-  src/runtime-array.cpp
-  src/runtime-bool.cpp
-  src/runtime-dictionary.cpp
-  src/runtime-error.cpp
-  src/runtime-number.cpp
-  src/runtime-object.cpp
-  src/runtime-quote.cpp
-  src/runtime-string.cpp
   src/token.cpp
   src/unicode.cpp
   src/utils.cpp
   src/value.cpp
+  src/value-array.cpp
+  src/value-boolean.cpp
+  src/value-error.cpp
+  src/value-null.cpp
+  src/value-number.cpp
+  src/value-object.cpp
+  src/value-quote.cpp
+  src/value-string.cpp
 )
 
 ADD_EXECUTABLE(
   plorth-cli
-  src/console.cpp
   src/main.cpp
-)
-
-TARGET_LINK_LIBRARIES(
-  plorth
-  "${GMP_LIBRARIES}"
-  "${GMPXX_LIBRARIES}"
 )
 
 TARGET_LINK_LIBRARIES(

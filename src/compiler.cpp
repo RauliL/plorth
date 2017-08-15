@@ -1,571 +1,258 @@
-#include <sstream>
-
-#include <plorth/plorth-context.hpp>
-#include <plorth/plorth-token.hpp>
-
-#include "./unicode.hpp"
-#include "./utils.hpp"
+#include <plorth/context.hpp>
+#include <plorth/token.hpp>
 
 namespace plorth
 {
-  static bool compile_string(const Ref<Context>&,
-                             const char,
-                             std::string::const_iterator&,
-                             const std::string::const_iterator&,
-                             std::vector<Token>&,
-                             std::string&);
-  static Ref<Value> parse_value(const Ref<Context>&,
-                                const std::vector<Token>&,
-                                std::size_t&,
-                                const std::size_t);
-  static bool parse_declaration(const Ref<Context>&,
-                                const std::vector<Token>&,
-                                std::size_t&,
-                                const std::size_t);
+  static bool compile_advance(context*,
+                              std::string::const_iterator&,
+                              const std::string::const_iterator&,
+                              unichar&);
+  static bool compile_string_literal(context*,
+                                     const unichar,
+                                     std::string::const_iterator&,
+                                     const std::string::const_iterator&,
+                                     std::vector<token>&,
+                                     unistring&);
 
-  namespace
+  ref<quote> context::compile(const std::string& source)
   {
-    class CompiledQuote : public Quote
+    std::vector<token> tokens;
+    auto it = std::begin(source);
+    const auto end = std::end(source);
+    unistring buffer;
+
+    while (it != end)
     {
-    public:
-      explicit CompiledQuote(const std::vector<Token>& tokens)
-        : m_tokens(tokens) {}
+      unichar c;
 
-      bool Call(const Ref<Context>& context) const
+      if (!compile_advance(this, it, end, c))
       {
-        const std::size_t size = m_tokens.size();
-
-        for (std::size_t i = 0; i < size;)
-        {
-          const Token& token = m_tokens[i];
-
-          switch (token.GetType())
-          {
-            case Token::TYPE_STRING:
-            case Token::TYPE_LBRACK:
-            case Token::TYPE_LBRACE:
-            {
-              const Ref<Value> value = parse_value(context, m_tokens, i, size);
-
-              if (!value)
-              {
-                return false;
-              }
-              context->Push(value);
-              break;
-            }
-
-            case Token::TYPE_COLON:
-              if (!parse_declaration(context, m_tokens, ++i, size))
-              {
-                return false;
-              }
-              break;
-
-            case Token::TYPE_WORD:
-              ++i;
-              if (!context->CallWord(token.GetData()))
-              {
-                return false;
-              }
-              break;
-
-            case Token::TYPE_LPAREN:
-            case Token::TYPE_RPAREN:
-            case Token::TYPE_RBRACK:
-            case Token::TYPE_RBRACE:
-            case Token::TYPE_COMMA:
-            {
-              std::stringstream ss;
-
-              ss << "Unexpected " << token.GetType();
-              context->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
-
-              return false;
-            }
-          }
-        }
-
-        return true;
+        return ref<quote>();
       }
 
-      std::string ToString() const
-      {
-        std::string result;
-
-        result += "{";
-        for (std::size_t i = 0; i < m_tokens.size(); ++i)
-        {
-          if (i > 0)
-          {
-            result += " ";
-          }
-          result += m_tokens[i].ToSource();
-        }
-        result += "}";
-
-        return result;
-      }
-
-    private:
-      const std::vector<Token> m_tokens;
-    };
-  }
-
-  Ref<Quote> Quote::Compile(const Ref<Context>& context, const std::string& source)
-  {
-    std::vector<Token> tokens;
-    std::string buffer;
-    auto current = source.cbegin();
-    const auto end = source.cend();
-
-    while (current < end)
-    {
-      switch (*current)
+retry_switch:
+      switch (c)
       {
         // Skip line comments.
         case '#':
-          while (++current < end)
+          while (it != end)
           {
-            if (*current == '\n' || *current == '\r')
+            if (!compile_advance(this, it, end, c))
+            {
+              return ref<quote>();
+            }
+            else if (c == '\n' || c == '\r')
             {
               break;
             }
           }
-          break;
+          continue;
 
         // Skip whitespace.
         case ' ':
         case '\t':
         case '\r':
         case '\n':
-          ++current;
-          break;
+          continue;
 
         // Separator characters.
         case '(': case ')':
         case '[': case ']':
         case '{': case '}':
         case ':': case ',':
-        {
-          const char c = *current++;
-
-          tokens.push_back(Token(
-            c == '(' ? Token::TYPE_LPAREN :
-            c == ')' ? Token::TYPE_RPAREN :
-            c == '[' ? Token::TYPE_LBRACK :
-            c == ']' ? Token::TYPE_RBRACK :
-            c == '{' ? Token::TYPE_LBRACE :
-            c == '}' ? Token::TYPE_RBRACE :
-            c == ':' ? Token::TYPE_COLON :
-            Token::TYPE_COMMA
+        case ';':
+          tokens.push_back(token(
+            c == '(' ? token::type_lparen :
+            c == ')' ? token::type_rparen :
+            c == '[' ? token::type_lbrack :
+            c == ']' ? token::type_rbrack :
+            c == '{' ? token::type_lbrace :
+            c == '}' ? token::type_rbrace :
+            c == ':' ? token::type_colon :
+            c == ';' ? token::type_semicolon :
+            token::type_comma
           ));
-          break;
-        }
+          continue;
 
         case '\'':
         case '"':
-        {
-          const char separator = *current++;
-
-          if (!compile_string(context, separator, current, end, tokens, buffer))
+          if (!compile_string_literal(this, c, it, end, tokens, buffer))
           {
-            return Ref<Quote>();
+            return ref<quote>();
           }
-          break;
-        }
-
-        default:
-          buffer.assign(1, *current++);
-          while (current < end && is_word_part(*current))
-          {
-            buffer.append(1, *current++);
-          }
-          tokens.push_back(Token(Token::TYPE_WORD, buffer));
+          continue;
       }
+
+      if (!unichar_isword(c))
+      {
+        error(error::code_syntax, "Unexpected input.");
+
+        return ref<quote>();
+      }
+
+      buffer.assign(1, c);
+
+      while (it != end)
+      {
+        if (!compile_advance(this, it, end, c))
+        {
+          return ref<quote>();
+        }
+        else if (!unichar_isword(c))
+        {
+          tokens.push_back(token(token::type_word, buffer));
+          goto retry_switch;
+        }
+        buffer.append(1, c);
+      }
+
+      tokens.push_back(token(token::type_word, buffer));
     }
 
-    return new (context->GetRuntime()) CompiledQuote(tokens);
+    return m_runtime->quote(tokens);
   }
 
-  static bool compile_string(const Ref<Context>& context,
-                             const char separator,
-                             std::string::const_iterator& current,
-                             const std::string::const_iterator& end,
-                             std::vector<Token>& tokens,
-                             std::string& buffer)
+  static bool compile_advance(context* ctx,
+                              std::string::const_iterator& it,
+                              const std::string::const_iterator& end,
+                              unichar& output)
+  {
+    if (utf8_advance(it, end, output))
+    {
+      return true;
+    }
+    ctx->error(error::code_syntax, "Unable to decode source code as UTF-8");
+
+    return false;
+  }
+
+  static bool compile_string_literal(context* ctx,
+                                     const unichar separator,
+                                     std::string::const_iterator& it,
+                                     const std::string::const_iterator& end,
+                                     std::vector<token>& tokens,
+                                     unistring& buffer)
   {
     buffer.clear();
-    while (current < end && *current != separator)
+    for (;;)
     {
-      if (*current == '\\')
+      unichar c;
+
+      if (it >= end)
       {
-        char c;
+        ctx->error(error::code_syntax, "Unterminated string literal.");
 
-        if (++current == end)
-        {
-          context->SetError(
-            Error::ERROR_CODE_SYNTAX,
-            "Unterminated string literal."
-          );
+        return false;
+      }
 
-          return false;
-        }
-        switch (c = *current++)
-        {
-          case 'b':
-            buffer.append(1, 010);
-            break;
+      if (!compile_advance(ctx, it, end, c))
+      {
+        return false;
+      }
 
-          case 't':
-            buffer.append(1, 011);
-            break;
+      if (c == separator)
+      {
+        tokens.push_back(token(token::type_string, buffer));
 
-          case 'n':
-            buffer.append(1, 012);
-            break;
+        return true;
+      }
+      else if (c != '\\')
+      {
+        buffer.append(1, c);
+        continue;
+      }
 
-          case 'f':
-            buffer.append(1, 014);
-            break;
+      if (it >= end)
+      {
+        ctx->error(error::code_syntax, "Unterminated string literal.");
 
-          case 'r':
-            buffer.append(1, 015);
-            break;
+        return false;
+      }
+      else if (!compile_advance(ctx, it, end, c))
+      {
+        return false;
+      }
 
-          case '"':
-          case '\'':
-          case '\\':
-          case '/':
-            buffer.append(1, c);
-            break;
+      switch (c)
+      {
+        case 'b':
+          buffer.append(1, 010);
+          break;
 
-          case 'u':
+        case 't':
+          buffer.append(1, 011);
+          break;
+
+        case 'n':
+          buffer.append(1, 012);
+          break;
+
+        case 'f':
+          buffer.append(1, 014);
+          break;
+
+        case 'r':
+          buffer.append(1, 015);
+          break;
+
+        case '"':
+        case '\'':
+        case '\\':
+        case '/':
+          buffer.append(1, c);
+          break;
+
+        case 'u':
           {
-            unsigned int result = 0;
+            unichar result = 0;
 
             for (int i = 0; i < 4; ++i)
             {
-              int hex;
-
-              if (current == end || !std::isxdigit(hex = *current++))
+              if (it >= end)
               {
-                context->SetError(
-                  Error::ERROR_CODE_SYNTAX,
-                  "Illegal Unicode hex escape sequence."
-                );
+                ctx->error(error::code_syntax, "Unterminated string literal.");
 
                 return false;
               }
-              else if (hex >= 'A' && hex <= 'F')
+              else if (!compile_advance(ctx, it, end, c))
               {
-                result = result * 16 + (hex - 'A' + 10);
+                return false;
               }
-              else if (hex >= 'a' && hex <= 'f')
+              else if (!std::isxdigit(c))
               {
-                result = result * 16 + (hex - 'a' + 10);
+                ctx->error(error::code_syntax, "Illegal Unicode hex escape sequence.");
+
+                return false;
+              }
+
+              if (c >= 'A' && c <= 'F')
+              {
+                result = result * 16 + (c - 'A' + 10);
+              }
+              else if (c >= 'a' && c <= 'f')
+              {
+                result = result * 16 + (c - 'a' + 10);
               } else {
-                result = result * 16 + (hex - '0');
+                result = result * 16 + (c - '0');
               }
             }
-            if (!unicode_encode(result, buffer))
+
+            if (!unichar_validate(result))
             {
-              context->SetError(
-                Error::ERROR_CODE_SYNTAX,
-                "Illegal Unicode hex escape sequence."
-              );
+              ctx->error(error::code_syntax, "Illegal Unicode hex escape sequence.");
 
               return false;
             }
-            break;
+
+            buffer.append(1, c);
           }
+          break;
 
-          default:
-            context->SetError(
-              Error::ERROR_CODE_SYNTAX,
-              "Illegal escape sequence in string literal."
-            );
+        default:
+          ctx->error(error::code_syntax, "Illegal escape sequence in string literal.");
 
-            return false;
-        }
-      } else {
-        buffer.append(1, *current++);
+          return false;
       }
     }
-    if (current >= end)
-    {
-      context->SetError(
-        Error::ERROR_CODE_SYNTAX,
-        "Unterminated string literal."
-      );
-
-      return false;
-    }
-    ++current;
-    tokens.push_back(Token(Token::TYPE_STRING, buffer));
-
-    return true;
-  }
-
-  static Ref<Value> parse_array(const Ref<Context>& context,
-                                const std::vector<Token>& tokens,
-                                std::size_t& index,
-                                const std::size_t size)
-  {
-    std::vector<Ref<Value>> elements;
-
-    for (;;)
-    {
-      if (index >= size)
-      {
-        context->SetError(
-          Error::ERROR_CODE_SYNTAX,
-          "Unterminated array literal."
-        );
-
-        return Ref<Value>();
-      }
-      else if (tokens[index].GetType() == Token::TYPE_RBRACK)
-      {
-        ++index;
-        break;
-      } else {
-        const Ref<Value> value = parse_value(context, tokens, index, size);
-
-        if (!value)
-        {
-          return Ref<Value>();
-        }
-        elements.push_back(value);
-        if (index >= size)
-        {
-          context->SetError(
-            Error::ERROR_CODE_SYNTAX,
-            "Unterminated array literal: Missing `]'"
-          );
-
-          return Ref<Value>();
-        }
-        else if (tokens[index].GetType() == Token::TYPE_COMMA)
-        {
-          ++index;
-        }
-        else if (tokens[index].GetType() != Token::TYPE_RBRACK)
-        {
-          std::stringstream ss;
-
-          ss << "Unexpected " << tokens[index].GetType() << "; Missing `]'";
-          context->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
-
-          return Ref<Value>();
-        }
-      }
-    }
-
-    return context->GetRuntime()->NewArray(elements);
-  }
-
-  static Ref<Value> parse_object(const Ref<Context>& context,
-                                 const std::vector<Token>& tokens,
-                                 std::size_t& index,
-                                 const std::size_t size)
-  {
-    Object::Dictionary properties;
-
-    for (;;)
-    {
-      std::string key;
-      Ref<Value> value;
-
-      if (index >= size)
-      {
-        context->SetError(
-          Error::ERROR_CODE_SYNTAX,
-          "Missing key for object literal: Missing `}'"
-        );
-
-        return Ref<Value>();
-      }
-      else if (tokens[index].GetType() == Token::TYPE_RBRACE)
-      {
-        ++index;
-        break;
-      }
-      else if (tokens[index].GetType() != Token::TYPE_STRING)
-      {
-        context->SetError(
-          Error::ERROR_CODE_SYNTAX,
-          "Missing key for object literal."
-        );
-
-        return Ref<Value>();
-      }
-      key = tokens[index++].GetData();
-      if (index >= size || tokens[index].GetType() != Token::TYPE_COLON)
-      {
-        context->SetError(
-          Error::ERROR_CODE_SYNTAX,
-          "Missing `:' after key of an object."
-        );
-
-        return Ref<Value>();
-      }
-      else if (!(value = parse_value(context, tokens, ++index, size)))
-      {
-        return Ref<Value>();
-      }
-      properties[key] = value;
-      if (index >= size)
-      {
-        context->SetError(
-          Error::ERROR_CODE_SYNTAX,
-          "Unterminated object literal: Missing `}'"
-        );
-
-        return Ref<Value>();
-      }
-      else if (tokens[index].GetType() == Token::TYPE_COMMA)
-      {
-        ++index;
-      }
-      else if (tokens[index].GetType() != Token::TYPE_RBRACE)
-      {
-        std::stringstream ss;
-
-        ss << "Unexpected " << tokens[index].GetType() << "; Missing `]'";
-        context->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
-
-        return Ref<Value>();
-      }
-    }
-
-    return context->GetRuntime()->NewObject(properties);
-  }
-
-  static Ref<Quote> parse_quote(const Ref<Context>& context,
-                                const std::vector<Token>& tokens,
-                                std::size_t& index,
-                                const std::size_t size)
-  {
-    std::vector<Token> result;
-    std::size_t counter = 1;
-
-    while (index < size)
-    {
-      const Token& token = tokens[index++];
-
-      if (token.GetType() == Token::TYPE_LBRACE)
-      {
-        ++counter;
-      }
-      else if (token.GetType() == Token::TYPE_RBRACE && !--counter)
-      {
-        break;
-      }
-      result.push_back(token);
-    }
-    if (counter > 0)
-    {
-      context->SetError(Error::ERROR_CODE_SYNTAX, "Unterminated quote.");
-
-      return Ref<Quote>();
-    }
-
-    return new (context->GetRuntime()) CompiledQuote(result);
-  }
-
-  static Ref<Value> parse_value(const Ref<Context>& context,
-                                const std::vector<Token>& tokens,
-                                std::size_t& index,
-                                const std::size_t size)
-  {
-    const Token& token = tokens[index++];
-
-    switch (token.GetType())
-    {
-      case Token::TYPE_STRING:
-        return context->GetRuntime()->NewString(token.GetData());
-
-      case Token::TYPE_LBRACK:
-        return parse_array(context, tokens, index, size);
-
-      case Token::TYPE_LBRACE:
-        // Empty object literal?
-        if (index < size
-            && tokens[index].GetType() == Token::TYPE_RBRACE)
-        {
-          ++index;
-
-          return context->GetRuntime()->NewObject();
-        }
-        // Object literal?
-        else if (index + 1 < size
-                && tokens[index].GetType() == Token::TYPE_STRING
-                && tokens[index + 1].GetType() == Token::TYPE_COLON)
-        {
-          return parse_object(context, tokens, index, size);
-        } else {
-          return parse_quote(context, tokens, index, size);
-        }
-
-      case Token::TYPE_WORD:
-      {
-        const std::string& text = token.GetData();
-
-        if (!text.compare("null"))
-        {
-          return context->GetRuntime()->GetNullValue();
-        }
-        else if (!text.compare("true"))
-        {
-          return context->GetRuntime()->GetTrueValue();
-        }
-        else if (!text.compare("false"))
-        {
-          return context->GetRuntime()->GetFalseValue();
-        }
-        else if (str_is_number(text))
-        {
-          return context->GetRuntime()->NewNumber(text);
-        }
-      }
-
-      default:
-      {
-        std::stringstream ss;
-
-        ss << "Unexpected " << token.GetType() << "; Missing value.";
-        context->SetError(Error::ERROR_CODE_SYNTAX, ss.str());
-
-        return Ref<Value>();
-      }
-    }
-  }
-
-  static bool parse_declaration(const Ref<Context>& context,
-                                const std::vector<Token>& tokens,
-                                std::size_t& index,
-                                const std::size_t size)
-  {
-    std::string name;
-    Ref<Value> value;
-
-    if (index >= size || tokens[index].GetType() != Token::TYPE_WORD)
-    {
-      context->SetError(
-        Error::ERROR_CODE_SYNTAX,
-        "Missing name after word declaration."
-      );
-
-      return false;
-    }
-    name = tokens[index++].GetData();
-    if (!(value = parse_value(context, tokens, index, size)))
-    {
-      return false;
-    }
-    context->AddWord(name, value);
-
-    return true;
   }
 }

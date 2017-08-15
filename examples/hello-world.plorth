@@ -1,9 +1,9 @@
 #!/usr/bin/env plorth
 
 # Declare word "hello-world".
-: hello-world {
+: hello-world
     "Hello, World!" println
-}
+;
 
 # And invoke it.
 hello-world

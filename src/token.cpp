@@ -1,107 +1,174 @@
-#include <plorth/plorth-token.hpp>
-
+#include <plorth/token.hpp>
 #include "./utils.hpp"
 
 namespace plorth
 {
-  Token::Token(Type type, const std::string& data)
+  token::token(enum type type, const unistring& data)
     : m_type(type)
-    , m_data(data) {}
+    , m_text(data) {}
 
-  Token::Token(const Token& that)
+  token::token(const token& that)
     : m_type(that.m_type)
-    , m_data(that.m_data) {}
+    , m_text(that.m_text) {}
 
-  std::string Token::ToSource() const
+  token::token(token&& that)
+    : m_type(that.m_type)
+    , m_text(that.m_text)
   {
-    switch (m_type)
+    that.m_type = type_word;
+    that.m_text.clear();
+  }
+
+  token& token::operator=(const token& that)
+  {
+    m_type = that.m_type;
+    m_text = that.m_text;
+
+    return *this;
+  }
+
+  token& token::operator=(token&& that)
+  {
+    if (this != &that)
     {
-      case Token::TYPE_LPAREN:
-        return "(";
-
-      case Token::TYPE_RPAREN:
-        return ")";
-
-      case Token::TYPE_LBRACK:
-        return "[";
-
-      case Token::TYPE_RBRACK:
-        return "]";
-
-      case Token::TYPE_LBRACE:
-        return "{";
-
-      case Token::TYPE_RBRACE:
-        return "}";
-
-      case Token::TYPE_COLON:
-        return ":";
-
-      case Token::TYPE_COMMA:
-        return ",";
-
-      case Token::TYPE_WORD:
-        return m_data;
-
-      case Token::TYPE_STRING:
-        return to_json_string(m_data);
+      m_type = that.m_type;
+      m_text = that.m_text;
+      that.m_type = type_word;
+      that.m_text.clear();
     }
 
-    return "<unknown token>";
+    return *this;
   }
 
-  std::ostream& operator<<(std::ostream& os, const Token& token)
+  bool token::equals(const token& that) const
   {
-    os << token.ToSource();
-
-    return os;
+    return m_type == that.m_type && !m_text.compare(that.m_text);
   }
 
-  std::ostream& operator<<(std::ostream& os, Token::Type type)
+  unistring token::to_source() const
+  {
+    const char* str;
+
+    switch (m_type)
+    {
+      case type_lparen:
+        str = "(";
+        break;
+
+      case type_rparen:
+        str = ")";
+        break;
+
+      case type_lbrack:
+        str = "[";
+        break;
+
+      case type_rbrack:
+        str = "]";
+        break;
+
+      case type_lbrace:
+        str = "{";
+        break;
+
+      case type_rbrace:
+        str = "}";
+        break;
+
+      case type_colon:
+        str = ":";
+        break;
+
+      case type_semicolon:
+        str = ";";
+        break;
+
+      case type_comma:
+        str = ",";
+        break;
+
+      case type_word:
+        return m_text;
+
+      case type_string:
+        return json_stringify(m_text);
+    }
+
+    return utf8_decode(str);
+  }
+
+  std::ostream& operator<<(std::ostream& out, enum token::type type)
   {
     switch (type)
     {
-      case Token::TYPE_LPAREN:
-        os << "`('";
+      case token::type_lparen:
+        out << "`('";
         break;
 
-      case Token::TYPE_RPAREN:
-        os << "`)'";
+      case token::type_rparen:
+        out << "`)'";
         break;
 
-      case Token::TYPE_LBRACK:
-        os << "`['";
+      case token::type_lbrack:
+        out << "`['";
         break;
 
-      case Token::TYPE_RBRACK:
-        os << "`]'";
+      case token::type_rbrack:
+        out << "`]'";
         break;
 
-      case Token::TYPE_LBRACE:
-        os << "`{'";
+      case token::type_lbrace:
+        out << "`{'";
         break;
 
-      case Token::TYPE_RBRACE:
-        os << "`}'";
+      case token::type_rbrace:
+        out << "`}'";
         break;
 
-      case Token::TYPE_COLON:
-        os << "`:'";
+      case token::type_colon:
+        out << "`:'";
         break;
 
-      case Token::TYPE_COMMA:
-        os << "`,'";
+      case token::type_semicolon:
+        out << "`;'";
         break;
 
-      case Token::TYPE_WORD:
-        os << "word";
+      case token::type_comma:
+        out << "`,'";
         break;
 
-      case Token::TYPE_STRING:
-        os << "string literal";
+      case token::type_word:
+        out << "word";
+        break;
+
+      case token::type_string:
+        out << "string literal";
         break;
     }
 
-    return os;
+    return out;
+  }
+
+  std::ostream& operator<<(std::ostream& out, const class token& token)
+  {
+    if (token.is(token::type_word))
+    {
+      out << "`" << token.text() << "'";
+    }
+    else if (token.is(token::type_string))
+    {
+      const unistring& text = token.text();
+
+      if (text.length() > 15)
+      {
+        out << json_stringify(text.substr(0, 15) + "...");
+      } else {
+        out << json_stringify(text);
+      }
+    } else {
+      out << token.type();
+    }
+
+    return out;
   }
 }
