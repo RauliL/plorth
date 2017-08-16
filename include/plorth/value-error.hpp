@@ -41,10 +41,12 @@ namespace plorth
       code_reference = 2,
       /** Type error. */
       code_type = 3,
+      /** Value error. */
+      code_value = 4,
       /** Range error. */
-      code_range = 4,
+      code_range = 5,
       /** Import error. */
-      code_import = 5,
+      code_import = 6,
       /** Unknown error. */
       code_unknown = 100
     };

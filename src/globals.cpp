@@ -668,8 +668,8 @@ namespace plorth
   /**
    * type-error ( string|null -- error )
    *
-   * Construct instance of reference with with given optional error message and
-   * places it on the stack.
+   * Construct instance of type error with with given optional error message
+   * and places it on the stack.
    */
   static void w_type_error(const ref<context>& ctx)
   {
@@ -677,10 +677,21 @@ namespace plorth
   }
 
   /**
+   * value-error ( string|null -- error )
+   *
+   * Constructs instance of value error with given optional error message and
+   * places it on the stack.
+   */
+  static void w_value_error(const ref<context>& ctx)
+  {
+    make_error(ctx, error::code_value);
+  }
+
+  /**
    * range-error ( string|null -- error )
    *
-   * Construct instance of reference with with given optional error message and
-   * places it on the stack.
+   * Construct instance of range error with with given optional error message
+   * and places it on the stack.
    */
   static void w_range_error(const ref<context>& ctx)
   {
@@ -690,8 +701,8 @@ namespace plorth
   /**
    * unknown-error ( string|null -- error )
    *
-   * Construct instance of reference with with given optional error message and
-   * places it on the stack.
+   * Construct instance of unknown error with with given optional error
+   * message and places it on the stack.
    */
   static void w_unknown_error(const ref<context>& ctx)
   {
@@ -838,6 +849,7 @@ namespace plorth
 
         // Different types of errors.
         { "type-error", w_type_error },
+        { "value-error", w_value_error },
         { "range-error", w_range_error },
         { "unknown-error", w_unknown_error },
 

@@ -65,36 +65,40 @@ namespace plorth
     return "<" + to_string() + ">";
   }
 
-  std::ostream& operator<<(std::ostream& os, enum error::code code)
+  std::ostream& operator<<(std::ostream& out, enum error::code code)
   {
     switch (code)
     {
       case error::code_syntax:
-        os << "Syntax error";
+        out << "Syntax error";
         break;
 
       case error::code_reference:
-        os << "Reference error";
+        out << "Reference error";
         break;
 
       case error::code_type:
-        os << "Type error";
+        out << "Type error";
+        break;
+
+      case error::code_value:
+        out << "Value error";
         break;
 
       case error::code_range:
-        os << "Range error";
+        out << "Range error";
         break;
 
       case error::code_import:
-        os << "Import error";
+        out << "Import error";
         break;
 
       case error::code_unknown:
-        os << "Unknown error";
+        out << "Unknown error";
         break;
     }
 
-    return os;
+    return out;
   }
 
   /**
