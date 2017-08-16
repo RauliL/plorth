@@ -104,6 +104,14 @@ namespace plorth
     /**
      * Returns the dictionary used by this context to store words.
      */
+    inline object::container_type& dictionary()
+    {
+      return m_dictionary;
+    }
+
+    /**
+     * Returns the dictionary used by this context to store words.
+     */
     inline const object::container_type& dictionary() const
     {
       return m_dictionary;
