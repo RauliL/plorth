@@ -1,0 +1,13 @@
+"./framework.plorth" import
+
+"and"
+( true true and ) expect
+
+"or"
+( false true or ) expect
+
+"xor"
+( true false xor ) expect
+
+"not"
+( true not false = ) expect

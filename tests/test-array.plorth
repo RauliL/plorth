@@ -1,0 +1,145 @@
+"./framework.plorth" import
+
+"length"
+[
+  ( [] length nip 0 = ),
+  ( [1, 2, 3] length nip 3 = ),
+]
+test-case
+
+"includes?"
+[
+  ( 2 [1, 2, 3] includes? nip ),
+  ( 4 [1, 2, 3] includes? not nip ),
+]
+test-case
+
+"index-of"
+[
+  ( 2 [1, 2, 3] index-of nip 1 = ),
+  ( 4 [1, 2, 3] index-of nip null = ),
+]
+test-case
+
+"find"
+[
+  ( ( 2 > ) [1, 2, 3] find nip 3 = ),
+  ( ( 3 > ) [1, 2, 3] find nip null = ),
+]
+test-case
+
+"find-index"
+[
+  ( ( 2 > ) [1, 2, 3] find-index nip 2 = ),
+  ( ( 3 > ) [1, 2, 3] find-index nip null = ),
+]
+test-case
+
+"every?"
+[
+  ( ( number? nip ) [1, 2, 3] every? nip ),
+  ( ( number? nip ) [1, "foo", 3] every? nip not ),
+]
+test-case
+
+"some?"
+[
+  ( ( number? nip ) ["foo", "bar", 1] some? nip ),
+  ( ( number? nip ) ["foo", "bar"] some? nip not ),
+]
+test-case
+
+"reverse"
+[
+  ( [1, 2, 3] reverse [3, 2, 1] = ),
+]
+test-case
+
+"uniq"
+[
+  ( [1, 1, 2, 2, 3, 3] uniq [1, 2, 3] = ),
+]
+test-case
+
+"extract"
+[
+  ( ["test"] extract "test" = ),
+]
+test-case
+
+"join"
+[
+  ( ", " ["foo", "bar"] join "foo, bar" = ),
+]
+test-case
+
+"for-each"
+[
+  ( (drop true) [1] for-each ),
+]
+test-case
+
+"map"
+[
+  ( ( 1 + ) [1, 2, 3] map [2, 3, 4] = ),
+]
+test-case
+
+"filter"
+[
+  ( ( 1 > ) [1, 2, 3] filter [2, 3] = ),
+  ( ( 3 > ) [1, 2, 3] filter [] = ),
+]
+test-case
+
+"reduce"
+[
+  ( ( + ) [1, 2, 3] reduce 6 = ),
+]
+test-case
+
+"+"
+[
+  ( [1] [2] + [1, 2] = ),
+  ( [] [] + length nip 0 = ),
+  ( [1] [] + length nip 1 = ),
+]
+test-case
+
+"*"
+[
+  ( 2 [1, 2] * [1, 2, 1, 2] = ),
+  ( 1 [] * length nip 0 = ),
+  ( 0 [1, 2, 3] * length nip 0 = ),
+]
+test-case
+
+"&"
+[
+  ( [1, 1, 2, 3, 4] [1, 4, 4] & [1, 4] = ),
+]
+test-case
+
+"|"
+[
+  ( [1, 1, 2, 2] [2, 2, 3, 3, 4] | [1, 2, 3, 4] = ),
+]
+test-case
+
+"@"
+[
+  ( 0 [1, 2, 3] @ nip 1 = ),
+  ( -1 [1, 2, 3] @ nip 3 = ),
+  ( -2 [1, 2, 3] @ nip 2 = ),
+  ( 2 [1, 2, 3] @ nip 3 = ),
+]
+test-case
+
+"!"
+[
+  ( "foo" 0 [1, 2, 3] ! ["foo", 2, 3] = ),
+  ( "foo" -1 [1, 2, 3] ! [1, 2, "foo"] = ),
+  ( "foo" -2 [1, 2, 3] ! [1, "foo", 3] = ),
+  ( "foo" 2 [1, 2, 3] ! [1, 2, "foo"] = ),
+]
+test-case

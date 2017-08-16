@@ -1,0 +1,22 @@
+: expect-quote-to-return-true
+  call >boolean not
+  ( "Assertion failed." value-error throw )
+  if
+;
+
+: test-case
+  (
+    array?
+    ( ( expect-quote-to-return-true ) swap for-each )
+    ( expect-quote-to-return-true )
+    if-else
+  )
+  (
+    swap
+    >string "✘ " swap + println
+    throw
+  )
+  try
+  >string "✔ " swap + println
+  clear
+;
