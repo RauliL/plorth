@@ -51,7 +51,7 @@ namespace plorth
     {
       const ref<object> prototype = m_data.back()->prototype(m_runtime);
 
-      if (prototype && (value = prototype->property(word)))
+      if (prototype && prototype->property(m_runtime, word, value))
       {
         if (value->is(value::type_quote))
         {

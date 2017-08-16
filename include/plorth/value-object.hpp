@@ -48,11 +48,19 @@ namespace plorth
      * Retrieves property with given name from the object itself and it's
      * prototypes.
      *
-     * \param name Name of the property to retrieve.
-     * \return     Reference to value of the property or null reference if
-     *             property with given name does not exist.
+     * \param runtime   Scripting runtime. Required for prototype chain
+     *                  inheritance.
+     * \param name      Name of the property to retrieve.
+     * \param slot      Where value of the found property will be assigned to.
+     * \param inherited Whether inherited properties from prototype chain
+     *                  should be included in the search or not.
+     * \return          Boolean flag which tells whether the property was found
+     *                  or not.
      */
-    ref<value> property(const unistring& name) const;
+    bool property(const ref<class runtime>& runtime,
+                  const unistring& name,
+                  ref<value>& slot,
+                  bool inherited = true) const;
 
     inline enum type type() const
     {

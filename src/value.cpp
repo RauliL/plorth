@@ -56,17 +56,22 @@ namespace plorth
 
       case type_object:
         {
-          const auto property = static_cast<const object*>(this)->property(utf8_decode("__proto__"));
+          const auto& properties = static_cast<const object*>(this)->properties();
+          const auto property = properties.find(utf8_decode("__proto__"));
 
-          if (property && property->is(type_object))
+          if (property == std::end(properties))
           {
-            return property.cast<object>();
+            return runtime->object_prototype();
+          }
+          else if (property->second && property->second->is(type_object))
+          {
+            return property->second.cast<object>();
+          } else {
+            return ref<object>();
           }
         }
         break;
     }
-
-    return runtime->object_prototype();
   }
 
   bool operator==(const ref<value>& a, const ref<value>& b)

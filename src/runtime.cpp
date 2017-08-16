@@ -58,11 +58,11 @@ namespace plorth
       m_dictionary[utf8_decode(entry.first)] = quote(entry.second);
     }
 
+    m_object_prototype = make_prototype(this, "object", api::object_prototype());
     m_array_prototype = make_prototype(this, "array", api::array_prototype());
     m_boolean_prototype = make_prototype(this, "boolean", api::boolean_prototype());
     m_error_prototype = make_prototype(this, "error", api::error_prototype());
     m_number_prototype = make_prototype(this, "number", api::number_prototype());
-    m_object_prototype = make_prototype(this, "object", api::object_prototype());
     m_quote_prototype = make_prototype(this, "quote", api::quote_prototype());
     m_string_prototype = make_prototype(this, "string", api::string_prototype());
   }
@@ -83,6 +83,7 @@ namespace plorth
     {
       properties[utf8_decode(entry.first)] = runtime->quote(entry.second);
     }
+    properties[utf8_decode("prototype")] = runtime->object_prototype();
 
     prototype = runtime->value<object>(properties);
     runtime->dictionary()[utf8_decode(name)] = runtime->value<object>(object::container_type({

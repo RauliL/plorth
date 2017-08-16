@@ -33,22 +33,30 @@ namespace plorth
   object::object(const container_type& properties)
     : m_properties(properties) {}
 
-  ref<value> object::property(const unistring& name) const
+  bool object::property(const ref<class runtime>& runtime,
+                        const unistring& name,
+                        ref<value>& slot,
+                        bool inherited) const
   {
-    auto entry = m_properties.find(name);
+    const auto property = m_properties.find(name);
 
-    if (entry != std::end(m_properties))
+    if (property != std::end(m_properties))
     {
-      return entry->second;
+      slot = property->second;
+
+      return true;
+    }
+    if (inherited)
+    {
+      const ref<object> proto = prototype(runtime);
+
+      if (proto && this != proto.get())
+      {
+        return proto->property(runtime, name, slot, true);
+      }
     }
 
-    entry = m_properties.find(utf8_decode("__proto__"));
-    if (entry != std::end(m_properties) && entry->second->is(type_object))
-    {
-      return entry->second.cast<object>()->property(name);
-    }
-
-    return ref<value>();
+    return false;
   }
 
   bool object::equals(const ref<value>& that) const
@@ -199,8 +207,10 @@ namespace plorth
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
+      ref<value> slot;
+
       ctx->push(obj);
-      ctx->push_boolean(!!obj->property(id->value()));
+      ctx->push_boolean(!!obj->property(ctx->runtime(), id->value(), slot));
     }
   }
 
@@ -234,6 +244,7 @@ namespace plorth
    */
   static void w_new(const ref<context>& ctx)
   {
+    const ref<class runtime>& runtime = ctx->runtime();
     ref<object> obj;
     ref<value> prototype;
     ref<value> constructor;
@@ -243,8 +254,8 @@ namespace plorth
       return;
     }
 
-    prototype = obj->property(utf8_decode("prototype"));
-    if (!prototype || !prototype->is(value::type_object))
+    if (!obj->property(runtime, utf8_decode("prototype"), prototype, false)
+        || !prototype->is(value::type_object))
     {
       ctx->error(error::code_type, "Object has no prototype.");
       return;
@@ -252,8 +263,8 @@ namespace plorth
 
     ctx->push_object({ { utf8_decode("__proto__"), prototype } });
 
-    constructor = prototype.cast<object>()->property(utf8_decode("constructor"));
-    if (constructor && constructor->is(value::type_quote))
+    if (prototype.cast<object>()->property(runtime, utf8_decode("constructor"), constructor)
+        && constructor->is(value::type_quote))
     {
       constructor.cast<quote>()->call(ctx);
     }
@@ -273,10 +284,10 @@ namespace plorth
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
-      const ref<value> val = obj->property(id->value());
+      ref<value> val;
 
       ctx->push(obj);
-      if (val)
+      if (obj->property(ctx->runtime(), id->value(), val))
       {
         ctx->push(val);
       } else {
