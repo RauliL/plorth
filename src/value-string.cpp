@@ -34,18 +34,18 @@
 
 namespace plorth
 {
-	string::string(const unistring& value)
-		: m_value(value) {}
+  string::string(const unistring& value)
+    : m_value(value) {}
 
-	bool string::equals(const ref<class value>& that) const
-	{
-		if (!that || !that->is(type_string))
-		{
-			return false;
-		}
+  bool string::equals(const ref<class value>& that) const
+  {
+    if (!that || !that->is(type_string))
+    {
+      return false;
+    }
 
-		return !m_value.compare(that.cast<string>()->m_value);
-	}
+    return !m_value.compare(that.cast<string>()->m_value);
+  }
 
   unistring string::to_string() const
   {
@@ -57,20 +57,20 @@ namespace plorth
     return json_stringify(m_value);
   }
 
-	/**
-	 * length ( string -- string number )
-	 *
-	 * Returns length of the string.
-	 */
-	static void w_length(const ref<context>& ctx)
-	{
-		ref<string> str;
+  /**
+   * length ( string -- string number )
+   *
+   * Returns length of the string.
+   */
+  static void w_length(const ref<context>& ctx)
+  {
+    ref<string> str;
 
-		if (ctx->pop_string(str))
-		{
-			ctx->push_number(str->value().length());
-		}
-	}
+    if (ctx->pop_string(str))
+    {
+      ctx->push_number(str->value().length());
+    }
+  }
 
   /**
    * space? ( string -- string boolean )
@@ -80,10 +80,10 @@ namespace plorth
    */
   static void w_is_space(const ref<context>& ctx)
   {
-		ref<string> str;
+    ref<string> str;
 
-		if (ctx->pop_string(str))
-		{
+    if (ctx->pop_string(str))
+    {
       const unistring& input = str->value();
       const auto length = input.length();
 
@@ -101,7 +101,7 @@ namespace plorth
         }
       }
       ctx->push_boolean(true);
-		}
+    }
   }
 
   /**
@@ -112,10 +112,10 @@ namespace plorth
    */
   static void w_is_lower_case(const ref<context>& ctx)
   {
-		ref<string> str;
+    ref<string> str;
 
-		if (ctx->pop_string(str))
-		{
+    if (ctx->pop_string(str))
+    {
       const unistring& input = str->value();
       const auto length = input.length();
 
@@ -133,7 +133,7 @@ namespace plorth
         }
       }
       ctx->push_boolean(true);
-		}
+    }
   }
 
   /**
@@ -144,10 +144,10 @@ namespace plorth
    */
   static void w_is_upper_case(const ref<context>& ctx)
   {
-		ref<string> str;
+    ref<string> str;
 
-		if (ctx->pop_string(str))
-		{
+    if (ctx->pop_string(str))
+    {
       const unistring& input = str->value();
       const auto length = input.length();
 
@@ -165,7 +165,7 @@ namespace plorth
         }
       }
       ctx->push_boolean(true);
-		}
+    }
   }
 
   /**
@@ -195,169 +195,169 @@ namespace plorth
     }
   }
 
-	/**
-	 * runes ( string -- string array )
-	 *
-	 * Extracts Unicode code points from the string and returns them in an array
-	 * of numbers.
-	 */
-	static void w_runes(const ref<context>& ctx)
-	{
-		const ref<class runtime>& runtime = ctx->runtime();
-		ref<string> str;
-		std::vector<ref<value>> result;
+  /**
+   * runes ( string -- string array )
+   *
+   * Extracts Unicode code points from the string and returns them in an array
+   * of numbers.
+   */
+  static void w_runes(const ref<context>& ctx)
+  {
+    const ref<class runtime>& runtime = ctx->runtime();
+    ref<string> str;
+    std::vector<ref<value>> result;
 
-		if (!ctx->pop_string(str))
-		{
-			return;
-		}
+    if (!ctx->pop_string(str))
+    {
+      return;
+    }
 
-		for (const auto& c : str->value())
-		{
-			result.push_back(runtime->value<number>(c));
-		}
+    for (const auto& c : str->value())
+    {
+      result.push_back(runtime->value<number>(c));
+    }
 
-		ctx->push(str);
-		ctx->push_array(result);
-	}
+    ctx->push(str);
+    ctx->push_array(result);
+  }
 
-	/**
-	 * words ( string -- string array )
-	 *
-	 * Extracts white space separated words from the string and returns them in
-	 * an array.
-	 */
-	static void w_words(const ref<context>& ctx)
-	{
-		const ref<class runtime>& runtime = ctx->runtime();
-		ref<string> str;
+  /**
+   * words ( string -- string array )
+   *
+   * Extracts white space separated words from the string and returns them in
+   * an array.
+   */
+  static void w_words(const ref<context>& ctx)
+  {
+    const ref<class runtime>& runtime = ctx->runtime();
+    ref<string> str;
 
-		if (ctx->pop_string(str))
-		{
-			const unistring& s = str->value();
-			const std::size_t length = s.length();
-			std::size_t begin = 0;
-			std::size_t end = 0;
-			std::vector<ref<value>> result;
+    if (ctx->pop_string(str))
+    {
+      const unistring& s = str->value();
+      const std::size_t length = s.length();
+      std::size_t begin = 0;
+      std::size_t end = 0;
+      std::vector<ref<value>> result;
 
-			for (std::size_t i = 0; i < length; ++i)
-			{
-				if (unichar_isspace(s[i]))
-				{
-					if (end - begin > 0)
-					{
-						result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
-					}
-					begin = end = i + 1;
-				} else {
-					++end;
-				}
-			}
-			if (end - begin > 0)
-			{
-				result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
-			}
-
-			ctx->push(str);
-			ctx->push_array(result);
-		}
-	}
-
-	/**
-	 * lines ( string -- string array )
-	 *
-	 * Extracts lines from the string and returns them in an array.
-	 */
-	static void w_lines(const ref<context>& ctx)
-	{
-		const ref<class runtime>& runtime = ctx->runtime();
-		ref<string> str;
-
-		if (ctx->pop_string(str))
-		{
-			const unistring& s = str->value();
-			const std::size_t length = s.length();
-			std::size_t begin = 0;
-			std::size_t end = 0;
-			std::vector<ref<value>> result;
-
-			for (std::size_t i = 0; i < length; ++i)
-			{
-        if (i + 1 < length && s[i] == '\r' && s[i + 1] == '\n')
-				{
-					result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
-					begin = end = ++i + 1;
+      for (std::size_t i = 0; i < length; ++i)
+      {
+        if (unichar_isspace(s[i]))
+        {
+          if (end - begin > 0)
+          {
+            result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
+          }
+          begin = end = i + 1;
+        } else {
+          ++end;
         }
-				else if (s[i] == '\n' || s[i] == '\r')
-				{
-					result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
-					begin = end = i + 1;
-				} else {
-					++end;
-				}
-			}
-			if (end - begin > 0)
-			{
-				result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
-			}
+      }
+      if (end - begin > 0)
+      {
+        result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
+      }
 
-			ctx->push(str);
-			ctx->push_array(result);
-		}
-	}
+      ctx->push(str);
+      ctx->push_array(result);
+    }
+  }
 
-	/**
-	 * reverse ( string -- string )
-	 *
-	 * Returns reversed copy of the string.
-	 */
-	static void w_reverse(const ref<context>& ctx)
-	{
-		ref<string> str;
+  /**
+   * lines ( string -- string array )
+   *
+   * Extracts lines from the string and returns them in an array.
+   */
+  static void w_lines(const ref<context>& ctx)
+  {
+    const ref<class runtime>& runtime = ctx->runtime();
+    ref<string> str;
 
-		if (ctx->pop_string(str))
-		{
-			const unistring& s = str->value();
+    if (ctx->pop_string(str))
+    {
+      const unistring& s = str->value();
+      const std::size_t length = s.length();
+      std::size_t begin = 0;
+      std::size_t end = 0;
+      std::vector<ref<value>> result;
 
-			ctx->push_string(unistring(s.rbegin(), s.rend()));
-		}
-	}
+      for (std::size_t i = 0; i < length; ++i)
+      {
+        if (i + 1 < length && s[i] == '\r' && s[i + 1] == '\n')
+        {
+          result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
+          begin = end = ++i + 1;
+        }
+        else if (s[i] == '\n' || s[i] == '\r')
+        {
+          result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
+          begin = end = i + 1;
+        } else {
+          ++end;
+        }
+      }
+      if (end - begin > 0)
+      {
+        result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
+      }
 
-	/*
-	 * upper-case ( string -- string )
-	 *
-	 * Converts string into upper case.
-	 */
-	static void w_upper_case(const ref<context>& ctx)
-	{
-		ref<string> str;
+      ctx->push(str);
+      ctx->push_array(result);
+    }
+  }
 
-		if (ctx->pop_string(str))
-		{
-			unistring result = str->value();
+  /**
+   * reverse ( string -- string )
+   *
+   * Returns reversed copy of the string.
+   */
+  static void w_reverse(const ref<context>& ctx)
+  {
+    ref<string> str;
 
-			std::transform(result.begin(), result.end(), result.begin(), unichar_toupper);
-			ctx->push_string(result);
-		}
-	}
+    if (ctx->pop_string(str))
+    {
+      const unistring& s = str->value();
 
-	/**
-	 * lower-case ( string -- string )
-	 *
-	 * Converts string into lower case.
-	 */
-	static void w_lower_case(const ref<context>& ctx)
-	{
-		ref<string> str;
+      ctx->push_string(unistring(s.rbegin(), s.rend()));
+    }
+  }
 
-		if (ctx->pop_string(str))
-		{
-			unistring result = str->value();
+  /*
+   * upper-case ( string -- string )
+   *
+   * Converts string into upper case.
+   */
+  static void w_upper_case(const ref<context>& ctx)
+  {
+    ref<string> str;
 
-			std::transform(result.begin(), result.end(), result.begin(), unichar_tolower);
-			ctx->push_string(result);
-		}
-	}
+    if (ctx->pop_string(str))
+    {
+      unistring result = str->value();
+
+      std::transform(result.begin(), result.end(), result.begin(), unichar_toupper);
+      ctx->push_string(result);
+    }
+  }
+
+  /**
+   * lower-case ( string -- string )
+   *
+   * Converts string into lower case.
+   */
+  static void w_lower_case(const ref<context>& ctx)
+  {
+    ref<string> str;
+
+    if (ctx->pop_string(str))
+    {
+      unistring result = str->value();
+
+      std::transform(result.begin(), result.end(), result.begin(), unichar_tolower);
+      ctx->push_string(result);
+    }
+  }
 
   /**
    * swap-case ( string -- string )
@@ -425,20 +425,20 @@ namespace plorth
     }
   }
 
-	/**
-	 * + ( string string -- string )
-	 *
-	 * Concatenates contents of two strings and returns the result.
-	 */
-	static void w_concat(const ref<context>& ctx)
-	{
-		ref<string> a;
-		ref<string> b;
+  /**
+   * + ( string string -- string )
+   *
+   * Concatenates contents of two strings and returns the result.
+   */
+  static void w_concat(const ref<context>& ctx)
+  {
+    ref<string> a;
+    ref<string> b;
 
-		if (ctx->pop_string(a) && ctx->pop_string(b))
-		{
-			ctx->push_string(b->value() + a->value());
-		}
+    if (ctx->pop_string(a) && ctx->pop_string(b))
+    {
+      ctx->push_string(b->value() + a->value());
+    }
   }
 
   /**
@@ -505,34 +505,34 @@ namespace plorth
     }
   }
 
-	namespace api
-	{
-		runtime::prototype_definition string_prototype()
-		{
-			return
-			{
-				{ "length", w_length },
+  namespace api
+  {
+    runtime::prototype_definition string_prototype()
+    {
+      return
+      {
+        { "length", w_length },
         { "chars", w_chars },
-				{ "runes", w_runes },
-				{ "words", w_words },
-				{ "lines", w_lines },
+        { "runes", w_runes },
+        { "words", w_words },
+        { "lines", w_lines },
 
         // Tests.
         { "space?", w_is_space },
         { "lower-case?", w_is_lower_case },
         { "upper-case?", w_is_upper_case },
 
-				// Conversions.
-				{ "reverse", w_reverse },
-				{ "upper-case", w_upper_case },
-				{ "lower-case", w_lower_case },
+        // Conversions.
+        { "reverse", w_reverse },
+        { "upper-case", w_upper_case },
+        { "lower-case", w_lower_case },
         { "swap-case", w_swap_case },
         { "capitalize", w_capitalize },
 
         { "+", w_concat },
         { "*", w_repeat },
         { "@", w_get }
-			};
-		}
-	}
+      };
+    }
+  }
 }

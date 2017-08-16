@@ -34,437 +34,437 @@
 
 namespace plorth
 {
-	/**
-	 * null ( -- null )
-	 *
-	 * Returns null value.
-	 */
-	static void w_null(const ref<context>& ctx)
-	{
-		ctx->push_null();
-	}
+  /**
+   * null ( -- null )
+   *
+   * Returns null value.
+   */
+  static void w_null(const ref<context>& ctx)
+  {
+    ctx->push_null();
+  }
 
-	/**
-	 * true ( -- boolean )
-	 *
-	 * Returns boolean value of true.
-	 */
-	static void w_true(const ref<context>& ctx)
-	{
-		ctx->push_boolean(true);
-	}
+  /**
+   * true ( -- boolean )
+   *
+   * Returns boolean value of true.
+   */
+  static void w_true(const ref<context>& ctx)
+  {
+    ctx->push_boolean(true);
+  }
 
-	/**
-	 * false ( -- boolean )
-	 *
-	 * Returns boolean value of false.
-	 */
-	static void w_false(const ref<context>& ctx)
-	{
-		ctx->push_boolean(false);
-	}
+  /**
+   * false ( -- boolean )
+   *
+   * Returns boolean value of false.
+   */
+  static void w_false(const ref<context>& ctx)
+  {
+    ctx->push_boolean(false);
+  }
 
-	/**
-	 * e ( -- number )
-	 *
-	 * Returns Eulers number.
-	 */
-	static void w_e(const ref<context>& ctx)
-	{
-		ctx->push_number(M_E);
-	}
+  /**
+   * e ( -- number )
+   *
+   * Returns Eulers number.
+   */
+  static void w_e(const ref<context>& ctx)
+  {
+    ctx->push_number(M_E);
+  }
 
-	/**
-	 * pi ( -- number )
-	 *
-	 * Returns value of pi.
-	 */
-	static void w_pi(const ref<context>& ctx)
-	{
-		ctx->push_number(M_PI);
-	}
+  /**
+   * pi ( -- number )
+   *
+   * Returns value of pi.
+   */
+  static void w_pi(const ref<context>& ctx)
+  {
+    ctx->push_number(M_PI);
+  }
 
-	/**
-	 * nop ( -- )
-	 *
-	 * Does nothing. Can be used to construct empty quotes.
-	 */
-	static void w_nop(const ref<context>&) {}
+  /**
+   * nop ( -- )
+   *
+   * Does nothing. Can be used to construct empty quotes.
+   */
+  static void w_nop(const ref<context>&) {}
 
-	/**
-	 * clear ( -- )
-	 *
-	 * Clears the entire stack of current context.
-	 */
-	static void w_clear(const ref<context>& ctx)
-	{
-		ctx->clear();
-	}
+  /**
+   * clear ( -- )
+   *
+   * Clears the entire stack of current context.
+   */
+  static void w_clear(const ref<context>& ctx)
+  {
+    ctx->clear();
+  }
 
-	/**
-	 * depth ( -- number )
-	 *
-	 * Returns current depth of the stack.
-	 */
-	static void w_depth(const ref<context>& ctx)
-	{
-		ctx->push_number(ctx->size());
-	}
+  /**
+   * depth ( -- number )
+   *
+   * Returns current depth of the stack.
+   */
+  static void w_depth(const ref<context>& ctx)
+  {
+    ctx->push_number(ctx->size());
+  }
 
-	/**
-	 * drop ( any -- )
-	 *
-	 * Discards top-most value from the stack.
-	 */
-	static void w_drop(const ref<context>& ctx)
-	{
-		ctx->pop();
-	}
+  /**
+   * drop ( any -- )
+   *
+   * Discards top-most value from the stack.
+   */
+  static void w_drop(const ref<context>& ctx)
+  {
+    ctx->pop();
+  }
 
-	/**
-	 * 2drop ( any any -- )
-	 *
-	 * Discards two top-most values from the stack.
-	 */
-	static void w_drop2(const ref<context>& ctx)
-	{
-		if (ctx->pop())
-		{
-			ctx->pop();
-		}
-	}
+  /**
+   * 2drop ( any any -- )
+   *
+   * Discards two top-most values from the stack.
+   */
+  static void w_drop2(const ref<context>& ctx)
+  {
+    if (ctx->pop())
+    {
+      ctx->pop();
+    }
+  }
 
-	/**
-	 * dup ( any -- any any )
-	 *
-	 * Duplicates top-most value of the stack.
-	 */
-	static void w_dup(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * dup ( any -- any any )
+   *
+   * Duplicates top-most value of the stack.
+   */
+  static void w_dup(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
-			ctx->push(value);
-			ctx->push(value);
-		}
-	}
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
+      ctx->push(value);
+    }
+  }
 
-	/**
-	 * 2dup ( any any -- any any any any )
-	 *
-	 * Duplicates two top-most values of the stack.
-	 */
-	static void w_dup2(const ref<context>& ctx)
-	{
-		ref<value> a;
-		ref<value> b;
+  /**
+   * 2dup ( any any -- any any any any )
+   *
+   * Duplicates two top-most values of the stack.
+   */
+  static void w_dup2(const ref<context>& ctx)
+  {
+    ref<value> a;
+    ref<value> b;
 
-		if (ctx->pop(a) && ctx->pop(b))
-		{
-			ctx->push(b);
-			ctx->push(a);
-			ctx->push(b);
-			ctx->push(a);
-		}
-	}
+    if (ctx->pop(a) && ctx->pop(b))
+    {
+      ctx->push(b);
+      ctx->push(a);
+      ctx->push(b);
+      ctx->push(a);
+    }
+  }
 
-	/**
-	 * nip ( any any -- any )
-	 *
-	 * Drops the first value and pushes second value on the stack.
-	 */
-	static void w_nip(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * nip ( any any -- any )
+   *
+   * Drops the first value and pushes second value on the stack.
+   */
+  static void w_nip(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value) && ctx->pop())
-		{
-			ctx->push(value);
-		}
-	}
+    if (ctx->pop(value) && ctx->pop())
+    {
+      ctx->push(value);
+    }
+  }
 
-	/**
-	 * over ( any any -- any any any )
-	 *
-	 * Copies second top-most value of the stack into top-most value of the
-	 * stack.
-	 */
-	static void w_over(const ref<context>& ctx)
-	{
-		ref<value> a;
-		ref<value> b;
+  /**
+   * over ( any any -- any any any )
+   *
+   * Copies second top-most value of the stack into top-most value of the
+   * stack.
+   */
+  static void w_over(const ref<context>& ctx)
+  {
+    ref<value> a;
+    ref<value> b;
 
-		if (ctx->pop(a) && ctx->pop(b))
-		{
-			ctx->push(b);
-			ctx->push(a);
-			ctx->push(b);
-		}
-	}
+    if (ctx->pop(a) && ctx->pop(b))
+    {
+      ctx->push(b);
+      ctx->push(a);
+      ctx->push(b);
+    }
+  }
 
-	/**
-	 * rot ( any any any -- any any any )
-	 *
-	 * Rotates three top-most values on the stack.
-	 */
-	static void w_rot(const ref<context>& ctx)
-	{
-		ref<value> a;
-		ref<value> b;
-		ref<value> c;
+  /**
+   * rot ( any any any -- any any any )
+   *
+   * Rotates three top-most values on the stack.
+   */
+  static void w_rot(const ref<context>& ctx)
+  {
+    ref<value> a;
+    ref<value> b;
+    ref<value> c;
 
-		if (ctx->pop(a) && ctx->pop(b) && ctx->pop(c))
-		{
-			ctx->push(b);
-			ctx->push(a);
-			ctx->push(c);
-		}
-	}
+    if (ctx->pop(a) && ctx->pop(b) && ctx->pop(c))
+    {
+      ctx->push(b);
+      ctx->push(a);
+      ctx->push(c);
+    }
+  }
 
-	/**
-	 * swap ( any any -- any any )
-	 *
-	 * Swaps positions of two top-most values on the stack.
-	 */
-	static void w_swap(const ref<context>& ctx)
-	{
-		ref<value> a;
-		ref<value> b;
+  /**
+   * swap ( any any -- any any )
+   *
+   * Swaps positions of two top-most values on the stack.
+   */
+  static void w_swap(const ref<context>& ctx)
+  {
+    ref<value> a;
+    ref<value> b;
 
-		if (ctx->pop(a) && ctx->pop(b))
-		{
-			ctx->push(a);
-			ctx->push(b);
-		}
-	}
+    if (ctx->pop(a) && ctx->pop(b))
+    {
+      ctx->push(a);
+      ctx->push(b);
+    }
+  }
 
-	/**
-	 * tuck ( any any -- any any any )
-	 *
-	 * Copies top-most value of the stack as the third top-most value of the
-	 * stack.
-	 */
-	static void w_tuck(const ref<context>& ctx)
-	{
-		ref<value> a;
-		ref<value> b;
+  /**
+   * tuck ( any any -- any any any )
+   *
+   * Copies top-most value of the stack as the third top-most value of the
+   * stack.
+   */
+  static void w_tuck(const ref<context>& ctx)
+  {
+    ref<value> a;
+    ref<value> b;
 
-		if (ctx->pop(a) && ctx->pop(b))
-		{
-			ctx->push(a);
-			ctx->push(b);
-			ctx->push(a);
-		}
-	}
+    if (ctx->pop(a) && ctx->pop(b))
+    {
+      ctx->push(a);
+      ctx->push(b);
+      ctx->push(a);
+    }
+  }
 
-	/**
-	 * array? ( any -- any boolean )
-	 *
-	 * Returns true if top-most value of the stack is array.
-	 */
-	static void w_is_array(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * array? ( any -- any boolean )
+   *
+   * Returns true if top-most value of the stack is array.
+   */
+  static void w_is_array(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
-			ctx->push(value);
-			ctx->push_boolean(value && value->is(value::type_array));
-		}
-	}
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
+      ctx->push_boolean(value && value->is(value::type_array));
+    }
+  }
 
-	/**
-	 * boolean? ( any -- any boolean )
-	 *
-	 * Returns true if top-most value of the stack is boolean.
-	 */
-	static void w_is_boolean(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * boolean? ( any -- any boolean )
+   *
+   * Returns true if top-most value of the stack is boolean.
+   */
+  static void w_is_boolean(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
-			ctx->push(value);
-			ctx->push_boolean(value && value->is(value::type_boolean));
-		}
-	}
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
+      ctx->push_boolean(value && value->is(value::type_boolean));
+    }
+  }
 
-	/**
-	 * error? ( any -- any boolean )
-	 *
-	 * Returns true if top-most value of the stack is error.
-	 */
-	static void w_is_error(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * error? ( any -- any boolean )
+   *
+   * Returns true if top-most value of the stack is error.
+   */
+  static void w_is_error(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
-			ctx->push(value);
-			ctx->push_boolean(value && value->is(value::type_error));
-		}
-	}
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
+      ctx->push_boolean(value && value->is(value::type_error));
+    }
+  }
 
-	/**
-	 * number? ( any -- any boolean )
-	 *
-	 * Returns true if top-most value of the stack is boolean.
-	 */
-	static void w_is_number(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * number? ( any -- any boolean )
+   *
+   * Returns true if top-most value of the stack is boolean.
+   */
+  static void w_is_number(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
-			ctx->push(value);
-			ctx->push_boolean(value && value->is(value::type_number));
-		}
-	}
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
+      ctx->push_boolean(value && value->is(value::type_number));
+    }
+  }
 
-	/**
-	 * null? ( any -- any boolean )
-	 *
-	 * Returns true if top-most value of the stack is null.
-	 */
-	static void w_is_null(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * null? ( any -- any boolean )
+   *
+   * Returns true if top-most value of the stack is null.
+   */
+  static void w_is_null(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
-			ctx->push(value);
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
       ctx->push_boolean(!value);
-		}
-	}
+    }
+  }
 
-	/**
-	 * object? ( any -- any boolean )
-	 *
-	 * Returns true if top-most value of the stack is object.
-	 */
-	static void w_is_object(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * object? ( any -- any boolean )
+   *
+   * Returns true if top-most value of the stack is object.
+   */
+  static void w_is_object(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
-			ctx->push(value);
-			ctx->push_boolean(value && value->is(value::type_object));
-		}
-	}
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
+      ctx->push_boolean(value && value->is(value::type_object));
+    }
+  }
 
-	/**
-	 * quote? ( any -- any boolean )
-	 *
-	 * Returns true if top-most value of the stack is quote.
-	 */
-	static void w_is_quote(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * quote? ( any -- any boolean )
+   *
+   * Returns true if top-most value of the stack is quote.
+   */
+  static void w_is_quote(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
-			ctx->push(value);
-			ctx->push_boolean(value && value->is(value::type_quote));
-		}
-	}
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
+      ctx->push_boolean(value && value->is(value::type_quote));
+    }
+  }
 
-	/**
-	 * string? ( any -- any boolean )
-	 *
-	 * Returns true if top-most value of the stack is string.
-	 */
-	static void w_is_string(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * string? ( any -- any boolean )
+   *
+   * Returns true if top-most value of the stack is string.
+   */
+  static void w_is_string(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
-			ctx->push(value);
-			ctx->push_boolean(value && value->is(value::type_string));
-		}
-	}
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
+      ctx->push_boolean(value && value->is(value::type_string));
+    }
+  }
 
-	/**
-	 * typeof ( any -- any string )
-	 *
-	 * Returns name of the type of given value as string.
-	 */
-	static void w_typeof(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * typeof ( any -- any string )
+   *
+   * Returns name of the type of given value as string.
+   */
+  static void w_typeof(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
+    if (ctx->pop(value))
+    {
       ctx->push(value);
       if (value)
       {
-			  std::stringstream ss;
+        std::stringstream ss;
 
-			  ss << value->type();
+        ss << value->type();
         ctx->push_string(utf8_decode(ss.str()));
       } else {
         ctx->push_string(utf8_decode("null"));
       }
-		}
-	}
+    }
+  }
 
-	/**
-	 * prototype ( any -- any object )
-	 *
-	 * Retrieves prototype of the top-most value. If the top-most value of the
+  /**
+   * prototype ( any -- any object )
+   *
+   * Retrieves prototype of the top-most value. If the top-most value of the
    * stack is null, null will be returned instead.
-	 */
-	static void w_prototype(const ref<context>& ctx)
-	{
-		ref<class value> value;
+   */
+  static void w_prototype(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
-			ctx->push(value);
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
       if (value)
       {
-			  ctx->push(value->prototype(ctx->runtime()));
+        ctx->push(value->prototype(ctx->runtime()));
       } else {
         ctx->push_null();
       }
-		}
-	}
+    }
+  }
 
-	/**
-	 * >boolean ( any -- boolean )
-	 *
-	 * Converts top-most value of the stack into boolean. Null and false will
-	 * become false while everything else will be true.
-	 */
-	static void w_to_boolean(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * >boolean ( any -- boolean )
+   *
+   * Converts top-most value of the stack into boolean. Null and false will
+   * become false while everything else will be true.
+   */
+  static void w_to_boolean(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (!ctx->pop(value))
-		{
+    if (!ctx->pop(value))
+    {
       return;
     }
-		else if (value && value->is(value::type_boolean))
-		{
-			ctx->push(value);
-		} else {
+    else if (value && value->is(value::type_boolean))
+    {
+      ctx->push(value);
+    } else {
       ctx->push_boolean(!!value);
-		}
-	}
+    }
+  }
 
-	/**
-	 * >string ( any -- string )
-	 *
-	 * Converts top-most value of the stack into string.
-	 */
-	static void w_to_string(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * >string ( any -- string )
+   *
+   * Converts top-most value of the stack into string.
+   */
+  static void w_to_string(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (!ctx->pop(value))
-		{
+    if (!ctx->pop(value))
+    {
       return;
     }
     else if (value)
@@ -472,179 +472,179 @@ namespace plorth
       ctx->push_string(value->to_string());
     } else {
       ctx->push_string(utf8_decode(""));
-		}
-	}
+    }
+  }
 
-	/**
-	 * >source ( any -- string )
-	 *
-	 * Converts top-most value of the stack into a string that most accurately
-	 * represents what the value would look like in source code.
-	 */
-	static void w_to_source(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * >source ( any -- string )
+   *
+   * Converts top-most value of the stack into a string that most accurately
+   * represents what the value would look like in source code.
+   */
+  static void w_to_source(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (!ctx->pop(value))
-		{
+    if (!ctx->pop(value))
+    {
       return;
     }
     else if (value)
     {
-			ctx->push_string(value->to_source());
-		} else {
+      ctx->push_string(value->to_source());
+    } else {
       ctx->push_string(utf8_decode("null"));
     }
-	}
+  }
 
-	/**
-	 * print ( any -- )
-	 *
-	 * Prints top-most value of the stack to stdout.
-	 */
-	static void w_print(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * print ( any -- )
+   *
+   * Prints top-most value of the stack to stdout.
+   */
+  static void w_print(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value) && value)
-		{
-			std::cout << value;
-		}
-	}
+    if (ctx->pop(value) && value)
+    {
+      std::cout << value;
+    }
+  }
 
-	/**
-	 * if ( boolean quote -- )
-	 *
-	 * Executes quote if the boolean value is true.
-	 */
-	static void w_if(const ref<context>& ctx)
-	{
-		bool condition;
-		ref<class quote> quote;
+  /**
+   * if ( boolean quote -- )
+   *
+   * Executes quote if the boolean value is true.
+   */
+  static void w_if(const ref<context>& ctx)
+  {
+    bool condition;
+    ref<class quote> quote;
 
-		if (ctx->pop_quote(quote) && ctx->pop_boolean(condition) && condition)
-		{
-			quote->call(ctx);
-		}
-	}
+    if (ctx->pop_quote(quote) && ctx->pop_boolean(condition) && condition)
+    {
+      quote->call(ctx);
+    }
+  }
 
-	/**
-	 * if-else ( boolean quote quote -- )
-	 *
-	 * Calls first quote if boolean value is true, second quote otherwise.
-	 */
-	static void w_if_else(const ref<context>& ctx)
-	{
-		bool condition;
-		ref<quote> then_quote;
-		ref<quote> else_quote;
+  /**
+   * if-else ( boolean quote quote -- )
+   *
+   * Calls first quote if boolean value is true, second quote otherwise.
+   */
+  static void w_if_else(const ref<context>& ctx)
+  {
+    bool condition;
+    ref<quote> then_quote;
+    ref<quote> else_quote;
 
-		if (!ctx->pop_quote(else_quote)
-				|| !ctx->pop_quote(then_quote)
-				|| !ctx->pop_boolean(condition))
-		{
-			return;
-		}
+    if (!ctx->pop_quote(else_quote)
+        || !ctx->pop_quote(then_quote)
+        || !ctx->pop_boolean(condition))
+    {
+      return;
+    }
 
-		if (condition)
-		{
-			then_quote->call(ctx);
-		} else {
-			else_quote->call(ctx);
-		}
-	}
+    if (condition)
+    {
+      then_quote->call(ctx);
+    } else {
+      else_quote->call(ctx);
+    }
+  }
 
-	/**
-	 * while ( quote quote -- )
-	 *
-	 * Executes second quote as long as the first quote returns true.
-	 */
-	static void w_while(const ref<context>& ctx)
-	{
-		ref<quote> test;
-		ref<quote> body;
+  /**
+   * while ( quote quote -- )
+   *
+   * Executes second quote as long as the first quote returns true.
+   */
+  static void w_while(const ref<context>& ctx)
+  {
+    ref<quote> test;
+    ref<quote> body;
 
-		if (!ctx->pop_quote(body) || !ctx->pop_quote(test))
-		{
-			return;
-		}
+    if (!ctx->pop_quote(body) || !ctx->pop_quote(test))
+    {
+      return;
+    }
 
-		for (;;)
-		{
-			bool b;
+    for (;;)
+    {
+      bool b;
 
-			if (!test->call(ctx) || !ctx->pop_boolean(b) || !b || !body->call(ctx))
-			{
-				return;
-			}
-		}
-	}
+      if (!test->call(ctx) || !ctx->pop_boolean(b) || !b || !body->call(ctx))
+      {
+        return;
+      }
+    }
+  }
 
-	/**
-	 * try ( quote quote -- )
-	 *
-	 * Executes first quote and if it throws an error, calls second quote with
-	 * the error on top of the stack.
-	 */
-	static void w_try(const ref<context>& ctx)
-	{
-		ref<quote> try_quote;
-		ref<quote> catch_quote;
+  /**
+   * try ( quote quote -- )
+   *
+   * Executes first quote and if it throws an error, calls second quote with
+   * the error on top of the stack.
+   */
+  static void w_try(const ref<context>& ctx)
+  {
+    ref<quote> try_quote;
+    ref<quote> catch_quote;
 
-		if (!ctx->pop_quote(catch_quote) || !ctx->pop_quote(try_quote))
-		{
-			return;
-		}
+    if (!ctx->pop_quote(catch_quote) || !ctx->pop_quote(try_quote))
+    {
+      return;
+    }
 
-		if (!try_quote->call(ctx))
-		{
-			ctx->push(ctx->error());
-			ctx->clear_error();
-			catch_quote->call(ctx);
-		}
-	}
+    if (!try_quote->call(ctx))
+    {
+      ctx->push(ctx->error());
+      ctx->clear_error();
+      catch_quote->call(ctx);
+    }
+  }
 
-	/**
-	 * compile ( string -- quote )
-	 *
-	 * Compiles given string of source code into quote.
-	 */
-	static void w_compile(const ref<context>& ctx)
-	{
-		ref<string> source;
-		ref<class quote> quote;
+  /**
+   * compile ( string -- quote )
+   *
+   * Compiles given string of source code into quote.
+   */
+  static void w_compile(const ref<context>& ctx)
+  {
+    ref<string> source;
+    ref<class quote> quote;
 
-		if (!ctx->pop_string(source))
-		{
-			return;
-		}
+    if (!ctx->pop_string(source))
+    {
+      return;
+    }
 
-		quote = ctx->compile(utf8_encode(source->value()));
-		if (quote)
-		{
-			ctx->push(quote);
-		}
-	}
+    quote = ctx->compile(utf8_encode(source->value()));
+    if (quote)
+    {
+      ctx->push(quote);
+    }
+  }
 
-	/**
-	 * globals ( -- object )
-	 *
-	 * Returns global dictionary as object.
-	 */
-	static void w_globals(const ref<context>& ctx)
-	{
-		ctx->push_object(ctx->runtime()->dictionary());
-	}
+  /**
+   * globals ( -- object )
+   *
+   * Returns global dictionary as object.
+   */
+  static void w_globals(const ref<context>& ctx)
+  {
+    ctx->push_object(ctx->runtime()->dictionary());
+  }
 
-	/**
-	 * locals ( -- object )
-	 *
-	 * Returns local dictionary of current execution context as object.
-	 */
-	static void w_locals(const ref<context>& ctx)
-	{
-		ctx->push_object(ctx->dictionary());
-	}
+  /**
+   * locals ( -- object )
+   *
+   * Returns local dictionary of current execution context as object.
+   */
+  static void w_locals(const ref<context>& ctx)
+  {
+    ctx->push_object(ctx->dictionary());
+  }
 
   /**
    * const ( any string -- )
@@ -734,48 +734,48 @@ namespace plorth
     make_error(ctx, error::code_unknown);
   }
 
-	/**
-	 * println ( any -- )
-	 *
-	 * Prints top-most value of the stack to stdout with terminating new line.
-	 */
-	static void w_println(const ref<context>& ctx)
-	{
-		ref<class value> value;
+  /**
+   * println ( any -- )
+   *
+   * Prints top-most value of the stack to stdout with terminating new line.
+   */
+  static void w_println(const ref<context>& ctx)
+  {
+    ref<class value> value;
 
-		if (ctx->pop(value))
-		{
+    if (ctx->pop(value))
+    {
       if (value)
       {
-			  std::cout << value;
+        std::cout << value;
       }
       std::cout << std::endl;
-		}
-	}
+    }
+  }
 
-	/**
-	 * emit ( number -- )
-	 *
-	 * Outputs given Unicode code point into the standard output stream. Range
-	 * error will be thrown if the given number is not valid Unicode code point.
-	 */
-	static void w_emit(const ref<context>& ctx)
-	{
-		double number;
+  /**
+   * emit ( number -- )
+   *
+   * Outputs given Unicode code point into the standard output stream. Range
+   * error will be thrown if the given number is not valid Unicode code point.
+   */
+  static void w_emit(const ref<context>& ctx)
+  {
+    double number;
 
-		if (!ctx->pop_number(number))
-		{
-			return;
-		}
+    if (!ctx->pop_number(number))
+    {
+      return;
+    }
 
-		if (!unichar_validate(number))
-		{
-			ctx->error(error::code_range, "Invalid Unicode code point.");
-			return;
-		}
+    if (!unichar_validate(number))
+    {
+      ctx->error(error::code_range, "Invalid Unicode code point.");
+      return;
+    }
 
-		std::cout << unistring(1, number);
-	}
+    std::cout << unistring(1, number);
+  }
 
   /**
    * now ( -- number )
@@ -788,92 +788,92 @@ namespace plorth
     ctx->push_number(std::time(nullptr));
   }
 
-	/**
-	 * = ( any any -- boolean )
-	 *
-	 * Tests whether the two top-most values of the stack are equal.
-	 */
-	static void w_eq(const ref<context>& ctx)
-	{
-		ref<value> a;
-		ref<value> b;
+  /**
+   * = ( any any -- boolean )
+   *
+   * Tests whether the two top-most values of the stack are equal.
+   */
+  static void w_eq(const ref<context>& ctx)
+  {
+    ref<value> a;
+    ref<value> b;
 
-		if (ctx->pop(a) && ctx->pop(b))
-		{
+    if (ctx->pop(a) && ctx->pop(b))
+    {
       ctx->push_boolean(b == a);
-		}
-	}
+    }
+  }
 
-	/**
-	 * != ( any any -- boolean )
-	 *
-	 * Tests whether the two top-most values of the stack are equal.
-	 */
-	static void w_ne(const ref<context>& ctx)
-	{
-		ref<value> a;
-		ref<value> b;
+  /**
+   * != ( any any -- boolean )
+   *
+   * Tests whether the two top-most values of the stack are equal.
+   */
+  static void w_ne(const ref<context>& ctx)
+  {
+    ref<value> a;
+    ref<value> b;
 
-		if (ctx->pop(a) && ctx->pop(b))
-		{
+    if (ctx->pop(a) && ctx->pop(b))
+    {
       ctx->push_boolean(b != a);
-		}
-	}
+    }
+  }
 
-	namespace api
-	{
-		runtime::prototype_definition global_dictionary()
-		{
-			return
-			{
-				// Constants.
-				{ "null", w_null },
-				{ "true", w_true },
-				{ "false", w_false },
-				{ "e", w_e },
-				{ "pi", w_pi },
+  namespace api
+  {
+    runtime::prototype_definition global_dictionary()
+    {
+      return
+      {
+        // Constants.
+        { "null", w_null },
+        { "true", w_true },
+        { "false", w_false },
+        { "e", w_e },
+        { "pi", w_pi },
 
-				// Stack manipulation.
-				{ "nop", w_nop },
-				{ "clear", w_clear },
-				{ "depth", w_depth },
-				{ "drop", w_drop },
-				{ "2drop", w_drop2 },
-				{ "dup", w_dup },
-				{ "2dup", w_dup2 },
-				{ "nip", w_nip },
-				{ "over", w_over },
-				{ "rot", w_rot },
-				{ "swap", w_swap },
-				{ "tuck", w_tuck },
+        // Stack manipulation.
+        { "nop", w_nop },
+        { "clear", w_clear },
+        { "depth", w_depth },
+        { "drop", w_drop },
+        { "2drop", w_drop2 },
+        { "dup", w_dup },
+        { "2dup", w_dup2 },
+        { "nip", w_nip },
+        { "over", w_over },
+        { "rot", w_rot },
+        { "swap", w_swap },
+        { "tuck", w_tuck },
 
-				// Value types.
-				{ "array?", w_is_array },
-				{ "boolean?", w_is_boolean },
-				{ "error?", w_is_error },
-				{ "null?", w_is_null },
-				{ "number?", w_is_number },
-				{ "object?", w_is_object },
-				{ "quote?", w_is_quote },
-				{ "string?", w_is_string },
-				{ "typeof" , w_typeof },
-				{ "prototype", w_prototype },
+        // Value types.
+        { "array?", w_is_array },
+        { "boolean?", w_is_boolean },
+        { "error?", w_is_error },
+        { "null?", w_is_null },
+        { "number?", w_is_number },
+        { "object?", w_is_object },
+        { "quote?", w_is_quote },
+        { "string?", w_is_string },
+        { "typeof" , w_typeof },
+        { "prototype", w_prototype },
 
-				// Conversions.
-				{ ">boolean", w_to_boolean },
-				{ ">string", w_to_string },
-				{ ">source", w_to_source },
+        // Conversions.
+        { ">boolean", w_to_boolean },
+        { ">string", w_to_string },
+        { ">source", w_to_source },
 
-				// Logic.
-				{ "if", w_if },
-				{ "if-else", w_if_else },
-				{ "while", w_while },
-				{ "try", w_try },
+        // Logic.
+        { "if", w_if },
+        { "if-else", w_if_else },
+        { "while", w_while },
+        { "try", w_try },
 
-				// Interpreter related.
-				{ "compile", w_compile },
-				{ "globals", w_globals },
-				{ "locals", w_locals },
+        // Interpreter related.
+        { "compile", w_compile },
+        { "globals", w_globals },
+        { "locals", w_locals },
         { "const", w_const },
 
         // Different types of errors.
@@ -882,18 +882,18 @@ namespace plorth
         { "range-error", w_range_error },
         { "unknown-error", w_unknown_error },
 
-				// I/O related.
-				{ "print", w_print },
-				{ "println", w_println },
-				{ "emit", w_emit },
+        // I/O related.
+        { "print", w_print },
+        { "println", w_println },
+        { "emit", w_emit },
 
         // Random utilities.
         { "now", w_now },
 
-				// Global operators.
-				{ "=", w_eq },
-				{ "!=", w_ne },
-			};
-		}
-	}
+        // Global operators.
+        { "=", w_eq },
+        { "!=", w_ne },
+      };
+    }
+  }
 }
