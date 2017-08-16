@@ -13,10 +13,10 @@
   )
   (
     swap
-    >string "✘ " swap + println
+    >string "\u001b[31m✘\u001b[0m " swap + println
     throw
   )
   try
-  >string "✔ " swap + println
+  >string "\u001b[32m✔\u001b[0m " swap + println
   clear
 ;
