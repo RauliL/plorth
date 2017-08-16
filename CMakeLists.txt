@@ -6,6 +6,12 @@ INCLUDE(CheckIncludeFile)
 INCLUDE(CheckFunctionExists)
 
 OPTION(
+  PLORTH_ENABLE_MODULES
+  "Whether modules has been enabled or not."
+  ON
+)
+
+OPTION(
   PLORTH_GC_DEBUG
   "Display debug messages from garbage collector."
   OFF
@@ -23,7 +29,11 @@ ELSE()
 ENDIF()
 
 CHECK_INCLUDE_FILE(unistd.h PLORTH_HAVE_UNISTD_H)
+CHECK_INCLUDE_FILE(sys/types.h PLORTH_HAVE_SYS_TYPES_H)
+CHECK_INCLUDE_FILE(sys/stat.h PLORTH_HAVE_SYS_STAT_H)
 CHECK_FUNCTION_EXISTS(isatty PLORTH_HAVE_ISATTY)
+CHECK_FUNCTION_EXISTS(stat PLORTH_HAVE_STAT)
+CHECK_FUNCTION_EXISTS(realpath PLORTH_HAVE_REALPATH)
 
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp.in"
@@ -41,6 +51,7 @@ ADD_LIBRARY(
   src/context.cpp
   src/globals.cpp
   src/memory.cpp
+  src/module.cpp
   src/runtime.cpp
   src/token.cpp
   src/unicode.cpp

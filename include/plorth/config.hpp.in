@@ -26,8 +26,13 @@
 #ifndef PLORTH_CONFIG_HPP_GUARD
 #define PLORTH_CONFIG_HPP_GUARD
 
+#cmakedefine PLORTH_ENABLE_MODULES 1
 #cmakedefine PLORTH_GC_DEBUG 1
 #cmakedefine PLORTH_HAVE_UNISTD_H 1
+#cmakedefine PLORTH_HAVE_SYS_TYPES_H 1
+#cmakedefine PLORTH_HAVE_SYS_STAT_H 1
 #cmakedefine PLORTH_HAVE_ISATTY 1
+#cmakedefine PLORTH_HAVE_STAT 1
+#cmakedefine PLORTH_HAVE_REALPATH 1
 
 #endif /* !PLORTH_CONFIG_HPP_GUARD */

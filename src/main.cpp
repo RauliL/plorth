@@ -35,6 +35,9 @@
 
 using namespace plorth;
 
+#if PLORTH_ENABLE_MODULES
+static void scan_module_path(const ref<runtime>&);
+#endif
 static inline bool is_console_interactive();
 static void compile_and_run(const ref<context>&, const std::string&);
 static void console_loop(const ref<context>&);
@@ -44,6 +47,10 @@ int main(int argc, char** argv)
   memory::manager memory_manager;
   ref<runtime> runtime = memory_manager.new_runtime();
   ref<context> context = runtime->new_context();
+
+#if PLORTH_ENABLE_MODULES
+  scan_module_path(runtime);
+#endif
 
   if (argc > 1)
   {
@@ -82,6 +89,44 @@ int main(int argc, char** argv)
 
   return EXIT_SUCCESS;
 }
+
+#if PLORTH_ENABLE_MODULES
+static void scan_module_path(const ref<class runtime>& runtime)
+{
+#if defined(_WIN32)
+  static const unichar path_separator = ';';
+#else
+  static const unichar path_separator = ':';
+#endif
+  auto& module_paths = runtime->module_paths();
+  const char* begin = std::getenv("PLORTHPATH");
+  const char* end = begin;
+
+  if (!end)
+  {
+    return;
+  }
+
+  for (; *end; ++end)
+  {
+    if (*end != path_separator)
+    {
+      continue;
+    }
+
+    if (end - begin > 0)
+    {
+      module_paths.push_back(utf8_decode(std::string(begin, end - begin)));
+    }
+    begin = end + 1;
+  }
+
+  if (end - begin > 0)
+  {
+    module_paths.push_back(utf8_decode(std::string(begin, end - begin)));
+  }
+}
+#endif
 
 static inline bool is_console_interactive()
 {

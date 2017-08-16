@@ -68,6 +68,22 @@ namespace plorth
     }
 
     /**
+     * Returns container for file system paths where modules are searched from.
+     */
+    inline std::vector<unistring>& module_paths()
+    {
+      return m_module_paths;
+    }
+
+    /**
+     * Returns container for file system paths where modules are searched from.
+     */
+    inline const std::vector<unistring>& module_paths() const
+    {
+      return m_module_paths;
+    }
+
+    /**
      * Returns the global dictionary that contains core word set available to
      * all contexts.
      */
@@ -81,6 +97,19 @@ namespace plorth
      * it's runtime.
      */
     ref<context> new_context();
+
+    /**
+     * Imports module from file system and inserts all of it's exported words
+     * into dictionary of given execution context.
+     *
+     * \param ctx  Execution context where exported words from module will be
+     *             inserted into. If import error occurs, it will also be stored
+     *             in this execution context.
+     * \param path Module path.
+     * \return     Boolean flag telling whether the import was successfull or
+     *             whether some kind of error was occurred.
+     */
+    bool import(const ref<context>& ctx, const unistring& path);
 
     /**
      * Constructs compiled quote from given sequence of tokens.
@@ -230,6 +259,10 @@ namespace plorth
     ref<object> m_quote_prototype;
     /** Prototype for string values. */
     ref<object> m_string_prototype;
+    /** List of file system paths where to look modules from. */
+    std::vector<unistring> m_module_paths;
+    /** Container for already imported modules. */
+    object::container_type m_imported_modules;
   };
 }
 
