@@ -35,7 +35,7 @@ namespace plorth
   {
     ref<array> ary;
 
-    if (!that->is(type_array))
+    if (!that || !that->is(type_array))
     {
       return false;
     }
@@ -49,7 +49,7 @@ namespace plorth
 
     for (std::size_t i = 0; i < m_elements.size(); ++i)
     {
-      if (!m_elements[i]->equals(ary->m_elements[i]))
+      if (m_elements[i] != ary->m_elements[i])
       {
         return false;
       }
@@ -65,12 +65,17 @@ namespace plorth
 
     for (std::size_t i = 0; i < size; ++i)
     {
+      const auto& element = m_elements[i];
+
       if (i > 0)
       {
         result += ',';
         result += ' ';
       }
-      result += m_elements[i]->to_string();
+      if (element)
+      {
+        result += element->to_string();
+      }
     }
 
     return result;
@@ -84,12 +89,19 @@ namespace plorth
     result += '[';
     for (std::size_t i = 0; i < size; ++i)
     {
+      const auto& element = m_elements[i];
+
       if (i > 0)
       {
         result += ',';
         result += ' ';
       }
-      result += m_elements[i]->to_source();
+      if (element)
+      {
+        result += element->to_source();
+      } else {
+        result += utf8_decode("null");
+      }
     }
     result += ']';
 
@@ -129,7 +141,7 @@ namespace plorth
       ctx->push(ary);
       for (const auto& element : ary->elements())
       {
-        if (val->equals(element))
+        if (val == element)
         {
           ctx->push_boolean(true);
           return;
@@ -158,7 +170,7 @@ namespace plorth
       ctx->push(ary);
       for (std::size_t i = 0; i < size; ++i)
       {
-        if (val->equals(elements[i]))
+        if (val == elements[i])
         {
           ctx->push_number(i);
           return;
@@ -340,7 +352,7 @@ namespace plorth
 
         for (const auto& value2 : result)
         {
-          if (value1->equals(value2))
+          if (value1 == value2)
           {
             found = true;
             break;
@@ -405,7 +417,12 @@ namespace plorth
       } else {
         result += separator->value();
       }
-      result += element->to_string();
+      if (element)
+      {
+        result += element->to_string();
+      } else {
+        result += utf8_decode("null");
+      }
     }
 
     ctx->push_string(result);
@@ -622,7 +639,7 @@ namespace plorth
 
         for (const auto& value2 : a->elements())
         {
-          if (value1->equals(value2))
+          if (value1 == value2)
           {
             found = true;
             break;
@@ -636,7 +653,7 @@ namespace plorth
 
         for (const auto& value2 : result)
         {
-          if (value1->equals(value2))
+          if (value1 == value2)
           {
             found = false;
             break;
@@ -674,7 +691,7 @@ namespace plorth
 
         for (const auto& value2 : result)
         {
-          if (value1->equals(value2))
+          if (value1 == value2)
           {
             found = true;
             break;
@@ -693,7 +710,7 @@ namespace plorth
 
         for (const auto& value2 : result)
         {
-          if (value1->equals(value2))
+          if (value1 == value2)
           {
             found = true;
             break;

@@ -49,7 +49,6 @@ ADD_LIBRARY(
   src/value-array.cpp
   src/value-boolean.cpp
   src/value-error.cpp
-  src/value-null.cpp
   src/value-number.cpp
   src/value-object.cpp
   src/value-quote.cpp

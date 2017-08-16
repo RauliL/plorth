@@ -102,6 +102,9 @@ namespace plorth
     virtual unistring to_source() const = 0;
   };
 
+  bool operator==(const ref<value>&, const ref<value>&);
+  bool operator!=(const ref<value>&, const ref<value>&);
+
   std::ostream& operator<<(std::ostream&, enum value::type);
   std::ostream& operator<<(std::ostream&, const ref<value>&);
 }

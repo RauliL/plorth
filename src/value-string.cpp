@@ -39,7 +39,7 @@ namespace plorth
 
 	bool string::equals(const ref<class value>& that) const
 	{
-		if (!that->is(type_string))
+		if (!that || !that->is(type_string))
 		{
 			return false;
 		}

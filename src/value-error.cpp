@@ -37,7 +37,7 @@ namespace plorth
   {
     const error* err;
 
-    if (!that->is(type_error))
+    if (!that || !that->is(type_error))
     {
       return false;
     }

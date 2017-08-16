@@ -55,7 +55,7 @@ namespace plorth
   {
     const object* obj;
 
-    if (!that->is(type_object))
+    if (!that || !that->is(type_object))
     {
       return false;
     }
@@ -71,8 +71,7 @@ namespace plorth
     {
       const auto entry2 = obj->m_properties.find(entry1.first);
 
-      if (entry2 == std::end(obj->m_properties)
-          || !entry1.second->equals(entry2->second))
+      if (entry2 == std::end(obj->m_properties) || entry1.second != entry2->second)
       {
         return false;
       }
@@ -97,7 +96,10 @@ namespace plorth
       }
       result += property.first;
       result += '=';
-      result += property.second->to_string();
+      if (property.second)
+      {
+        result += property.second->to_string();
+      }
     }
 
     return result;
@@ -121,7 +123,12 @@ namespace plorth
       result += json_stringify(property.first);
       result += ':';
       result += ' ';
-      result += property.second->to_source();
+      if (property.second)
+      {
+        result += property.second->to_source();
+      } else {
+        result += utf8_decode("null");
+      }
     }
     result += '}';
 

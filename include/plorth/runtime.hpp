@@ -27,7 +27,6 @@
 #define PLORTH_RUNTIME_HPP_GUARD
 
 #include <plorth/value-boolean.hpp>
-#include <plorth/value-null.hpp>
 #include <plorth/value-object.hpp>
 #include <plorth/value-quote.hpp>
 
@@ -128,14 +127,6 @@ namespace plorth
     }
 
     /**
-     * Returns shared instance of null value.
-     */
-    inline const ref<class null>& null() const
-    {
-      return m_null_value;
-    }
-
-    /**
      * Returns shared instance of true boolean value.
      */
     inline const ref<class boolean>& true_value() const
@@ -221,8 +212,6 @@ namespace plorth
     memory::manager* m_memory_manager;
     /** Global dictionary available to all contexts. */
     object::container_type m_dictionary;
-    /** Shared instance of null value. */
-    ref<class null> m_null_value;
     /** Shared instance of true boolean value. */
     ref<class boolean> m_true_value;
     /** Shared instance of false boolean value. */

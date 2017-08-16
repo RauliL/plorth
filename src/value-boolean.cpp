@@ -32,7 +32,7 @@ namespace plorth
 
   bool boolean::equals(const ref<class value>& that) const
   {
-    if (!that->is(type_boolean))
+    if (!that || !that->is(type_boolean))
     {
       return false;
     }

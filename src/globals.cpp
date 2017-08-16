@@ -270,7 +270,7 @@ namespace plorth
 		if (ctx->pop(value))
 		{
 			ctx->push(value);
-			ctx->push_boolean(value->is(value::type_array));
+			ctx->push_boolean(value && value->is(value::type_array));
 		}
 	}
 
@@ -286,7 +286,7 @@ namespace plorth
 		if (ctx->pop(value))
 		{
 			ctx->push(value);
-			ctx->push_boolean(value->is(value::type_boolean));
+			ctx->push_boolean(value && value->is(value::type_boolean));
 		}
 	}
 
@@ -302,7 +302,7 @@ namespace plorth
 		if (ctx->pop(value))
 		{
 			ctx->push(value);
-			ctx->push_boolean(value->is(value::type_error));
+			ctx->push_boolean(value && value->is(value::type_error));
 		}
 	}
 
@@ -318,7 +318,7 @@ namespace plorth
 		if (ctx->pop(value))
 		{
 			ctx->push(value);
-			ctx->push_boolean(value->is(value::type_number));
+			ctx->push_boolean(value && value->is(value::type_number));
 		}
 	}
 
@@ -334,7 +334,7 @@ namespace plorth
 		if (ctx->pop(value))
 		{
 			ctx->push(value);
-			ctx->push_boolean(value->is(value::type_null));
+      ctx->push_boolean(!value);
 		}
 	}
 
@@ -350,7 +350,7 @@ namespace plorth
 		if (ctx->pop(value))
 		{
 			ctx->push(value);
-			ctx->push_boolean(value->is(value::type_object));
+			ctx->push_boolean(value && value->is(value::type_object));
 		}
 	}
 
@@ -366,7 +366,7 @@ namespace plorth
 		if (ctx->pop(value))
 		{
 			ctx->push(value);
-			ctx->push_boolean(value->is(value::type_quote));
+			ctx->push_boolean(value && value->is(value::type_quote));
 		}
 	}
 
@@ -382,7 +382,7 @@ namespace plorth
 		if (ctx->pop(value))
 		{
 			ctx->push(value);
-			ctx->push_boolean(value->is(value::type_string));
+			ctx->push_boolean(value && value->is(value::type_string));
 		}
 	}
 
@@ -397,18 +397,24 @@ namespace plorth
 
 		if (ctx->pop(value))
 		{
-			std::stringstream ss;
+      ctx->push(value);
+      if (value)
+      {
+			  std::stringstream ss;
 
-			ss << value->type();
-			ctx->push(value);
-			ctx->push_string(utf8_decode(ss.str()));
+			  ss << value->type();
+        ctx->push_string(utf8_decode(ss.str()));
+      } else {
+        ctx->push_string(utf8_decode("null"));
+      }
 		}
 	}
 
 	/**
 	 * prototype ( any -- any object )
 	 *
-	 * Retrieves prototype of the top-most value.
+	 * Retrieves prototype of the top-most value. If the top-most value of the
+   * stack is null, null will be returned instead.
 	 */
 	static void w_prototype(const ref<context>& ctx)
 	{
@@ -417,7 +423,12 @@ namespace plorth
 		if (ctx->pop(value))
 		{
 			ctx->push(value);
-			ctx->push(value->prototype(ctx->runtime()));
+      if (value)
+      {
+			  ctx->push(value->prototype(ctx->runtime()));
+      } else {
+        ctx->push_null();
+      }
 		}
 	}
 
@@ -431,14 +442,15 @@ namespace plorth
 	{
 		ref<class value> value;
 
-		if (ctx->pop(value))
+		if (!ctx->pop(value))
 		{
-			if (value->is(value::type_boolean))
-			{
-				ctx->push(value);
-			} else {
-				ctx->push_boolean(!value->is(value::type_null));
-			}
+      return;
+    }
+		else if (value && value->is(value::type_boolean))
+		{
+			ctx->push(value);
+		} else {
+      ctx->push_boolean(!!value);
 		}
 	}
 
@@ -451,9 +463,15 @@ namespace plorth
 	{
 		ref<class value> value;
 
-		if (ctx->pop(value))
+		if (!ctx->pop(value))
 		{
-			ctx->push_string(value->to_string());
+      return;
+    }
+    else if (value)
+    {
+      ctx->push_string(value->to_string());
+    } else {
+      ctx->push_string(utf8_decode(""));
 		}
 	}
 
@@ -467,10 +485,16 @@ namespace plorth
 	{
 		ref<class value> value;
 
-		if (ctx->pop(value))
+		if (!ctx->pop(value))
 		{
+      return;
+    }
+    else if (value)
+    {
 			ctx->push_string(value->to_source());
-		}
+		} else {
+      ctx->push_string(utf8_decode("null"));
+    }
 	}
 
 	/**
@@ -482,7 +506,7 @@ namespace plorth
 	{
 		ref<class value> value;
 
-		if (ctx->pop(value))
+		if (ctx->pop(value) && value)
 		{
 			std::cout << value;
 		}
@@ -649,17 +673,18 @@ namespace plorth
       return;
     }
 
-    if (val->is(value::type_string))
+    if (val)
     {
-      message = val.cast<string>()->value();
-    }
-    else if (!val->is(value::type_null))
-    {
-      std::stringstream ss;
+      if (val->is(value::type_string))
+      {
+        message = val.cast<string>()->value();
+      } else {
+        std::stringstream ss;
 
-      ss << "Expected string, got " << val->type() << " instead.";
-      ctx->error(error::code_type, utf8_decode(ss.str()));
-      return;
+        ss << "Expected string, got " << val->type() << " instead.";
+        ctx->error(error::code_type, utf8_decode(ss.str()));
+        return;
+      }
     }
 
     ctx->push(ctx->runtime()->value<error>(code, message));
@@ -720,7 +745,11 @@ namespace plorth
 
 		if (ctx->pop(value))
 		{
-			std::cout << value << std::endl;
+      if (value)
+      {
+			  std::cout << value;
+      }
+      std::cout << std::endl;
 		}
 	}
 
@@ -771,7 +800,7 @@ namespace plorth
 
 		if (ctx->pop(a) && ctx->pop(b))
 		{
-			ctx->push_boolean(b->equals(a));
+      ctx->push_boolean(b == a);
 		}
 	}
 
@@ -787,7 +816,7 @@ namespace plorth
 
 		if (ctx->pop(a) && ctx->pop(b))
 		{
-			ctx->push_boolean(!b->equals(a));
+      ctx->push_boolean(b != a);
 		}
 	}
 
