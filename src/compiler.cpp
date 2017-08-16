@@ -269,7 +269,7 @@ retry_switch:
               return false;
             }
 
-            buffer.append(1, c);
+            buffer.append(1, result);
           }
           break;
 
