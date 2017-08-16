@@ -6,6 +6,12 @@ INCLUDE(CheckIncludeFile)
 INCLUDE(CheckFunctionExists)
 
 OPTION(
+  PLORTH_ENABLE_MODULES
+  "Whether modules has been enabled or not."
+  ON
+)
+
+OPTION(
   PLORTH_GC_DEBUG
   "Display debug messages from garbage collector."
   OFF
@@ -41,6 +47,7 @@ ADD_LIBRARY(
   src/context.cpp
   src/globals.cpp
   src/memory.cpp
+  src/module.cpp
   src/runtime.cpp
   src/token.cpp
   src/unicode.cpp
