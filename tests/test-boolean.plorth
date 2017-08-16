@@ -1,13 +1,29 @@
 "./framework.plorth" import
 
 "and"
-( true true and ) expect
+[
+  ( true true and ),
+  ( true false and not ),
+]
+test-case
 
 "or"
-( false true or ) expect
+[
+  ( false true or ),
+  ( false false or not ),
+]
+test-case
 
 "xor"
-( true false xor ) expect
+[
+  ( true false xor ),
+  ( false false xor not ),
+]
+test-case
 
 "not"
-( true not false = ) expect
+[
+  ( true not false = ),
+  ( false not true = ),
+]
+test-case
