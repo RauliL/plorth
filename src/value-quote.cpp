@@ -426,7 +426,7 @@ namespace plorth
 
       if (token.is(token::type_lparen))
       {
-        ++it;
+        ++counter;
       }
       else if (token.is(token::type_rparen) && !--counter)
       {
