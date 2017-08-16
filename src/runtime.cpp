@@ -50,7 +50,6 @@ namespace plorth
   {
     assert(memory_manager);
 
-    m_null_value = new (*m_memory_manager) class null();
     m_true_value = new (*m_memory_manager) class boolean(true);
     m_false_value = new (*m_memory_manager) class boolean(false);
 

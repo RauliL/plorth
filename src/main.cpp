@@ -142,10 +142,15 @@ static void w_stack(const ref<class context>& context)
 
   for (std::size_t i = 0; i < size && i < 10; ++i)
   {
-    std::cout << (size - i)
-              << ": "
-              << stack[size - i - 1]->to_source()
-              << std::endl;
+    const ref<class value>& value = stack[size - i - 1];
+    std::cout << (size - i) << ": ";
+    if (value)
+    {
+      std::cout << value->to_source();
+    } else {
+      std::cout << "null";
+    }
+    std::cout << std::endl;
   }
 }
 

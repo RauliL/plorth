@@ -47,7 +47,7 @@ namespace plorth
     ref<class value> value;
 
     // Look from prototype of the current item.
-    if (!m_data.empty())
+    if (!m_data.empty() && m_data.back())
     {
       const ref<object> prototype = m_data.back()->prototype(m_runtime);
 
@@ -70,7 +70,7 @@ namespace plorth
       if (entry != std::end(m_dictionary))
       {
         value = entry->second;
-        if (value->is(value::type_quote))
+        if (value && value->is(value::type_quote))
         {
           return value.cast<quote>()->call(this);
         }
@@ -92,7 +92,7 @@ namespace plorth
       if (entry != std::end(global_dictionary))
       {
         value = entry->second;
-        if (value->is(value::type_quote))
+        if (value && value->is(value::type_quote))
         {
           return value.cast<quote>()->call(this);
         }
@@ -123,7 +123,7 @@ namespace plorth
 
   void context::push_null()
   {
-    push(m_runtime->null());
+    push(ref<value>());
   }
 
   void context::push_boolean(bool value)
@@ -170,11 +170,18 @@ namespace plorth
     {
       const ref<class value>& value = m_data.back();
 
-      if (!value->is(type))
+      if ((!value && type != value::type_null) || (value && !value->is(type)))
       {
         std::stringstream ss;
 
-        ss << "Expected " << type << ", got " << value->type() << " instead.";
+        ss << "Expected " << type << ", got ";
+        if (value)
+        {
+          ss << value->type();
+        } else {
+          ss << "null";
+        }
+        ss << " instead.";
         error(error::code_type, ss.str().c_str());
 
         return false;
@@ -207,11 +214,18 @@ namespace plorth
     if (!m_data.empty())
     {
       slot = m_data.back();
-      if (!slot->is(type))
+      if ((!slot && type != value::type_null) || (slot && !slot->is(type)))
       {
         std::stringstream ss;
 
-        ss << "Expected " << type << ", got " << slot->type() << " instead.";
+        ss << "Expected " << type << ", got ";
+        if (slot)
+        {
+          ss << slot->type();
+        } else {
+          ss << "null";
+        }
+        ss << " instead.";
         error(error::code_type, ss.str().c_str());
 
         return false;

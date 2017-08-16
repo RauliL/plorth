@@ -38,7 +38,6 @@ namespace plorth
   class array;
   class boolean;
   class error;
-  class null;
   class number;
   class object;
   class quote;

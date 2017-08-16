@@ -34,16 +34,13 @@
 
 namespace plorth
 {
-  static ref<value> parse_value(
-    const ref<context>&,
-    std::vector<token>::const_iterator&,
-    const std::vector<token>::const_iterator&
-  );
-  static bool parse_declaration(
-    const ref<context>&,
-    std::vector<token>::const_iterator&,
-    const std::vector<token>::const_iterator&
-  );
+  static bool parse_value(const ref<context>& ctx,
+                          std::vector<token>::const_iterator&,
+                          const std::vector<token>::const_iterator&,
+                          ref<value>&);
+  static bool parse_declaration(const ref<context>&,
+                                std::vector<token>::const_iterator&,
+                                const std::vector<token>::const_iterator&);
 
   namespace
   {
@@ -74,9 +71,9 @@ namespace plorth
             case token::type_lbrack:
             case token::type_lbrace:
               {
-                const ref<value> val = parse_value(ctx, current, end);
+                ref<value> val;
 
-                if (!val)
+                if (!parse_value(ctx, current, end, val))
                 {
                   return false;
                 }
@@ -373,7 +370,12 @@ namespace plorth
 
       unistring to_string() const
       {
-        return m_value->to_source();
+        if (m_value)
+        {
+          return m_value->to_source();
+        } else {
+          return utf8_decode("null");
+        }
       }
 
     private:
@@ -411,20 +413,20 @@ namespace plorth
     return "(" + to_string() + ")";
   }
 
-  static ref<value> parse_quote(const ref<context>& ctx,
-                                std::vector<token>::const_iterator& current,
+  static ref<quote> parse_quote(const ref<context>& ctx,
+                                std::vector<token>::const_iterator& it,
                                 const std::vector<token>::const_iterator& end)
   {
     std::vector<token> result;
     int counter = 1;
 
-    while (current != end)
+    while (it != end)
     {
-      const class token& token = *current++;
+      const class token& token = *it++;
 
       if (token.is(token::type_lparen))
       {
-        ++counter;
+        ++it;
       }
       else if (token.is(token::type_rparen) && !--counter)
       {
@@ -436,14 +438,14 @@ namespace plorth
     {
       ctx->error(error::code_syntax, "Unterminated quote.");
 
-      return ref<value>();
+      return ref<quote>();
     }
 
     return ctx->runtime()->value<compiled_quote>(result);
   }
 
-  static ref<value> parse_array(const ref<context>& ctx,
-                                std::vector<token>::const_iterator& current,
+  static ref<array> parse_array(const ref<context>& ctx,
+                                std::vector<token>::const_iterator& it,
                                 const std::vector<token>::const_iterator& end)
   {
     array::container_type elements;
@@ -451,49 +453,49 @@ namespace plorth
 
     for (;;)
     {
-      if (current >= end)
+      if (it >= end)
       {
         ctx->error(error::code_syntax, "Unterminated array literal.");
 
-        return ref<value>();
+        return ref<array>();
       }
-      else if (current->is(token::type_rbrack))
+      else if (it->is(token::type_rbrack))
       {
-        ++current;
+        ++it;
         break;
       }
-      if (!(val = parse_value(ctx, current, end)))
+      if (!parse_value(ctx, it, end, val))
       {
-        return ref<value>();
+        return ref<array>();
       }
       elements.push_back(val);
-      if (current >= end)
+      if (it >= end)
       {
         ctx->error(error::code_syntax, "Unterminated array literal.");
 
-        return ref<value>();
+        return ref<array>();
       }
-      else if (current->is(token::type_comma))
+      else if (it->is(token::type_comma))
       {
-        ++current;
+        ++it;
       }
-      else if (!current->is(token::type_rbrack))
+      else if (!it->is(token::type_rbrack))
       {
         std::stringstream ss;
 
-        ss << "Unexpected " << *current << "; Missing `]'";
+        ss << "Unexpected " << *it << "; Missing `]'";
         ctx->error(error::code_syntax, ss.str().c_str());
 
-        return ref<value>();
+        return ref<array>();
       }
     }
 
     return ctx->runtime()->value<array>(elements);
   }
 
-  static ref<value> parse_object(const ref<context>& ctx,
-                                 std::vector<token>::const_iterator& current,
-                                 const std::vector<token>::const_iterator& end)
+  static ref<object> parse_object(const ref<context>& ctx,
+                                  std::vector<token>::const_iterator& it,
+                                  const std::vector<token>::const_iterator& end)
   {
     object::container_type properties;
     unistring id;
@@ -501,78 +503,92 @@ namespace plorth
 
     for (;;)
     {
-      if (current >= end)
+      if (it >= end)
       {
         ctx->error(error::code_syntax, "Unterminated object literal.");
 
-        return ref<value>();
+        return ref<object>();
       }
-      else if (current->is(token::type_rbrace))
+      else if (it->is(token::type_rbrace))
       {
-        ++current;
+        ++it;
         break;
       }
-      else if (!current->is(token::type_string))
+      else if (!it->is(token::type_string))
       {
         ctx->error(error::code_syntax, "Missing key for object literal.");
 
-        return ref<value>();
+        return ref<object>();
       }
-      id = current++->text();
-      if (current >= end || !current->is(token::type_colon))
+      id = it++->text();
+      if (it >= end || !it++->is(token::type_colon))
       {
         ctx->error(error::code_syntax, "Missing `:' after key of an object.");
 
-        return ref<value>();
+        return ref<object>();
       }
-      else if (!(val = parse_value(ctx, ++current, end)))
+      else if (!parse_value(ctx, it, end, val))
       {
-        return ref<value>();
+        return ref<object>();
       }
       properties[id] = val;
-      if (current >= end)
+      if (it >= end)
       {
         ctx->error(error::code_syntax, "Unterminated object literal.");
 
-        return ref<value>();
+        return ref<object>();
       }
-      else if (current->is(token::type_comma))
+      else if (it->is(token::type_comma))
       {
-        ++current;
+        ++it;
       }
-      else if (!current->is(token::type_rbrace))
+      else if (!it->is(token::type_rbrace))
       {
         std::stringstream ss;
 
-        ss << "Unexpected " << *current << "; Missing `]'";
+        ss << "Unexpected " << *it << "; Missing `]'";
         ctx->error(error::code_syntax, ss.str().c_str());
 
-        return ref<value>();
+        return ref<object>();
       }
     }
 
     return ctx->runtime()->value<object>(properties);
   }
 
-  static ref<value> parse_value(const ref<context>& ctx,
-                                std::vector<token>::const_iterator& current,
-                                const std::vector<token>::const_iterator& end)
+  static bool parse_value(const ref<context>& ctx,
+                          std::vector<token>::const_iterator& it,
+                          const std::vector<token>::const_iterator& end,
+                          ref<value>& slot)
   {
-    const class token& token = *current++;
+    const class token& token = *it++;
 
     switch (token.type())
     {
       case token::type_string:
-        return ctx->runtime()->value<string>(token.text());
+        slot = ctx->runtime()->value<string>(token.text());
+        break;
 
       case token::type_lparen:
-        return parse_quote(ctx, current, end);
+        if (!(slot = parse_quote(ctx, it, end)))
+        {
+          return false;
+        }
+        break;
 
       case token::type_lbrack:
-        return parse_array(ctx, current, end);
+        if (!(slot = parse_array(ctx, it, end)))
+        {
+          return false;
+        }
+        break;
 
       case token::type_lbrace:
-        return parse_object(ctx, current, end);
+        if (!(slot = parse_object(ctx, it, end)))
+        {
+          return false;
+        }
+        break;
 
       case token::type_word:
         {
@@ -580,19 +596,23 @@ namespace plorth
 
           if (!text.compare(utf8_decode("null")))
           {
-            return ctx->runtime()->null();
+            slot.release();
+            break;
           }
           else if (!text.compare(utf8_decode("true")))
           {
-            return ctx->runtime()->true_value();
+            slot = ctx->runtime()->true_value();
+            break;
           }
           else if (!text.compare(utf8_decode("false")))
           {
-            return ctx->runtime()->false_value();
+            slot = ctx->runtime()->false_value();
+            break;
           }
           else if (is_number(text))
           {
-            return ctx->runtime()->value<number>(std::stod(utf8_encode(text)));
+            slot = ctx->runtime()->value<number>(std::stod(utf8_encode(text)));
+            break;
           }
         }
 
@@ -603,9 +623,11 @@ namespace plorth
           ss << "Unexpected " << token << ", expected value.";
           ctx->error(error::code_syntax, ss.str().c_str());
 
-          return ref<value>();
+          return false;
         }
     }
+
+    return true;
   }
 
   static bool parse_declaration(const ref<context>& ctx,

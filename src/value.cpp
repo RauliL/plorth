@@ -69,6 +69,16 @@ namespace plorth
     return runtime->object_prototype();
   }
 
+  bool operator==(const ref<value>& a, const ref<value>& b)
+  {
+    return a ? b && a->equals(b) : !b;
+  }
+
+  bool operator!=(const ref<value>& a, const ref<value>& b)
+  {
+    return a ? !b || !a->equals(b) : !!b;
+  }
+
   std::ostream& operator<<(std::ostream& os, enum value::type type)
   {
     switch (type)

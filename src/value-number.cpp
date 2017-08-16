@@ -35,7 +35,7 @@ namespace plorth
 
   bool number::equals(const ref<class value>& that) const
   {
-    if (!that->is(type_number))
+    if (!that || !that->is(type_number))
     {
       return false;
     }
