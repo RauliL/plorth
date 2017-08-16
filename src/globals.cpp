@@ -663,6 +663,22 @@ namespace plorth
     }
   }
 
+  /**
+   * import ( string -- )
+   *
+   * Imports module from given path and adds all of it's exported words into
+   * this execution context.
+   */
+  static void w_import(const ref<context>& ctx)
+  {
+    ref<string> path;
+
+    if (ctx->pop_string(path))
+    {
+      ctx->runtime()->import(ctx, path->value());
+    }
+  }
+
   static void make_error(const ref<context>& ctx, enum error::code code)
   {
     ref<value> val;
@@ -875,6 +891,7 @@ namespace plorth
         { "globals", w_globals },
         { "locals", w_locals },
         { "const", w_const },
+        { "import", w_import },
 
         // Different types of errors.
         { "type-error", w_type_error },
