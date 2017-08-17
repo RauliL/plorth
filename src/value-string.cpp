@@ -68,6 +68,7 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
+      ctx->push(str);
       ctx->push_number(str->value().length());
     }
   }
