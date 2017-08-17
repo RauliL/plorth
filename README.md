@@ -1,8 +1,8 @@
 # Plorth
 
-Plorth is a stack based, statically typed, functional and minimal scripting language
-which is easy to embed in applications written in C++. It's inspired by [Forth] and
-[Factor] programming languages.
+Plorth is stack based, concatenative, strongly typed functional scripting
+language which is easy to embed to applications written in C++. It's inspired
+by [Forth] and [Factor] programming languages.
 
 [Online version of the interpreter is also available.][REPL]
 
