@@ -91,6 +91,7 @@ namespace plorth
       if (!length)
       {
         ctx->push_boolean(false);
+        return;
       }
       for (std::size_t i = 0; i < length; ++i)
       {
@@ -123,6 +124,7 @@ namespace plorth
       if (!length)
       {
         ctx->push_boolean(false);
+        return;
       }
       for (std::size_t i = 0; i < length; ++i)
       {
@@ -155,6 +157,7 @@ namespace plorth
       if (!length)
       {
         ctx->push_boolean(false);
+        return;
       }
       for (std::size_t i = 0; i < length; ++i)
       {
