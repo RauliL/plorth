@@ -203,8 +203,8 @@ static void initialize_console_api(const ref<class runtime>& runtime)
 {
   auto& dictionary = runtime->dictionary();
 
-  dictionary[utf8_decode(".q")] = runtime->quote(w_quit);
-  dictionary[utf8_decode(".s")] = runtime->quote(w_stack);
+  dictionary[utf8_decode(".q")] = runtime->native_quote(w_quit);
+  dictionary[utf8_decode(".s")] = runtime->native_quote(w_stack);
 }
 
 static void count_open_braces(const std::string& input, std::stack<char>& open_braces)

@@ -55,7 +55,7 @@ namespace plorth
 
     for (auto& entry : api::global_dictionary())
     {
-      m_dictionary[utf8_decode(entry.first)] = quote(entry.second);
+      m_dictionary[utf8_decode(entry.first)] = native_quote(entry.second);
     }
 
     m_object_prototype = make_prototype(this, "object", api::object_prototype());
@@ -81,7 +81,7 @@ namespace plorth
 
     for (auto& entry : definition)
     {
-      properties[utf8_decode(entry.first)] = runtime->quote(entry.second);
+      properties[utf8_decode(entry.first)] = runtime->native_quote(entry.second);
     }
     properties[utf8_decode("prototype")] = runtime->object_prototype();
 

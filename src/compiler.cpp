@@ -134,7 +134,7 @@ retry_switch:
       tokens.push_back(token(token::type_word, buffer));
     }
 
-    return m_runtime->quote(tokens);
+    return m_runtime->compiled_quote(tokens);
   }
 
   static bool compile_advance(context* ctx,

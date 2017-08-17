@@ -383,14 +383,14 @@ namespace plorth
     };
   }
 
-  ref<quote> runtime::quote(const std::vector<token>& tokens)
+  ref<quote> runtime::compiled_quote(const std::vector<token>& tokens)
   {
-    return new (*m_memory_manager) compiled_quote(tokens);
+    return new (*m_memory_manager) class compiled_quote(tokens);
   }
 
-  ref<quote> runtime::quote(quote::callback callback)
+  ref<quote> runtime::native_quote(quote::callback callback)
   {
-    return new (*m_memory_manager) native_quote(callback);
+    return new (*m_memory_manager) class native_quote(callback);
   }
 
   ref<quote> runtime::curry(const ref<class value>& argument, const ref<class quote>& quote)

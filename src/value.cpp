@@ -72,6 +72,8 @@ namespace plorth
         }
         break;
     }
+
+    return ref<object>(); // Just to make GCC happy.
   }
 
   bool operator==(const ref<value>& a, const ref<value>& b)

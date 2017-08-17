@@ -156,7 +156,7 @@ namespace plorth
     struct slot
     {
       /** Memory pool where this slot belongs to. */
-      pool* pool;
+      struct pool* pool;
       /** Pointer to the next slot in the pool. */
       slot* next;
       /** Pointer to the previous slot in the pool. */

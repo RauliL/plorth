@@ -114,12 +114,12 @@ namespace plorth
     /**
      * Constructs compiled quote from given sequence of tokens.
      */
-    ref<class quote> quote(const std::vector<token>& tokens);
+    ref<quote> compiled_quote(const std::vector<token>& tokens);
 
     /**
      * Constructs native quote from given C++ callback.
      */
-    ref<class quote> quote(quote::callback callback);
+    ref<quote> native_quote(quote::callback callback);
 
     /**
      * Constructs curried quote from given value and quote.
