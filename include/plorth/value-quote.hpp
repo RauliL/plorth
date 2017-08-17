@@ -82,7 +82,7 @@ namespace plorth
       return type_quote;
     }
 
-    unistring to_source() const;
+    unistring to_string() const;
   };
 }
 

@@ -44,6 +44,12 @@ namespace plorth
 
   namespace
   {
+    /**
+     * Compiled quote consists from sequence of tokens parsed from source code.
+     * When called, the tokens are being iterated, string, array, object and
+     * quote literals are parsed, converted into appropriate values and placed
+     * into the stack, while words are being called under the execution context.
+     */
     class compiled_quote : public quote
     {
     public:
@@ -114,11 +120,12 @@ namespace plorth
         return true;
       }
 
-      unistring to_string() const
+      unistring to_source() const
       {
         unistring result;
         bool first = true;
 
+        result += '(';
         for (const auto& token : m_tokens)
         {
           if (first)
@@ -129,6 +136,7 @@ namespace plorth
           }
           result += token.to_source();
         }
+        result += ')';
 
         return result;
       }
@@ -161,6 +169,10 @@ namespace plorth
       const std::vector<token> m_tokens;
     };
 
+    /**
+     * Native quotes are wrappers around native C++ functions, allowing the
+     * interpreter binary to interoperate with Plorth source code.
+     */
     class native_quote : public quote
     {
     public:
@@ -179,9 +191,9 @@ namespace plorth
         return !ctx->error();
       }
 
-      unistring to_string() const
+      unistring to_source() const
       {
-        return utf8_decode("[native quote]");
+        return utf8_decode("(\"native quote\")");
       }
 
       bool equals(const ref<value>& that) const
@@ -195,6 +207,10 @@ namespace plorth
       const callback m_callback;
     };
 
+    /**
+     * Curried quote consists from value and quote. When called, the value is
+     * placed into the stack and the wrapped quote is called.
+     */
     class curried_quote : public quote
     {
     public:
@@ -227,14 +243,14 @@ namespace plorth
         return m_argument->equals(q->m_argument) && m_quote->equals(q->m_quote);
       }
 
-      unistring to_string() const
+      unistring to_source() const
       {
         unistring result;
 
         result += m_argument->to_source();
         result += ' ';
         result += m_quote->to_source();
-        result += utf8_decode(" call");
+        result += utf8_decode(" curry");
 
         return result;
       }
@@ -244,6 +260,10 @@ namespace plorth
       const ref<quote> m_quote;
     };
 
+    /**
+     * Composed quote consists from two quotes that are being called in
+     * sequence.
+     */
     class composed_quote : public quote
     {
     public:
@@ -274,14 +294,14 @@ namespace plorth
         return m_left->equals(q->m_left) && m_right->equals(q->m_right);
       }
 
-      unistring to_string() const
+      unistring to_source() const
       {
         unistring result;
 
         result += m_left->to_source();
-        result += utf8_decode(" call ");
+        result += ' ';
         result += m_right->to_source();
-        result += utf8_decode(" call");
+        result += utf8_decode(" compose");
 
         return result;
       }
@@ -291,6 +311,9 @@ namespace plorth
       const ref<quote> m_right;
     };
 
+    /**
+     * Negated quote calls another quote and negates it's boolean result.
+     */
     class negated_quote : public quote
     {
     public:
@@ -328,15 +351,19 @@ namespace plorth
         return m_quote->equals(q->m_quote);
       }
 
-      unistring to_string() const
+      unistring to_source() const
       {
-        return m_quote->to_source() + " call not";
+        return m_quote->to_source() + " negate";
       }
 
     private:
       const ref<quote> m_quote;
     };
 
+    /**
+     * Constant quote consists from single value. When called, the value is just
+     * placed into the stack and nothing else happens.
+     */
     class constant_quote : public quote
     {
     public:
@@ -368,14 +395,20 @@ namespace plorth
         return m_value->equals(q->m_value);
       }
 
-      unistring to_string() const
+      unistring to_source() const
       {
+        unistring result;
+
+        result += '(';
         if (m_value)
         {
-          return m_value->to_source();
+          result += m_value->to_source();
         } else {
-          return utf8_decode("null");
+          result += utf8_decode("null");
         }
+        result += ')';
+
+        return result;
       }
 
     private:
@@ -408,9 +441,9 @@ namespace plorth
     return new (*m_memory_manager) constant_quote(value);
   }
 
-  unistring quote::to_source() const
+  unistring quote::to_string() const
   {
-    return "(" + to_string() + ")";
+    return to_source();
   }
 
   static ref<quote> parse_quote(const ref<context>& ctx,
