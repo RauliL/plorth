@@ -1,0 +1,69 @@
+"./framework.plorth" import
+
+"object literals"
+[
+  ( {} object? nip ),
+  ( { "a": 1, "b": true, "c": [1, 2, 3] } object? nip ),
+]
+test-case
+
+"keys"
+[
+  ( {} keys [] = nip ),
+  ( { "a": 1 } keys ["a"] = nip ),
+]
+test-case
+
+"values"
+[
+  ( {} values [] = nip ),
+  ( { "a": 1 } values [1] = nip ),
+]
+test-case
+
+"has?"
+[
+  ( "a" {} has? not nip ),
+  ( "keys" {} has? nip ),
+  ( "a" { "a": 1 } has? nip ),
+]
+test-case
+
+"has-own?"
+[
+  ( "a" {} has-own? not nip ),
+  ( "keys" {} has-own? not nip ),
+  ( "a" { "a": 1 } has-own? nip ),
+]
+test-case
+
+"new"
+[
+  ( ( {} new ) ( drop true ) ( false ) try-else ),
+  ( ( { "prototype": {} } new ) ( false ) ( drop true ) try-else ),
+  ( { "prototype": { "a": 1 } } new "a" swap has? nip ),
+  ( { "prototype": { "constructor": ( 1 "a" rot ! ) } } new "a" swap has? nip ),
+]
+test-case
+
+"@"
+[
+  ( "a" { "a": 1 } @ 1 = nip ),
+  ( ( "a" {} @ ) ( 2drop true ) ( false ) try-else ),
+]
+test-case
+
+"!"
+[
+  ( "a" 2 "a" { "a": 1 } ! @ 2 = nip ),
+  ( 1 "a" {} ! { "a": 1 } = ),
+]
+test-case
+
+"+"
+[
+  ( { "a": 1 } {} + keys length 1 = nip nip ),
+  ( "a" { "a": 1 } { "a": 2 } + @ 2 = nip ),
+  ( { "a": 1 } { "b": 2 } + { "a": 1, "b": 2 } = ),
+]
+test-case

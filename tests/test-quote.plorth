@@ -1,0 +1,36 @@
+"./framework.plorth" import
+
+"quote literals"
+[
+  ( ( ) quote? nip ),
+  ( ( 1 2 + ) typeof "quote" = nip ),
+]
+test-case
+
+"call"
+[
+  ( ( true ) call ),
+  ( ( 1 1 + ) call 2 = ),
+]
+test-case
+
+"compose"
+[
+  ( ( 1 ) ( 2 ) compose quote? nip ),
+  ( ( 1 ) ( 2 ) compose call + 3 = ),
+]
+test-case
+
+"curry"
+[
+  ( 1 ( dup + ) curry quote? nip ),
+  ( 1 ( dup + ) curry call 2 = ),
+]
+test-case
+
+"negate"
+[
+  ( ( true ) negate quote? nip ),
+  ( ( true ) negate call not ),
+]
+test-case

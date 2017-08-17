@@ -1,0 +1,118 @@
+"./framework.plorth" import
+
+"length"
+[
+  ( "" length nip 0 = ),
+  ( "foo" length nip 3 = ),
+]
+test-case
+
+"chars"
+[
+  ( "" chars nip [] = ),
+  ( "foo" chars nip ["f", "o", "o"] = ),
+]
+test-case
+
+"runes"
+[
+  ( "" runes nip [] = ),
+  ( "foo" runes nip [102, 111, 111] = ),
+]
+test-case
+
+"words"
+[
+  ( "" words nip length nip 0 = ),
+  ( "foo" words nip length nip 1 = ),
+  ( "foo\tbar" words nip length nip 2 = ),
+  ( "foo\r\n \tbar" words nip length nip 2 = ),
+]
+test-case
+
+"lines"
+[
+  ( "foo" lines nip length 1 = nip ),
+  ( "foo\nbar" lines nip length 2 = nip ),
+  ( "foo\r\nbar" lines nip length 2 = nip ),
+  ( "foo\rbar" lines nip length 2 = nip ),
+]
+test-case
+
+"space?"
+[
+  ( "" space? not nip ),
+  ( " \t\r\n " space? nip ),
+  ( " foo\t" space? not nip ),
+]
+test-case
+
+"lower-case?"
+[
+  ( "foo" lower-case? nip ),
+  ( "FOO" lower-case? not nip ),
+]
+test-case
+
+"upper-case?"
+[
+  ( "FOO" upper-case? nip ),
+  ( "foo" upper-case? not nip ),
+]
+test-case
+
+"reverse"
+[
+  ( "foo" reverse "oof" = ),
+]
+test-case
+
+"upper-case"
+[
+  ( "foo" upper-case "FOO" = ),
+  ( "FOO" upper-case "FOO" = ),
+]
+test-case
+
+"lower-case"
+[
+  ( "FOO" lower-case "foo" = ),
+  ( "foo" lower-case "foo" = ),
+]
+test-case
+
+"swap-case"
+[
+  ( "fooBAR" swap-case "FOObar" = ),
+]
+test-case
+
+"capitalize"
+[
+  ( "foo" capitalize "Foo" = ),
+  ( "FOO" capitalize "Foo" = ),
+]
+test-case
+
+"+"
+[
+  ( "foo" "bar" + "foobar" = ),
+  ( "foo" "" + "foo" = ),
+  ( "" "bar" + "bar" = ),
+  ( "" dup dup + = ),
+]
+test-case
+
+"*"
+[
+  ( 2 "foo" * "foofoo" = ),
+  ( 0 "foo" * "" = ),
+]
+test-case
+
+"@"
+[
+  ( 0 "foo" @ "f" = nip ),
+  ( -1 "foo" @ "o" = nip ),
+]
+test-case
