@@ -29,7 +29,7 @@
 #include <fstream>
 #include <stack>
 
-#if defined(PLORTH_HAVE_UNISTD_H)
+#if defined(HAVE_UNISTD_H)
 # include <unistd.h>
 #endif
 
@@ -130,7 +130,7 @@ static void scan_module_path(const ref<class runtime>& runtime)
 
 static inline bool is_console_interactive()
 {
-#if defined(PLORTH_HAVE_ISATTY)
+#if defined(HAVE_ISATTY)
   return isatty(fileno(stdin));
 #else
   return false;

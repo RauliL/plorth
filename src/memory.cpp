@@ -25,8 +25,6 @@
  */
 #include <plorth/runtime.hpp>
 
-#include <cstdlib>
-
 namespace plorth
 {
   namespace memory
@@ -85,7 +83,7 @@ namespace plorth
         std::abort();
       }
 
-#if defined(PLORTH_GC_DEBUG)
+#if defined(PLORTH_ENABLE_GC_DEBUG)
       std::fprintf(stderr, "GC: Memory pool allocated.\n");
 #endif
 
@@ -172,7 +170,7 @@ namespace plorth
       {
         pool->next->prev = pool->prev;
         pool->prev->next = pool->next;
-#if defined(PLORTH_GC_DEBUG)
+#if defined(PLORTH_ENABLE_GC_DEBUG)
         std::fprintf(stderr, "GC: Memory pool removed.\n");
 #endif
         std::free(static_cast<void*>(pool));
