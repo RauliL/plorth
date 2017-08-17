@@ -605,6 +605,36 @@ namespace plorth
   }
 
   /**
+   * try ( quote quote quote -- )
+   *
+   * Executes first quote and if it throws an error, calls second quote with
+   * the error on top of the stack. If no error was thrown, third quote will
+   * be called instead.
+   */
+  static void w_try_else(const ref<context>& ctx)
+  {
+    ref<quote> try_quote;
+    ref<quote> catch_quote;
+    ref<quote> else_quote;
+
+    if (!ctx->pop_quote(else_quote)
+        || !ctx->pop_quote(catch_quote)
+        || !ctx->pop_quote(try_quote))
+    {
+      return;
+    }
+
+    if (!try_quote->call(ctx))
+    {
+      ctx->push(ctx->error());
+      ctx->clear_error();
+      catch_quote->call(ctx);
+    } else {
+      else_quote->call(ctx);
+    }
+  }
+
+  /**
    * compile ( string -- quote )
    *
    * Compiles given string of source code into quote.
@@ -885,6 +915,7 @@ namespace plorth
         { "if-else", w_if_else },
         { "while", w_while },
         { "try", w_try },
+        { "try-else", w_try_else },
 
         // Interpreter related.
         { "compile", w_compile },
