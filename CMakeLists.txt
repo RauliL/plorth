@@ -6,6 +6,12 @@ INCLUDE(CheckIncludeFile)
 INCLUDE(CheckFunctionExists)
 
 OPTION(
+  PLORTH_ENABLE_TARGET_CLI
+  "Enable CLI interpreter."
+  ON
+)
+
+OPTION(
   PLORTH_ENABLE_MODULES
   "Whether modules has been enabled or not."
   ON
@@ -75,22 +81,26 @@ ADD_LIBRARY(
   src/value-string.cpp
 )
 
-ADD_EXECUTABLE(
-  plorth-cli
-  src/main.cpp
-)
-
-TARGET_LINK_LIBRARIES(
-  plorth-cli
-  plorth
-)
-
 INSTALL(
   TARGETS
     plorth
-    plorth-cli
-  RUNTIME DESTINATION
-    bin
   LIBRARY DESTINATION
     lib
 )
+
+IF(PLORTH_ENABLE_TARGET_CLI)
+  ADD_EXECUTABLE(
+    plorth-cli
+    src/main.cpp
+  )
+  TARGET_LINK_LIBRARIES(
+    plorth-cli
+    plorth
+  )
+  INSTALL(
+    TARGETS
+      plorth-cli
+    RUNTIME DESTINATION
+      bin
+  )
+ENDIF()
