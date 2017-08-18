@@ -642,6 +642,14 @@ namespace plorth
             slot = ctx->runtime()->false_value();
             break;
           }
+          else if (!text.compare(utf8_decode("drop")))
+          {
+            if (!ctx->pop(slot))
+            {
+              return false;
+            }
+            break;
+          }
           else if (is_number(text))
           {
             slot = ctx->runtime()->value<number>(std::stod(utf8_encode(text)));
