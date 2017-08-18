@@ -28,7 +28,7 @@ $ cmake ..
 $ make
 ```
 
-This will begin compilation of the interpreter. The interpreter consists from
+This will begin compilation of the interpreter. The interpreter consists of
 two parts: Plorth interpreter library and it's command line user interface
 known as `plorth-cli` which uses the interpreter library. By tweaking the CMake
 options, it's also possible to compile only the library without `plorth-cli`
