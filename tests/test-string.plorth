@@ -94,6 +94,27 @@ test-case
 ]
 test-case
 
+"trim"
+[
+  ( " foo " trim "foo" = ),
+  ( "foo" dup trim = ),
+]
+test-case
+
+"trim-left"
+[
+  ( " foo" trim-left "foo" = ),
+  ( "foo " dup trim-left = ),
+]
+test-case
+
+"trim-right"
+[
+  ( "foo " trim-right "foo" = ),
+  ( " foo" dup trim-right = ),
+]
+test-case
+
 "+"
 [
   ( "foo" "bar" + "foobar" = ),

@@ -430,6 +430,106 @@ namespace plorth
   }
 
   /**
+   * trim ( string -- string )
+   *
+   * Strips whitespace from begining and end of the string and returns result.
+   */
+  static void w_trim(const ref<context>& ctx)
+  {
+    ref<string> a;
+
+    if (ctx->pop_string(a))
+    {
+      const auto& str = a->value();
+      const std::size_t length = str.length();
+      std::size_t i, j;
+
+      for (i = 0; i < length; ++i)
+      {
+        if (!unichar_isspace(str[i]))
+        {
+          break;
+        }
+      }
+      for (j = length; j != 0; --j)
+      {
+        if (!unichar_isspace(str[j - 1]))
+        {
+          break;
+        }
+      }
+      if (i != 0 || j != length)
+      {
+        ctx->push(ctx->runtime()->value<string>(str.substr(i, j - i)));
+      } else {
+        ctx->push(a);
+      }
+    }
+  }
+
+  /**
+   * trim-left ( string -- string )
+   *
+   * Strips whitespace from begining of the string and returns result.
+   */
+  static void w_trim_left(const ref<context>& ctx)
+  {
+    ref<string> a;
+
+    if (ctx->pop_string(a))
+    {
+      const auto& str = a->value();
+      const std::size_t length = str.length();
+      std::size_t i;
+
+      for (i = 0; i < length; ++i)
+      {
+        if (!unichar_isspace(str[i]))
+        {
+          break;
+        }
+      }
+      if (i != 0)
+      {
+        ctx->push(ctx->runtime()->value<string>(str.substr(i, length - i)));
+      } else {
+        ctx->push(a);
+      }
+    }
+  }
+
+  /**
+   * trim-right ( string -- string )
+   *
+   * Strips whitespace from end of the string and returns result.
+   */
+  static void w_trim_right(const ref<context>& ctx)
+  {
+    ref<string> a;
+
+    if (ctx->pop_string(a))
+    {
+      const auto& str = a->value();
+      const std::size_t length = str.length();
+      std::size_t i;
+
+      for (i = length; i != 0; --i)
+      {
+        if (!unichar_isspace(str[i - 1]))
+        {
+          break;
+        }
+      }
+      if (i != length)
+      {
+        ctx->push(ctx->runtime()->value<string>(str.substr(0, i)));
+      } else {
+        ctx->push(a);
+      }
+    }
+  }
+
+  /**
    * + ( string string -- string )
    *
    * Concatenates contents of two strings and returns the result.
@@ -522,6 +622,10 @@ namespace plorth
         { "lines", w_lines },
 
         // Tests.
+        // TODO: includes?
+        // TODO: index-of
+        // TODO: starts-with?
+        // TODO: ends-with?
         { "space?", w_is_space },
         { "lower-case?", w_is_lower_case },
         { "upper-case?", w_is_upper_case },
@@ -532,6 +636,16 @@ namespace plorth
         { "lower-case", w_lower_case },
         { "swap-case", w_swap_case },
         { "capitalize", w_capitalize },
+        { "trim", w_trim },
+        { "trim-left", w_trim_left },
+        { "trim-right", w_trim_right },
+        // TODO: pad-left
+        // TODO: pad-right
+        // TODO: substring
+        // TODO: split
+        // TODO: replace
+        // TODO: normalize
+        // TODO: >number
 
         { "+", w_concat },
         { "*", w_repeat },
