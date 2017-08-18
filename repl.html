@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Plorth REPL</title>
+  <meta charset="utf-8">
+  <link href="http://fonts.googleapis.com/css?family=Inconsolata&amp;subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  <style>
+   * {
+     box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+   }
+
+   body {
+     background-color: #282c34;
+     color: #abb2bf;
+     font: 1.1em 'Inconsolata', monospace;
+   }
+
+   div {
+     min-height: 1.9em;
+     padding: 0.4em 1em 0.4em 1em;
+     width: 100%;
+   }
+
+   div.user-input {
+     color: #828997;
+   }
+
+   div.error {
+     color: #e06c75;
+   }
+
+   div:hover {
+     background-color: #383c44;
+   }
+
+   div.prompt {
+     display: flex;
+     flex-direction: row;
+     flex-wrap: nowrap;
+     justify-content: flex-start;
+     align-content: stretch;
+     align-items: flex-start;
+     background-color: #99bbff;
+     padding: 0;
+   }
+
+   div.prompt > span {
+     order: 0;
+     flex: 0 1 auto;
+     align-self: auto;
+     color: #002b36;
+     display: inline-block;
+     padding: 0.4em 0.4em 0.4em 1em;
+   }
+
+   div.prompt > input {
+     order: 0;
+     flex: 1 1 auto;
+     align-self: auto;
+     background: transparent;
+     border: 0;
+     color: #2c323b;
+     cursor: pointer;
+     display: inline-block;
+     font: 1.1em 'Inconsolata', monospace;
+     padding: 0.4em 0 0.4em 0em;
+   }
+  </style>
+</head>
+<body>
+  <script>
+   var Module = {
+     noExitRuntime: true,
+   };
+
+   (() => {
+     const promptContainer = document.createElement('div');
+     const promptLabel = document.createElement('span');
+     const promptInput = document.createElement('input');
+     let lineCounter = 1;
+
+     Module.print = (text, className) => {
+       const lineContainer = document.createElement('div');
+
+       lineContainer.textContent = text;
+       if (className) {
+         lineContainer.className = className;
+       }
+       document.body.replaceChild(lineContainer, promptContainer);
+       document.body.appendChild(promptContainer);
+     };
+
+     Module.printErr = (text) => {
+       Module.print(text, 'error');
+     };
+
+     const updatePrompt = () => {
+       promptLabel.textContent = `plorth:${lineCounter}:${Module.depth ? Module.depth() : 0}>`;
+     };
+
+     promptInput.addEventListener('keydown', (ev) => {
+       const line = promptInput.value.trim();
+
+       if (ev.key !== 'Enter') {
+         return;
+       }
+       ev.preventDefault();
+       if (line.length > 0) {
+         Module.print(`${promptLabel.textContent} ${line}`, 'user-input');
+         Module.execute(line);
+         ++lineCounter;
+       }
+       updatePrompt();
+       promptInput.value = '';
+       promptInput.focus();
+     });
+
+     updatePrompt();
+     promptContainer.className = 'prompt';
+     promptContainer.appendChild(promptLabel);
+     promptContainer.appendChild(promptInput);
+     document.body.appendChild(promptContainer);
+     promptInput.focus();
+   })();
+  </script>
+  <script src="./plorth-emscripten-repl.js"></script>
+</body>
+</html>

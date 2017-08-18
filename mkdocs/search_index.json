@@ -1,0 +1,134 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "Plorth\n\n\nPlorth is stack based, concatenative, strongly typed functional scripting\nlanguage which is easy to embed to applications written in C++. It's inspired\nby \nForth\n and \nFactor\n programming languages.\n\n\nYou can try Plorth online here.\n\n\nThis documentation is still work in progress.",
+            "title": "Home"
+        },
+        {
+            "location": "/#plorth",
+            "text": "Plorth is stack based, concatenative, strongly typed functional scripting\nlanguage which is easy to embed to applications written in C++. It's inspired\nby  Forth  and  Factor  programming languages.  You can try Plorth online here.  This documentation is still work in progress.",
+            "title": "Plorth"
+        },
+        {
+            "location": "/installation/",
+            "text": "Installing Plorth\n\n\nThis page describes how to get Plorth up and running on your computer.\n\n\nPlorth has no dependencies, only \nCMake\n and C++11 capable compiler are\nrequired to compile the interpreter.\n\n\nRetrieving the source code\n\n\nYour best bet of getting your hands on Plorth interpreter source code is to\nclone it from \nGitHub\n. This can be done\nby executing the following command:\n\n\n$ git clone https://github.com/RauliL/plorth.git\n\n\n\n\nCompiling\n\n\nAfter you have cloned the source code from GitHub, you need to compile the\ninterpreter. For this you need modern C++ compiler and \nCMake\n. Change into\n\nplorth\n directory and run following commands:\n\n\n$ mkdir build\n$ cd build\n$ cmake ..\n$ make\n\n\n\n\nThis will begin compilation of the interpreter. The interpreter consists from\ntwo parts: Plorth interpreter library and it's command line user interface\nknown as \nplorth-cli\n which uses the interpreter library. By tweaking the CMake\noptions, it's also possible to compile only the library without \nplorth-cli\n\nexecutable, if you plan to embed the interpreter to your own C++ application.\n\n\nInstallation\n\n\nAfter the interpreter has been compiled, you can run the \nplorth-cli\n executable\nlocated in \nbuild\n directory. Alternatively, you can also install Plorth into\nyour system by running the following command:\n\n\nsudo make install\n\n\n\n\nThe installation however is not necessary if you plan only to play with the\ninterpreter's REPL and possibly run some examples.",
+            "title": "Installation"
+        },
+        {
+            "location": "/installation/#installing-plorth",
+            "text": "This page describes how to get Plorth up and running on your computer.  Plorth has no dependencies, only  CMake  and C++11 capable compiler are\nrequired to compile the interpreter.",
+            "title": "Installing Plorth"
+        },
+        {
+            "location": "/installation/#retrieving-the-source-code",
+            "text": "Your best bet of getting your hands on Plorth interpreter source code is to\nclone it from  GitHub . This can be done\nby executing the following command:  $ git clone https://github.com/RauliL/plorth.git",
+            "title": "Retrieving the source code"
+        },
+        {
+            "location": "/installation/#compiling",
+            "text": "After you have cloned the source code from GitHub, you need to compile the\ninterpreter. For this you need modern C++ compiler and  CMake . Change into plorth  directory and run following commands:  $ mkdir build\n$ cd build\n$ cmake ..\n$ make  This will begin compilation of the interpreter. The interpreter consists from\ntwo parts: Plorth interpreter library and it's command line user interface\nknown as  plorth-cli  which uses the interpreter library. By tweaking the CMake\noptions, it's also possible to compile only the library without  plorth-cli \nexecutable, if you plan to embed the interpreter to your own C++ application.",
+            "title": "Compiling"
+        },
+        {
+            "location": "/installation/#installation",
+            "text": "After the interpreter has been compiled, you can run the  plorth-cli  executable\nlocated in  build  directory. Alternatively, you can also install Plorth into\nyour system by running the following command:  sudo make install  The installation however is not necessary if you plan only to play with the\ninterpreter's REPL and possibly run some examples.",
+            "title": "Installation"
+        },
+        {
+            "location": "/language/",
+            "text": "Language reference\n\n\nThis page gives short summary of the Plorth programming language.\n\n\nInterpreter\n\n\nTODO\n\n\nStack\n\n\nTODO\n\n\nWords and dictionaries\n\n\nWhen the interpreter encounters whitespace separated word, such as \nfoo\n, it\nwill execute matching piece of code found from the dictionary with that same\nword as identifier.\n\n\nWhen word is being executed, the code that is going to be executed is searched\nthrough these four steps, in this specific order:\n\n\n\n\n\n\nValue specific words: If the stack is not empty, word specific to the\n   top-most value of the stack will be searched first. This is done through\n   prototype chain which will be described below. Most of the operations\n   performed on values are usually value specific, meaning that the same word\n   can execute different operations based on the top-most value of the stack.\n\n\n\n\n\n\nLocal dictionary:\n\n\n\n\n\n\nGlobal dictionary: Plorth interpreter has global dictionary of words that\n   will also be searched. This dictionary contains the most basic operations in\n   the Plorth programming language.\n\n\n\n\n\n\nNumber: If the word can be converted into floating point decimal number, it\n   will be converted into one and placed on the top of the stack.\n\n\n\n\n\n\nIf none of these steps provide any kind of result, reference error will be\nthrown.\n\n\nPrototypes\n\n\nEach value except null have some kind of prototype object, where value specific\nwill be searched from. Prototype objects might inherit from other prototype\nobjects, creating an inheritance chain, which will be traversed when value\nspecific words are being searched.\n\n\nPrototype of the top-most value on the stack can be extracted with\n\nprototype\n word found in global dictionary. On objects, it can also be found\nas property identified as \n__proto__\n. Objects which do not have \n__proto__\n\nproperty will use the global \nobject\n as prototype instead.\n\n\nNew object instances can be created from objects that have \nprototype\n\nproperty with global word \nnew\n. Value of this property will be placed into\n\n__proto__\n property of the newly instantiated object. For example, if we would\nhave this object as the top-most value on our stack\n\n\n{ \"prototype\": { \"foo\": \"bar\" } }\n\n\n\n\nwe could create an instance of the object with \nnew\n word. After \nnew\n has been\ncalled, instance of the object will be placed as the top-most value of the\nstack. This new object will have property called \nfoo\n available, which value\nwill be a string containing text \n\"bar\"\n.\n\n\nData types\n\n\nNull\n\n\nNull values represent an empty value or no value at all. They are usually\nreturned by words to indicate that nothing was found/accomplished by the word.\nYou can push null values into the stack with the \nnull\n word found in global\ndictionary.\n\n\nBoolean\n\n\nBoolean values represent truthness. They can be placed into the stack with\nwords \ntrue\n and \nfalse\n which can be found in the global dictionary.\n\n\nNumber\n\n\nTODO\n\n\nString\n\n\nString is container for textual data, a sequence of Unicode code points.\n\n\nTODO\n\n\nArray\n\n\nArrays are indexed sequences of other values. Arrays can be constructed with\n\narray literals\n, which use same syntax as is used for arrays in JSON. For\nexample, if you would like to construct and array containing numbers from 0 to\n5 and push that into the stack, you would write:\n\n\n[0, 1, 2, 3, 4, 5]\n\n\n\n\nAfter that, the array is available as the top-most item of the stack.\n\n\nLength of an array can be retrieved with \nlength\n word. This places the number\nof elements in the array as top of the stack, while leaving the array itself\nintact.\n\n\n[1, 2, 3] length # -> [1, 2, 3] 3\n\n\n\n\nItems from the array can be accessed with \n@\n word. You need to place numeric\nindex of the item you wish to retrieve, the array itself and finally execute\nthe word. If the index is not out of bounds, range error will be thrown.\n\n\n1 [1, 2, 3] @ # -> [1, 2, 3] 2\n\n\n\n\nObject\n\n\nObjects are associative arrays that map string keys into values.\n\n\nTODO: Information about object literals and how to access properties.\n\n\nQuote\n\n\nQuote is piece of code that can be executed when required. Quotes can be\nconstructed in many different ways, including \nquote literals\n which are words\nplaced inside parenthesis:\n\n\n( foo bar baz )\n\n\n\n\nThis places a quote with words \nfoo\n, \nbar\n and \nbaz\n into the stack. When you\nexecute the word \ncall\n on the quote, those three words will be executed in\nsequence. Quotes are pretty much like what other languages would call\nfunctions, except that they do not take any arguments but rather operate\ndirectly on the stack.\n\n\nQuotes can also be constructed dynamically with \ncompile\n keyword. This takes\nsource code in form of string, compiles it into a quote and places the compiled\nquote into the stack. Quotes can also be constructed from other quotes by\ncurrying, composing and negation.\n\n\nQuotes can usually be converted back into source code with \n>source\n word,\nwith the exception being native core words that built in the interpreter.\n\n\nError\n\n\nErrors are special values that will be \nthrown\n when some kind of errorneous\nsituation is being encountered. Unless errors are being \ncaught\n and processed\nin some way, the execution of the program will be terminated.\n\n\nErrors contain numeric error code and optional textual description of the\nproblem. Unlike in other languages, it is not possible to construct new types\nof errors.\n\n\nDeclaring new words\n\n\nTODO\n\n\nConditional execution\n\n\nTODO\n\n\nCatching errors\n\n\nTODO\n\n\nModules\n\n\nTODO",
+            "title": "Language reference"
+        },
+        {
+            "location": "/language/#language-reference",
+            "text": "This page gives short summary of the Plorth programming language.",
+            "title": "Language reference"
+        },
+        {
+            "location": "/language/#interpreter",
+            "text": "TODO",
+            "title": "Interpreter"
+        },
+        {
+            "location": "/language/#stack",
+            "text": "TODO",
+            "title": "Stack"
+        },
+        {
+            "location": "/language/#words-and-dictionaries",
+            "text": "When the interpreter encounters whitespace separated word, such as  foo , it\nwill execute matching piece of code found from the dictionary with that same\nword as identifier.  When word is being executed, the code that is going to be executed is searched\nthrough these four steps, in this specific order:    Value specific words: If the stack is not empty, word specific to the\n   top-most value of the stack will be searched first. This is done through\n   prototype chain which will be described below. Most of the operations\n   performed on values are usually value specific, meaning that the same word\n   can execute different operations based on the top-most value of the stack.    Local dictionary:    Global dictionary: Plorth interpreter has global dictionary of words that\n   will also be searched. This dictionary contains the most basic operations in\n   the Plorth programming language.    Number: If the word can be converted into floating point decimal number, it\n   will be converted into one and placed on the top of the stack.    If none of these steps provide any kind of result, reference error will be\nthrown.",
+            "title": "Words and dictionaries"
+        },
+        {
+            "location": "/language/#prototypes",
+            "text": "Each value except null have some kind of prototype object, where value specific\nwill be searched from. Prototype objects might inherit from other prototype\nobjects, creating an inheritance chain, which will be traversed when value\nspecific words are being searched.  Prototype of the top-most value on the stack can be extracted with prototype  word found in global dictionary. On objects, it can also be found\nas property identified as  __proto__ . Objects which do not have  __proto__ \nproperty will use the global  object  as prototype instead.  New object instances can be created from objects that have  prototype \nproperty with global word  new . Value of this property will be placed into __proto__  property of the newly instantiated object. For example, if we would\nhave this object as the top-most value on our stack  { \"prototype\": { \"foo\": \"bar\" } }  we could create an instance of the object with  new  word. After  new  has been\ncalled, instance of the object will be placed as the top-most value of the\nstack. This new object will have property called  foo  available, which value\nwill be a string containing text  \"bar\" .",
+            "title": "Prototypes"
+        },
+        {
+            "location": "/language/#data-types",
+            "text": "",
+            "title": "Data types"
+        },
+        {
+            "location": "/language/#null",
+            "text": "Null values represent an empty value or no value at all. They are usually\nreturned by words to indicate that nothing was found/accomplished by the word.\nYou can push null values into the stack with the  null  word found in global\ndictionary.",
+            "title": "Null"
+        },
+        {
+            "location": "/language/#boolean",
+            "text": "Boolean values represent truthness. They can be placed into the stack with\nwords  true  and  false  which can be found in the global dictionary.",
+            "title": "Boolean"
+        },
+        {
+            "location": "/language/#number",
+            "text": "TODO",
+            "title": "Number"
+        },
+        {
+            "location": "/language/#string",
+            "text": "String is container for textual data, a sequence of Unicode code points.  TODO",
+            "title": "String"
+        },
+        {
+            "location": "/language/#array",
+            "text": "Arrays are indexed sequences of other values. Arrays can be constructed with array literals , which use same syntax as is used for arrays in JSON. For\nexample, if you would like to construct and array containing numbers from 0 to\n5 and push that into the stack, you would write:  [0, 1, 2, 3, 4, 5]  After that, the array is available as the top-most item of the stack.  Length of an array can be retrieved with  length  word. This places the number\nof elements in the array as top of the stack, while leaving the array itself\nintact.  [1, 2, 3] length # -> [1, 2, 3] 3  Items from the array can be accessed with  @  word. You need to place numeric\nindex of the item you wish to retrieve, the array itself and finally execute\nthe word. If the index is not out of bounds, range error will be thrown.  1 [1, 2, 3] @ # -> [1, 2, 3] 2",
+            "title": "Array"
+        },
+        {
+            "location": "/language/#object",
+            "text": "Objects are associative arrays that map string keys into values.  TODO: Information about object literals and how to access properties.",
+            "title": "Object"
+        },
+        {
+            "location": "/language/#quote",
+            "text": "Quote is piece of code that can be executed when required. Quotes can be\nconstructed in many different ways, including  quote literals  which are words\nplaced inside parenthesis:  ( foo bar baz )  This places a quote with words  foo ,  bar  and  baz  into the stack. When you\nexecute the word  call  on the quote, those three words will be executed in\nsequence. Quotes are pretty much like what other languages would call\nfunctions, except that they do not take any arguments but rather operate\ndirectly on the stack.  Quotes can also be constructed dynamically with  compile  keyword. This takes\nsource code in form of string, compiles it into a quote and places the compiled\nquote into the stack. Quotes can also be constructed from other quotes by\ncurrying, composing and negation.  Quotes can usually be converted back into source code with  >source  word,\nwith the exception being native core words that built in the interpreter.",
+            "title": "Quote"
+        },
+        {
+            "location": "/language/#error",
+            "text": "Errors are special values that will be  thrown  when some kind of errorneous\nsituation is being encountered. Unless errors are being  caught  and processed\nin some way, the execution of the program will be terminated.  Errors contain numeric error code and optional textual description of the\nproblem. Unlike in other languages, it is not possible to construct new types\nof errors.",
+            "title": "Error"
+        },
+        {
+            "location": "/language/#declaring-new-words",
+            "text": "TODO",
+            "title": "Declaring new words"
+        },
+        {
+            "location": "/language/#conditional-execution",
+            "text": "TODO",
+            "title": "Conditional execution"
+        },
+        {
+            "location": "/language/#catching-errors",
+            "text": "TODO",
+            "title": "Catching errors"
+        },
+        {
+            "location": "/language/#modules",
+            "text": "TODO",
+            "title": "Modules"
+        }
+    ]
+}
