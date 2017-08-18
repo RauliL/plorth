@@ -24,4 +24,4 @@ binary to start Plorth REPL.
 [Forth]: https://www.forth.com
 [Factor]: http://www.factorcode.org
 [CMake]: https://www.cmake.org
-[REPL]: https://raulil.github.io/plorth/
+[REPL]: https://raulil.github.io/plorth/repl.html

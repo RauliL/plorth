@@ -52,7 +52,7 @@
      align-self: auto;
      color: #002b36;
      display: inline-block;
-     padding: 0.4em 0 0.4em 0.4em;
+     padding: 0.4em 0.4em 0.4em 1em;
    }
 
    div.prompt > input {
@@ -65,7 +65,7 @@
      cursor: pointer;
      display: inline-block;
      font: 1.1em 'Inconsolata', monospace;
-     padding: 0.4em 0 0.4em 0.4em;
+     padding: 0.4em 0 0.4em 0em;
    }
   </style>
 </head>
@@ -108,7 +108,7 @@
        }
        ev.preventDefault();
        if (line.length > 0) {
-         Module.print(line, 'user-input');
+         Module.print(`${promptLabel.textContent} ${line}`, 'user-input');
          Module.execute(line);
          ++lineCounter;
        }
