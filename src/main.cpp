@@ -277,6 +277,8 @@ static void console_loop(const ref<class context>& context)
               << ' ';
     if (!std::getline(std::cin, line))
     {
+      // Output final newline after ^D has been pressed by the user.
+      std::cout << std::endl;
       break;
     }
     else if (!line.empty())
