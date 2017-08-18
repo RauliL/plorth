@@ -32,6 +32,8 @@ namespace plorth
 {
   unistring json_stringify(const unistring&);
   bool is_number(const unistring&);
+  bool to_number(const unistring&, double&);
+  unistring to_unistring(double);
 }
 
 #endif /* !PLORTH_UTILS_HPP_GUARD */

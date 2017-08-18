@@ -530,6 +530,29 @@ namespace plorth
   }
 
   /**
+   * >number ( string -- number )
+   *
+   * Converts string into floating point decimal number, or throws value error
+   * if the number cannot be converted into one.
+   */
+  static void w_to_number(const ref<context>& ctx)
+  {
+    ref<string> a;
+    double number;
+
+    if (!ctx->pop_string(a))
+    {
+      return;
+    }
+    else if (to_number(a->value(), number))
+    {
+      ctx->push_number(number);
+    } else {
+      ctx->error(error::code_value, "Could not convert string to number.");
+    }
+  }
+
+  /**
    * + ( string string -- string )
    *
    * Concatenates contents of two strings and returns the result.
@@ -645,7 +668,7 @@ namespace plorth
         // TODO: split
         // TODO: replace
         // TODO: normalize
-        // TODO: >number
+        { ">number", w_to_number },
 
         { "+", w_concat },
         { "*", w_repeat },

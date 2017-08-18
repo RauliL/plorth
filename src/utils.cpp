@@ -25,8 +25,16 @@
  */
 #include <plorth/unicode.hpp>
 
+#include <cfloat>
+#include <climits>
+#include <cmath>
+
 namespace plorth
 {
+  static const unistring unistring_nan = {'n', 'a', 'n'};
+  static const unistring unistring_inf = {'i', 'n', 'f'};
+  static const unistring unistring_inf_neg = {'-', 'i', 'n', 'f'};
+
   unistring json_stringify(const unistring& input)
   {
     unistring result;
@@ -130,6 +138,166 @@ namespace plorth
         return false;
       }
     }
+
+    return true;
+  }
+
+  unistring to_unistring(double number)
+  {
+    char buffer[20];
+
+    if (std::isnan(number))
+    {
+      return unistring_nan;
+    }
+    else if (std::isinf(number))
+    {
+      return number < 0.0 ? unistring_inf_neg : unistring_inf;
+    }
+    std::snprintf(buffer, sizeof(buffer), "%g", number);
+
+    return utf8_decode(buffer);
+  }
+
+  static bool parse_int(const unistring& input, int& number)
+  {
+    static const int div = INT_MAX / 10;
+    static const int rem = INT_MAX % 10;
+    const std::size_t length = input.length();
+    std::size_t offset = 0;
+    bool sign;
+
+    // Extract the sign.
+    sign = !(length > 0 && input[0] == '-');
+    if (!sign || (length > 0 && input[0] == '+'))
+    {
+      ++offset;
+    }
+
+    for (; offset < length; ++offset)
+    {
+      const unichar c = input[offset];
+      int digit;
+
+      if (!std::isdigit(c))
+      {
+        continue;
+      }
+      digit = c - '0';
+      if (number > div || (number == div && digit > rem))
+      {
+        return false; // Integer underflow / overflow.
+      }
+      number = (number * 10) + digit;
+    }
+    number = sign ? number : -number;
+
+    return true;
+  }
+
+  bool to_number(const unistring& input, double& number)
+  {
+    const std::size_t length = input.length();
+    std::size_t offset = 0;
+    bool seen_digits = false;
+    bool seen_dot = false;
+    bool sign;
+    int exponent = 0;
+
+    if (!input.compare(unistring_nan))
+    {
+      number = NAN;
+
+      return true;
+    }
+    else if (!input.compare(unistring_inf))
+    {
+      number = INFINITY;
+
+      return true;
+    }
+    else if (!input.compare(unistring_inf_neg))
+    {
+      number = -INFINITY;
+
+      return true;
+    }
+
+    // Extract the sign.
+    sign = !(length > 0 && input[0] == '-');
+    if (!sign || (length > 0 && input[0] == '+'))
+    {
+      ++offset;
+    }
+
+    number = 0.0;
+
+    for (; offset < length; ++offset)
+    {
+      const unichar c = input[offset];
+
+      if (std::isdigit(c))
+      {
+        seen_digits = true;
+        if (number > DBL_MAX * 0.1)
+        {
+          ++exponent;
+        } else {
+          number = (number * 10.0) + (c - '0');
+        }
+        if (seen_dot)
+        {
+          --exponent;
+        }
+      }
+      else if (!seen_dot && c == '.')
+      {
+        seen_dot = true;
+      } else {
+        break;
+      }
+    }
+
+    if (!seen_digits)
+    {
+      number = 0.0;
+
+      return true;
+    }
+
+    // Parse exponent.
+    if (offset < length && (input[offset] == 'e' || input[offset] == 'E'))
+    {
+      if (!parse_int(input.substr(offset + 1), exponent))
+      {
+        return false;
+      }
+    }
+
+    if (number == 0.0)
+    {
+      number = 0.0;
+
+      return true;
+    }
+
+    if (exponent < 0)
+    {
+      if (number < DBL_MIN * std::pow(10.0, static_cast<double>(-exponent)))
+      {
+        return false; // Float underflow.
+      }
+    }
+    else if (exponent > 0)
+    {
+      if (number > DBL_MAX * std::pow(10.0, static_cast<double>(exponent)))
+      {
+        return false; // Float overflow.
+      }
+    }
+
+    number *= std::pow(10.0, static_cast<double>(exponent));
+    number = number * sign;
 
     return true;
   }

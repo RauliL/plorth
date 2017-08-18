@@ -26,6 +26,8 @@
 #include <plorth/context.hpp>
 #include <plorth/value-number.hpp>
 
+#include "./utils.hpp"
+
 #include <cmath>
 
 namespace plorth
@@ -45,7 +47,7 @@ namespace plorth
 
   unistring number::to_string() const
   {
-    return utf8_decode(std::to_string(m_value));
+    return to_unistring(m_value);
   }
 
   unistring number::to_source() const

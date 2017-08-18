@@ -105,9 +105,17 @@ namespace plorth
     // If the name of the word can be converted into number, then do just that.
     if (is_number(word))
     {
-      m_data.push_back(m_runtime->value<number>(std::stod(utf8_encode(word))));
+      double num;
 
-      return true;
+      if (to_number(word, num))
+      {
+        m_data.push_back(m_runtime->value<number>(num));
+
+        return true;
+      }
+      error(error::code_value, "Unable to parse `" + word + "' into number.");
+
+      return false;
     }
 
     // Otherwise it's reference error.
