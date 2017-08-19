@@ -2,17 +2,17 @@
     "docs": [
         {
             "location": "/",
-            "text": "Plorth\n\n\nPlorth is stack based, concatenative, strongly typed functional scripting\nlanguage which is easy to embed to applications written in C++. It's inspired\nby \nForth\n and \nFactor\n programming languages.\n\n\nYou can try Plorth online here.\n\n\nThis documentation is still work in progress.",
+            "text": "Plorth\n\n\nPlorth a is stack based, concatenative, strongly typed functional scripting\nlanguage which is easy to embed in applications written in C++. It's inspired\nby \nForth\n and \nFactor\n programming languages.\n\n\nYou can try Plorth online here.\n\n\nThis documentation is still a work in progress.",
             "title": "Home"
         },
         {
             "location": "/#plorth",
-            "text": "Plorth is stack based, concatenative, strongly typed functional scripting\nlanguage which is easy to embed to applications written in C++. It's inspired\nby  Forth  and  Factor  programming languages.  You can try Plorth online here.  This documentation is still work in progress.",
+            "text": "Plorth a is stack based, concatenative, strongly typed functional scripting\nlanguage which is easy to embed in applications written in C++. It's inspired\nby  Forth  and  Factor  programming languages.  You can try Plorth online here.  This documentation is still a work in progress.",
             "title": "Plorth"
         },
         {
             "location": "/installation/",
-            "text": "Installing Plorth\n\n\nThis page describes how to get Plorth up and running on your computer.\n\n\nPlorth has no dependencies, only \nCMake\n and C++11 capable compiler are\nrequired to compile the interpreter.\n\n\nRetrieving the source code\n\n\nYour best bet of getting your hands on Plorth interpreter source code is to\nclone it from \nGitHub\n. This can be done\nby executing the following command:\n\n\n$ git clone https://github.com/RauliL/plorth.git\n\n\n\n\nCompiling\n\n\nAfter you have cloned the source code from GitHub, you need to compile the\ninterpreter. For this you need modern C++ compiler and \nCMake\n. Change into\n\nplorth\n directory and run following commands:\n\n\n$ mkdir build\n$ cd build\n$ cmake ..\n$ make\n\n\n\n\nThis will begin compilation of the interpreter. The interpreter consists from\ntwo parts: Plorth interpreter library and it's command line user interface\nknown as \nplorth-cli\n which uses the interpreter library. By tweaking the CMake\noptions, it's also possible to compile only the library without \nplorth-cli\n\nexecutable, if you plan to embed the interpreter to your own C++ application.\n\n\nInstallation\n\n\nAfter the interpreter has been compiled, you can run the \nplorth-cli\n executable\nlocated in \nbuild\n directory. Alternatively, you can also install Plorth into\nyour system by running the following command:\n\n\nsudo make install\n\n\n\n\nThe installation however is not necessary if you plan only to play with the\ninterpreter's REPL and possibly run some examples.",
+            "text": "Installing Plorth\n\n\nThis page describes how to get Plorth up and running on your computer.\n\n\nPlorth has no dependencies, only \nCMake\n and C++11 capable compiler are\nrequired to compile the interpreter.\n\n\nRetrieving the source code\n\n\nYour best bet of getting your hands on Plorth interpreter source code is to\nclone it from \nGitHub\n. This can be done\nby executing the following command:\n\n\n$ git clone https://github.com/RauliL/plorth.git\n\n\n\n\nCompiling\n\n\nAfter you have cloned the source code from GitHub, you need to compile the\ninterpreter. For this you need modern C++ compiler and \nCMake\n. Change into\n\nplorth\n directory and run following commands:\n\n\n$ mkdir build\n$ cd build\n$ cmake ..\n$ make\n\n\n\n\nThis will begin compilation of the interpreter. The interpreter consists of\ntwo parts: Plorth interpreter library and it's command line user interface\nknown as \nplorth-cli\n which uses the interpreter library. By tweaking the CMake\noptions, it's also possible to compile only the library without \nplorth-cli\n\nexecutable, if you plan to embed the interpreter to your own C++ application.\n\n\nInstallation\n\n\nAfter the interpreter has been compiled, you can run the \nplorth-cli\n executable\nlocated in \nbuild\n directory. Alternatively, you can also install Plorth into\nyour system by running the following command:\n\n\nsudo make install\n\n\n\n\nThe installation however is not necessary if you plan only to play with the\ninterpreter's REPL and possibly run some examples.",
             "title": "Installation"
         },
         {
@@ -27,7 +27,7 @@
         },
         {
             "location": "/installation/#compiling",
-            "text": "After you have cloned the source code from GitHub, you need to compile the\ninterpreter. For this you need modern C++ compiler and  CMake . Change into plorth  directory and run following commands:  $ mkdir build\n$ cd build\n$ cmake ..\n$ make  This will begin compilation of the interpreter. The interpreter consists from\ntwo parts: Plorth interpreter library and it's command line user interface\nknown as  plorth-cli  which uses the interpreter library. By tweaking the CMake\noptions, it's also possible to compile only the library without  plorth-cli \nexecutable, if you plan to embed the interpreter to your own C++ application.",
+            "text": "After you have cloned the source code from GitHub, you need to compile the\ninterpreter. For this you need modern C++ compiler and  CMake . Change into plorth  directory and run following commands:  $ mkdir build\n$ cd build\n$ cmake ..\n$ make  This will begin compilation of the interpreter. The interpreter consists of\ntwo parts: Plorth interpreter library and it's command line user interface\nknown as  plorth-cli  which uses the interpreter library. By tweaking the CMake\noptions, it's also possible to compile only the library without  plorth-cli \nexecutable, if you plan to embed the interpreter to your own C++ application.",
             "title": "Compiling"
         },
         {
@@ -37,12 +37,12 @@
         },
         {
             "location": "/language/",
-            "text": "Language reference\n\n\nThis page gives short summary of the Plorth programming language.\n\n\nInterpreter\n\n\nTODO\n\n\nStack\n\n\nTODO\n\n\nWords and dictionaries\n\n\nWhen the interpreter encounters whitespace separated word, such as \nfoo\n, it\nwill execute matching piece of code found from the dictionary with that same\nword as identifier.\n\n\nWhen word is being executed, the code that is going to be executed is searched\nthrough these four steps, in this specific order:\n\n\n\n\n\n\nValue specific words: If the stack is not empty, word specific to the\n   top-most value of the stack will be searched first. This is done through\n   prototype chain which will be described below. Most of the operations\n   performed on values are usually value specific, meaning that the same word\n   can execute different operations based on the top-most value of the stack.\n\n\n\n\n\n\nLocal dictionary:\n\n\n\n\n\n\nGlobal dictionary: Plorth interpreter has global dictionary of words that\n   will also be searched. This dictionary contains the most basic operations in\n   the Plorth programming language.\n\n\n\n\n\n\nNumber: If the word can be converted into floating point decimal number, it\n   will be converted into one and placed on the top of the stack.\n\n\n\n\n\n\nIf none of these steps provide any kind of result, reference error will be\nthrown.\n\n\nPrototypes\n\n\nEach value except null have some kind of prototype object, where value specific\nwill be searched from. Prototype objects might inherit from other prototype\nobjects, creating an inheritance chain, which will be traversed when value\nspecific words are being searched.\n\n\nPrototype of the top-most value on the stack can be extracted with\n\nprototype\n word found in global dictionary. On objects, it can also be found\nas property identified as \n__proto__\n. Objects which do not have \n__proto__\n\nproperty will use the global \nobject\n as prototype instead.\n\n\nNew object instances can be created from objects that have \nprototype\n\nproperty with global word \nnew\n. Value of this property will be placed into\n\n__proto__\n property of the newly instantiated object. For example, if we would\nhave this object as the top-most value on our stack\n\n\n{ \"prototype\": { \"foo\": \"bar\" } }\n\n\n\n\nwe could create an instance of the object with \nnew\n word. After \nnew\n has been\ncalled, instance of the object will be placed as the top-most value of the\nstack. This new object will have property called \nfoo\n available, which value\nwill be a string containing text \n\"bar\"\n.\n\n\nData types\n\n\nNull\n\n\nNull values represent an empty value or no value at all. They are usually\nreturned by words to indicate that nothing was found/accomplished by the word.\nYou can push null values into the stack with the \nnull\n word found in global\ndictionary.\n\n\nBoolean\n\n\nBoolean values represent truthness. They can be placed into the stack with\nwords \ntrue\n and \nfalse\n which can be found in the global dictionary.\n\n\nNumber\n\n\nTODO\n\n\nString\n\n\nString is container for textual data, a sequence of Unicode code points.\n\n\nTODO\n\n\nArray\n\n\nArrays are indexed sequences of other values. Arrays can be constructed with\n\narray literals\n, which use same syntax as is used for arrays in JSON. For\nexample, if you would like to construct and array containing numbers from 0 to\n5 and push that into the stack, you would write:\n\n\n[0, 1, 2, 3, 4, 5]\n\n\n\n\nAfter that, the array is available as the top-most item of the stack.\n\n\nLength of an array can be retrieved with \nlength\n word. This places the number\nof elements in the array as top of the stack, while leaving the array itself\nintact.\n\n\n[1, 2, 3] length # -> [1, 2, 3] 3\n\n\n\n\nItems from the array can be accessed with \n@\n word. You need to place numeric\nindex of the item you wish to retrieve, the array itself and finally execute\nthe word. If the index is not out of bounds, range error will be thrown.\n\n\n1 [1, 2, 3] @ # -> [1, 2, 3] 2\n\n\n\n\nObject\n\n\nObjects are associative arrays that map string keys into values.\n\n\nTODO: Information about object literals and how to access properties.\n\n\nQuote\n\n\nQuote is piece of code that can be executed when required. Quotes can be\nconstructed in many different ways, including \nquote literals\n which are words\nplaced inside parenthesis:\n\n\n( foo bar baz )\n\n\n\n\nThis places a quote with words \nfoo\n, \nbar\n and \nbaz\n into the stack. When you\nexecute the word \ncall\n on the quote, those three words will be executed in\nsequence. Quotes are pretty much like what other languages would call\nfunctions, except that they do not take any arguments but rather operate\ndirectly on the stack.\n\n\nQuotes can also be constructed dynamically with \ncompile\n keyword. This takes\nsource code in form of string, compiles it into a quote and places the compiled\nquote into the stack. Quotes can also be constructed from other quotes by\ncurrying, composing and negation.\n\n\nQuotes can usually be converted back into source code with \n>source\n word,\nwith the exception being native core words that built in the interpreter.\n\n\nError\n\n\nErrors are special values that will be \nthrown\n when some kind of errorneous\nsituation is being encountered. Unless errors are being \ncaught\n and processed\nin some way, the execution of the program will be terminated.\n\n\nErrors contain numeric error code and optional textual description of the\nproblem. Unlike in other languages, it is not possible to construct new types\nof errors.\n\n\nDeclaring new words\n\n\nTODO\n\n\nConditional execution\n\n\nTODO\n\n\nCatching errors\n\n\nTODO\n\n\nModules\n\n\nTODO",
+            "text": "Language reference\n\n\nThis page gives a short summary of the Plorth programming language.\n\n\nInterpreter\n\n\nTODO\n\n\nStack\n\n\nTODO\n\n\nWords and dictionaries\n\n\nWhen the interpreter encounters a whitespace separated word, such as \nfoo\n, it\nwill execute the matching piece of code found in the dictionary with that same\nword as the identifier.\n\n\nWhen a word is being executed, the code to be executed is searched\nthrough the following four steps, in this specific order:\n\n\n\n\n\n\nValue specific words: If the stack is not empty, the word specific to the\n   top-most value of the stack will be searched first. This is done through\n   the prototype chain which will be described below. Most of the operations\n   performed on values are usually value specific, meaning that the same word\n   can execute different operations based on the top-most value of the stack.\n\n\n\n\n\n\nLocal dictionary: TODO\n\n\n\n\n\n\nGlobal dictionary: The Plorth interpreter has a global dictionary of words that\n   will also be searched. This dictionary contains the most basic operations in\n   the Plorth programming language.\n\n\n\n\n\n\nNumber: If the word can be converted into a decimal number, it will be converted\n   into a double precision floating point number and placed on the top of the stack.\n\n\n\n\n\n\nIf none of these steps apply, a reference error will be thrown.\n\n\nPrototypes\n\n\nEach value except null have some kind of prototype object, where value specific words\nwill be searched from. Prototype objects might inherit from other prototype\nobjects, creating an inheritance chain, which will be traversed when value\nspecific words are being searched.\n\n\nPrototype of the top-most value on the stack can be extracted with\n\nprototype\n word found in global dictionary. On objects, it can also be found\nas property identified \n__proto__\n. Objects which do not have \n__proto__\n\nproperty will use the global \nobject\n as prototype instead.\n\n\nNew object instances can be created from objects that have \nprototype\n\nproperty with global word \nnew\n. Value of this property will be placed into\n\n__proto__\n property of the newly instantiated object. For example, if we would\nhave this object as the top-most value on our stack\n\n\n{ \"prototype\": { \"foo\": \"bar\" } }\n\n\n\n\nwe could create an instance of the object with \nnew\n word. After \nnew\n has been\ncalled, an instance of the object will be placed as the top-most value of the\nstack. This new object will have a property called \nfoo\n available, the value of which\nwill be a string containing text \n\"bar\"\n.\n\n\nData types\n\n\nNull\n\n\nNull values represent an empty value or no value at all. It is usually\nreturned by words to indicate that nothing was found/accomplished by the word.\nYou can push null values into the stack with the \nnull\n word found in global\ndictionary.\n\n\nBoolean\n\n\nBoolean values represent truthness. They can be placed onto the stack with\nwords \ntrue\n and \nfalse\n which can be found in the global dictionary.\n\n\nNumber\n\n\nTODO\n\n\nString\n\n\nString is a container for textual data, a sequence of Unicode code points.\n\n\nTODO\n\n\nArray\n\n\nArrays are indexed sequences of other values. Arrays can be constructed with\n\narray literals\n, which use same syntax as is used for arrays in JSON. For\nexample, if you would like to construct an array containing numbers from 0 to\n5 and push that onto the stack, you would write:\n\n\n[0, 1, 2, 3, 4, 5]\n\n\n\n\nAfter that, the array is available as the top-most item of the stack.\n\n\nLength of an array can be retrieved with the \nlength\n word. This places the number\nof elements in the array on top of the stack, while leaving the array itself\nintact.\n\n\n[1, 2, 3] length # -> [1, 2, 3] 3\n\n\n\n\nItems from the array can be accessed with the \n@\n word. You need to place the numeric\nindex of the item you wish to retrieve and the array itself onto the stack and finally execute\nthe word. If the index is out of bounds a range error will be thrown.\n\n\n1 [1, 2, 3] @ # -> [1, 2, 3] 2\n\n\n\n\nObject\n\n\nObjects are associative arrays that map string keys into values.\n\n\nTODO: Information about object literals and how to access properties.\n\n\nQuote\n\n\nQuote is a piece of code that can be executed when required. Quotes can be\nconstructed in many different ways, including \nquote literals\n which are words\nplaced inside parenthesis:\n\n\n( foo bar baz )\n\n\n\n\nThis places a quote with words \nfoo\n, \nbar\n and \nbaz\n onto the stack. When you\nexecute the word \ncall\n on the quote, those three words will be executed in\nsequence. Quotes are pretty much like what other languages would call\nfunctions, except that they do not take any arguments but rather operate\ndirectly on the stack.\n\n\nQuotes can also be constructed dynamically with the \ncompile\n keyword. It takes\nsource code in the form of a string, compiles it into a quote and places the compiled\nquote onto the stack. Quotes can also be constructed from other quotes by\ncurrying, composing and negation.\n\n\nQuotes can usually be converted back into source code with the \n>source\n word,\nwith the exception being native core words that are built into the interpreter.\n\n\nError\n\n\nErrors are special values that will be \nthrown\n when some kind of errorneous\nsituation is encountered. Unless errors are being \ncaught\n and processed\nin some way, the execution of the program will be terminated.\n\n\nErrors contain numeric error code and optional textual description of the\nproblem. Unlike in other languages, it is not possible to construct new types\nof errors.\n\n\nDeclaring new words\n\n\nTODO\n\n\nConditional execution\n\n\nTODO\n\n\nCatching errors\n\n\nTODO\n\n\nModules\n\n\nTODO",
             "title": "Language reference"
         },
         {
             "location": "/language/#language-reference",
-            "text": "This page gives short summary of the Plorth programming language.",
+            "text": "This page gives a short summary of the Plorth programming language.",
             "title": "Language reference"
         },
         {
@@ -57,12 +57,12 @@
         },
         {
             "location": "/language/#words-and-dictionaries",
-            "text": "When the interpreter encounters whitespace separated word, such as  foo , it\nwill execute matching piece of code found from the dictionary with that same\nword as identifier.  When word is being executed, the code that is going to be executed is searched\nthrough these four steps, in this specific order:    Value specific words: If the stack is not empty, word specific to the\n   top-most value of the stack will be searched first. This is done through\n   prototype chain which will be described below. Most of the operations\n   performed on values are usually value specific, meaning that the same word\n   can execute different operations based on the top-most value of the stack.    Local dictionary:    Global dictionary: Plorth interpreter has global dictionary of words that\n   will also be searched. This dictionary contains the most basic operations in\n   the Plorth programming language.    Number: If the word can be converted into floating point decimal number, it\n   will be converted into one and placed on the top of the stack.    If none of these steps provide any kind of result, reference error will be\nthrown.",
+            "text": "When the interpreter encounters a whitespace separated word, such as  foo , it\nwill execute the matching piece of code found in the dictionary with that same\nword as the identifier.  When a word is being executed, the code to be executed is searched\nthrough the following four steps, in this specific order:    Value specific words: If the stack is not empty, the word specific to the\n   top-most value of the stack will be searched first. This is done through\n   the prototype chain which will be described below. Most of the operations\n   performed on values are usually value specific, meaning that the same word\n   can execute different operations based on the top-most value of the stack.    Local dictionary: TODO    Global dictionary: The Plorth interpreter has a global dictionary of words that\n   will also be searched. This dictionary contains the most basic operations in\n   the Plorth programming language.    Number: If the word can be converted into a decimal number, it will be converted\n   into a double precision floating point number and placed on the top of the stack.    If none of these steps apply, a reference error will be thrown.",
             "title": "Words and dictionaries"
         },
         {
             "location": "/language/#prototypes",
-            "text": "Each value except null have some kind of prototype object, where value specific\nwill be searched from. Prototype objects might inherit from other prototype\nobjects, creating an inheritance chain, which will be traversed when value\nspecific words are being searched.  Prototype of the top-most value on the stack can be extracted with prototype  word found in global dictionary. On objects, it can also be found\nas property identified as  __proto__ . Objects which do not have  __proto__ \nproperty will use the global  object  as prototype instead.  New object instances can be created from objects that have  prototype \nproperty with global word  new . Value of this property will be placed into __proto__  property of the newly instantiated object. For example, if we would\nhave this object as the top-most value on our stack  { \"prototype\": { \"foo\": \"bar\" } }  we could create an instance of the object with  new  word. After  new  has been\ncalled, instance of the object will be placed as the top-most value of the\nstack. This new object will have property called  foo  available, which value\nwill be a string containing text  \"bar\" .",
+            "text": "Each value except null have some kind of prototype object, where value specific words\nwill be searched from. Prototype objects might inherit from other prototype\nobjects, creating an inheritance chain, which will be traversed when value\nspecific words are being searched.  Prototype of the top-most value on the stack can be extracted with prototype  word found in global dictionary. On objects, it can also be found\nas property identified  __proto__ . Objects which do not have  __proto__ \nproperty will use the global  object  as prototype instead.  New object instances can be created from objects that have  prototype \nproperty with global word  new . Value of this property will be placed into __proto__  property of the newly instantiated object. For example, if we would\nhave this object as the top-most value on our stack  { \"prototype\": { \"foo\": \"bar\" } }  we could create an instance of the object with  new  word. After  new  has been\ncalled, an instance of the object will be placed as the top-most value of the\nstack. This new object will have a property called  foo  available, the value of which\nwill be a string containing text  \"bar\" .",
             "title": "Prototypes"
         },
         {
@@ -72,12 +72,12 @@
         },
         {
             "location": "/language/#null",
-            "text": "Null values represent an empty value or no value at all. They are usually\nreturned by words to indicate that nothing was found/accomplished by the word.\nYou can push null values into the stack with the  null  word found in global\ndictionary.",
+            "text": "Null values represent an empty value or no value at all. It is usually\nreturned by words to indicate that nothing was found/accomplished by the word.\nYou can push null values into the stack with the  null  word found in global\ndictionary.",
             "title": "Null"
         },
         {
             "location": "/language/#boolean",
-            "text": "Boolean values represent truthness. They can be placed into the stack with\nwords  true  and  false  which can be found in the global dictionary.",
+            "text": "Boolean values represent truthness. They can be placed onto the stack with\nwords  true  and  false  which can be found in the global dictionary.",
             "title": "Boolean"
         },
         {
@@ -87,12 +87,12 @@
         },
         {
             "location": "/language/#string",
-            "text": "String is container for textual data, a sequence of Unicode code points.  TODO",
+            "text": "String is a container for textual data, a sequence of Unicode code points.  TODO",
             "title": "String"
         },
         {
             "location": "/language/#array",
-            "text": "Arrays are indexed sequences of other values. Arrays can be constructed with array literals , which use same syntax as is used for arrays in JSON. For\nexample, if you would like to construct and array containing numbers from 0 to\n5 and push that into the stack, you would write:  [0, 1, 2, 3, 4, 5]  After that, the array is available as the top-most item of the stack.  Length of an array can be retrieved with  length  word. This places the number\nof elements in the array as top of the stack, while leaving the array itself\nintact.  [1, 2, 3] length # -> [1, 2, 3] 3  Items from the array can be accessed with  @  word. You need to place numeric\nindex of the item you wish to retrieve, the array itself and finally execute\nthe word. If the index is not out of bounds, range error will be thrown.  1 [1, 2, 3] @ # -> [1, 2, 3] 2",
+            "text": "Arrays are indexed sequences of other values. Arrays can be constructed with array literals , which use same syntax as is used for arrays in JSON. For\nexample, if you would like to construct an array containing numbers from 0 to\n5 and push that onto the stack, you would write:  [0, 1, 2, 3, 4, 5]  After that, the array is available as the top-most item of the stack.  Length of an array can be retrieved with the  length  word. This places the number\nof elements in the array on top of the stack, while leaving the array itself\nintact.  [1, 2, 3] length # -> [1, 2, 3] 3  Items from the array can be accessed with the  @  word. You need to place the numeric\nindex of the item you wish to retrieve and the array itself onto the stack and finally execute\nthe word. If the index is out of bounds a range error will be thrown.  1 [1, 2, 3] @ # -> [1, 2, 3] 2",
             "title": "Array"
         },
         {
@@ -102,12 +102,12 @@
         },
         {
             "location": "/language/#quote",
-            "text": "Quote is piece of code that can be executed when required. Quotes can be\nconstructed in many different ways, including  quote literals  which are words\nplaced inside parenthesis:  ( foo bar baz )  This places a quote with words  foo ,  bar  and  baz  into the stack. When you\nexecute the word  call  on the quote, those three words will be executed in\nsequence. Quotes are pretty much like what other languages would call\nfunctions, except that they do not take any arguments but rather operate\ndirectly on the stack.  Quotes can also be constructed dynamically with  compile  keyword. This takes\nsource code in form of string, compiles it into a quote and places the compiled\nquote into the stack. Quotes can also be constructed from other quotes by\ncurrying, composing and negation.  Quotes can usually be converted back into source code with  >source  word,\nwith the exception being native core words that built in the interpreter.",
+            "text": "Quote is a piece of code that can be executed when required. Quotes can be\nconstructed in many different ways, including  quote literals  which are words\nplaced inside parenthesis:  ( foo bar baz )  This places a quote with words  foo ,  bar  and  baz  onto the stack. When you\nexecute the word  call  on the quote, those three words will be executed in\nsequence. Quotes are pretty much like what other languages would call\nfunctions, except that they do not take any arguments but rather operate\ndirectly on the stack.  Quotes can also be constructed dynamically with the  compile  keyword. It takes\nsource code in the form of a string, compiles it into a quote and places the compiled\nquote onto the stack. Quotes can also be constructed from other quotes by\ncurrying, composing and negation.  Quotes can usually be converted back into source code with the  >source  word,\nwith the exception being native core words that are built into the interpreter.",
             "title": "Quote"
         },
         {
             "location": "/language/#error",
-            "text": "Errors are special values that will be  thrown  when some kind of errorneous\nsituation is being encountered. Unless errors are being  caught  and processed\nin some way, the execution of the program will be terminated.  Errors contain numeric error code and optional textual description of the\nproblem. Unlike in other languages, it is not possible to construct new types\nof errors.",
+            "text": "Errors are special values that will be  thrown  when some kind of errorneous\nsituation is encountered. Unless errors are being  caught  and processed\nin some way, the execution of the program will be terminated.  Errors contain numeric error code and optional textual description of the\nproblem. Unlike in other languages, it is not possible to construct new types\nof errors.",
             "title": "Error"
         },
         {
@@ -129,6 +129,696 @@
             "location": "/language/#modules",
             "text": "TODO",
             "title": "Modules"
+        },
+        {
+            "location": "/api/",
+            "text": "API documentation\n\n\n\n\n\nGlobal dictionary\n\n\n\n\n!=\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nTests whether the two top-most values of the stack are equal.\n\n\n\n\n2drop\n\n\n\n  \nTakes:\n\n  \nany, any\n\n\n\n\n\nDiscards two top-most values from the stack.\n\n\n1 2 3 2drop #=> 1\n\n\n\n\n\n2dup\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any, any, any\n\n\n\n\n\nDuplicates two top-most values of the stack.\n\n\n1 2 2dup #=> 1 2 1 2\n\n\n\n\n\n=\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nTests whether the two top-most values of the stack are equal.\n\n\n\n\n>boolean\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nConverts top-most value of the stack into boolean. Null and false will\nbecome false while everything else will be true.\n\n\n\n\n>source\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts top-most value of the stack into a string that most accurately\nrepresents what the value would look like in source code.\n\n\n\n\n>string\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts top-most value of the stack into string.\n\n\n\n\narray?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is array.\n\n\n\n\nboolean?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is boolean.\n\n\n\n\nclear\n\n\nClears the entire stack of current context.\n\n\n\n\ncompile\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nCompiles given string of source code into quote.\n\n\n\n\nconst\n\n\n\n  \nTakes:\n\n  \nany, string\n\n\n\n\n\nDeclares given value as constant in the current context with name\nidentified by given string.\n\n\n\n\ndepth\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPushes current depth of the stack onto stack.\n\n\n\n\ndrop\n\n\n\n  \nTakes:\n\n  \nany\n\n\n\n\n\nDiscards top-most value from the stack.\n\n\n1 drop #=> empty stack\n\n\n\n\n\ndup\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, any\n\n\n\n\n\nDuplicates top-most value of the stack.\n\n\n1 dup #=> 1 1\n\n\n\n\n\ne\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPushes Eulers number onto stack.\n\n\n\n\nemit\n\n\n\n  \nTakes:\n\n  \nnumber\n\n\n\n\n\nOutputs given Unicode code point into the standard output stream. Range\nerror will be thrown if the given number is not valid Unicode code point.\n\n\n\n\nerror?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is error.\n\n\n\n\nfalse\n\n\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nPushes boolean value of false onto stack.\n\n\n\n\nglobals\n\n\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nReturns global dictionary as object.\n\n\n\n\nif\n\n\n\n  \nTakes:\n\n  \nboolean, quote\n\n\n\n\n\nExecutes quote if the boolean value is true.\n\n\n\n\nif-else\n\n\n\n  \nTakes:\n\n  \nboolean, quote, quote\n\n\n\n\n\nCalls first quote if boolean value is true, second quote otherwise.\n\n\n\n\nimport\n\n\n\n  \nTakes:\n\n  \nstring\n\n\n\n\n\nImports module from given path and adds all of it's exported words into\nthis execution context.\n\n\n\n\nlocals\n\n\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nReturns local dictionary of current execution context as object.\n\n\n\n\nnip\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany\n\n\n\n\n\nDrops the first value and pushes second value on the stack.\n\n\n1 2 nip #=> 2\n\n\n\n\n\nnop\n\n\nDoes nothing. Can be used to construct empty quotes.\n\n\n\n\nnow\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns the timestamp of the number of seconds that have elapsed since the\nUnix epoch (1 January 1970 00:00:00 UTC).\n\n\n\n\nnull\n\n\n\n  \nGives:\n\n  \nnull\n\n\n\n\n\nPushes null value onto stack.\n\n\n\n\nnull?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is null.\n\n\n\n\nnumber?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is boolean.\n\n\n\n\nobject?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is object.\n\n\n\n\nover\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any, any\n\n\n\n\n\nCopies second top-most value of the stack into top-most value of the\nstack.\n\n\n1 2 over #=> 1 2 1\n\n\n\n\n\npi\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPushes value of pi onto stack.\n\n\n\n\nprint\n\n\n\n  \nTakes:\n\n  \nany\n\n\n\n\n\nPrints top-most value of the stack to stdout.\n\n\n\n\nprintln\n\n\n\n  \nTakes:\n\n  \nany\n\n\n\n\n\nPrints top-most value of the stack to stdout with terminating new line.\n\n\n\n\nprototype\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, object\n\n\n\n\n\nRetrieves prototype of the top-most value. If the top-most value of the\nstack is null, null will be returned instead.\n\n\n\n\nquote?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is quote.\n\n\n\n\nrange-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstruct instance of range error with with given optional error message\nand places it on the stack.\n\n\n\n\nrot\n\n\n\n  \nTakes:\n\n  \nany, any, any\n\n  \nGives:\n\n  \nany, any, any\n\n\n\n\n\nRotates three top-most values on the stack.\n\n\n1 2 3 rot #=> 2 3 1\n\n\n\n\n\nstring?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is string.\n\n\n\n\nswap\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any\n\n\n\n\n\nSwaps positions of two top-most values on the stack.\n\n\n1 2 swap #=> 2 1\n\n\n\n\n\ntrue\n\n\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nPushes boolean value of true onto stack.\n\n\n\n\ntry\n\n\n\n  \nTakes:\n\n  \nquote, quote, quote\n\n\n\n\n\nExecutes first quote and if it throws an error, calls second quote with\nthe error on top of the stack. If no error was thrown, third quote will\nbe called instead.\n\n\n\n\ntuck\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any, any\n\n\n\n\n\nCopies top-most value of the stack as the third top-most value of the\nstack.\n\n\n1 2 tuck #=> 2 1 2\n\n\n\n\n\ntype-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstruct instance of type error with with given optional error message\nand places it on the stack.\n\n\n\n\ntypeof\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, string\n\n\n\n\n\nReturns name of the type of given value as string.\n\n\n\n\nunknown-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstruct instance of unknown error with with given optional error\nmessage and places it on the stack.\n\n\n\n\nvalue-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstructs instance of value error with given optional error message and\nplaces it on the stack.\n\n\n\n\nwhile\n\n\n\n  \nTakes:\n\n  \nquote, quote\n\n\n\n\n\nExecutes second quote as long as the first quote returns true.\n\n\narray\n\n\n\n\n!\n\n\n\n  \nTakes:\n\n  \nany, number, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nSets value in the array at given index. Negative indexes count backwrds.\nIf index is larger than number of elements in the array, value will be\nappended as the last element of the array.\n\n\n\n\n&\n\n\n\n  \nTakes:\n\n  \narray, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nSet intersection: Returns new array containing unique elements common to\nthe two arrays.\n\n\n\n\n*\n\n\n\n  \nTakes:\n\n  \nnumber, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nRepeats array given number of times.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \narray, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nConcatenates contents of two arrays and returns result.\n\n\n\n\n@\n\n\n\n  \nTakes:\n\n  \nnumber, array\n\n  \nGives:\n\n  \narray, any\n\n\n\n\n\nRetrieves value from array at given numerical index. Negative indexes\ncount backwards. If given index is out of bounds, range error will be\nthrown.\n\n\n\n\nevery?\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, boolean\n\n\n\n\n\nTests whether all elements in the array passes the test implemented by the\nprovided quote.\n\n\n\n\nextract\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \nany...\n\n\n\n\n\nExtracts all values from the array and places them into the stack.\n\n\n\n\nfilter\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nApplies quote once for each element in the array and constructs new array\nfrom ones which passed the test.\n\n\n\n\nfind\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, any|null\n\n\n\n\n\nReturns first element from the array that satisfies the provided testing\nquote. Otherwise null is returned.\n\n\n\n\nfind-index\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, number|null\n\n\n\n\n\nReturns index of first element from the array that satisfies the provided\ntesting quote. Otherwise null is returned.\n\n\n\n\nfor-each\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n\n\n\n\nRuns quote once for every element in the array.\n\n\n\n\nincludes?\n\n\n\n  \nTakes:\n\n  \nany, array\n\n  \nGives:\n\n  \narray, boolean\n\n\n\n\n\nSearches for given value from the array and returns true if it's included\nin the array and false if it's not.\n\n\n\n\nindex-of\n\n\n\n  \nTakes:\n\n  \nany, array\n\n  \nGives:\n\n  \narray, number|null\n\n\n\n\n\nSearches for given value from the array and returns it's index in the array\nif it's included in the array and null when it's not.\n\n\n\n\njoin\n\n\n\n  \nTakes:\n\n  \nstring, array\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConcatenates all elements from the array into single string, delimited by\nthe given separator string.\n\n\n\n\nlength\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \narray, number\n\n\n\n\n\nReturns number of elements in the array, while keeping the array in the\nstack.\n\n\n\n\nmap\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nApplies quote once for each element in the array and constructs new array\nfrom values returned by the quote.\n\n\n\n\nreduce\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \nany\n\n\n\n\n\nApplies given quote against an acculumator and each element in array to\nreduce it into single value.\n\n\n\n\nreverse\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nReturns reversed copy of the array where the first array element becomes\nthe last, and the last array element becomes first.\n\n\n\n\nsome?\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, boolean\n\n\n\n\n\nTests whether any element in the array passes the test implemented by the\nprovided quote.\n\n\n\n\nuniq\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nCreates a duplicate free version of the array.\n\n\n\n\n|\n\n\n\n  \nTakes:\n\n  \narray, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nSet union: Returns new array by joining the two given arrays, excluding any\nduplicates and preserving the order from the given arrays.\n\n\nboolean\n\n\n\n\nand\n\n\n\n  \nTakes:\n\n  \nboolean, boolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nLogical AND. Returns true if both values are true.\n\n\n\n\nnot\n\n\n\n  \nTakes:\n\n  \nboolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nNegates given boolean value.\n\n\n\n\nor\n\n\n\n  \nTakes:\n\n  \nboolean, boolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nLogical OR. Returns true if either one of the values are true.\n\n\n\n\nxor\n\n\n\n  \nTakes:\n\n  \nboolean, boolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nExclusive OR.\n\n\nerror\n\n\n\n\ncode\n\n\n\n  \nTakes:\n\n  \nerror\n\n  \nGives:\n\n  \nerror, number\n\n\n\n\n\nReturns error code extracted from the error in numeric form.\n\n\n\n\nmessage\n\n\n\n  \nTakes:\n\n  \nerror\n\n  \nGives:\n\n  \nerror, string|null\n\n\n\n\n\nReturns error message extracted from the error, or null if the error does\nnot have any error message.\n\n\n\n\nthrow\n\n\n\n  \nTakes:\n\n  \nerror\n\n\n\n\n\nSets given error as current error of the execution context.\n\n\nnumber\n\n\n\n\n%\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nComputes the floating-point remainder of the division operation between the\ntwo given numbers.\n\n\n\n\n*\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPerforms multiplication on the two given numbers.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPerforms addition on the two given numbers.\n\n\n\n\n-\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPerforms substraction on the two given numbers.\n\n\n\n\n/\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPerforms division on the two given numbers.\n\n\n\n\n<\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if first number is lesser than the second one.\n\n\n\n\n<=\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if first number is less or equal than the second one.\n\n\n\n\n>\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if first number is greater than the second one.\n\n\n\n\n>=\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if first number is greater or equal than the second one.\n\n\n\n\nabs\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns absolute value of the number.\n\n\n\n\nceil\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nComputes the smallest integer value not less than given number.\n\n\n\n\nclamp\n\n\n\n  \nTakes:\n\n  \nnumber, number, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nClamps top-most number between the minimum and maximum limits.\n\n\n\n\nfinite?\n\n\n\n  \nTakes:\n\n  \nnum\n\n  \nGives:\n\n  \nnumber, boolean\n\n\n\n\n\nReturns true if given number is finite.\n\n\n\n\nfloor\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nComputes the largest integer value not greater than given number.\n\n\n\n\nin-range?\n\n\n\n  \nTakes:\n\n  \nnumber, number, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nTests whether the top-most number is in range of given minimum and maximum\nnumbers.\n\n\n\n\nmax\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns maximum of two numbers.\n\n\n\n\nmin\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns minimum of two numbers.\n\n\n\n\nnan?\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber, boolean\n\n\n\n\n\nReturns true if given number if NaN.\n\n\n\n\nround\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nRounds number to nearest integer value.\n\n\n\n\ntimes\n\n\n\n  \nTakes:\n\n  \nquote, number\n\n\n\n\n\nExecutes quote given number of times.\n\n\nobject\n\n\n\n\n!\n\n\n\n  \nTakes:\n\n  \nany, string, object\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nConstructs copy of the object with new named property either introduced\nor replaced.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \nobject, object\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nCombines contents of two objects together and returns result.\n\n\n\n\n@\n\n\n\n  \nTakes:\n\n  \nstring, object\n\n  \nGives:\n\n  \nobject, any\n\n\n\n\n\nRetrieves value identified by given string from properties of the object.\nIf the object does not have such property, range error will be thrown.\nNotice that inherited properties are also included in the search.\n\n\n\n\nhas-own?\n\n\n\n  \nTakes:\n\n  \nstring, object\n\n  \nGives:\n\n  \nobject, boolean\n\n\n\n\n\nTests whether object has own property with given identifier. Inherited\nproperties are not included in the search.\n\n\n\n\nhas?\n\n\n\n  \nTakes:\n\n  \nstring, object\n\n  \nGives:\n\n  \nobject, boolean\n\n\n\n\n\nTests whether object has property with given identifier. Notice that\ninherited properties are also included in the search.\n\n\n\n\nkeys\n\n\n\n  \nTakes:\n\n  \nobject\n\n  \nGives:\n\n  \nobject, array\n\n\n\n\n\nRetrieves all keys from the object and returns them in an array. Notice\nthat inherited properties are not included in the list.\n\n\n\n\nnew\n\n\n\n  \nTakes:\n\n  \nany...\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nConstructs new instance of the object and invokes it's constructor if it\nhas one with the newly constructed object pushed into top of the stack.\nType error will be thrown if the object has no \"prototype\" property.\n\n\n\n\nvalues\n\n\n\n  \nTakes:\n\n  \nobject\n\n  \nGives:\n\n  \nobject, array\n\n\n\n\n\nRetrieves all values from the object and returns them in an array. Notice\nthat inherited properties are not included in the list.\n\n\nquote\n\n\n\n\ncall\n\n\n\n  \nTakes:\n\n  \nquote\n\n\n\n\n\nExecutes quote taken from top of the stack.\n\n\n\n\ncompose\n\n\n\n  \nTakes:\n\n  \nquote, quote\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nConstructs new quote which will call the two given quotes in sequence.\n\n\n\n\ncurry\n\n\n\n  \nTakes:\n\n  \nany, quote\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nConstructs curried quote where given value will be pushed into the stack\nbefore calling the original quote.\n\n\n\n\nnegate\n\n\n\n  \nTakes:\n\n  \nquote, quote\n\n\n\n\n\nProvides:\nConstructs negated version of given quote which negates boolean result\nreturned by the original quote.\n\n\nstring\n\n\n\n\n*\n\n\n\n  \nTakes:\n\n  \nnumber, string\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nRepeats string given number of times.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \nstring, string\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConcatenates contents of two strings and returns the result.\n\n\n\n\n>number\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nConverts string into floating point decimal number, or throws value error\nif the number cannot be converted into one.\n\n\n\n\n@\n\n\n\n  \nTakes:\n\n  \nnumber, string\n\n  \nGives:\n\n  \nstring, string\n\n\n\n\n\nRetrieves character from given index. Negative indexes count backwards. If\ngiven index is out of bounds, range error will be thrown.\n\n\n\n\ncapitalize\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts first character of the string into upper case and remaining to\nlower case.\n\n\n\n\nchars\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts characters from the string and returns them in an array of\nsubstrings.\n\n\n\n\nlength\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, number\n\n\n\n\n\nReturns length of the string.\n\n\n\n\nlines\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts lines from the string and returns them in an array.\n\n\n\n\nlower-case\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts string into lower case.\n\n\n\n\nlower-case?\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, boolean\n\n\n\n\n\nTests whether the string contains only lower case characters. Empty strings\nreturn false.\n\n\n\n\nreverse\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nReturns reversed copy of the string.\n\n\n\n\nrunes\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts Unicode code points from the string and returns them in an array\nof numbers.\n\n\n\n\nspace?\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, boolean\n\n\n\n\n\nTests whether the string contains only whitespace characters. Empty strings\nreturn false.\n\n\n\n\nswap-case\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConstructs copy of string where lower case characters have been turned into\nupper case and vice versa.\n\n\n\n\ntrim\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nStrips whitespace from begining and end of the string and returns result.\n\n\n\n\ntrim-left\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nStrips whitespace from begining of the string and returns result.\n\n\n\n\ntrim-right\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nStrips whitespace from end of the string and returns result.\n\n\n\n\nupper-case?\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, boolean\n\n\n\n\n\nTests whether the string contains only upper case characters. Empty strings\nreturn false.\n\n\n\n\nwords\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts white space separated words from the string and returns them in\nan array.",
+            "title": "API reference"
+        },
+        {
+            "location": "/api/#api-documentation",
+            "text": "",
+            "title": "API documentation"
+        },
+        {
+            "location": "/api/#global-dictionary",
+            "text": "",
+            "title": "Global dictionary"
+        },
+        {
+            "location": "/api/#_1",
+            "text": "Takes: \n   any, any \n   Gives: \n   boolean   Tests whether the two top-most values of the stack are equal.",
+            "title": "!="
+        },
+        {
+            "location": "/api/#2drop",
+            "text": "Takes: \n   any, any   Discards two top-most values from the stack.  1 2 3 2drop #=> 1",
+            "title": "2drop"
+        },
+        {
+            "location": "/api/#2dup",
+            "text": "Takes: \n   any, any \n   Gives: \n   any, any, any, any   Duplicates two top-most values of the stack.  1 2 2dup #=> 1 2 1 2",
+            "title": "2dup"
+        },
+        {
+            "location": "/api/#_2",
+            "text": "Takes: \n   any, any \n   Gives: \n   boolean   Tests whether the two top-most values of the stack are equal.",
+            "title": "="
+        },
+        {
+            "location": "/api/#boolean",
+            "text": "Takes: \n   any \n   Gives: \n   boolean   Converts top-most value of the stack into boolean. Null and false will\nbecome false while everything else will be true.",
+            "title": "&gt;boolean"
+        },
+        {
+            "location": "/api/#source",
+            "text": "Takes: \n   any \n   Gives: \n   string   Converts top-most value of the stack into a string that most accurately\nrepresents what the value would look like in source code.",
+            "title": "&gt;source"
+        },
+        {
+            "location": "/api/#string",
+            "text": "Takes: \n   any \n   Gives: \n   string   Converts top-most value of the stack into string.",
+            "title": "&gt;string"
+        },
+        {
+            "location": "/api/#array",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is array.",
+            "title": "array?"
+        },
+        {
+            "location": "/api/#boolean_1",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is boolean.",
+            "title": "boolean?"
+        },
+        {
+            "location": "/api/#clear",
+            "text": "Clears the entire stack of current context.",
+            "title": "clear"
+        },
+        {
+            "location": "/api/#compile",
+            "text": "Takes: \n   string \n   Gives: \n   quote   Compiles given string of source code into quote.",
+            "title": "compile"
+        },
+        {
+            "location": "/api/#const",
+            "text": "Takes: \n   any, string   Declares given value as constant in the current context with name\nidentified by given string.",
+            "title": "const"
+        },
+        {
+            "location": "/api/#depth",
+            "text": "Gives: \n   number   Pushes current depth of the stack onto stack.",
+            "title": "depth"
+        },
+        {
+            "location": "/api/#drop",
+            "text": "Takes: \n   any   Discards top-most value from the stack.  1 drop #=> empty stack",
+            "title": "drop"
+        },
+        {
+            "location": "/api/#dup",
+            "text": "Takes: \n   any \n   Gives: \n   any, any   Duplicates top-most value of the stack.  1 dup #=> 1 1",
+            "title": "dup"
+        },
+        {
+            "location": "/api/#e",
+            "text": "Gives: \n   number   Pushes Eulers number onto stack.",
+            "title": "e"
+        },
+        {
+            "location": "/api/#emit",
+            "text": "Takes: \n   number   Outputs given Unicode code point into the standard output stream. Range\nerror will be thrown if the given number is not valid Unicode code point.",
+            "title": "emit"
+        },
+        {
+            "location": "/api/#error",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is error.",
+            "title": "error?"
+        },
+        {
+            "location": "/api/#false",
+            "text": "Gives: \n   boolean   Pushes boolean value of false onto stack.",
+            "title": "false"
+        },
+        {
+            "location": "/api/#globals",
+            "text": "Gives: \n   object   Returns global dictionary as object.",
+            "title": "globals"
+        },
+        {
+            "location": "/api/#if",
+            "text": "Takes: \n   boolean, quote   Executes quote if the boolean value is true.",
+            "title": "if"
+        },
+        {
+            "location": "/api/#if-else",
+            "text": "Takes: \n   boolean, quote, quote   Calls first quote if boolean value is true, second quote otherwise.",
+            "title": "if-else"
+        },
+        {
+            "location": "/api/#import",
+            "text": "Takes: \n   string   Imports module from given path and adds all of it's exported words into\nthis execution context.",
+            "title": "import"
+        },
+        {
+            "location": "/api/#locals",
+            "text": "Gives: \n   object   Returns local dictionary of current execution context as object.",
+            "title": "locals"
+        },
+        {
+            "location": "/api/#nip",
+            "text": "Takes: \n   any, any \n   Gives: \n   any   Drops the first value and pushes second value on the stack.  1 2 nip #=> 2",
+            "title": "nip"
+        },
+        {
+            "location": "/api/#nop",
+            "text": "Does nothing. Can be used to construct empty quotes.",
+            "title": "nop"
+        },
+        {
+            "location": "/api/#now",
+            "text": "Gives: \n   number   Returns the timestamp of the number of seconds that have elapsed since the\nUnix epoch (1 January 1970 00:00:00 UTC).",
+            "title": "now"
+        },
+        {
+            "location": "/api/#null",
+            "text": "Gives: \n   null   Pushes null value onto stack.",
+            "title": "null"
+        },
+        {
+            "location": "/api/#null_1",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is null.",
+            "title": "null?"
+        },
+        {
+            "location": "/api/#number",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is boolean.",
+            "title": "number?"
+        },
+        {
+            "location": "/api/#object",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is object.",
+            "title": "object?"
+        },
+        {
+            "location": "/api/#over",
+            "text": "Takes: \n   any, any \n   Gives: \n   any, any, any   Copies second top-most value of the stack into top-most value of the\nstack.  1 2 over #=> 1 2 1",
+            "title": "over"
+        },
+        {
+            "location": "/api/#pi",
+            "text": "Gives: \n   number   Pushes value of pi onto stack.",
+            "title": "pi"
+        },
+        {
+            "location": "/api/#print",
+            "text": "Takes: \n   any   Prints top-most value of the stack to stdout.",
+            "title": "print"
+        },
+        {
+            "location": "/api/#println",
+            "text": "Takes: \n   any   Prints top-most value of the stack to stdout with terminating new line.",
+            "title": "println"
+        },
+        {
+            "location": "/api/#prototype",
+            "text": "Takes: \n   any \n   Gives: \n   any, object   Retrieves prototype of the top-most value. If the top-most value of the\nstack is null, null will be returned instead.",
+            "title": "prototype"
+        },
+        {
+            "location": "/api/#quote",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is quote.",
+            "title": "quote?"
+        },
+        {
+            "location": "/api/#range-error",
+            "text": "Takes: \n   string|null \n   Gives: \n   error   Construct instance of range error with with given optional error message\nand places it on the stack.",
+            "title": "range-error"
+        },
+        {
+            "location": "/api/#rot",
+            "text": "Takes: \n   any, any, any \n   Gives: \n   any, any, any   Rotates three top-most values on the stack.  1 2 3 rot #=> 2 3 1",
+            "title": "rot"
+        },
+        {
+            "location": "/api/#string_1",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is string.",
+            "title": "string?"
+        },
+        {
+            "location": "/api/#swap",
+            "text": "Takes: \n   any, any \n   Gives: \n   any, any   Swaps positions of two top-most values on the stack.  1 2 swap #=> 2 1",
+            "title": "swap"
+        },
+        {
+            "location": "/api/#true",
+            "text": "Gives: \n   boolean   Pushes boolean value of true onto stack.",
+            "title": "true"
+        },
+        {
+            "location": "/api/#try",
+            "text": "Takes: \n   quote, quote, quote   Executes first quote and if it throws an error, calls second quote with\nthe error on top of the stack. If no error was thrown, third quote will\nbe called instead.",
+            "title": "try"
+        },
+        {
+            "location": "/api/#tuck",
+            "text": "Takes: \n   any, any \n   Gives: \n   any, any, any   Copies top-most value of the stack as the third top-most value of the\nstack.  1 2 tuck #=> 2 1 2",
+            "title": "tuck"
+        },
+        {
+            "location": "/api/#type-error",
+            "text": "Takes: \n   string|null \n   Gives: \n   error   Construct instance of type error with with given optional error message\nand places it on the stack.",
+            "title": "type-error"
+        },
+        {
+            "location": "/api/#typeof",
+            "text": "Takes: \n   any \n   Gives: \n   any, string   Returns name of the type of given value as string.",
+            "title": "typeof"
+        },
+        {
+            "location": "/api/#unknown-error",
+            "text": "Takes: \n   string|null \n   Gives: \n   error   Construct instance of unknown error with with given optional error\nmessage and places it on the stack.",
+            "title": "unknown-error"
+        },
+        {
+            "location": "/api/#value-error",
+            "text": "Takes: \n   string|null \n   Gives: \n   error   Constructs instance of value error with given optional error message and\nplaces it on the stack.",
+            "title": "value-error"
+        },
+        {
+            "location": "/api/#while",
+            "text": "Takes: \n   quote, quote   Executes second quote as long as the first quote returns true.",
+            "title": "while"
+        },
+        {
+            "location": "/api/#array_1",
+            "text": "",
+            "title": "array"
+        },
+        {
+            "location": "/api/#_3",
+            "text": "Takes: \n   any, number, array \n   Gives: \n   array   Sets value in the array at given index. Negative indexes count backwrds.\nIf index is larger than number of elements in the array, value will be\nappended as the last element of the array.",
+            "title": "!"
+        },
+        {
+            "location": "/api/#_4",
+            "text": "Takes: \n   array, array \n   Gives: \n   array   Set intersection: Returns new array containing unique elements common to\nthe two arrays.",
+            "title": "&amp;"
+        },
+        {
+            "location": "/api/#_5",
+            "text": "Takes: \n   number, array \n   Gives: \n   array   Repeats array given number of times.",
+            "title": "*"
+        },
+        {
+            "location": "/api/#_6",
+            "text": "Takes: \n   array, array \n   Gives: \n   array   Concatenates contents of two arrays and returns result.",
+            "title": "+"
+        },
+        {
+            "location": "/api/#_7",
+            "text": "Takes: \n   number, array \n   Gives: \n   array, any   Retrieves value from array at given numerical index. Negative indexes\ncount backwards. If given index is out of bounds, range error will be\nthrown.",
+            "title": "@"
+        },
+        {
+            "location": "/api/#every",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array, boolean   Tests whether all elements in the array passes the test implemented by the\nprovided quote.",
+            "title": "every?"
+        },
+        {
+            "location": "/api/#extract",
+            "text": "Takes: \n   array \n   Gives: \n   any...   Extracts all values from the array and places them into the stack.",
+            "title": "extract"
+        },
+        {
+            "location": "/api/#filter",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array   Applies quote once for each element in the array and constructs new array\nfrom ones which passed the test.",
+            "title": "filter"
+        },
+        {
+            "location": "/api/#find",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array, any|null   Returns first element from the array that satisfies the provided testing\nquote. Otherwise null is returned.",
+            "title": "find"
+        },
+        {
+            "location": "/api/#find-index",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array, number|null   Returns index of first element from the array that satisfies the provided\ntesting quote. Otherwise null is returned.",
+            "title": "find-index"
+        },
+        {
+            "location": "/api/#for-each",
+            "text": "Takes: \n   quote, array   Runs quote once for every element in the array.",
+            "title": "for-each"
+        },
+        {
+            "location": "/api/#includes",
+            "text": "Takes: \n   any, array \n   Gives: \n   array, boolean   Searches for given value from the array and returns true if it's included\nin the array and false if it's not.",
+            "title": "includes?"
+        },
+        {
+            "location": "/api/#index-of",
+            "text": "Takes: \n   any, array \n   Gives: \n   array, number|null   Searches for given value from the array and returns it's index in the array\nif it's included in the array and null when it's not.",
+            "title": "index-of"
+        },
+        {
+            "location": "/api/#join",
+            "text": "Takes: \n   string, array \n   Gives: \n   string   Concatenates all elements from the array into single string, delimited by\nthe given separator string.",
+            "title": "join"
+        },
+        {
+            "location": "/api/#length",
+            "text": "Takes: \n   array \n   Gives: \n   array, number   Returns number of elements in the array, while keeping the array in the\nstack.",
+            "title": "length"
+        },
+        {
+            "location": "/api/#map",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array   Applies quote once for each element in the array and constructs new array\nfrom values returned by the quote.",
+            "title": "map"
+        },
+        {
+            "location": "/api/#reduce",
+            "text": "Takes: \n   quote, array \n   Gives: \n   any   Applies given quote against an acculumator and each element in array to\nreduce it into single value.",
+            "title": "reduce"
+        },
+        {
+            "location": "/api/#reverse",
+            "text": "Takes: \n   array \n   Gives: \n   array   Returns reversed copy of the array where the first array element becomes\nthe last, and the last array element becomes first.",
+            "title": "reverse"
+        },
+        {
+            "location": "/api/#some",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array, boolean   Tests whether any element in the array passes the test implemented by the\nprovided quote.",
+            "title": "some?"
+        },
+        {
+            "location": "/api/#uniq",
+            "text": "Takes: \n   array \n   Gives: \n   array   Creates a duplicate free version of the array.",
+            "title": "uniq"
+        },
+        {
+            "location": "/api/#_8",
+            "text": "Takes: \n   array, array \n   Gives: \n   array   Set union: Returns new array by joining the two given arrays, excluding any\nduplicates and preserving the order from the given arrays.",
+            "title": "|"
+        },
+        {
+            "location": "/api/#boolean_2",
+            "text": "",
+            "title": "boolean"
+        },
+        {
+            "location": "/api/#and",
+            "text": "Takes: \n   boolean, boolean \n   Gives: \n   boolean   Logical AND. Returns true if both values are true.",
+            "title": "and"
+        },
+        {
+            "location": "/api/#not",
+            "text": "Takes: \n   boolean \n   Gives: \n   boolean   Negates given boolean value.",
+            "title": "not"
+        },
+        {
+            "location": "/api/#or",
+            "text": "Takes: \n   boolean, boolean \n   Gives: \n   boolean   Logical OR. Returns true if either one of the values are true.",
+            "title": "or"
+        },
+        {
+            "location": "/api/#xor",
+            "text": "Takes: \n   boolean, boolean \n   Gives: \n   boolean   Exclusive OR.",
+            "title": "xor"
+        },
+        {
+            "location": "/api/#error_1",
+            "text": "",
+            "title": "error"
+        },
+        {
+            "location": "/api/#code",
+            "text": "Takes: \n   error \n   Gives: \n   error, number   Returns error code extracted from the error in numeric form.",
+            "title": "code"
+        },
+        {
+            "location": "/api/#message",
+            "text": "Takes: \n   error \n   Gives: \n   error, string|null   Returns error message extracted from the error, or null if the error does\nnot have any error message.",
+            "title": "message"
+        },
+        {
+            "location": "/api/#throw",
+            "text": "Takes: \n   error   Sets given error as current error of the execution context.",
+            "title": "throw"
+        },
+        {
+            "location": "/api/#number_1",
+            "text": "",
+            "title": "number"
+        },
+        {
+            "location": "/api/#_9",
+            "text": "Takes: \n   number, number \n   Gives: \n   number   Computes the floating-point remainder of the division operation between the\ntwo given numbers.",
+            "title": "%"
+        },
+        {
+            "location": "/api/#_10",
+            "text": "Takes: \n   number, number \n   Gives: \n   number   Performs multiplication on the two given numbers.",
+            "title": "*"
+        },
+        {
+            "location": "/api/#_11",
+            "text": "Takes: \n   number, number \n   Gives: \n   number   Performs addition on the two given numbers.",
+            "title": "+"
+        },
+        {
+            "location": "/api/#-",
+            "text": "Takes: \n   number, number \n   Gives: \n   number   Performs substraction on the two given numbers.",
+            "title": "-"
+        },
+        {
+            "location": "/api/#_12",
+            "text": "Takes: \n   number, number \n   Gives: \n   number   Performs division on the two given numbers.",
+            "title": "/"
+        },
+        {
+            "location": "/api/#_13",
+            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if first number is lesser than the second one.",
+            "title": "&lt;"
+        },
+        {
+            "location": "/api/#_14",
+            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if first number is less or equal than the second one.",
+            "title": "&lt;="
+        },
+        {
+            "location": "/api/#_15",
+            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if first number is greater than the second one.",
+            "title": "&gt;"
+        },
+        {
+            "location": "/api/#_16",
+            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if first number is greater or equal than the second one.",
+            "title": "&gt;="
+        },
+        {
+            "location": "/api/#abs",
+            "text": "Takes: \n   number \n   Gives: \n   number   Returns absolute value of the number.",
+            "title": "abs"
+        },
+        {
+            "location": "/api/#ceil",
+            "text": "Takes: \n   number \n   Gives: \n   number   Computes the smallest integer value not less than given number.",
+            "title": "ceil"
+        },
+        {
+            "location": "/api/#clamp",
+            "text": "Takes: \n   number, number, number \n   Gives: \n   number   Clamps top-most number between the minimum and maximum limits.",
+            "title": "clamp"
+        },
+        {
+            "location": "/api/#finite",
+            "text": "Takes: \n   num \n   Gives: \n   number, boolean   Returns true if given number is finite.",
+            "title": "finite?"
+        },
+        {
+            "location": "/api/#floor",
+            "text": "Takes: \n   number \n   Gives: \n   number   Computes the largest integer value not greater than given number.",
+            "title": "floor"
+        },
+        {
+            "location": "/api/#in-range",
+            "text": "Takes: \n   number, number, number \n   Gives: \n   boolean   Tests whether the top-most number is in range of given minimum and maximum\nnumbers.",
+            "title": "in-range?"
+        },
+        {
+            "location": "/api/#max",
+            "text": "Takes: \n   number, number \n   Gives: \n   number   Returns maximum of two numbers.",
+            "title": "max"
+        },
+        {
+            "location": "/api/#min",
+            "text": "Takes: \n   number, number \n   Gives: \n   number   Returns minimum of two numbers.",
+            "title": "min"
+        },
+        {
+            "location": "/api/#nan",
+            "text": "Takes: \n   number \n   Gives: \n   number, boolean   Returns true if given number if NaN.",
+            "title": "nan?"
+        },
+        {
+            "location": "/api/#round",
+            "text": "Takes: \n   number \n   Gives: \n   number   Rounds number to nearest integer value.",
+            "title": "round"
+        },
+        {
+            "location": "/api/#times",
+            "text": "Takes: \n   quote, number   Executes quote given number of times.",
+            "title": "times"
+        },
+        {
+            "location": "/api/#object_1",
+            "text": "",
+            "title": "object"
+        },
+        {
+            "location": "/api/#_17",
+            "text": "Takes: \n   any, string, object \n   Gives: \n   object   Constructs copy of the object with new named property either introduced\nor replaced.",
+            "title": "!"
+        },
+        {
+            "location": "/api/#_18",
+            "text": "Takes: \n   object, object \n   Gives: \n   object   Combines contents of two objects together and returns result.",
+            "title": "+"
+        },
+        {
+            "location": "/api/#_19",
+            "text": "Takes: \n   string, object \n   Gives: \n   object, any   Retrieves value identified by given string from properties of the object.\nIf the object does not have such property, range error will be thrown.\nNotice that inherited properties are also included in the search.",
+            "title": "@"
+        },
+        {
+            "location": "/api/#has-own",
+            "text": "Takes: \n   string, object \n   Gives: \n   object, boolean   Tests whether object has own property with given identifier. Inherited\nproperties are not included in the search.",
+            "title": "has-own?"
+        },
+        {
+            "location": "/api/#has",
+            "text": "Takes: \n   string, object \n   Gives: \n   object, boolean   Tests whether object has property with given identifier. Notice that\ninherited properties are also included in the search.",
+            "title": "has?"
+        },
+        {
+            "location": "/api/#keys",
+            "text": "Takes: \n   object \n   Gives: \n   object, array   Retrieves all keys from the object and returns them in an array. Notice\nthat inherited properties are not included in the list.",
+            "title": "keys"
+        },
+        {
+            "location": "/api/#new",
+            "text": "Takes: \n   any... \n   Gives: \n   object   Constructs new instance of the object and invokes it's constructor if it\nhas one with the newly constructed object pushed into top of the stack.\nType error will be thrown if the object has no \"prototype\" property.",
+            "title": "new"
+        },
+        {
+            "location": "/api/#values",
+            "text": "Takes: \n   object \n   Gives: \n   object, array   Retrieves all values from the object and returns them in an array. Notice\nthat inherited properties are not included in the list.",
+            "title": "values"
+        },
+        {
+            "location": "/api/#quote_1",
+            "text": "",
+            "title": "quote"
+        },
+        {
+            "location": "/api/#call",
+            "text": "Takes: \n   quote   Executes quote taken from top of the stack.",
+            "title": "call"
+        },
+        {
+            "location": "/api/#compose",
+            "text": "Takes: \n   quote, quote \n   Gives: \n   quote   Constructs new quote which will call the two given quotes in sequence.",
+            "title": "compose"
+        },
+        {
+            "location": "/api/#curry",
+            "text": "Takes: \n   any, quote \n   Gives: \n   quote   Constructs curried quote where given value will be pushed into the stack\nbefore calling the original quote.",
+            "title": "curry"
+        },
+        {
+            "location": "/api/#negate",
+            "text": "Takes: \n   quote, quote   Provides:\nConstructs negated version of given quote which negates boolean result\nreturned by the original quote.",
+            "title": "negate"
+        },
+        {
+            "location": "/api/#string_2",
+            "text": "",
+            "title": "string"
+        },
+        {
+            "location": "/api/#_20",
+            "text": "Takes: \n   number, string \n   Gives: \n   string   Repeats string given number of times.",
+            "title": "*"
+        },
+        {
+            "location": "/api/#_21",
+            "text": "Takes: \n   string, string \n   Gives: \n   string   Concatenates contents of two strings and returns the result.",
+            "title": "+"
+        },
+        {
+            "location": "/api/#number_2",
+            "text": "Takes: \n   string \n   Gives: \n   number   Converts string into floating point decimal number, or throws value error\nif the number cannot be converted into one.",
+            "title": "&gt;number"
+        },
+        {
+            "location": "/api/#_22",
+            "text": "Takes: \n   number, string \n   Gives: \n   string, string   Retrieves character from given index. Negative indexes count backwards. If\ngiven index is out of bounds, range error will be thrown.",
+            "title": "@"
+        },
+        {
+            "location": "/api/#capitalize",
+            "text": "Takes: \n   string \n   Gives: \n   string   Converts first character of the string into upper case and remaining to\nlower case.",
+            "title": "capitalize"
+        },
+        {
+            "location": "/api/#chars",
+            "text": "Takes: \n   string \n   Gives: \n   string, array   Extracts characters from the string and returns them in an array of\nsubstrings.",
+            "title": "chars"
+        },
+        {
+            "location": "/api/#length_1",
+            "text": "Takes: \n   string \n   Gives: \n   string, number   Returns length of the string.",
+            "title": "length"
+        },
+        {
+            "location": "/api/#lines",
+            "text": "Takes: \n   string \n   Gives: \n   string, array   Extracts lines from the string and returns them in an array.",
+            "title": "lines"
+        },
+        {
+            "location": "/api/#lower-case",
+            "text": "Takes: \n   string \n   Gives: \n   string   Converts string into lower case.",
+            "title": "lower-case"
+        },
+        {
+            "location": "/api/#lower-case_1",
+            "text": "Takes: \n   string \n   Gives: \n   string, boolean   Tests whether the string contains only lower case characters. Empty strings\nreturn false.",
+            "title": "lower-case?"
+        },
+        {
+            "location": "/api/#reverse_1",
+            "text": "Takes: \n   string \n   Gives: \n   string   Returns reversed copy of the string.",
+            "title": "reverse"
+        },
+        {
+            "location": "/api/#runes",
+            "text": "Takes: \n   string \n   Gives: \n   string, array   Extracts Unicode code points from the string and returns them in an array\nof numbers.",
+            "title": "runes"
+        },
+        {
+            "location": "/api/#space",
+            "text": "Takes: \n   string \n   Gives: \n   string, boolean   Tests whether the string contains only whitespace characters. Empty strings\nreturn false.",
+            "title": "space?"
+        },
+        {
+            "location": "/api/#swap-case",
+            "text": "Takes: \n   string \n   Gives: \n   string   Constructs copy of string where lower case characters have been turned into\nupper case and vice versa.",
+            "title": "swap-case"
+        },
+        {
+            "location": "/api/#trim",
+            "text": "Takes: \n   string \n   Gives: \n   string   Strips whitespace from begining and end of the string and returns result.",
+            "title": "trim"
+        },
+        {
+            "location": "/api/#trim-left",
+            "text": "Takes: \n   string \n   Gives: \n   string   Strips whitespace from begining of the string and returns result.",
+            "title": "trim-left"
+        },
+        {
+            "location": "/api/#trim-right",
+            "text": "Takes: \n   string \n   Gives: \n   string   Strips whitespace from end of the string and returns result.",
+            "title": "trim-right"
+        },
+        {
+            "location": "/api/#upper-case",
+            "text": "Takes: \n   string \n   Gives: \n   string, boolean   Tests whether the string contains only upper case characters. Empty strings\nreturn false.",
+            "title": "upper-case?"
+        },
+        {
+            "location": "/api/#words",
+            "text": "Takes: \n   string \n   Gives: \n   string, array   Extracts white space separated words from the string and returns them in\nan array.",
+            "title": "words"
         }
     ]
 }
