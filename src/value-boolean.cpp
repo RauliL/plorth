@@ -51,7 +51,15 @@ namespace plorth
   }
 
   /**
-   * and ( bool bool -- bool )
+   * Word: and
+   * Prototype: boolean
+   *
+   * Takes:
+   * - boolean
+   * - boolean
+   *
+   * Gives:
+   * - boolean
    *
    * Logical AND. Returns true if both values are true.
    */
@@ -67,7 +75,15 @@ namespace plorth
   }
 
   /**
-   * or ( bool bool -- bool )
+   * Word: or
+   * Prototype: boolean
+   *
+   * Takes:
+   * - boolean
+   * - boolean
+   *
+   * Gives:
+   * - boolean
    *
    * Logical OR. Returns true if either one of the values are true.
    */
@@ -83,7 +99,15 @@ namespace plorth
   }
 
   /**
-   * xor ( bool bool -- bool )
+   * Word: xor
+   * Prototype: boolean
+   *
+   * Takes:
+   * - boolean
+   * - boolean
+   *
+   * Gives:
+   * - boolean
    *
    * Exclusive OR.
    */
@@ -99,7 +123,14 @@ namespace plorth
   }
 
   /**
-   * not ( bool -- bool )
+   * Word: not
+   * Prototype: boolean
+   *
+   * Takes:
+   * - boolean
+   *
+   * Gives:
+   * - boolean
    *
    * Negates given boolean value.
    */

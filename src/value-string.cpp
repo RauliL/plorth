@@ -58,7 +58,15 @@ namespace plorth
   }
 
   /**
-   * length ( string -- string number )
+   * Word: length
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
+   * - number
    *
    * Returns length of the string.
    */
@@ -74,7 +82,15 @@ namespace plorth
   }
 
   /**
-   * space? ( string -- string boolean )
+   * Word: space?
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
+   * - boolean
    *
    * Tests whether the string contains only whitespace characters. Empty strings
    * return false.
@@ -107,7 +123,15 @@ namespace plorth
   }
 
   /**
-   * lower-case? ( string -- string boolean )
+   * Word: lower-case?
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
+   * - boolean
    *
    * Tests whether the string contains only lower case characters. Empty strings
    * return false.
@@ -140,7 +164,15 @@ namespace plorth
   }
 
   /**
-   * upper-case? ( string -- string boolean )
+   * Word: upper-case?
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
+   * - boolean
    *
    * Tests whether the string contains only upper case characters. Empty strings
    * return false.
@@ -173,7 +205,15 @@ namespace plorth
   }
 
   /**
-   * chars ( string -- string array )
+   * Word: chars
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
+   * - array
    *
    * Extracts characters from the string and returns them in an array of
    * substrings.
@@ -200,7 +240,15 @@ namespace plorth
   }
 
   /**
-   * runes ( string -- string array )
+   * Word: runes
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
+   * - array
    *
    * Extracts Unicode code points from the string and returns them in an array
    * of numbers.
@@ -226,7 +274,15 @@ namespace plorth
   }
 
   /**
-   * words ( string -- string array )
+   * Word: words
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
+   * - array
    *
    * Extracts white space separated words from the string and returns them in
    * an array.
@@ -268,7 +324,15 @@ namespace plorth
   }
 
   /**
-   * lines ( string -- string array )
+   * Word: lines
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
+   * - array
    *
    * Extracts lines from the string and returns them in an array.
    */
@@ -311,7 +375,14 @@ namespace plorth
   }
 
   /**
-   * reverse ( string -- string )
+   * Word: reverse
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
    *
    * Returns reversed copy of the string.
    */
@@ -328,7 +399,14 @@ namespace plorth
   }
 
   /*
-   * upper-case ( string -- string )
+   * Word: upper-case
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
    *
    * Converts string into upper case.
    */
@@ -346,7 +424,14 @@ namespace plorth
   }
 
   /**
-   * lower-case ( string -- string )
+   * Word: lower-case
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
    *
    * Converts string into lower case.
    */
@@ -364,7 +449,14 @@ namespace plorth
   }
 
   /**
-   * swap-case ( string -- string )
+   * Word: swap-case
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
    *
    * Constructs copy of string where lower case characters have been turned into
    * upper case and vice versa.
@@ -397,7 +489,14 @@ namespace plorth
   }
 
   /**
-   * capitalize ( string -- string )
+   * Word: capitalize
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
    *
    * Converts first character of the string into upper case and remaining to
    * lower case.
@@ -430,7 +529,14 @@ namespace plorth
   }
 
   /**
-   * trim ( string -- string )
+   * Word: trim
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
    *
    * Strips whitespace from begining and end of the string and returns result.
    */
@@ -468,7 +574,14 @@ namespace plorth
   }
 
   /**
-   * trim-left ( string -- string )
+   * Word: trim-left
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
    *
    * Strips whitespace from begining of the string and returns result.
    */
@@ -499,7 +612,14 @@ namespace plorth
   }
 
   /**
-   * trim-right ( string -- string )
+   * Word: trim-right
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - string
    *
    * Strips whitespace from end of the string and returns result.
    */
@@ -530,7 +650,14 @@ namespace plorth
   }
 
   /**
-   * >number ( string -- number )
+   * Word: >number
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - number
    *
    * Converts string into floating point decimal number, or throws value error
    * if the number cannot be converted into one.
@@ -553,7 +680,15 @@ namespace plorth
   }
 
   /**
-   * + ( string string -- string )
+   * Word: +
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   * - string
+   *
+   * Gives:
+   * - string
    *
    * Concatenates contents of two strings and returns the result.
    */
@@ -569,7 +704,15 @@ namespace plorth
   }
 
   /**
-   * * ( number string -- string )
+   * Word: *
+   * Prototype: string
+   *
+   * Takes:
+   * - number
+   * - string
+   *
+   * Gives:
+   * - string
    *
    * Repeats string given number of times.
    */
@@ -601,7 +744,16 @@ namespace plorth
   }
 
   /**
-   * @ ( number string -- string string )
+   * Word: @
+   * Prototype: string
+   *
+   * Takes:
+   * - number
+   * - string
+   *
+   * Gives:
+   * - string
+   * - string
    *
    * Retrieves character from given index. Negative indexes count backwards. If
    * given index is out of bounds, range error will be thrown.

@@ -102,7 +102,15 @@ namespace plorth
   }
 
   /**
-   * code ( error -- error number )
+   * Word: code
+   * Prototype: error
+   *
+   * Takes:
+   * - error
+   *
+   * Gives:
+   * - error
+   * - number
    *
    * Returns error code extracted from the error in numeric form.
    */
@@ -118,7 +126,15 @@ namespace plorth
   }
 
   /**
-   * message ( error -- error string|null )
+   * Word: message
+   * Prototype: error
+   *
+   * Takes:
+   * - error
+   *
+   * Gives:
+   * - error
+   * - string|null
    *
    * Returns error message extracted from the error, or null if the error does
    * not have any error message.
@@ -142,7 +158,11 @@ namespace plorth
   }
 
   /**
-   * throw ( error -- )
+   * Word: throw
+   * Prototype: error
+   *
+   * Takes:
+   * - error
    *
    * Sets given error as current error of the execution context.
    */

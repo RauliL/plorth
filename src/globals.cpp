@@ -35,9 +35,12 @@
 namespace plorth
 {
   /**
-   * null ( -- null )
+   * Word: null
    *
-   * Returns null value.
+   * Gives:
+   * - null
+   *
+   * Pushes null value onto stack.
    */
   static void w_null(const ref<context>& ctx)
   {
@@ -45,9 +48,12 @@ namespace plorth
   }
 
   /**
-   * true ( -- boolean )
+   * Word: true
    *
-   * Returns boolean value of true.
+   * Gives:
+   * - boolean
+   *
+   * Pushes boolean value of true onto stack.
    */
   static void w_true(const ref<context>& ctx)
   {
@@ -55,9 +61,12 @@ namespace plorth
   }
 
   /**
-   * false ( -- boolean )
+   * Word: false
    *
-   * Returns boolean value of false.
+   * Gives:
+   * - boolean
+   *
+   * Pushes boolean value of false onto stack.
    */
   static void w_false(const ref<context>& ctx)
   {
@@ -65,9 +74,12 @@ namespace plorth
   }
 
   /**
-   * e ( -- number )
+   * Word: e
    *
-   * Returns Eulers number.
+   * Gives:
+   * - number
+   *
+   * Pushes Eulers number onto stack.
    */
   static void w_e(const ref<context>& ctx)
   {
@@ -75,9 +87,12 @@ namespace plorth
   }
 
   /**
-   * pi ( -- number )
+   * Word: pi
    *
-   * Returns value of pi.
+   * Gives:
+   * - number
+   *
+   * Pushes value of pi onto stack.
    */
   static void w_pi(const ref<context>& ctx)
   {
@@ -85,14 +100,14 @@ namespace plorth
   }
 
   /**
-   * nop ( -- )
+   * Word: nop
    *
    * Does nothing. Can be used to construct empty quotes.
    */
   static void w_nop(const ref<context>&) {}
 
   /**
-   * clear ( -- )
+   * Word: clear
    *
    * Clears the entire stack of current context.
    */
@@ -102,9 +117,12 @@ namespace plorth
   }
 
   /**
-   * depth ( -- number )
+   * Word: depth
    *
-   * Returns current depth of the stack.
+   * Gives:
+   * - number
+   *
+   * Pushes current depth of the stack onto stack.
    */
   static void w_depth(const ref<context>& ctx)
   {
@@ -112,9 +130,14 @@ namespace plorth
   }
 
   /**
-   * drop ( any -- )
+   * Word: drop
+   *
+   * Takes:
+   * - any
    *
    * Discards top-most value from the stack.
+   *
+   *     1 drop #=> empty stack
    */
   static void w_drop(const ref<context>& ctx)
   {
@@ -122,9 +145,15 @@ namespace plorth
   }
 
   /**
-   * 2drop ( any any -- )
+   * Word: 2drop
+   *
+   * Takes:
+   * - any
+   * - any
    *
    * Discards two top-most values from the stack.
+   *
+   *     1 2 3 2drop #=> 1
    */
   static void w_drop2(const ref<context>& ctx)
   {
@@ -135,9 +164,18 @@ namespace plorth
   }
 
   /**
-   * dup ( any -- any any )
+   * Word: dup
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - any
    *
    * Duplicates top-most value of the stack.
+   *
+   *     1 dup #=> 1 1
    */
   static void w_dup(const ref<context>& ctx)
   {
@@ -151,9 +189,21 @@ namespace plorth
   }
 
   /**
-   * 2dup ( any any -- any any any any )
+   * Word: 2dup
+   *
+   * Takes:
+   * - any
+   * - any
+   *
+   * Gives:
+   * - any
+   * - any
+   * - any
+   * - any
    *
    * Duplicates two top-most values of the stack.
+   *
+   *     1 2 2dup #=> 1 2 1 2
    */
   static void w_dup2(const ref<context>& ctx)
   {
@@ -170,9 +220,18 @@ namespace plorth
   }
 
   /**
-   * nip ( any any -- any )
+   * Word: nip
+   *
+   * Takes:
+   * - any
+   * - any
+   *
+   * Gives:
+   * - any
    *
    * Drops the first value and pushes second value on the stack.
+   *
+   *     1 2 nip #=> 2
    */
   static void w_nip(const ref<context>& ctx)
   {
@@ -185,10 +244,21 @@ namespace plorth
   }
 
   /**
-   * over ( any any -- any any any )
+   * Word: over
+   *
+   * Takes:
+   * - any
+   * - any
+   *
+   * Gives:
+   * - any
+   * - any
+   * - any
    *
    * Copies second top-most value of the stack into top-most value of the
    * stack.
+   *
+   *     1 2 over #=> 1 2 1
    */
   static void w_over(const ref<context>& ctx)
   {
@@ -204,9 +274,21 @@ namespace plorth
   }
 
   /**
-   * rot ( any any any -- any any any )
+   * Word: rot
+   *
+   * Takes:
+   * - any
+   * - any
+   * - any
+   *
+   * Gives:
+   * - any
+   * - any
+   * - any
    *
    * Rotates three top-most values on the stack.
+   *
+   *     1 2 3 rot #=> 2 3 1
    */
   static void w_rot(const ref<context>& ctx)
   {
@@ -223,9 +305,19 @@ namespace plorth
   }
 
   /**
-   * swap ( any any -- any any )
+   * Word: swap
+   *
+   * Takes:
+   * - any
+   * - any
+   *
+   * Gives:
+   * - any
+   * - any
    *
    * Swaps positions of two top-most values on the stack.
+   *
+   *     1 2 swap #=> 2 1
    */
   static void w_swap(const ref<context>& ctx)
   {
@@ -240,10 +332,21 @@ namespace plorth
   }
 
   /**
-   * tuck ( any any -- any any any )
+   * Word: tuck
+   *
+   * Takes:
+   * - any
+   * - any
+   *
+   * Gives:
+   * - any
+   * - any
+   * - any
    *
    * Copies top-most value of the stack as the third top-most value of the
    * stack.
+   *
+   *     1 2 tuck #=> 2 1 2
    */
   static void w_tuck(const ref<context>& ctx)
   {
@@ -259,7 +362,14 @@ namespace plorth
   }
 
   /**
-   * array? ( any -- any boolean )
+   * Word: array?
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - boolean
    *
    * Returns true if top-most value of the stack is array.
    */
@@ -275,7 +385,14 @@ namespace plorth
   }
 
   /**
-   * boolean? ( any -- any boolean )
+   * Word: boolean?
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - boolean
    *
    * Returns true if top-most value of the stack is boolean.
    */
@@ -291,7 +408,14 @@ namespace plorth
   }
 
   /**
-   * error? ( any -- any boolean )
+   * Word: error?
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - boolean
    *
    * Returns true if top-most value of the stack is error.
    */
@@ -307,7 +431,14 @@ namespace plorth
   }
 
   /**
-   * number? ( any -- any boolean )
+   * Word: number?
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - boolean
    *
    * Returns true if top-most value of the stack is boolean.
    */
@@ -323,7 +454,14 @@ namespace plorth
   }
 
   /**
-   * null? ( any -- any boolean )
+   * Word: null?
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - boolean
    *
    * Returns true if top-most value of the stack is null.
    */
@@ -339,7 +477,14 @@ namespace plorth
   }
 
   /**
-   * object? ( any -- any boolean )
+   * Word: object?
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - boolean
    *
    * Returns true if top-most value of the stack is object.
    */
@@ -355,7 +500,14 @@ namespace plorth
   }
 
   /**
-   * quote? ( any -- any boolean )
+   * Word: quote?
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - boolean
    *
    * Returns true if top-most value of the stack is quote.
    */
@@ -371,7 +523,14 @@ namespace plorth
   }
 
   /**
-   * string? ( any -- any boolean )
+   * Word: string?
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - boolean
    *
    * Returns true if top-most value of the stack is string.
    */
@@ -387,7 +546,14 @@ namespace plorth
   }
 
   /**
-   * typeof ( any -- any string )
+   * Word: typeof
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - string
    *
    * Returns name of the type of given value as string.
    */
@@ -411,7 +577,14 @@ namespace plorth
   }
 
   /**
-   * prototype ( any -- any object )
+   * Word: prototype
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - object
    *
    * Retrieves prototype of the top-most value. If the top-most value of the
    * stack is null, null will be returned instead.
@@ -433,7 +606,13 @@ namespace plorth
   }
 
   /**
-   * >boolean ( any -- boolean )
+   * Word: >boolean
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - boolean
    *
    * Converts top-most value of the stack into boolean. Null and false will
    * become false while everything else will be true.
@@ -455,7 +634,13 @@ namespace plorth
   }
 
   /**
-   * >string ( any -- string )
+   * Word: >string
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - string
    *
    * Converts top-most value of the stack into string.
    */
@@ -476,7 +661,13 @@ namespace plorth
   }
 
   /**
-   * >source ( any -- string )
+   * Word: >source
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - string
    *
    * Converts top-most value of the stack into a string that most accurately
    * represents what the value would look like in source code.
@@ -498,7 +689,10 @@ namespace plorth
   }
 
   /**
-   * print ( any -- )
+   * Word: print
+   *
+   * Takes:
+   * - any
    *
    * Prints top-most value of the stack to stdout.
    */
@@ -513,7 +707,11 @@ namespace plorth
   }
 
   /**
-   * if ( boolean quote -- )
+   * Word: if
+   *
+   * Takes:
+   * - boolean
+   * - quote
    *
    * Executes quote if the boolean value is true.
    */
@@ -529,7 +727,12 @@ namespace plorth
   }
 
   /**
-   * if-else ( boolean quote quote -- )
+   * Word: if-else
+   *
+   * Takes:
+   * - boolean
+   * - quote
+   * - quote
    *
    * Calls first quote if boolean value is true, second quote otherwise.
    */
@@ -555,7 +758,11 @@ namespace plorth
   }
 
   /**
-   * while ( quote quote -- )
+   * Word: while
+   *
+   * Takes:
+   * - quote
+   * - quote
    *
    * Executes second quote as long as the first quote returns true.
    */
@@ -581,7 +788,11 @@ namespace plorth
   }
 
   /**
-   * try ( quote quote -- )
+   * Word: try
+   *
+   * Takes:
+   * - quote
+   * - quote
    *
    * Executes first quote and if it throws an error, calls second quote with
    * the error on top of the stack.
@@ -605,7 +816,12 @@ namespace plorth
   }
 
   /**
-   * try ( quote quote quote -- )
+   * Word: try
+   *
+   * Takes:
+   * - quote
+   * - quote
+   * - quote
    *
    * Executes first quote and if it throws an error, calls second quote with
    * the error on top of the stack. If no error was thrown, third quote will
@@ -635,7 +851,13 @@ namespace plorth
   }
 
   /**
-   * compile ( string -- quote )
+   * Word: compile
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - quote
    *
    * Compiles given string of source code into quote.
    */
@@ -657,7 +879,10 @@ namespace plorth
   }
 
   /**
-   * globals ( -- object )
+   * Word: globals
+   *
+   * Gives:
+   * - object
    *
    * Returns global dictionary as object.
    */
@@ -667,7 +892,10 @@ namespace plorth
   }
 
   /**
-   * locals ( -- object )
+   * Word: locals
+   *
+   * Gives:
+   * - object
    *
    * Returns local dictionary of current execution context as object.
    */
@@ -677,7 +905,11 @@ namespace plorth
   }
 
   /**
-   * const ( any string -- )
+   * Word: const
+   *
+   * Takes:
+   * - any
+   * - string
    *
    * Declares given value as constant in the current context with name
    * identified by given string.
@@ -694,7 +926,10 @@ namespace plorth
   }
 
   /**
-   * import ( string -- )
+   * Word: import
+   *
+   * Takes:
+   * - string
    *
    * Imports module from given path and adds all of it's exported words into
    * this execution context.
@@ -737,7 +972,13 @@ namespace plorth
   }
 
   /**
-   * type-error ( string|null -- error )
+   * Word: type-error
+   *
+   * Takes:
+   * - string|null
+   *
+   * Gives:
+   * - error
    *
    * Construct instance of type error with with given optional error message
    * and places it on the stack.
@@ -748,7 +989,13 @@ namespace plorth
   }
 
   /**
-   * value-error ( string|null -- error )
+   * Word: value-error
+   *
+   * Takes:
+   * - string|null
+   *
+   * Gives:
+   * - error
    *
    * Constructs instance of value error with given optional error message and
    * places it on the stack.
@@ -759,7 +1006,13 @@ namespace plorth
   }
 
   /**
-   * range-error ( string|null -- error )
+   * Word: range-error
+   *
+   * Takes:
+   * - string|null
+   *
+   * Gives:
+   * - error
    *
    * Construct instance of range error with with given optional error message
    * and places it on the stack.
@@ -770,7 +1023,13 @@ namespace plorth
   }
 
   /**
-   * unknown-error ( string|null -- error )
+   * Word: unknown-error
+   *
+   * Takes:
+   * - string|null
+   *
+   * Gives:
+   * - error
    *
    * Construct instance of unknown error with with given optional error
    * message and places it on the stack.
@@ -781,7 +1040,10 @@ namespace plorth
   }
 
   /**
-   * println ( any -- )
+   * Word: println
+   *
+   * Takes:
+   * - any
    *
    * Prints top-most value of the stack to stdout with terminating new line.
    */
@@ -800,7 +1062,10 @@ namespace plorth
   }
 
   /**
-   * emit ( number -- )
+   * Word: emit
+   *
+   * Takes:
+   * - number
    *
    * Outputs given Unicode code point into the standard output stream. Range
    * error will be thrown if the given number is not valid Unicode code point.
@@ -824,7 +1089,10 @@ namespace plorth
   }
 
   /**
-   * now ( -- number )
+   * Word: now
+   *
+   * Gives:
+   * - number
    *
    * Returns the timestamp of the number of seconds that have elapsed since the
    * Unix epoch (1 January 1970 00:00:00 UTC).
@@ -835,7 +1103,14 @@ namespace plorth
   }
 
   /**
-   * = ( any any -- boolean )
+   * Word: =
+   *
+   * Takes:
+   * - any
+   * - any
+   *
+   * Gives:
+   * - boolean
    *
    * Tests whether the two top-most values of the stack are equal.
    */
@@ -851,7 +1126,14 @@ namespace plorth
   }
 
   /**
-   * != ( any any -- boolean )
+   * Word: !=
+   *
+   * Takes:
+   * - any
+   * - any
+   *
+   * Gives:
+   * - boolean
    *
    * Tests whether the two top-most values of the stack are equal.
    */

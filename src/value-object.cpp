@@ -144,7 +144,15 @@ namespace plorth
   }
 
   /**
-   * keys ( object -- object array )
+   * Word: keys
+   * Prototype: object
+   *
+   * Takes:
+   * - object
+   *
+   * Gives:
+   * - object
+   * - array
    *
    * Retrieves all keys from the object and returns them in an array. Notice
    * that inherited properties are not included in the list.
@@ -170,7 +178,15 @@ namespace plorth
   }
 
   /**
-   * values ( object -- object array )
+   * Word: values
+   * Prototype: object
+   *
+   * Takes:
+   * - object
+   *
+   * Gives:
+   * - object
+   * - array
    *
    * Retrieves all values from the object and returns them in an array. Notice
    * that inherited properties are not included in the list.
@@ -195,7 +211,16 @@ namespace plorth
   }
 
   /**
-   * has? ( string object -- object boolean )
+   * Word: has?
+   * Prototype: object
+   *
+   * Takes:
+   * - string
+   * - object
+   *
+   * Gives:
+   * - object
+   * - boolean
    *
    * Tests whether object has property with given identifier. Notice that
    * inherited properties are also included in the search.
@@ -215,7 +240,16 @@ namespace plorth
   }
 
   /**
-   * has-own? ( string object -- object boolean )
+   * Word: has-own?
+   * Prototype: object
+   *
+   * Takes:
+   * - string
+   * - object
+   *
+   * Gives:
+   * - object
+   * - boolean
    *
    * Tests whether object has own property with given identifier. Inherited
    * properties are not included in the search.
@@ -235,7 +269,14 @@ namespace plorth
   }
 
   /**
-   * new ( any... -- object )
+   * Word: new
+   * Prototype: object
+   *
+   * Takes:
+   * - any...
+   *
+   * Gives:
+   * - object
    *
    * Constructs new instance of the object and invokes it's constructor if it
    * has one with the newly constructed object pushed into top of the stack.
@@ -271,7 +312,16 @@ namespace plorth
   }
 
   /**
-   * @ ( string object -- object any )
+   * Word: @
+   * Prototype: object
+   *
+   * Takes:
+   * - string
+   * - object
+   *
+   * Gives:
+   * - object
+   * - any
    *
    * Retrieves value identified by given string from properties of the object.
    * If the object does not have such property, range error will be thrown.
@@ -300,7 +350,16 @@ namespace plorth
   }
 
   /**
-   * ! ( any string object -- object )
+   * Word: !
+   * Prototype: object
+   *
+   * Takes:
+   * - any
+   * - string
+   * - object
+   *
+   * Gives:
+   * - object
    *
    * Constructs copy of the object with new named property either introduced
    * or replaced.
@@ -321,7 +380,15 @@ namespace plorth
   }
 
   /**
-   * + ( object object -- object )
+   * Word: +
+   * Prototype: object
+   *
+   * Takes:
+   * - object
+   * - object
+   *
+   * Gives:
+   * - object
    *
    * Combines contents of two objects together and returns result.
    */

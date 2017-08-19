@@ -720,7 +720,11 @@ namespace plorth
   }
 
   /**
-   * call ( quote -- )
+   * Word: call
+   * Prototype: quote
+   *
+   * Takes:
+   * - quote
    *
    * Executes quote taken from top of the stack.
    */
@@ -735,7 +739,15 @@ namespace plorth
   }
 
   /**
-   * compose ( quote quote -- quote )
+   * Word: compose
+   * Prototype: quote
+   *
+   * Takes:
+   * - quote
+   * - quote
+   *
+   * Gives:
+   * - quote
    *
    * Constructs new quote which will call the two given quotes in sequence.
    */
@@ -751,7 +763,15 @@ namespace plorth
   }
 
   /**
-   * curry ( any quote -- quote )
+   * Word: curry
+   * Prototype: quote
+   *
+   * Takes:
+   * - any
+   * - quote
+   *
+   * Gives:
+   * - quote
    *
    * Constructs curried quote where given value will be pushed into the stack
    * before calling the original quote.
@@ -768,7 +788,14 @@ namespace plorth
   }
 
   /**
-   * negate ( quote -- quote )
+   * Word: negate
+   * Prototype: quote
+   *
+   * Takes:
+   * - quote
+   *
+   * Provides:
+   * - quote
    *
    * Constructs negated version of given quote which negates boolean result
    * returned by the original quote.

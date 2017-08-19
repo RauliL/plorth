@@ -56,7 +56,15 @@ namespace plorth
   }
 
   /**
-   * nan? ( number -- number boolean )
+   * Word: nan?
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   *
+   * Gives:
+   * - number
+   * - boolean
    *
    * Returns true if given number if NaN.
    */
@@ -72,7 +80,15 @@ namespace plorth
   }
 
   /**
-   * finite? ( num -- number boolean )
+   * Word: finite?
+   * Prototype: number
+   *
+   * Takes:
+   * - num
+   *
+   * Gives:
+   * - number
+   * - boolean
    *
    * Returns true if given number is finite.
    */
@@ -88,7 +104,12 @@ namespace plorth
   }
 
   /**
-   * times ( quote number -- )
+   * Word: times
+   * Prototype: number
+   *
+   * Takes:
+   * - quote
+   * - number
    *
    * Executes quote given number of times.
    */
@@ -118,7 +139,14 @@ namespace plorth
   }
 
   /**
-   * abs ( number -- number )
+   * Word: abs
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Returns absolute value of the number.
    */
@@ -133,7 +161,14 @@ namespace plorth
   }
 
   /**
-   * round ( number -- number )
+   * Word: round
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Rounds number to nearest integer value.
    */
@@ -148,7 +183,14 @@ namespace plorth
   }
 
   /**
-   * ceil ( number -- number )
+   * Word: ceil
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Computes the smallest integer value not less than given number.
    */
@@ -163,7 +205,14 @@ namespace plorth
   }
 
   /**
-   * floor ( number -- number )
+   * Word: floor
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Computes the largest integer value not greater than given number.
    */
@@ -178,7 +227,15 @@ namespace plorth
   }
 
   /**
-   * max ( number number -- number )
+   * Word: max
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Returns maximum of two numbers.
    */
@@ -194,7 +251,15 @@ namespace plorth
   }
 
   /**
-   * min ( number number -- number )
+   * Word: min
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Returns minimum of two numbers.
    */
@@ -210,7 +275,16 @@ namespace plorth
   }
 
   /**
-   * clamp ( number number number -- number )
+   * Word: clamp
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Clamps top-most number between the minimum and maximum limits.
    */
@@ -235,7 +309,16 @@ namespace plorth
   }
 
   /**
-   * in-range? ( number number number -- boolean )
+   * Word: in-range?
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   * - number
+   *
+   * Gives:
+   * - boolean
    *
    * Tests whether the top-most number is in range of given minimum and maximum
    * numbers.
@@ -253,7 +336,15 @@ namespace plorth
   }
 
   /**
-   * + ( number number -- number )
+   * Word: +
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Performs addition on the two given numbers.
    */
@@ -269,7 +360,15 @@ namespace plorth
   }
 
   /**
-   * - ( number number -- number )
+   * Word: -
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Performs substraction on the two given numbers.
    */
@@ -285,7 +384,15 @@ namespace plorth
   }
 
   /**
-   * * ( number number -- number )
+   * Word: *
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Performs multiplication on the two given numbers.
    */
@@ -301,7 +408,15 @@ namespace plorth
   }
 
   /**
-   * / ( number number -- number )
+   * Word: /
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Performs division on the two given numbers.
    */
@@ -317,7 +432,15 @@ namespace plorth
   }
 
   /**
-   * % ( number number -- number )
+   * Word: %
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
    *
    * Computes the floating-point remainder of the division operation between the
    * two given numbers.
@@ -334,7 +457,15 @@ namespace plorth
   }
 
   /**
-   * < ( number number -- boolean )
+   * Word: <
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - boolean
    *
    * Returns true if first number is lesser than the second one.
    */
@@ -350,7 +481,15 @@ namespace plorth
   }
 
   /**
-   * > ( number number -- boolean )
+   * Word: >
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - boolean
    *
    * Returns true if first number is greater than the second one.
    */
@@ -366,7 +505,15 @@ namespace plorth
   }
 
   /**
-   * <= ( number number -- boolean )
+   * Word: <=
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - boolean
    *
    * Returns true if first number is less or equal than the second one.
    */
@@ -382,7 +529,15 @@ namespace plorth
   }
 
   /**
-   * >= ( number number -- boolean )
+   * Word: >=
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - boolean
    *
    * Returns true if first number is greater or equal than the second one.
    */

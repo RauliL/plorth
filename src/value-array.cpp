@@ -109,7 +109,15 @@ namespace plorth
   }
 
   /**
-   * length ( array -- array number )
+   * Word: length
+   * Prototype: array
+   *
+   * Takes:
+   * - array
+   *
+   * Gives:
+   * - array
+   * - number
    *
    * Returns number of elements in the array, while keeping the array in the
    * stack.
@@ -126,7 +134,16 @@ namespace plorth
   }
 
   /**
-   * includes? ( any array -- array boolean )
+   * Word: includes?
+   * Prototype: array
+   *
+   * Takes:
+   * - any
+   * - array
+   *
+   * Gives:
+   * - array
+   * - boolean
    *
    * Searches for given value from the array and returns true if it's included
    * in the array and false if it's not.
@@ -152,7 +169,16 @@ namespace plorth
   }
 
   /**
-   * index-of ( any array -- array number|null )
+   * Word: index-of
+   * Prototype: array
+   *
+   * Takes:
+   * - any
+   * - array
+   *
+   * Gives:
+   * - array
+   * - number|null
    *
    * Searches for given value from the array and returns it's index in the array
    * if it's included in the array and null when it's not.
@@ -181,7 +207,16 @@ namespace plorth
   }
 
   /**
-   * find ( quote array -- array any|null )
+   * Word: find
+   * Prototype: array
+   *
+   * Takes:
+   * - quote
+   * - array
+   *
+   * Gives:
+   * - array
+   * -any|null
    *
    * Returns first element from the array that satisfies the provided testing
    * quote. Otherwise null is returned.
@@ -214,7 +249,16 @@ namespace plorth
   }
 
   /**
-   * find-index ( quote array -- array number|null )
+   * Word: find-index
+   * Prototype: array
+   *
+   * Takes:
+   * - quote
+   * - array
+   *
+   * Gives:
+   * - array
+   * - number|null
    *
    * Returns index of first element from the array that satisfies the provided
    * testing quote. Otherwise null is returned.
@@ -250,7 +294,16 @@ namespace plorth
   }
 
   /**
-   * every? ( quote array -- array boolean )
+   * Word: every?
+   * Prototype: array
+   *
+   * Takes:
+   * - quote
+   * - array
+   *
+   * Gives:
+   * - array
+   * -boolean
    *
    * Tests whether all elements in the array passes the test implemented by the
    * provided quote.
@@ -283,7 +336,16 @@ namespace plorth
   }
 
   /**
-   * some? ( quote array -- array boolean )
+   * Word: some?
+   * Prototype: array
+   *
+   * Takes:
+   * - quote
+   * - array
+   *
+   * Gives:
+   * - array
+   * - boolean
    *
    * Tests whether any element in the array passes the test implemented by the
    * provided quote.
@@ -316,7 +378,14 @@ namespace plorth
   }
 
   /**
-   * reverse ( array -- array )
+   * Word: reverse
+   * Prototype: array
+   *
+   * Takes:
+   * - array
+   *
+   * Gives:
+   * - array
    *
    * Returns reversed copy of the array where the first array element becomes
    * the last, and the last array element becomes first.
@@ -334,7 +403,14 @@ namespace plorth
   }
 
   /**
-   * uniq ( array -- array )
+   * Word: uniq
+   * Prototype: array
+   *
+   * Takes:
+   * - array
+   *
+   * Gives:
+   * - array
    *
    * Creates a duplicate free version of the array.
    */
@@ -370,7 +446,14 @@ namespace plorth
   }
 
   /**
-   * extract ( array -- any... )
+   * Word: extract
+   * Prototype: array
+   *
+   * Takes:
+   * - array
+   *
+   * Gives:
+   * - any...
    *
    * Extracts all values from the array and places them into the stack.
    */
@@ -392,7 +475,15 @@ namespace plorth
   }
 
   /**
-   * join ( string array -- string )
+   * Word: join
+   * Prototype: array
+   *
+   * Takes:
+   * - string
+   * - array
+   *
+   * Gives:
+   * - string
    *
    * Concatenates all elements from the array into single string, delimited by
    * the given separator string.
@@ -429,7 +520,12 @@ namespace plorth
   }
 
   /**
-   * for-each ( quote array -- )
+   * Word: for-each
+   * Prototype: array
+   *
+   * Takes:
+   * - quote
+   * - array
    *
    * Runs quote once for every element in the array.
    */
@@ -454,7 +550,15 @@ namespace plorth
   }
 
   /**
-   * map ( quote array -- array )
+   * Word: map
+   * Prototype: array
+   *
+   * Takes:
+   * - quote
+   * - array
+   *
+   * Gives:
+   * - array
    *
    * Applies quote once for each element in the array and constructs new array
    * from values returned by the quote.
@@ -488,7 +592,15 @@ namespace plorth
   }
 
   /**
-   * filter ( quote array -- array )
+   * Word: filter
+   * Prototype: array
+   *
+   * Takes:
+   * - quote
+   * - array
+   *
+   * Gives:
+   * - array
    *
    * Applies quote once for each element in the array and constructs new array
    * from ones which passed the test.
@@ -523,7 +635,15 @@ namespace plorth
   }
 
   /**
-   * reduce ( quote array -- any )
+   * Word: reduce
+   * Prototype: array
+   *
+   * Takes:
+   * - quote
+   * - array
+   *
+   * Gives:
+   * - any
    *
    * Applies given quote against an acculumator and each element in array to
    * reduce it into single value.
@@ -564,7 +684,15 @@ namespace plorth
   }
 
   /**
-   * + ( array array -- array )
+   * Word: +
+   * Prototype: array
+   *
+   * Takes:
+   * - array
+   * - array
+   *
+   * Gives:
+   * - array
    *
    * Concatenates contents of two arrays and returns result.
    */
@@ -587,7 +715,15 @@ namespace plorth
   }
 
   /**
-   * * ( number array -- array )
+   * Word: *
+   * Prototype: array
+   *
+   * Takes:
+   * - number
+   * - array
+   *
+   * Gives:
+   * - array
    *
    * Repeats array given number of times.
    */
@@ -619,7 +755,15 @@ namespace plorth
   }
 
   /**
-   * & ( array array -- array )
+   * Word: &
+   * Prototype: array
+   *
+   * Takes:
+   * - array
+   * - array
+   *
+   * Gives:
+   * - array
    *
    * Set intersection: Returns new array containing unique elements common to
    * the two arrays.
@@ -671,7 +815,15 @@ namespace plorth
   }
 
   /**
-   * | ( array array -- array )
+   * Word: |
+   * Prototype: array
+   *
+   * Takes:
+   * - array
+   * - array
+   *
+   * Gives:
+   * - array
    *
    * Set union: Returns new array by joining the two given arrays, excluding any
    * duplicates and preserving the order from the given arrays.
@@ -728,7 +880,16 @@ namespace plorth
   }
 
   /**
-   * @ ( number array -- array any )
+   * Word: @
+   * Prototype: array
+   *
+   * Takes:
+   * - number
+   * - array
+   *
+   * Gives:
+   * - array
+   * - any
    *
    * Retrieves value from array at given numerical index. Negative indexes
    * count backwards. If given index is out of bounds, range error will be
@@ -761,7 +922,16 @@ namespace plorth
   }
 
   /**
-   * ! ( any number array -- array )
+   * Word: !
+   * Prototype: array
+   *
+   * Takes:
+   * - any
+   * - number
+   * - array
+   *
+   * Gives:
+   * - array
    *
    * Sets value in the array at given index. Negative indexes count backwrds.
    * If index is larger than number of elements in the array, value will be
