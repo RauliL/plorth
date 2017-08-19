@@ -4,7 +4,7 @@ Plorth is stack based, concatenative, strongly typed functional scripting
 language which is easy to embed to applications written in C++. It's inspired
 by [Forth] and [Factor] programming languages.
 
-[Online version of the interpreter is also available.][REPL]
+[Online documentation can be found here.][Documentation]
 
 ## Compilation
 
@@ -24,4 +24,4 @@ binary to start Plorth REPL.
 [Forth]: https://www.forth.com
 [Factor]: http://www.factorcode.org
 [CMake]: https://www.cmake.org
-[REPL]: https://raulil.github.io/plorth/repl.html
+[Documentation]: https://raulil.github.io/plorth/
