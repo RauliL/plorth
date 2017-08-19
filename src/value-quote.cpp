@@ -794,7 +794,7 @@ namespace plorth
    * Takes:
    * - quote
    *
-   * Provides:
+   * Gives:
    * - quote
    *
    * Constructs negated version of given quote which negates boolean result

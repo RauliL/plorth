@@ -1135,7 +1135,7 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Tests whether the two top-most values of the stack are equal.
+   * Tests whether the two top-most values of the stack are not equal.
    */
   static void w_ne(const ref<context>& ctx)
   {
