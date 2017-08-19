@@ -28,8 +28,6 @@
 
 #include <plorth/value.hpp>
 
-#include <vector>
-
 namespace plorth
 {
   /**
@@ -39,21 +37,16 @@ namespace plorth
   class array : public value
   {
   public:
-    using container_type = std::vector<ref<value>>;
+    using size_type = std::size_t;
+    using value_type = ref<value>;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
-    /**
-     * Constructs new array from given elements.
-     */
-    explicit array(const container_type& elements);
+    virtual size_type size() const = 0;
 
-    /**
-     * Returns reference to the underlying container that contains the elements
-     * of the array.
-     */
-    inline const container_type& elements() const
-    {
-      return m_elements;
-    }
+    virtual const_reference at(size_type offset) const = 0;
 
     inline enum type type() const
     {
@@ -63,10 +56,6 @@ namespace plorth
     bool equals(const ref<value>& that) const;
     unistring to_string () const;
     unistring to_source() const;
-
-  private:
-    /** Container for elements of the array. */
-    const container_type m_elements;
   };
 }
 

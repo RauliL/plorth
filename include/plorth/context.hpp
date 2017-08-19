@@ -27,7 +27,6 @@
 #define PLORTH_CONTEXT_HPP_GUARD
 
 #include <plorth/runtime.hpp>
-#include <plorth/value-array.hpp>
 #include <plorth/value-error.hpp>
 
 #include <deque>
@@ -216,7 +215,7 @@ namespace plorth
      * Constructs array from given sequence of values and pushes it into the
      * data stack.
      */
-    void push_array(const array::container_type& elements);
+    void push_array(array::const_pointer elements, array::size_type size);
 
     /**
      * Constructs object from given properties and pushes it into the data

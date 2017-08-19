@@ -26,6 +26,7 @@
 #ifndef PLORTH_RUNTIME_HPP_GUARD
 #define PLORTH_RUNTIME_HPP_GUARD
 
+#include <plorth/value-array.hpp>
 #include <plorth/value-boolean.hpp>
 #include <plorth/value-object.hpp>
 #include <plorth/value-quote.hpp>
@@ -110,6 +111,15 @@ namespace plorth
      *             whether some kind of error was occurred.
      */
     bool import(const ref<context>& ctx, const unistring& path);
+
+    /**
+     * Constructs array value from given elements.
+     *
+     * \param elements Array of elements to construct array from.
+     * \param size     Number of elements in the array.
+     * \return         Reference to the created array value.
+     */
+    ref<class array> array(array::const_pointer elements, array::size_type size);
 
     /**
      * Constructs compiled quote from given sequence of tokens.

@@ -481,7 +481,7 @@ namespace plorth
                                 std::vector<token>::const_iterator& it,
                                 const std::vector<token>::const_iterator& end)
   {
-    array::container_type elements;
+    std::vector<ref<value>> elements;
     ref<value> val;
 
     for (;;)
@@ -523,7 +523,7 @@ namespace plorth
       }
     }
 
-    return ctx->runtime()->value<array>(elements);
+    return ctx->runtime()->array(elements.data(), elements.size());
   }
 
   static ref<object> parse_object(const ref<context>& ctx,
