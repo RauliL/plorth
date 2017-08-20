@@ -74,11 +74,13 @@ namespace plorth
       void operator=(const manager&) = delete;
       void operator=(manager&&) = delete;
 
+#if PLORTH_ENABLE_MEMORY_POOL
     private:
       /** Pointer to the first memory pool used by this manager. */
       pool* m_pool_head;
       /** Pointer to the last memory pool used by this manager. */
       pool* m_pool_tail;
+#endif
     };
 
     /**
@@ -133,6 +135,7 @@ namespace plorth
       std::size_t m_ref_count;
     };
 
+#if PLORTH_ENABLE_MEMORY_POOL
     struct pool
     {
       /** Pointer to the next pool in the memory manager. */
@@ -166,6 +169,7 @@ namespace plorth
       /** Pointer to the allocated memory. */
       char* memory;
     };
+#endif
   }
 }
 
