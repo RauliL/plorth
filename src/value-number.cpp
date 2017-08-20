@@ -706,9 +706,6 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      const auto a_type = a->number_type();
-      const auto b_type = b->number_type();
-
       if (a->is(number::number_type_real) || b->is(number::number_type_real))
       {
         ctx->push_boolean(a->as_real() < b->as_real());
@@ -738,9 +735,6 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      const auto a_type = a->number_type();
-      const auto b_type = b->number_type();
-
       if (a->is(number::number_type_real) || b->is(number::number_type_real))
       {
         ctx->push_boolean(a->as_real() > b->as_real());
@@ -770,9 +764,6 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      const auto a_type = a->number_type();
-      const auto b_type = b->number_type();
-
       if (a->is(number::number_type_real) || b->is(number::number_type_real))
       {
         ctx->push_boolean(a->as_real() <= b->as_real());
@@ -802,9 +793,6 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      const auto a_type = a->number_type();
-      const auto b_type = b->number_type();
-
       if (a->is(number::number_type_real) || b->is(number::number_type_real))
       {
         ctx->push_boolean(a->as_real() >= b->as_real());

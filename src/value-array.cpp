@@ -476,13 +476,14 @@ namespace plorth
     if (ctx->pop_array(ary))
     {
       const auto size = ary->size();
-      ref<value> result[size];
+      std::vector<ref<value>> result;
 
+      result.reserve(size);
       for (array::size_type i = ary->size(); i > 0; --i)
       {
-        result[size - i] = ary->at(i - 1);
+        result.push_back(ary->at(i - 1));
       }
-      ctx->push_array(result, size);
+      ctx->push_array(result.data(), size);
     }
   }
 
@@ -652,8 +653,9 @@ namespace plorth
     if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
       const auto size = ary->size();
-      ref<value> result[size];
+      std::vector<ref<value>> result;
 
+      result.reserve(size);
       for (array::size_type i = 0; i < size; ++i)
       {
         ref<value> quote_result;
@@ -663,9 +665,9 @@ namespace plorth
         {
           return;
         }
-        result[i] = quote_result;
+        result.push_back(quote_result);
       }
-      ctx->push_array(result, size);
+      ctx->push_array(result.data(), size);
     }
   }
 
@@ -803,8 +805,6 @@ namespace plorth
   {
     ref<array> ary;
     ref<number> num;
-    double count;
-
     if (ctx->pop_array(ary) && ctx->pop_number(num))
     {
       const auto size = ary->size();
@@ -812,16 +812,17 @@ namespace plorth
 
       if (count >= 0)
       {
-        ref<value> result[size * count];
+        std::vector<ref<value>> result;
 
+        result.reserve(size * count);
         for (std::int64_t i = 0; i < count; ++i)
         {
           for (array::size_type j = 0; j < size; ++j)
           {
-            result[(i * size) + j] = ary->at(j);
+            result.push_back(ary->at(j));
           }
         }
-        ctx->push_array(result, size * count);
+        ctx->push_array(result.data(), size * count);
       } else {
         ctx->error(error::code_range, "Invalid repeat count.");
       }
@@ -990,7 +991,7 @@ namespace plorth
 
       ctx->push(ary);
 
-      if (index < 0 || index > ary->size())
+      if (index < 0 || index > static_cast<std::int64_t>(ary->size()))
       {
         ctx->error(error::code_range, "Array index out of bounds.");
         return;
@@ -1038,7 +1039,7 @@ namespace plorth
         result.push_back(ary->at(i));
       }
 
-      if (index < 0 || index > size)
+      if (index < 0 || index > static_cast<std::int64_t>(size))
       {
         result.push_back(val);
       } else {

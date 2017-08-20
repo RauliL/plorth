@@ -956,13 +956,14 @@ namespace plorth
     const ref<class runtime>& runtime = ctx->runtime();
     const auto& arguments = runtime->arguments();
     const auto size = arguments.size();
-    ref<value> result[size];
+    std::vector<ref<value>> result;
 
+    result.reserve(size);
     for (std::size_t i = 0; i < size; ++i)
     {
-      result[i] = runtime->string(arguments[i]);
+      result.push_back(runtime->string(arguments[i]));
     }
-    ctx->push_array(result, size);
+    ctx->push_array(result.data(), size);
   }
 
   static void make_error(const ref<context>& ctx, enum error::code code)
