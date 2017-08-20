@@ -258,6 +258,7 @@ namespace plorth
       sign = input[0] == '+';
       offset = 1;
     } else {
+      sign = true;
       offset = 0;
     }
 
