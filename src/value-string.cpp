@@ -227,7 +227,7 @@ namespace plorth
     {
       const unistring& input = str->value();
       const auto length = input.length();
-      array::container_type output;
+      std::vector<ref<value>> output;
 
       output.reserve(length);
       for (std::size_t i = 0; i < length; ++i)
@@ -235,7 +235,7 @@ namespace plorth
         output.push_back(runtime->value<string>(input.substr(i, 1)));
       }
       ctx->push(str);
-      ctx->push_array(output);
+      ctx->push_array(output.data(), output.size());
     }
   }
 
@@ -270,7 +270,7 @@ namespace plorth
     }
 
     ctx->push(str);
-    ctx->push_array(result);
+    ctx->push_array(result.data(), result.size());
   }
 
   /**
@@ -319,7 +319,7 @@ namespace plorth
       }
 
       ctx->push(str);
-      ctx->push_array(result);
+      ctx->push_array(result.data(), result.size());
     }
   }
 
@@ -370,7 +370,7 @@ namespace plorth
       }
 
       ctx->push(str);
-      ctx->push_array(result);
+      ctx->push_array(result.data(), result.size());
     }
   }
 

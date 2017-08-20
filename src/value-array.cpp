@@ -28,8 +28,80 @@
 
 namespace plorth
 {
-  array::array(const container_type& elements)
-    : m_elements(elements) {}
+  namespace
+  {
+    /**
+     * Implementation of simple array, which only acts as a wrapper for C type
+     * array.
+     */
+    class simple_array : public array
+    {
+    public:
+      simple_array(size_type size, const_pointer elements)
+        : m_size(size)
+        , m_elements(size > 0 ? new value_type[size] : nullptr)
+      {
+        for (size_type i = 0; i < m_size; ++i)
+        {
+          m_elements[i] = elements[i];
+        }
+      }
+
+      ~simple_array()
+      {
+        if (m_size > 0)
+        {
+          delete[] m_elements;
+        }
+      }
+
+      size_type size() const
+      {
+        return m_size;
+      }
+
+      const_reference at(size_type i) const
+      {
+        return m_elements[i];
+      }
+
+    private:
+      const size_type m_size;
+      pointer m_elements;
+    };
+
+    /**
+     * Implementation of array where two arrays have been concatenated into one.
+     */
+    class concat_array : public array
+    {
+    public:
+      concat_array(const ref<array>& left, const ref<array>& right)
+        : m_left(left)
+        , m_right(right) {}
+
+      size_type size() const
+      {
+        return m_left->size() + m_right->size();
+      }
+
+      const_reference at(size_type offset) const
+      {
+        const size_type left_size = m_left->size();
+
+        if (offset < left_size)
+        {
+          return m_left->at(offset);
+        } else {
+          return m_right->at(offset - left_size);
+        }
+      }
+
+    private:
+      const ref<array> m_left;
+      const ref<array> m_right;
+    };
+  }
 
   bool array::equals(const ref<value>& that) const
   {
@@ -42,14 +114,14 @@ namespace plorth
 
     ary = that.cast<array>();
 
-    if (m_elements.size() != ary->m_elements.size())
+    if (size() != ary->size())
     {
       return false;
     }
 
-    for (std::size_t i = 0; i < m_elements.size(); ++i)
+    for (size_type i = 0; i < size(); ++i)
     {
-      if (m_elements[i] != ary->m_elements[i])
+      if (at(i) != ary->at(i))
       {
         return false;
       }
@@ -60,12 +132,12 @@ namespace plorth
 
   unistring array::to_string() const
   {
-    const std::size_t size = m_elements.size();
+    const size_type s = size();
     unistring result;
 
-    for (std::size_t i = 0; i < size; ++i)
+    for (size_type i = 0; i < s; ++i)
     {
-      const auto& element = m_elements[i];
+      const_reference element = at(i);
 
       if (i > 0)
       {
@@ -83,13 +155,13 @@ namespace plorth
 
   unistring array::to_source() const
   {
-    const std::size_t size = m_elements.size();
+    const size_type s = size();
     unistring result;
 
     result += '[';
-    for (std::size_t i = 0; i < size; ++i)
+    for (size_type i = 0; i < s; ++i)
     {
-      const auto& element = m_elements[i];
+      const_reference element = at(i);
 
       if (i > 0)
       {
@@ -108,6 +180,11 @@ namespace plorth
     return result;
   }
 
+  ref<class array> runtime::array(array::const_pointer elements, array::size_type size)
+  {
+    return new (*m_memory_manager) simple_array(size, elements);
+  }
+
   /**
    * Word: length
    * Prototype: array
@@ -124,12 +201,12 @@ namespace plorth
    */
   static void w_length(const ref<context>& ctx)
   {
-    ref<class array> array;
+    ref<array> ary;
 
-    if (ctx->pop_array(array))
+    if (ctx->pop_array(ary))
     {
-      ctx->push(array);
-      ctx->push_number(array->elements().size());
+      ctx->push(ary);
+      ctx->push_number(ary->size());
     }
   }
 
@@ -156,8 +233,10 @@ namespace plorth
     if (ctx->pop_array(ary) && ctx->pop(val))
     {
       ctx->push(ary);
-      for (const auto& element : ary->elements())
+      for (array::size_type i = 0; i < ary->size(); ++i)
       {
+        array::const_reference element = ary->at(i);
+
         if (val == element)
         {
           ctx->push_boolean(true);
@@ -190,13 +269,12 @@ namespace plorth
 
     if (ctx->pop_array(ary) && ctx->pop(val))
     {
-      const auto& elements = ary->elements();
-      const auto size = elements.size();
+      const auto size = ary->size();
 
       ctx->push(ary);
-      for (std::size_t i = 0; i < size; ++i)
+      for (array::size_type i = 0; i < size; ++i)
       {
-        if (val == elements[i])
+        if (val == ary->at(i))
         {
           ctx->push_number(i);
           return;
@@ -229,8 +307,9 @@ namespace plorth
     if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
       ctx->push(ary);
-      for (const auto& element : ary->elements())
+      for (array::size_type i = 0; i < ary->size(); ++i)
       {
+        const auto& element = ary->at(i);
         bool result;
 
         ctx->push(element);
@@ -270,15 +349,14 @@ namespace plorth
 
     if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
-      const auto& elements = ary->elements();
-      const auto size = elements.size();
+      const auto size = ary->size();
 
       ctx->push(ary);
-      for (std::size_t i = 0; i < size; ++i)
+      for (array::size_type i = 0; i < size; ++i)
       {
         bool result;
 
-        ctx->push(elements[i]);
+        ctx->push(ary->at(i));
         if (!quo->call(ctx) || !ctx->pop_boolean(result))
         {
           return;
@@ -316,8 +394,9 @@ namespace plorth
     if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
       ctx->push(ary);
-      for (const auto& element : ary->elements())
+      for (array::size_type i = 0; i < ary->size(); ++i)
       {
+        const auto& element = ary->at(i);
         bool result;
 
         ctx->push(element);
@@ -358,8 +437,9 @@ namespace plorth
     if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
       ctx->push(ary);
-      for (const auto& element : ary->elements())
+      for (array::size_type i = 0; i < ary->size(); ++i)
       {
+        const auto& element = ary->at(i);
         bool result;
 
         ctx->push(element);
@@ -392,13 +472,18 @@ namespace plorth
    */
   static void w_reverse(const ref<context>& ctx)
   {
-    ref<class array> array;
+    ref<array> ary;
 
-    if (ctx->pop_array(array))
+    if (ctx->pop_array(ary))
     {
-      const array::container_type& elements = array->elements();
+      const auto size = ary->size();
+      ref<value> result[size];
 
-      ctx->push_array(array::container_type(elements.rbegin(), elements.rend()));
+      for (array::size_type i = ary->size(); i > 0; --i)
+      {
+        result[size - i] = ary->at(i - 1);
+      }
+      ctx->push_array(result, size);
     }
   }
 
@@ -420,10 +505,11 @@ namespace plorth
 
     if (ctx->pop_array(ary))
     {
-      array::container_type result;
+      std::vector<ref<value>> result;
 
-      for (const auto& value1 : ary->elements())
+      for (array::size_type i = 0; i < ary->size(); ++i)
       {
+        const auto& value1 = ary->at(i);
         bool found = false;
 
         for (const auto& value2 : result)
@@ -441,7 +527,7 @@ namespace plorth
         }
       }
 
-      ctx->push_array(result);
+      ctx->push_array(result.data(), result.size());
     }
   }
 
@@ -459,18 +545,15 @@ namespace plorth
    */
   static void w_extract(const ref<context>& ctx)
   {
-    ref<class array> array;
+    ref<array> ary;
 
-    if (ctx->pop_array(array))
+    if (!ctx->pop_array(ary))
     {
-      const auto& elements = array->elements();
-      auto it = elements.rbegin();
-      const auto end = elements.rend();
-
-      while (it != end)
-      {
-        ctx->push(*it++);
-      }
+      return;
+    }
+    for (array::size_type i = ary->size(); i > 0; --i)
+    {
+      ctx->push(ary->at(i - 1));
     }
   }
 
@@ -493,19 +576,18 @@ namespace plorth
     ref<array> ary;
     ref<string> separator;
     unistring result;
-    bool first = true;
 
     if (!ctx->pop_array(ary) || !ctx->pop_string(separator))
     {
       return;
     }
 
-    for (const auto& element : ary->elements())
+    for (array::size_type i = 0; i < ary->size(); ++i)
     {
-      if (first)
+      const auto& element = ary->at(i);
+
+      if (i > 0)
       {
-        first = false;
-      } else {
         result += separator->value();
       }
       if (element)
@@ -531,18 +613,18 @@ namespace plorth
    */
   static void w_for_each(const ref<context>& ctx)
   {
-    ref<class array> array;
-    ref<class quote> quote;
+    ref<array> ary;
+    ref<quote> quo;
 
-    if (!ctx->pop_array(array) || !ctx->pop_quote(quote))
+    if (!ctx->pop_array(ary) || !ctx->pop_quote(quo))
     {
       return;
     }
 
-    for (const auto& element : array->elements())
+    for (array::size_type i = 0; i < ary->size(); ++i)
     {
-      ctx->push(element);
-      if (!quote->call(ctx))
+      ctx->push(ary->at(i));
+      if (!quo->call(ctx))
       {
         return;
       }
@@ -565,30 +647,27 @@ namespace plorth
    */
   static void w_map(const ref<context>& ctx)
   {
-    ref<class array> array;
-    ref<class quote> quote;
-    std::vector<ref<value>> result;
+    ref<array> ary;
+    ref<quote> quo;
 
-    if (!ctx->pop_array(array) || !ctx->pop_quote(quote))
+    if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
-      return;
-    }
+      const auto size = ary->size();
+      ref<value> result[size];
 
-    result.reserve(array->elements().size());
-
-    for (const auto& element : array->elements())
-    {
-      ref<value> quote_result;
-
-      ctx->push(element);
-      if (!quote->call(ctx) || !ctx->pop(quote_result))
+      for (array::size_type i = 0; i < size; ++i)
       {
-        return;
-      }
-      result.push_back(quote_result);
-    }
+        ref<value> quote_result;
 
-    ctx->push_array(result);
+        ctx->push(ary->at(i));
+        if (!quo->call(ctx) || !ctx->pop(quote_result))
+        {
+          return;
+        }
+        result[i] = quote_result;
+      }
+      ctx->push_array(result, size);
+    }
   }
 
   /**
@@ -616,8 +695,9 @@ namespace plorth
       return;
     }
 
-    for (const auto& element : array->elements())
+    for (array::size_type i = 0; i < array->size(); ++i)
     {
+      array::const_reference element = array->at(i);
       bool quote_result;
 
       ctx->push(element);
@@ -631,7 +711,7 @@ namespace plorth
       }
     }
 
-    ctx->push_array(result);
+    ctx->push_array(result.data(), result.size());
   }
 
   /**
@@ -653,14 +733,14 @@ namespace plorth
     ref<class array> array;
     ref<class quote> quote;
     ref<value> result;
-    std::size_t size;
+    array::size_type size;
 
     if (!ctx->pop_array(array) || !ctx->pop_quote(quote))
     {
       return;
     }
 
-    size = array->elements().size();
+    size = array->size();
 
     if (size == 0)
     {
@@ -668,12 +748,12 @@ namespace plorth
       return;
     }
 
-    result = array->elements().front();
+    result = array->at(0);
 
-    for (std::size_t i = 1; i < size; ++i)
+    for (array::size_type i = 1; i < size; ++i)
     {
       ctx->push(result);
-      ctx->push(array->elements()[i]);
+      ctx->push(array->at(i));
       if (!quote->call(ctx) || !ctx->pop(result))
       {
         return;
@@ -703,14 +783,7 @@ namespace plorth
 
     if (ctx->pop_array(a) && ctx->pop_array(b))
     {
-      const array::container_type& x = a->elements();
-      const array::container_type& y = b->elements();
-      array::container_type result;
-
-      result.reserve(x.size() + y.size());
-      result.insert(result.begin(), std::begin(x), std::end(x));
-      result.insert(result.begin(), std::begin(y), std::end(y));
-      ctx->push_array(result);
+      ctx->push(ctx->runtime()->value<concat_array>(b, a));
     }
   }
 
@@ -734,23 +807,25 @@ namespace plorth
 
     if (ctx->pop_array(ary) && ctx->pop_number(count))
     {
-      const auto& elements = ary->elements();
-      array::container_type result;
+      std::vector<ref<value>> result;
 
       if (count < 0.0)
       {
         count = -count;
       }
 
-      result.reserve(elements.size() * count);
+      result.reserve(ary->size() * count);
 
       while (count >= 1.0)
       {
         count -= 1.0;
-        result.insert(result.end(), std::begin(elements), std::end(elements));
+        for (array::size_type i = 0; i < ary->size(); ++i)
+        {
+          result.push_back(ary->at(i));
+        }
       }
 
-      ctx->push_array(result);
+      ctx->push_array(result.data(), result.size());
     }
   }
 
@@ -775,14 +850,17 @@ namespace plorth
 
     if (ctx->pop_array(a) && ctx->pop_array(b))
     {
-      array::container_type result;
+      std::vector<ref<value>> result;
 
-      for (const auto& value1 : b->elements())
+      for (array::size_type i = 0; i < b->size(); ++i)
       {
+        const auto& value1 = b->at(i);
         bool found = false;
 
-        for (const auto& value2 : a->elements())
+        for (array::size_type j = 0; j < a->size(); ++j)
         {
+          const auto& value2 = a->at(j);
+
           if (value1 == value2)
           {
             found = true;
@@ -810,7 +888,7 @@ namespace plorth
         }
       }
 
-      ctx->push_array(result);
+      ctx->push_array(result.data(), result.size());
     }
   }
 
@@ -835,10 +913,11 @@ namespace plorth
 
     if (ctx->pop_array(a) && ctx->pop_array(b))
     {
-      array::container_type result;
+      std::vector<ref<value>> result;
 
-      for (const auto& value1 : b->elements())
+      for (array::size_type i = 0; i < b->size(); ++i)
       {
+        const auto& value1 = b->at(i);
         bool found = false;
 
         for (const auto& value2 : result)
@@ -856,8 +935,9 @@ namespace plorth
         }
       }
 
-      for (const auto& value1 : a->elements())
+      for (array::size_type i = 0; i < a->size(); ++i)
       {
+        const auto& value1 = a->at(i);
         bool found = false;
 
         for (const auto& value2 : result)
@@ -875,7 +955,7 @@ namespace plorth
         }
       }
 
-      ctx->push_array(result);
+      ctx->push_array(result.data(), result.size());
     }
   }
 
@@ -902,22 +982,20 @@ namespace plorth
 
     if (ctx->pop_array(ary) && ctx->pop_number(index))
     {
-      const array::container_type& elements = ary->elements();
-
       if (index < 0.0)
       {
-        index += elements.size();
+        index += ary->size();
       }
 
       ctx->push(ary);
 
-      if (index < 0.0 || index > elements.size())
+      if (index < 0.0 || index > ary->size())
       {
         ctx->error(error::code_range, "Array index out of bounds.");
         return;
       }
 
-      ctx->push(elements[index]);
+      ctx->push(ary->at(index));
     }
   }
 
@@ -945,7 +1023,12 @@ namespace plorth
 
     if (ctx->pop_array(ary) && ctx->pop_number(index) && ctx->pop(val))
     {
-      array::container_type result = ary->elements();
+      std::vector<ref<value>> result;
+
+      for (array::size_type i = 0;  i < ary->size(); ++i)
+      {
+        result.push_back(ary->at(i));
+      }
 
       if (index < 0.0)
       {
@@ -959,7 +1042,7 @@ namespace plorth
         result[index] = val;
       }
 
-      ctx->push_array(result);
+      ctx->push_array(result.data(), result.size());
     }
   }
 

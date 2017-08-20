@@ -149,9 +149,9 @@ namespace plorth
     push(m_runtime->value<string>(value));
   }
 
-  void context::push_array(const array::container_type& elements)
+  void context::push_array(array::const_pointer elements, array::size_type size)
   {
-    push(m_runtime->value<array>(elements));
+    push(m_runtime->array(elements, size));
   }
 
   void context::push_object(const object::container_type& properties)

@@ -174,7 +174,7 @@ namespace plorth
     }
 
     ctx->push(obj);
-    ctx->push_array(result);
+    ctx->push_array(result.data(), result.size());
   }
 
   /**
@@ -207,7 +207,7 @@ namespace plorth
     }
 
     ctx->push(obj);
-    ctx->push_array(result);
+    ctx->push_array(result.data(), result.size());
   }
 
   /**
