@@ -1,2 +1,0 @@
-- Add test cases for the built-in API.
-- Add assertions to help with the test cases.
