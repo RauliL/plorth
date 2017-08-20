@@ -918,7 +918,7 @@ namespace plorth
 
       ctx->push(str);
 
-      if (index < 0 || index > length)
+      if (index < 0 || index > static_cast<std::int64_t>(length))
       {
         ctx->error(error::code_range, "String index out of bounds.");
         return;

@@ -991,7 +991,7 @@ namespace plorth
 
       ctx->push(ary);
 
-      if (index < 0 || index > ary->size())
+      if (index < 0 || index > static_cast<std::int64_t>(ary->size()))
       {
         ctx->error(error::code_range, "Array index out of bounds.");
         return;
@@ -1039,7 +1039,7 @@ namespace plorth
         result.push_back(ary->at(i));
       }
 
-      if (index < 0 || index > size)
+      if (index < 0 || index > static_cast<std::int64_t>(size))
       {
         result.push_back(val);
       } else {
