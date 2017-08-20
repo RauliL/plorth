@@ -348,16 +348,17 @@ namespace plorth
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
-      ref<value> output[length];
+      std::vector<ref<value>> output;
 
+      output.reserve(length);
       for (string::size_type i = 0; i < length; ++i)
       {
         const unichar c = str->at(i);
 
-        output[i] = runtime->string(&c, 1);
+        output.push_back(runtime->string(&c, 1));
       }
       ctx->push(str);
-      ctx->push_array(output, length);
+      ctx->push_array(output.data(), length);
     }
   }
 
@@ -383,14 +384,15 @@ namespace plorth
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
-      ref<value> output[length];
+      std::vector<ref<value>> output;
 
+      output.reserve(length);
       for (string::size_type i = 0; i < length; ++i)
       {
-        output[i] = runtime->number(static_cast<std::int64_t>(str->at(i)));
+        output.push_back(runtime->number(static_cast<std::int64_t>(str->at(i))));
       }
       ctx->push(str);
-      ctx->push_array(output, length);
+      ctx->push_array(output.data(), length);
     }
   }
 
