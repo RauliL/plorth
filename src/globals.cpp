@@ -575,7 +575,7 @@ namespace plorth
   }
 
   /**
-   * Word: prototype
+   * Word: proto
    *
    * Takes:
    * - any
@@ -584,10 +584,10 @@ namespace plorth
    * - any
    * - object
    *
-   * Retrieves prototype of the top-most value. If the top-most value of the
-   * stack is null, null will be returned instead.
+   * Retrieves proto of the top-most value. If the top-most value of the stack
+   * is null, null will be returned instead.
    */
-  static void w_prototype(const ref<context>& ctx)
+  static void w_proto(const ref<context>& ctx)
   {
     ref<class value> value;
 
@@ -1206,7 +1206,7 @@ namespace plorth
         { "quote?", w_is_quote },
         { "string?", w_is_string },
         { "typeof" , w_typeof },
-        { "prototype", w_prototype },
+        { "proto", w_proto },
 
         // Conversions.
         { ">boolean", w_to_boolean },
