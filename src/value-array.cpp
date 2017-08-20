@@ -588,7 +588,7 @@ namespace plorth
 
       if (i > 0)
       {
-        result += separator->value();
+        result += separator->to_string();
       }
       if (element)
       {
