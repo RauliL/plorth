@@ -450,7 +450,7 @@ Prints top-most value of the stack to stdout with terminating new line.
 
 ---
 
-### prototype
+### proto
 
 <dl>
   <dt>Takes:</dt>
@@ -459,8 +459,8 @@ Prints top-most value of the stack to stdout with terminating new line.
   <dd>any, object</dd>
 </dl>
 
-Retrieves prototype of the top-most value. If the top-most value of the
-stack is null, null will be returned instead.
+Retrieves proto of the top-most value. If the top-most value of the stack
+is null, null will be returned instead.
 
 ---
 
