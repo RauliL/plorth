@@ -26,15 +26,28 @@
 #include <plorth/context.hpp>
 #include <plorth/value-quote.hpp>
 
+#include <cstring>
 #include <fstream>
 #include <stack>
 
 #if defined(HAVE_UNISTD_H)
 # include <unistd.h>
 #endif
+#if defined(HAVE_SYSEXITS_H)
+# include <sysexits.h>
+#endif
+
+#if !defined(EX_USAGE)
+# define EX_USAGE 64
+#endif
 
 using namespace plorth;
 
+static const char* script_filename = nullptr;
+static bool flag_test_syntax = false;
+static bool flag_fork = false;
+
+static void scan_arguments(const ref<runtime>&, int, char**);
 #if PLORTH_ENABLE_MODULES
 static void scan_module_path(const ref<runtime>&);
 #endif
@@ -54,26 +67,29 @@ int main(int argc, char** argv)
   scan_module_path(runtime);
 #endif
 
-  if (argc > 1)
-  {
-    for (int i = 1; i < argc; ++i)
-    {
-      std::fstream is(argv[i], std::ios_base::in);
+  scan_arguments(runtime, argc, argv);
 
-      if (is.good())
-      {
-        const std::string source = std::string(
-          std::istreambuf_iterator<char>(is),
-          std::istreambuf_iterator<char>()
+  if (script_filename)
+  {
+    std::fstream is(script_filename, std::ios_base::in);
+
+    if (is.good())
+    {
+      const std::string source = std::string(
+        std::istreambuf_iterator<char>(is),
+        std::istreambuf_iterator<char>()
         );
 
-        is.close();
-        context->clear();
-        compile_and_run(context, source);
-      } else {
-        std::cerr << "unable to open file `" << argv[i] << "' for reading" << std::endl;
-        std::exit(EXIT_FAILURE);
-      }
+      is.close();
+      context->clear();
+      compile_and_run(context, source);
+    } else {
+      std::cerr << argv[0]
+                << ": Unable to open file `"
+                << script_filename
+                << "' for reading."
+                << std::endl;
+      std::exit(EXIT_FAILURE);
     }
   }
   else if (is_console_interactive())
@@ -85,11 +101,109 @@ int main(int argc, char** argv)
       std::string(
         std::istreambuf_iterator<char>(std::cin),
         std::istreambuf_iterator<char>()
-      )
-    );
+        )
+      );
   }
 
   return EXIT_SUCCESS;
+}
+
+static void print_usage(std::ostream& out, const char* executable)
+{
+  out << std::endl
+      << "Usage: "
+      << executable
+      << " [switches] [--] [programfile] [arguments]"
+      << std::endl;
+  out << "  -c        Check syntax only." << std::endl;
+#if HAVE_FORK
+  out << "  -f        Fork to background before executing script." << std::endl;
+#endif
+  out << "  --version Print the version." << std::endl;
+  out << "  --help    Display this message." << std::endl;
+  out << std::endl;
+}
+
+static void scan_arguments(const ref<class runtime>& runtime,
+                           int argc,
+                           char** argv)
+{
+  int offset = 1;
+
+  while (offset < argc)
+  {
+    const char* arg = argv[offset++];
+
+    if (!*arg)
+    {
+      continue;
+    }
+    else if (*arg != '-')
+    {
+      script_filename = arg;
+      break;
+    }
+    else if (!arg[1])
+    {
+      break;
+    }
+    else if (arg[1] == '-')
+    {
+      if (!std::strcmp(arg, "--help"))
+      {
+        print_usage(std::cout, argv[0]);
+        std::exit(EXIT_SUCCESS);
+      }
+      else if (!std::strcmp(arg, "--version"))
+      {
+        std::cerr << "Plorth " << PLORTH_VERSION << std::endl;
+        std::exit(EXIT_SUCCESS);
+      }
+      else if (!std::strcmp(arg, "--"))
+      {
+        if (offset < argc)
+        {
+          script_filename = argv[offset++];
+        }
+        break;
+      } else {
+        std::cerr << "Unrecognized switch: " << arg << std::endl;
+        print_usage(std::cerr, argv[0]);
+        std::exit(EX_USAGE);
+      }
+    }
+    for (int i = 1; arg[i]; ++i)
+    {
+      // TODO: Add support for these command line switches:
+      // -e: Compile and execute inline script.
+      // -r: Import module before execution of the script.
+      switch (arg[i])
+      {
+      case 'c':
+        flag_test_syntax = true;
+        break;
+
+      case 'f':
+        flag_fork = true;
+        break;
+
+      case 'h':
+        print_usage(std::cout, argv[0]);
+        std::exit(EXIT_SUCCESS);
+        break;
+
+      default:
+        std::cerr << "Unrecognized switch: `" << arg[i] << "'" << std::endl;
+        print_usage(std::cerr, argv[0]);
+        std::exit(EX_USAGE);
+      }
+    }
+  }
+
+  while (offset < argc)
+  {
+    runtime->arguments().push_back(utf8_decode(argv[offset++]));
+  }
 }
 
 #if PLORTH_ENABLE_MODULES
@@ -139,25 +253,55 @@ static inline bool is_console_interactive()
 #endif
 }
 
-static void compile_and_run(const ref<class context>& context, const std::string& source)
+static void handle_error(const ref<context>& ctx)
 {
-  const ref<class quote> quote = context->compile(source);
+  const ref<error>& err = ctx->error();
 
-  if (!quote || !quote->call(context))
+  if (err)
   {
-    const ref<class error>& error = context->error();
-
-    if (!error)
-    {
-      std::exit(EXIT_FAILURE);
-    }
-
     std::cerr << "Error: "
-              << error->code()
+              << err->code()
               << " - "
-              << error->message()
-              << std::endl;
-    std::exit(EXIT_FAILURE);
+              << err->message();
+  } else {
+    std::cerr << "Unknown error.";
+  }
+  std::cerr << std::endl;
+  std::exit(EXIT_FAILURE);
+}
+
+static void compile_and_run(const ref<context>& ctx, const std::string& source)
+{
+  const ref<quote> script = ctx->compile(source);
+
+  if (!script)
+  {
+    handle_error(ctx);
+    return;
+  }
+
+  if (flag_test_syntax)
+  {
+    std::cerr << "Syntax OK." << std::endl;
+    std::exit(EXIT_SUCCESS);
+    return;
+  }
+
+  if (flag_fork)
+  {
+#if HAVE_FORK
+    if (fork())
+    {
+      std::exit(EXIT_SUCCESS);
+    }
+#else
+    std::cerr << "Forking to background is not supported on this platform." << std::endl;
+#endif
+  }
+
+  if (!script->call(ctx))
+  {
+    handle_error(ctx);
   }
 }
 

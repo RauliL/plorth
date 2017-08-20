@@ -35,10 +35,12 @@
 
 // Optional headers.
 #cmakedefine HAVE_UNISTD_H 1
+#cmakedefine HAVE_SYSEXITS_H 1
 #cmakedefine HAVE_SYS_TYPES_H 1
 #cmakedefine HAVE_SYS_STAT_H 1
 
 // Optional functions.
+#cmakedefine HAVE_FORK 1
 #cmakedefine HAVE_ISATTY 1
 #cmakedefine HAVE_STAT 1
 #cmakedefine HAVE_REALPATH 1
