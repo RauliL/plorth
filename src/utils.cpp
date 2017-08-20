@@ -31,6 +31,7 @@
 
 namespace plorth
 {
+  static const char digitmap[] = "0123456789abcdefghijklmnopqrstuvwxyz";
   static const unistring unistring_nan = {'n', 'a', 'n'};
   static const unistring unistring_inf = {'i', 'n', 'f'};
   static const unistring unistring_inf_neg = {'-', 'i', 'n', 'f'};
@@ -142,6 +143,32 @@ namespace plorth
     return true;
   }
 
+  unistring to_unistring(std::int64_t number)
+  {
+    const bool negative = number < 0;
+    std::uint64_t mag = static_cast<std::uint64_t>(negative ? -number : number);
+    unistring result;
+
+    if (mag != 0)
+    {
+      result.reserve(negative ? 21 : 20);
+      do
+      {
+        result.insert(result.begin(), digitmap[mag % 10]);
+        mag /= 10;
+      }
+      while (mag);
+    } else {
+      result.insert(result.begin(), '0');
+    }
+    if (negative)
+    {
+      result.insert(result.begin(), '-');
+    }
+
+    return result;
+  }
+
   unistring to_unistring(double number)
   {
     char buffer[20];
@@ -159,19 +186,23 @@ namespace plorth
     return utf8_decode(buffer);
   }
 
-  static bool parse_int(const unistring& input, int& number)
+  std::int64_t to_integer(const unistring& input)
   {
-    static const int div = INT_MAX / 10;
-    static const int rem = INT_MAX % 10;
+    static const std::int64_t div = INT64_MAX / 10;
+    static const std::int64_t rem = INT64_MAX % 10;
+    std::int64_t number = 0;
     const std::size_t length = input.length();
-    std::size_t offset = 0;
+    std::size_t offset;
     bool sign;
 
     // Extract the sign.
-    sign = !(length > 0 && input[0] == '-');
-    if (!sign || (length > 0 && input[0] == '+'))
+    if (length > 0 && (input[0] == '+' || input[0] == '-'))
     {
-      ++offset;
+      offset = 1;
+      sign = input[0] == '+';
+    } else {
+      offset = 0;
+      sign = true;
     }
 
     for (; offset < length; ++offset)
@@ -190,19 +221,19 @@ namespace plorth
       }
       number = (number * 10) + digit;
     }
-    number = sign ? number : -number;
 
-    return true;
+    return sign ? number : -number;
   }
 
-  bool to_number(const unistring& input, double& number)
+  double to_real(const unistring& input)
   {
     const auto length = input.length();
+    double number;
     unistring::size_type offset;
     bool seen_digits = false;
     bool seen_dot = false;
     bool sign;
-    int exponent = 0;
+    std::int64_t exponent = 0;
 
     if (!length)
     {
@@ -211,21 +242,15 @@ namespace plorth
 
     if (!input.compare(unistring_nan))
     {
-      number = NAN;
-
-      return true;
+      return NAN;
     }
     else if (!input.compare(unistring_inf))
     {
-      number = INFINITY;
-
-      return true;
+      return INFINITY;
     }
     else if (!input.compare(unistring_inf_neg))
     {
-      number = -INFINITY;
-
-      return true;
+      return -INFINITY;
     }
 
     if (input[0] == '+' || input[0] == '-')
@@ -266,39 +291,32 @@ namespace plorth
 
     if (!seen_digits)
     {
-      number = 0.0;
-
-      return true;
+      return 0.0;
     }
 
     // Parse exponent.
     if (offset < length && (input[offset] == 'e' || input[offset] == 'E'))
     {
-      if (!parse_int(input.substr(offset + 1), exponent))
-      {
-        return false;
-      }
+      exponent = to_integer(input.substr(offset + 1));
     }
 
     if (number == 0.0)
     {
-      number = 0.0;
-
-      return true;
+      return 0.0;
     }
 
     if (exponent < 0)
     {
       if (number < DBL_MIN * std::pow(10.0, static_cast<double>(-exponent)))
       {
-        return false; // Float underflow.
+        return NAN; // Float underflow.
       }
     }
     else if (exponent > 0)
     {
       if (number > DBL_MAX * std::pow(10.0, static_cast<double>(exponent)))
       {
-        return false; // Float overflow.
+        return NAN; // Float overflow.
       }
     }
 
@@ -308,6 +326,6 @@ namespace plorth
       number = -number;
     }
 
-    return true;
+    return number;
   }
 }

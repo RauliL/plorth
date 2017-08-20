@@ -25,8 +25,6 @@
  */
 #include <plorth/context.hpp>
 #include <plorth/token.hpp>
-#include <plorth/value-number.hpp>
-#include <plorth/value-string.hpp>
 
 #include "./utils.hpp"
 
@@ -652,16 +650,8 @@ namespace plorth
           }
           else if (is_number(text))
           {
-            double num;
-
-            if (to_number(text, num))
-            {
-              slot = ctx->runtime()->value<number>(num);
-              break;
-            }
-            ctx->error(error::code_value, "Unable to parse `" + text + "' into number.");
-
-            return false;
+            slot = ctx->runtime()->number(text);
+            break;
           }
         }
 

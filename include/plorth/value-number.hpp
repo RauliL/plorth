@@ -33,12 +33,37 @@ namespace plorth
   class number : public value
   {
   public:
-    explicit number(double value);
-
-    inline double value() const
+    /**
+     * Enumeration for different supported number types.
+     */
+    enum number_type
     {
-      return m_value;
+      number_type_int,
+      number_type_real
+    };
+
+    /**
+     * Returns type of the number.
+     */
+    virtual enum number_type number_type() const = 0;
+
+    /**
+     * Tests whether this number is of specific type.
+     */
+    inline bool is(enum number_type t) const
+    {
+      return number_type() == t;
     }
+
+    /**
+     * Returns value of the number as integer.
+     */
+    virtual std::int64_t as_int() const = 0;
+
+    /**
+     * Returns value of the number as floating point decimal.
+     */
+    virtual double as_real() const = 0;
 
     inline enum type type() const
     {
@@ -48,9 +73,6 @@ namespace plorth
     bool equals(const ref<class value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
-
-  private:
-    const double m_value;
   };
 }
 

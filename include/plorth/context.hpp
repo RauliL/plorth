@@ -202,9 +202,20 @@ namespace plorth
     void push_boolean(bool value);
 
     /**
-     * Pushes number value into the data stack.
+     * Pushes integer number value into the data stack.
      */
-    void push_number(double value);
+    void push_int(std::int64_t value);
+
+    /**
+     * Pushes real number value into the data stack.
+     */
+    void push_real(double value);
+
+    /**
+     * Pushes either integer or real number into stack, based on the given text
+     * input which is parsed into a number.
+     */
+    void push_number(const unistring& value);
 
     /**
      * Pushes string value into the data stack.
@@ -291,7 +302,7 @@ namespace plorth
      * \return     Boolean flag that tells whether the operation was
      *             successfull or not.
      */
-    bool pop_number(double& slot);
+    bool pop_number(ref<number>& slot);
 
     /**
      * Pops string value from the data stack and places it into given slot. If

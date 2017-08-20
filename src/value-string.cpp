@@ -25,8 +25,6 @@
  */
 #include <plorth/context.hpp>
 #include <plorth/unicode.hpp>
-#include <plorth/value-number.hpp>
-#include <plorth/value-string.hpp>
 
 #include "./utils.hpp"
 
@@ -204,7 +202,7 @@ namespace plorth
     if (ctx->pop_string(str))
     {
       ctx->push(str);
-      ctx->push_number(str->length());
+      ctx->push_int(str->length());
     }
   }
 
@@ -389,7 +387,7 @@ namespace plorth
 
       for (string::size_type i = 0; i < length; ++i)
       {
-        output[i] = runtime->value<number>(str->at(i));
+        output[i] = runtime->number(static_cast<std::int64_t>(str->at(i)));
       }
       ctx->push(str);
       ctx->push_array(output, length);
@@ -794,17 +792,17 @@ namespace plorth
   static void w_to_number(const ref<context>& ctx)
   {
     ref<string> a;
-    double number;
 
-    if (!ctx->pop_string(a))
+    if (ctx->pop_string(a))
     {
-      return;
-    }
-    else if (to_number(a->to_string(), number))
-    {
-      ctx->push_number(number);
-    } else {
-      ctx->error(error::code_value, "Could not convert string to number.");
+      const unistring str = a->to_string();
+
+      if (is_number(str))
+      {
+        ctx->push_number(str);
+      } else {
+        ctx->error(error::code_value, "Could not convert string to number.");
+      }
     }
   }
 
@@ -857,23 +855,24 @@ namespace plorth
   static void w_repeat(const ref<context>& ctx)
   {
     ref<string> str;
-    double count;
+    ref<number> num;
 
-    if (ctx->pop_string(str) && ctx->pop_number(count))
+    if (ctx->pop_string(str) && ctx->pop_number(num))
     {
       const auto length = str->length();
+      std::int64_t count = num->as_int();
       unistring result;
 
-      if (count < 0.0)
+      if (count < 0)
       {
         count = -count;
       }
 
       result.reserve(length * count);
 
-      while (count >= 1.0)
+      while (count > 0)
       {
-        count -= 1.0;
+        --count;
         for (string::size_type i = 0; i < length; ++i)
         {
           result.append(1, str->at(i));
@@ -902,21 +901,22 @@ namespace plorth
   static void w_get(const ref<context>& ctx)
   {
     ref<string> str;
-    double index;
+    ref<number> num;
 
-    if (ctx->pop_string(str) && ctx->pop_number(index))
+    if (ctx->pop_string(str) && ctx->pop_number(num))
     {
       const auto length = str->length();
+      std::int64_t index = num->as_int();
       unichar c;
 
-      if (index < 0.0)
+      if (index < 0)
       {
         index += length;
       }
 
       ctx->push(str);
 
-      if (index < 0.0 || index > length)
+      if (index < 0 || index > length)
       {
         ctx->error(error::code_range, "String index out of bounds.");
         return;

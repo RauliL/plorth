@@ -28,6 +28,7 @@
 
 #include <plorth/value-array.hpp>
 #include <plorth/value-boolean.hpp>
+#include <plorth/value-number.hpp>
 #include <plorth/value-object.hpp>
 #include <plorth/value-quote.hpp>
 #include <plorth/value-string.hpp>
@@ -130,6 +131,31 @@ namespace plorth
      *             whether some kind of error was occurred.
      */
     bool import(const ref<context>& ctx, const unistring& path);
+
+    /**
+     * Constructs integer number from given value.
+     *
+     * \param value Value of the number.
+     * \return      Reference to the created number value.
+     */
+    ref<class number> number(std::int64_t value);
+
+    /**
+     * Constructs real number from given value.
+     *
+     * \param value Value of the number.
+     * \return      Reference to the created number value.
+     */
+    ref<class number> number(double value);
+
+    /**
+     * Parses given text input into number (either real or integer) and
+     * constructs number value from it.
+     *
+     * \param value Value of the number as text.
+     * \return      Reference to the created number value.
+     */
+    ref<class number> number(const unistring& value);
 
     /**
      * Constructs array value from given elements.
@@ -311,6 +337,10 @@ namespace plorth
     std::vector<unistring> m_module_paths;
     /** Container for already imported modules. */
     object::container_type m_imported_modules;
+#if PLORTH_ENABLE_INTEGER_CACHE
+    /** Cache for commonly used integer numbers. */
+    ref<class number> m_integer_cache[256];
+#endif
   };
 }
 

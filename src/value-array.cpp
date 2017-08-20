@@ -24,7 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
-#include <plorth/value-string.hpp>
 
 namespace plorth
 {
@@ -206,7 +205,7 @@ namespace plorth
     if (ctx->pop_array(ary))
     {
       ctx->push(ary);
-      ctx->push_number(ary->size());
+      ctx->push_int(ary->size());
     }
   }
 
@@ -276,7 +275,7 @@ namespace plorth
       {
         if (val == ary->at(i))
         {
-          ctx->push_number(i);
+          ctx->push_int(i);
           return;
         }
       }
@@ -363,7 +362,7 @@ namespace plorth
         }
         else if (result)
         {
-          ctx->push_number(i);
+          ctx->push_int(i);
           return;
         }
       }
@@ -803,29 +802,29 @@ namespace plorth
   static void w_repeat(const ref<context>& ctx)
   {
     ref<array> ary;
+    ref<number> num;
     double count;
 
-    if (ctx->pop_array(ary) && ctx->pop_number(count))
+    if (ctx->pop_array(ary) && ctx->pop_number(num))
     {
-      std::vector<ref<value>> result;
+      const auto size = ary->size();
+      const std::int64_t count = num->as_int();
 
-      if (count < 0.0)
+      if (count >= 0)
       {
-        count = -count;
-      }
+        ref<value> result[size * count];
 
-      result.reserve(ary->size() * count);
-
-      while (count >= 1.0)
-      {
-        count -= 1.0;
-        for (array::size_type i = 0; i < ary->size(); ++i)
+        for (std::int64_t i = 0; i < count; ++i)
         {
-          result.push_back(ary->at(i));
+          for (array::size_type j = 0; j < size; ++j)
+          {
+            result[(i * size) + j] = ary->at(j);
+          }
         }
+        ctx->push_array(result, size * count);
+      } else {
+        ctx->error(error::code_range, "Invalid repeat count.");
       }
-
-      ctx->push_array(result.data(), result.size());
     }
   }
 
@@ -978,18 +977,20 @@ namespace plorth
   static void w_get(const ref<context>& ctx)
   {
     ref<array> ary;
-    double index;
+    ref<number> num;
 
-    if (ctx->pop_array(ary) && ctx->pop_number(index))
+    if (ctx->pop_array(ary) && ctx->pop_number(num))
     {
-      if (index < 0.0)
+      std::int64_t index = num->as_int();
+
+      if (index < 0)
       {
         index += ary->size();
       }
 
       ctx->push(ary);
 
-      if (index < 0.0 || index > ary->size())
+      if (index < 0 || index > ary->size())
       {
         ctx->error(error::code_range, "Array index out of bounds.");
         return;
@@ -1018,24 +1019,26 @@ namespace plorth
   static void w_set(const ref<context>& ctx)
   {
     ref<array> ary;
-    double index;
+    ref<number> num;
     ref<value> val;
 
-    if (ctx->pop_array(ary) && ctx->pop_number(index) && ctx->pop(val))
+    if (ctx->pop_array(ary) && ctx->pop_number(num) && ctx->pop(val))
     {
+      const auto size = ary->size();
+      std::int64_t index = num->as_int();
       std::vector<ref<value>> result;
 
-      for (array::size_type i = 0;  i < ary->size(); ++i)
+      if (index < 0)
+      {
+        index += size;
+      }
+
+      for (array::size_type i = 0;  i < size; ++i)
       {
         result.push_back(ary->at(i));
       }
 
-      if (index < 0.0)
-      {
-        index += result.size();
-      }
-
-      if (index < 0.0 || index > result.size())
+      if (index < 0 || index > size)
       {
         result.push_back(val);
       } else {

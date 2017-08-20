@@ -24,9 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
-#include <plorth/value-number.hpp>
-#include <plorth/value-quote.hpp>
-#include <plorth/value-string.hpp>
 
 #include "./utils.hpp"
 
@@ -105,17 +102,9 @@ namespace plorth
     // If the name of the word can be converted into number, then do just that.
     if (is_number(word))
     {
-      double num;
+      push_number(word);
 
-      if (to_number(word, num))
-      {
-        m_data.push_back(m_runtime->value<number>(num));
-
-        return true;
-      }
-      error(error::code_value, "Unable to parse `" + word + "' into number.");
-
-      return false;
+      return true;
     }
 
     // Otherwise it's reference error.
@@ -139,9 +128,19 @@ namespace plorth
     push(m_runtime->boolean(value));
   }
 
-  void context::push_number(double value)
+  void context::push_int(std::int64_t value)
   {
-    push(m_runtime->value<number>(value));
+    push(m_runtime->number(value));
+  }
+
+  void context::push_real(double value)
+  {
+    push(m_runtime->number(value));
+  }
+
+  void context::push_number(const unistring& value)
+  {
+    push(m_runtime->number(value));
   }
 
   void context::push_string(const unistring& value)
@@ -265,7 +264,7 @@ namespace plorth
     return true;
   }
 
-  bool context::pop_number(double& slot)
+  bool context::pop_number(ref<number>& slot)
   {
     ref<class value> value;
 
@@ -273,7 +272,7 @@ namespace plorth
     {
       return false;
     }
-    slot = value.cast<number>()->value();
+    slot = value.cast<number>();
 
     return true;
   }

@@ -31,8 +31,10 @@
 namespace plorth
 {
   unistring json_stringify(const unistring&);
+  std::int64_t to_integer(const unistring&);
+  double to_real(const unistring&);
   bool is_number(const unistring&);
-  bool to_number(const unistring&, double&);
+  unistring to_unistring(std::int64_t);
   unistring to_unistring(double);
 }
 
