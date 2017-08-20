@@ -70,6 +70,24 @@ namespace plorth
     }
 
     /**
+     * Returns container for command line arguments provided for the
+     * interpreter.
+     */
+    inline std::vector<unistring>& arguments()
+    {
+      return m_arguments;
+    }
+
+    /**
+     * Returns container for command line arguments provided for the
+     * interpreter.
+     */
+    inline const std::vector<unistring>& arguments() const
+    {
+      return m_arguments;
+    }
+
+    /**
      * Returns container for file system paths where modules are searched from.
      */
     inline std::vector<unistring>& module_paths()
@@ -287,6 +305,8 @@ namespace plorth
     ref<object> m_quote_prototype;
     /** Prototype for string values. */
     ref<object> m_string_prototype;
+    /** List of command line arguments given for the interpreter. */
+    std::vector<unistring> m_arguments;
     /** List of file system paths where to look modules from. */
     std::vector<unistring> m_module_paths;
     /** Container for already imported modules. */
