@@ -83,7 +83,7 @@ namespace plorth
    */
   static void w_e(const ref<context>& ctx)
   {
-    ctx->push_number(M_E);
+    ctx->push_real(M_E);
   }
 
   /**
@@ -96,7 +96,7 @@ namespace plorth
    */
   static void w_pi(const ref<context>& ctx)
   {
-    ctx->push_number(M_PI);
+    ctx->push_real(M_PI);
   }
 
   /**
@@ -126,7 +126,7 @@ namespace plorth
    */
   static void w_depth(const ref<context>& ctx)
   {
-    ctx->push_number(ctx->size());
+    ctx->push_int(ctx->size());
   }
 
   /**
@@ -1095,20 +1095,19 @@ namespace plorth
    */
   static void w_emit(const ref<context>& ctx)
   {
-    double number;
+    ref<number> num;
 
-    if (!ctx->pop_number(number))
+    if (ctx->pop_number(num))
     {
-      return;
-    }
+      std::int64_t c = num->as_int();
 
-    if (!unichar_validate(number))
-    {
-      ctx->error(error::code_range, "Invalid Unicode code point.");
-      return;
+      if (!unichar_validate(c))
+      {
+        ctx->error(error::code_range, "Invalid Unicode code point.");
+      } else {
+        std::cout << unistring(1, static_cast<unichar>(c));
+      }
     }
-
-    std::cout << unistring(1, number);
   }
 
   /**
@@ -1122,7 +1121,7 @@ namespace plorth
    */
   static void w_now(const ref<context>& ctx)
   {
-    ctx->push_number(std::time(nullptr));
+    ctx->push_int(std::time(nullptr));
   }
 
   /**

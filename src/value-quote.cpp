@@ -652,16 +652,8 @@ namespace plorth
           }
           else if (is_number(text))
           {
-            double num;
-
-            if (to_number(text, num))
-            {
-              slot = ctx->runtime()->value<number>(num);
-              break;
-            }
-            ctx->error(error::code_value, "Unable to parse `" + text + "' into number.");
-
-            return false;
+            slot = ctx->runtime()->number(text);
+            break;
           }
         }
 

@@ -121,7 +121,7 @@ namespace plorth
     if (ctx->pop(err, value::type_error))
     {
       ctx->push(err);
-      ctx->push_number(err.cast<error>()->code());
+      ctx->push_int(err.cast<error>()->code());
     }
   }
 

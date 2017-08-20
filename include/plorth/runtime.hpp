@@ -132,6 +132,31 @@ namespace plorth
     bool import(const ref<context>& ctx, const unistring& path);
 
     /**
+     * Constructs integer number from given value.
+     *
+     * \param value Value of the number.
+     * \return      Reference to the created number value.
+     */
+    ref<class number> number(std::int64_t value);
+
+    /**
+     * Constructs real number from given value.
+     *
+     * \param value Value of the number.
+     * \return      Reference to the created number value.
+     */
+    ref<class number> number(double value);
+
+    /**
+     * Parses given text input into number (either real or integer) and
+     * constructs number value from it.
+     *
+     * \param value Value of the number as text.
+     * \return      Reference to the created number value.
+     */
+    ref<class number> number(const unistring& value);
+
+    /**
      * Constructs array value from given elements.
      *
      * \param elements Array of elements to construct array from.
