@@ -805,8 +805,6 @@ namespace plorth
   {
     ref<array> ary;
     ref<number> num;
-    double count;
-
     if (ctx->pop_array(ary) && ctx->pop_number(num))
     {
       const auto size = ary->size();
