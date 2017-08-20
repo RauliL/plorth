@@ -197,12 +197,17 @@ namespace plorth
 
   bool to_number(const unistring& input, double& number)
   {
-    const std::size_t length = input.length();
-    std::size_t offset = 0;
+    const auto length = input.length();
+    unistring::size_type offset;
     bool seen_digits = false;
     bool seen_dot = false;
     bool sign;
     int exponent = 0;
+
+    if (!length)
+    {
+      return false;
+    }
 
     if (!input.compare(unistring_nan))
     {
@@ -223,18 +228,19 @@ namespace plorth
       return true;
     }
 
-    // Extract the sign.
-    sign = !(length > 0 && input[0] == '-');
-    if (!sign || (length > 0 && input[0] == '+'))
+    if (input[0] == '+' || input[0] == '-')
     {
-      ++offset;
+      sign = input[0] == '+';
+      offset = 1;
+    } else {
+      offset = 0;
     }
 
     number = 0.0;
 
     for (; offset < length; ++offset)
     {
-      const unichar c = input[offset];
+      const auto c = input[offset];
 
       if (std::isdigit(c))
       {
@@ -297,7 +303,10 @@ namespace plorth
     }
 
     number *= std::pow(10.0, static_cast<double>(exponent));
-    number = number * sign;
+    if (!sign)
+    {
+      number = -number;
+    }
 
     return true;
   }
