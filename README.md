@@ -1,10 +1,18 @@
-# Plorth
+# Plorth ![Build Status]
 
 Plorth is stack based, concatenative, strongly typed functional scripting
 language which is easy to embed to applications written in C++. It's inspired
 by [Forth] and [Factor] programming languages.
 
-[Online documentation can be found here.][Documentation]
+Features:
+- Strong typing.
+- Supports JSON data types and syntax.
+- Garbage collected.
+- Prototype based OO, just like in JavaScript.
+
+[Browse documentation.][Documentation]
+
+[Try Plorth in your browser.][REPL]
 
 ## Compilation
 
@@ -25,3 +33,5 @@ binary to start Plorth REPL.
 [Factor]: http://www.factorcode.org
 [CMake]: https://www.cmake.org
 [Documentation]: https://raulil.github.io/plorth/
+[REPL]: https://raulil.github.io/plorth/repl.html
+[Build Status]: https://travis-ci.org/RauliL/plorth.svg?branch=master
