@@ -1,4 +1,4 @@
-"./framework.plorth" import
+"./framework" import
 
 "quote literals"
 [

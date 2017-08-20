@@ -19,13 +19,14 @@
 namespace plorth
 {
 #if PLORTH_ENABLE_MODULES
+  static const char* plorth_file_extension = ".plorth";
 # if defined(_WIN32)
   static const unichar file_separator = '\\';
 # else
   static const unichar file_separator = '/';
 # endif
 
-  static bool path_resolve(const unistring&,
+  static bool resolve_path(const unistring&,
                            unistring&,
                            const std::vector<unistring>&);
 #endif
@@ -46,7 +47,7 @@ namespace plorth
     ref<object> module;
 
     // First attempt to resolve the module path into actual file system path.
-    if (!path_resolve(path, resolved_path, m_module_paths))
+    if (!resolve_path(path, resolved_path, m_module_paths))
     {
       ctx->error(error::code_import, "No such file or directory.");
 
@@ -124,7 +125,7 @@ namespace plorth
   }
 
 #if PLORTH_ENABLE_MODULES
-  static bool path_is_absolute(const std::string& path)
+  static bool is_absolute_path(const unistring& path)
   {
     const auto length = path.length();
 
@@ -154,31 +155,45 @@ namespace plorth
     return false;
   }
 
-  static bool path_resolve2(const std::string& path, unistring& resolved_path)
+  /**
+   * Resolves arbitrary path which we know that exist in the file system into
+   * path to a regular file which we can open and read source code from.
+   *
+   * If the given path is pointing to a directory, see if that directory
+   * contains file called "index.plorth". If it does, use that one. Otherwise
+   * refuse to use that directory for anything.
+   *
+   * If the path is pointing to a regular file that exist in the file system,
+   * use it as the path from where to read source code from.
+   */
+  static bool resolve_into_file(const std::string& path,
+                                unistring& resolved_path)
   {
     struct ::stat st;
 
+    // Does the path even exist in the filesystem?
     if (::stat(path.c_str(), &st) < 0)
     {
       return false;
     }
 
-    // Is it a directory? If so, look for for a file called `index.plorth'
+    // Is it a directory? If so, look for a file called "index.plorth"
     // from it.
     if (S_ISDIR(st.st_mode))
     {
-      std::string index_path = path;
+      std::string index_file_path = path;
 
-      if (index_path.back() != file_separator)
+      if (index_file_path.back() != file_separator)
       {
-        index_path += file_separator;
+        index_file_path += file_separator;
       }
-      index_path += "index.plorth";
+      index_file_path += "index";
+      index_file_path += plorth_file_extension;
 
-      // Does the index file exist?
-      if (::stat(index_path.c_str(), &st) >= 0 && S_ISREG(st.st_mode))
+      // OK. Does the index file exist?
+      if (::stat(index_file_path.c_str(), &st) >= 0 && S_ISREG(st.st_mode))
       {
-        resolved_path = utf8_decode(index_path);
+        resolved_path = utf8_decode(index_file_path);
 
         return true;
       }
@@ -195,24 +210,33 @@ namespace plorth
     return false;
   }
 
-  static bool path_resolve(const unistring& original_path,
+  static bool resolve_path(const unistring& path,
                            unistring& resolved_path,
-                           const std::vector<unistring>& module_paths)
+                           const std::vector<unistring>& module_directories)
   {
-    std::string path = utf8_encode(original_path);
-    char buffer[PATH_MAX + 1];
+    std::string encoded_path = utf8_encode(path);
+    char buffer[PATH_MAX];
 
-    if (path_is_absolute(path))
+    // If the path is absolute, resolve it into full path and use that directly.
+    if (is_absolute_path(path))
     {
-      if (!::realpath(path.c_str(), buffer))
+      if (!::realpath(encoded_path.c_str(), buffer))
       {
-        return false;
+        // Try again with appended file extension.
+        encoded_path += plorth_file_extension;
+        if (!::realpath(encoded_path.c_str(), buffer))
+        {
+          // Give up.
+          return false;
+        }
       }
 
-      return path_resolve2(buffer, resolved_path);
+      return resolve_into_file(buffer, resolved_path);
     }
 
-    for (const auto& directory : module_paths)
+    // Otherwise go through the module directories and look for a matching file
+    // from each of them.
+    for (const auto& directory : module_directories)
     {
       std::string module_path;
 
@@ -224,26 +248,33 @@ namespace plorth
         continue;
       }
 
-      // First make sure that such directory can be resolved.
-      module_path = utf8_encode(directory);
+      module_path = encoded_path;
       if (!::realpath(module_path.c_str(), buffer))
       {
+        // Unable to locate the directory. Continue to next one.
         continue;
       }
 
-      // Then append the file name to the directory path and attempt to resolve
-      // resulting full path.
+      // Append the filename into the module directory path and try whether that
+      // one exists or not.
+      module_path = buffer;
       if (module_path.back() != file_separator)
       {
         module_path += file_separator;
       }
-      module_path += path;
       if (!::realpath(module_path.c_str(), buffer))
       {
-        continue;
+        // Try again with appended file extension.
+        module_path += plorth_file_extension;
+        if (!::realpath(module_path.c_str(), buffer))
+        {
+          // Give up.
+          continue;
+        }
       }
 
-      if (path_resolve2(module_path, resolved_path))
+      // Finally try to resolve it into readable file.
+      if (resolve_into_file(module_path, resolved_path))
       {
         return true;
       }
