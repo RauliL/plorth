@@ -30,6 +30,12 @@ OPTION(
 )
 
 OPTION(
+  PLORTH_ENABLE_INTEGER_CACHE
+  "Whether commonly used integer numbers should be cached or not."
+  ON
+)
+
+OPTION(
   PLORTH_ENABLE_MEMORY_POOL
   "Enable if you want the interpreter to use memory pools."
   ON

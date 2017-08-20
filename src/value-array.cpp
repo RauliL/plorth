@@ -24,8 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
-#include <plorth/value-number.hpp>
-#include <plorth/value-string.hpp>
 
 namespace plorth
 {

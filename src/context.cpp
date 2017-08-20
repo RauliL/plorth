@@ -24,9 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
-#include <plorth/value-number.hpp>
-#include <plorth/value-quote.hpp>
-#include <plorth/value-string.hpp>
 
 #include "./utils.hpp"
 

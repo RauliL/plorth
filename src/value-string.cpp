@@ -25,8 +25,6 @@
  */
 #include <plorth/context.hpp>
 #include <plorth/unicode.hpp>
-#include <plorth/value-number.hpp>
-#include <plorth/value-string.hpp>
 
 #include "./utils.hpp"
 

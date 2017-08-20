@@ -30,6 +30,7 @@
 
 // Optional features.
 #cmakedefine PLORTH_ENABLE_MODULES 1
+#cmakedefine PLORTH_ENABLE_INTEGER_CACHE 1
 #cmakedefine PLORTH_ENABLE_MEMORY_POOL 1
 #cmakedefine PLORTH_ENABLE_GC_DEBUG 1
 

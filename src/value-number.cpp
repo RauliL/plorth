@@ -24,7 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
-#include <plorth/value-number.hpp>
 
 #include "./utils.hpp"
 
@@ -130,6 +129,24 @@ namespace plorth
 
   ref<class number> runtime::number(std::int64_t value)
   {
+#if PLORTH_ENABLE_INTEGER_CACHE
+    static const int offset = 128;
+
+    if (value >= -128 && value <= 127)
+    {
+      const int index = value + offset;
+      auto reference = m_integer_cache[index];
+
+      if (!reference)
+      {
+        reference = new (*m_memory_manager) int_number(value);
+        m_integer_cache[index] = reference;
+      }
+
+      return reference;
+    }
+#endif
+
     return new (*m_memory_manager) int_number(value);
   }
 
