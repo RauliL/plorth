@@ -42,6 +42,8 @@ static inline bool is_console_interactive();
 static void compile_and_run(const ref<context>&, const std::string&);
 static void console_loop(const ref<context>&);
 
+void initialize_repl_api(const ref<runtime>&);
+
 int main(int argc, char** argv)
 {
   memory::manager memory_manager;
@@ -159,54 +161,6 @@ static void compile_and_run(const ref<class context>& context, const std::string
   }
 }
 
-/**
- * .q ( -- )
- *
- * Exits the interpreter.
- */
-static void w_quit(const ref<context>&)
-{
-  std::exit(EXIT_SUCCESS);
-}
-
-/**
- * .s ( -- )
- *
- * Displays ten of the top-most values from the data stack.
- */
-static void w_stack(const ref<class context>& context)
-{
-  const auto& stack = context->data();
-  const std::size_t size = stack.size();
-
-  if (!size)
-  {
-    std::cout << "Stack is empty." << std::endl;
-    return;
-  }
-
-  for (std::size_t i = 0; i < size && i < 10; ++i)
-  {
-    const ref<class value>& value = stack[size - i - 1];
-    std::cout << (size - i) << ": ";
-    if (value)
-    {
-      std::cout << value->to_source();
-    } else {
-      std::cout << "null";
-    }
-    std::cout << std::endl;
-  }
-}
-
-static void initialize_console_api(const ref<class runtime>& runtime)
-{
-  auto& dictionary = runtime->dictionary();
-
-  dictionary[utf8_decode(".q")] = runtime->native_quote(w_quit);
-  dictionary[utf8_decode(".s")] = runtime->native_quote(w_stack);
-}
-
 static void count_open_braces(const std::string& input, std::stack<char>& open_braces)
 {
   const std::size_t length = input.length();
@@ -263,7 +217,7 @@ static void console_loop(const ref<class context>& context)
   std::string source;
   std::stack<char> open_braces;
 
-  initialize_console_api(context->runtime());
+  initialize_repl_api(context->runtime());
 
   while (std::cin.good())
   {

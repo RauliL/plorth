@@ -59,9 +59,8 @@ INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
-ADD_LIBRARY(
-  plorth
-  SHARED
+SET(
+  PLORTH_INTERPRETER_SOURCES
   src/compiler.cpp
   src/context.cpp
   src/globals.cpp
@@ -81,6 +80,12 @@ ADD_LIBRARY(
   src/value-string.cpp
 )
 
+ADD_LIBRARY(
+  plorth
+  SHARED
+  ${PLORTH_INTERPRETER_SOURCES}
+)
+
 INSTALL(
   TARGETS
     plorth
@@ -92,6 +97,7 @@ IF(PLORTH_ENABLE_TARGET_CLI)
   ADD_EXECUTABLE(
     plorth-cli
     src/main.cpp
+    src/repl.cpp
   )
   TARGET_LINK_LIBRARIES(
     plorth-cli
