@@ -103,6 +103,18 @@ Converts top-most value of the stack into string.
 
 ---
 
+### args
+
+<dl>
+  <dt>Gives:</dt>
+  <dd>array<string></dd>
+</dl>
+
+Returns command line arguments given for the interpreter as an array of
+strings.
+
+---
+
 ### array?
 
 <dl>

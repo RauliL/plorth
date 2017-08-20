@@ -944,6 +944,29 @@ namespace plorth
     }
   }
 
+  /**
+   * Word: args
+   *
+   * Gives:
+   * - array<string>
+   *
+   * Returns command line arguments given for the interpreter as an array of
+   * strings.
+   */
+  static void w_args(const ref<context>& ctx)
+  {
+    const ref<class runtime>& runtime = ctx->runtime();
+    const auto& arguments = runtime->arguments();
+    const auto size = arguments.size();
+    ref<value> result[size];
+
+    for (std::size_t i = 0; i < size; ++i)
+    {
+      result[i] = runtime->string(arguments[i]);
+    }
+    ctx->push_array(result, size);
+  }
+
   static void make_error(const ref<context>& ctx, enum error::code code)
   {
     ref<value> val;
@@ -1205,6 +1228,7 @@ namespace plorth
         { "locals", w_locals },
         { "const", w_const },
         { "import", w_import },
+        { "args", w_args },
 
         // Different types of errors.
         { "type-error", w_type_error },

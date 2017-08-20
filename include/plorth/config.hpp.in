@@ -26,6 +26,8 @@
 #ifndef PLORTH_CONFIG_HPP_GUARD
 #define PLORTH_CONFIG_HPP_GUARD
 
+#define PLORTH_VERSION "1.0.0-alpha.3"
+
 // Optional features.
 #cmakedefine PLORTH_ENABLE_MODULES 1
 #cmakedefine PLORTH_ENABLE_MEMORY_POOL 1
@@ -33,10 +35,12 @@
 
 // Optional headers.
 #cmakedefine HAVE_UNISTD_H 1
+#cmakedefine HAVE_SYSEXITS_H 1
 #cmakedefine HAVE_SYS_TYPES_H 1
 #cmakedefine HAVE_SYS_STAT_H 1
 
 // Optional functions.
+#cmakedefine HAVE_FORK 1
 #cmakedefine HAVE_ISATTY 1
 #cmakedefine HAVE_STAT 1
 #cmakedefine HAVE_REALPATH 1
