@@ -24,23 +24,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/runtime.hpp>
+#if PLORTH_ENABLE_MEMORY_POOL
+# if !defined(PLORTH_MEMORY_POOL_SIZE)
+#  define PLORTH_MEMORY_POOL_SIZE (4096 * 32)
+# endif
+#endif
 
 namespace plorth
 {
   namespace memory
   {
-    /** Size of single garbage collector pool. */
-    static const std::size_t POOL_SIZE = 4096 * 32;
-
+#if PLORTH_ENABLE_MEMORY_POOL
     static pool* pool_create();
     static slot* pool_allocate(pool*, std::size_t);
+#endif
 
     manager::manager()
+#if PLORTH_ENABLE_MEMORY_POOL
       : m_pool_head(nullptr)
-      , m_pool_tail(nullptr) {}
+      , m_pool_tail(nullptr)
+#endif
+      {}
 
     manager::~manager()
     {
+#if PLORTH_ENABLE_MEMORY_POOL
       pool* current;
       pool* prev;
 
@@ -53,10 +61,12 @@ namespace plorth
         }
         std::free(static_cast<void*>(current));
       }
+#endif
     }
 
     void* manager::allocate(std::size_t size)
     {
+#if PLORTH_ENABLE_MEMORY_POOL
       const std::size_t remainder = size % 8;
       struct pool* pool;
       struct slot* slot;
@@ -83,9 +93,9 @@ namespace plorth
         std::abort();
       }
 
-#if defined(PLORTH_ENABLE_GC_DEBUG)
+# if defined(PLORTH_ENABLE_GC_DEBUG)
       std::fprintf(stderr, "GC: Memory pool allocated.\n");
-#endif
+# endif
 
       // Place the newly created pool into linked list of memory pools.
       if ((pool->prev = m_pool_tail))
@@ -105,6 +115,9 @@ namespace plorth
       }
 
       return static_cast<void*>(slot->memory);
+#else
+      return std::malloc(size);
+#endif
     }
 
     ref<runtime> manager::new_runtime()
@@ -124,6 +137,7 @@ namespace plorth
 
     void managed::operator delete(void* pointer)
     {
+#if PLORTH_ENABLE_MEMORY_POOL
       struct slot* slot;
       struct pool* pool;
 
@@ -170,16 +184,23 @@ namespace plorth
       {
         pool->next->prev = pool->prev;
         pool->prev->next = pool->next;
-#if defined(PLORTH_ENABLE_GC_DEBUG)
+# if defined(PLORTH_ENABLE_GC_DEBUG)
         std::fprintf(stderr, "GC: Memory pool removed.\n");
-#endif
+# endif
         std::free(static_cast<void*>(pool));
       }
+#else
+      if (pointer)
+      {
+        std::free(pointer);
+      }
+#endif
     }
 
+#if PLORTH_ENABLE_MEMORY_POOL
     static pool* pool_create()
     {
-      char* memory = static_cast<char*>(std::malloc(sizeof(struct pool) + POOL_SIZE));
+      char* memory = static_cast<char*>(std::malloc(sizeof(struct pool) + PLORTH_MEMORY_POOL_SIZE));
       struct pool* pool;
 
       if (!memory)
@@ -190,7 +211,7 @@ namespace plorth
       pool = reinterpret_cast<struct pool*>(memory);
       pool->next = nullptr;
       pool->prev = nullptr;
-      pool->remaining = POOL_SIZE;
+      pool->remaining = PLORTH_MEMORY_POOL_SIZE;
       pool->memory = memory + sizeof(struct pool);
       pool->free_head = nullptr;
       pool->free_tail = nullptr;
@@ -248,7 +269,7 @@ namespace plorth
         return nullptr;
       }
 
-      memory = pool->memory + (POOL_SIZE - pool->remaining);
+      memory = pool->memory + (PLORTH_MEMORY_POOL_SIZE - pool->remaining);
       pool->remaining -= size + sizeof(struct slot);
 
       slot = reinterpret_cast<struct slot*>(memory);
@@ -266,5 +287,6 @@ namespace plorth
 
       return slot;
     }
+#endif /* PLORTH_ENABLE_MEMORY_POOL */
   }
 }

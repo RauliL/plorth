@@ -30,6 +30,12 @@ OPTION(
 )
 
 OPTION(
+  PLORTH_ENABLE_MEMORY_POOL
+  "Enable if you want the interpreter to use memory pools."
+  ON
+)
+
+OPTION(
   PLORTH_ENABLE_GC_DEBUG
   "Display debug messages from garbage collector."
   OFF
