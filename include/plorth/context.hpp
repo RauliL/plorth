@@ -212,6 +212,12 @@ namespace plorth
     void push_string(const unistring& value);
 
     /**
+     * Constructs string value from given array of Unicode code points and
+     * pushes it onto data stack.
+     */
+    void push_string(string::const_pointer chars, string::size_type length);
+
+    /**
      * Constructs array from given sequence of values and pushes it into the
      * data stack.
      */

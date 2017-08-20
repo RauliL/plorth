@@ -33,14 +33,30 @@ namespace plorth
   class string : public value
   {
   public:
-    explicit string(const unistring& value);
+    using size_type = std::size_t;
+    using value_type = unichar;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
-    inline const unistring& value() const
+    /**
+     * Tests whether the string is empty.
+     */
+    inline bool empty() const
     {
-      return m_value;
+      return length() == 0;
     }
 
-    inline enum type type() const
+    /**
+     * Returns length of the string.
+     */
+    virtual size_type length() const = 0;
+
+    /**
+     * Returns Unicode code point from specified offset of the string.
+     */
+    virtual value_type at(size_type offset) const = 0;
+
+    enum type type() const
     {
       return type_string;
     }
@@ -48,9 +64,6 @@ namespace plorth
     bool equals(const ref<class value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
-
-  private:
-    const unistring m_value;
   };
 }
 

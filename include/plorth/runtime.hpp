@@ -30,6 +30,7 @@
 #include <plorth/value-boolean.hpp>
 #include <plorth/value-object.hpp>
 #include <plorth/value-quote.hpp>
+#include <plorth/value-string.hpp>
 
 #include <vector>
 
@@ -120,6 +121,23 @@ namespace plorth
      * \return         Reference to the created array value.
      */
     ref<class array> array(array::const_pointer elements, array::size_type size);
+
+    /**
+     * Constructs string value from given Unicode string.
+     *
+     * \param input Unicode string to construct string value from.
+     * \return      Reference to the created string value.
+     */
+    ref<class string> string(const unistring& input);
+
+    /**
+     * Constructs string value from given pointer of Unicode code points.
+     *
+     * \param chars  Array of Unicode characters to construct the string from.
+     * \param length Number of characters in the string.
+     * \return       Reference to the created string value.
+     */
+    ref<class string> string(string::const_pointer chars, string::size_type length);
 
     /**
      * Constructs compiled quote from given sequence of tokens.

@@ -170,7 +170,7 @@ namespace plorth
 
     for (const auto& property : obj->properties())
     {
-      result.push_back(runtime->value<string>(property.first));
+      result.push_back(runtime->string(property.first));
     }
 
     ctx->push(obj);
@@ -235,7 +235,7 @@ namespace plorth
       ref<value> slot;
 
       ctx->push(obj);
-      ctx->push_boolean(!!obj->property(ctx->runtime(), id->value(), slot));
+      ctx->push_boolean(!!obj->property(ctx->runtime(), id->to_string(), slot));
     }
   }
 
@@ -264,7 +264,7 @@ namespace plorth
       const auto& properties = obj->properties();
 
       ctx->push(obj);
-      ctx->push_boolean(properties.find(id->value()) != std::end(properties));
+      ctx->push_boolean(properties.find(id->to_string()) != std::end(properties));
     }
   }
 
@@ -337,13 +337,13 @@ namespace plorth
       ref<value> val;
 
       ctx->push(obj);
-      if (obj->property(ctx->runtime(), id->value(), val))
+      if (obj->property(ctx->runtime(), id->to_string(), val))
       {
         ctx->push(val);
       } else {
         ctx->error(
           error::code_range,
-          "No such property: `" + id->value() + "'"
+          "No such property: `" + id->to_string() + "'"
         );
       }
     }
@@ -374,7 +374,7 @@ namespace plorth
     {
       object::container_type result = obj->properties();
 
-      result[id->value()] = val;
+      result[id->to_string()] = val;
       ctx->push_object(result);
     }
   }

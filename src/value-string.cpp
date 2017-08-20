@@ -31,30 +31,157 @@
 #include "./utils.hpp"
 
 #include <algorithm>
+#include <cstring>
 
 namespace plorth
 {
-  string::string(const unistring& value)
-    : m_value(value) {}
+  namespace
+  {
+    class simple_string : public string
+    {
+    public:
+      explicit simple_string(const unichar* chars, size_type length)
+        : m_length(length)
+        , m_chars(m_length > 0 ? new unichar[m_length] : nullptr)
+      {
+        if (m_length > 0)
+        {
+          std::memcpy(m_chars, chars, sizeof(unichar) * m_length);
+        }
+      }
+
+      ~simple_string()
+      {
+        if (m_length > 0)
+        {
+          delete[] m_chars;
+        }
+      }
+
+      size_type length() const
+      {
+        return m_length;
+      }
+
+      value_type at(size_type offset) const
+      {
+        return m_chars[offset];
+      }
+
+    private:
+      const size_type m_length;
+      unichar* m_chars;
+    };
+
+    class concat_string : public string
+    {
+    public:
+      explicit concat_string(const ref<string>& left, const ref<string>& right)
+        : m_left(left)
+        , m_right(right) {}
+
+      size_type length() const
+      {
+        return m_left->length() + m_right->length();
+      }
+
+      value_type at(size_type offset) const
+      {
+        const size_type left_length = m_left->length();
+
+        if (offset < left_length)
+        {
+          return m_left->at(offset);
+        } else {
+          return m_right->at(offset - left_length);
+        }
+      }
+
+    private:
+      const ref<string> m_left;
+      const ref<string> m_right;
+    };
+
+    class substring : public string
+    {
+    public:
+      explicit substring(const ref<string>& original,
+                         size_type offset,
+                         size_type length)
+        : m_original(original)
+        , m_offset(offset)
+        , m_length(length) {}
+
+      size_type length() const
+      {
+        return m_length;
+      }
+
+      value_type at(size_type offset) const
+      {
+        return m_original->at(m_offset + offset);
+      }
+
+    private:
+      const ref<string> m_original;
+      const size_type m_offset;
+      const size_type m_length;
+    };
+  }
 
   bool string::equals(const ref<class value>& that) const
   {
+    const size_type len = length();
+    ref<string> str;
+
     if (!that || !that->is(type_string))
     {
       return false;
     }
+    str = that.cast<string>();
+    if (len != str->length())
+    {
+      return false;
+    }
+    for (size_type i = 0; i < len; ++i)
+    {
+      if (at(i) != str->at(i))
+      {
+        return false;
+      }
+    }
 
-    return !m_value.compare(that.cast<string>()->m_value);
+    return true;
   }
 
   unistring string::to_string() const
   {
-    return m_value;
+    const size_type len = length();
+    unistring result;
+
+    result.reserve(len);
+    for (size_type i = 0; i < len; ++i)
+    {
+      result.append(1, at(i));
+    }
+
+    return result;
   }
 
   unistring string::to_source() const
   {
-    return json_stringify(m_value);
+    return json_stringify(to_string());
+  }
+
+  ref<class string> runtime::string(const unistring& input)
+  {
+    return string(input.c_str(), input.length());
+  }
+
+  ref<class string> runtime::string(string::const_pointer chars,
+                                    string::size_type length)
+  {
+    return new (*m_memory_manager) simple_string(chars, length);
   }
 
   /**
@@ -77,7 +204,7 @@ namespace plorth
     if (ctx->pop_string(str))
     {
       ctx->push(str);
-      ctx->push_number(str->value().length());
+      ctx->push_number(str->length());
     }
   }
 
@@ -101,8 +228,7 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      const unistring& input = str->value();
-      const auto length = input.length();
+      const auto length = str->length();
 
       ctx->push(str);
       if (!length)
@@ -110,9 +236,9 @@ namespace plorth
         ctx->push_boolean(false);
         return;
       }
-      for (std::size_t i = 0; i < length; ++i)
+      for (string::size_type i = 0; i < length; ++i)
       {
-        if (!unichar_isspace(input[i]))
+        if (!unichar_isspace(str->at(i)))
         {
           ctx->push_boolean(false);
           return;
@@ -142,8 +268,7 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      const unistring& input = str->value();
-      const auto length = input.length();
+      const auto length = str->length();
 
       ctx->push(str);
       if (!length)
@@ -151,9 +276,9 @@ namespace plorth
         ctx->push_boolean(false);
         return;
       }
-      for (std::size_t i = 0; i < length; ++i)
+      for (string::size_type i = 0; i < length; ++i)
       {
-        if (!unichar_islower(input[i]))
+        if (!unichar_islower(str->at(i)))
         {
           ctx->push_boolean(false);
           return;
@@ -183,8 +308,7 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      const unistring& input = str->value();
-      const auto length = input.length();
+      const auto length = str->length();
 
       ctx->push(str);
       if (!length)
@@ -192,9 +316,9 @@ namespace plorth
         ctx->push_boolean(false);
         return;
       }
-      for (std::size_t i = 0; i < length; ++i)
+      for (string::size_type i = 0; i < length; ++i)
       {
-        if (!unichar_isupper(input[i]))
+        if (!unichar_isupper(str->at(i)))
         {
           ctx->push_boolean(false);
           return;
@@ -225,17 +349,17 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      const unistring& input = str->value();
-      const auto length = input.length();
-      std::vector<ref<value>> output;
+      const auto length = str->length();
+      ref<value> output[length];
 
-      output.reserve(length);
-      for (std::size_t i = 0; i < length; ++i)
+      for (string::size_type i = 0; i < length; ++i)
       {
-        output.push_back(runtime->value<string>(input.substr(i, 1)));
+        const unichar c = str->at(i);
+
+        output[i] = runtime->string(&c, 1);
       }
       ctx->push(str);
-      ctx->push_array(output.data(), output.size());
+      ctx->push_array(output, length);
     }
   }
 
@@ -255,22 +379,21 @@ namespace plorth
    */
   static void w_runes(const ref<context>& ctx)
   {
-    const ref<class runtime>& runtime = ctx->runtime();
+    const auto& runtime = ctx->runtime();
     ref<string> str;
-    std::vector<ref<value>> result;
 
-    if (!ctx->pop_string(str))
+    if (ctx->pop_string(str))
     {
-      return;
-    }
+      const auto length = str->length();
+      ref<value> output[length];
 
-    for (const auto& c : str->value())
-    {
-      result.push_back(runtime->value<number>(c));
+      for (string::size_type i = 0; i < length; ++i)
+      {
+        output[i] = runtime->value<number>(str->at(i));
+      }
+      ctx->push(str);
+      ctx->push_array(output, length);
     }
-
-    ctx->push(str);
-    ctx->push_array(result.data(), result.size());
   }
 
   /**
@@ -294,19 +417,18 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      const unistring& s = str->value();
-      const std::size_t length = s.length();
-      std::size_t begin = 0;
-      std::size_t end = 0;
+      const auto length = str->length();
+      string::size_type begin = 0;
+      string::size_type end = 0;
       std::vector<ref<value>> result;
 
-      for (std::size_t i = 0; i < length; ++i)
+      for (string::size_type i = 0; i < length; ++i)
       {
-        if (unichar_isspace(s[i]))
+        if (unichar_isspace(str->at(i)))
         {
           if (end - begin > 0)
           {
-            result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
+            result.push_back(runtime->value<substring>(str, begin, end - begin));
           }
           begin = end = i + 1;
         } else {
@@ -315,7 +437,7 @@ namespace plorth
       }
       if (end - begin > 0)
       {
-        result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
+        result.push_back(runtime->value<substring>(str, begin, end - begin));
       }
 
       ctx->push(str);
@@ -343,22 +465,23 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      const unistring& s = str->value();
-      const std::size_t length = s.length();
-      std::size_t begin = 0;
-      std::size_t end = 0;
+      const auto length = str->length();
+      string::size_type begin = 0;
+      string::size_type end = 0;
       std::vector<ref<value>> result;
 
-      for (std::size_t i = 0; i < length; ++i)
+      for (string::size_type i = 0; i < length; ++i)
       {
-        if (i + 1 < length && s[i] == '\r' && s[i + 1] == '\n')
+        const unichar c = str->at(i);
+
+        if (i + 1 < length && c == '\r' && str->at(i + 1) == '\n')
         {
-          result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
+          result.push_back(runtime->value<substring>(str, begin, end - begin));
           begin = end = ++i + 1;
         }
-        else if (s[i] == '\n' || s[i] == '\r')
+        else if (c == '\n' || c == '\r')
         {
-          result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
+          result.push_back(runtime->value<substring>(str, begin, end - begin));
           begin = end = i + 1;
         } else {
           ++end;
@@ -366,7 +489,7 @@ namespace plorth
       }
       if (end - begin > 0)
       {
-        result.push_back(runtime->value<string>(s.substr(begin, end - begin)));
+        result.push_back(runtime->value<substring>(str, begin, end - begin));
       }
 
       ctx->push(str);
@@ -392,9 +515,14 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      const unistring& s = str->value();
+      const auto length = str->length();
+      unichar result[length];
 
-      ctx->push_string(unistring(s.rbegin(), s.rend()));
+      for (string::size_type i = length; i > 0; --i)
+      {
+        result[length - i] = str->at(i - 1);
+      }
+      ctx->push_string(result, length);
     }
   }
 
@@ -416,10 +544,14 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      unistring result = str->value();
+      const auto length = str->length();
+      unichar result[length];
 
-      std::transform(result.begin(), result.end(), result.begin(), unichar_toupper);
-      ctx->push_string(result);
+      for (string::size_type i = 0; i < length; ++i)
+      {
+        result[i] = unichar_toupper(str->at(i));
+      }
+      ctx->push_string(result, length);
     }
   }
 
@@ -441,10 +573,14 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      unistring result = str->value();
+      const auto length = str->length();
+      unichar result[length];
 
-      std::transform(result.begin(), result.end(), result.begin(), unichar_tolower);
-      ctx->push_string(result);
+      for (string::size_type i = 0; i < length; ++i)
+      {
+        result[i] = unichar_tolower(str->at(i));
+      }
+      ctx->push_string(result, length);
     }
   }
 
@@ -467,14 +603,12 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      const unistring& input = str->value();
-      const auto length = input.length();
-      unistring output;
+      const auto length = str->length();
+      unichar output[length];
 
-      output.reserve(length);
-      for (std::size_t i = 0; i < length; ++i)
+      for (string::size_type i = 0; i < length; ++i)
       {
-        unichar c = input[i];
+        unichar c = str->at(i);
 
         if (unichar_islower(c))
         {
@@ -482,9 +616,9 @@ namespace plorth
         } else {
           c = unichar_tolower(c);
         }
-        output.append(1, c);
+        output[i] = c;
       }
-      ctx->push_string(output);
+      ctx->push_string(output, length);
     }
   }
 
@@ -507,14 +641,12 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      const unistring& input = str->value();
-      const auto length = input.length();
-      unistring output;
+      const auto length = str->length();
+      unichar output[length];
 
-      output.reserve(length);
-      for (std::size_t i = 0; i < length; ++i)
+      for (string::size_type i = 0; i < length; ++i)
       {
-        unichar c = input[i];
+        unichar c = str->at(i);
 
         if (i == 0)
         {
@@ -522,9 +654,9 @@ namespace plorth
         } else {
           c = unichar_tolower(c);
         }
-        output.append(1, c);
+        output[i] = c;
       }
-      ctx->push_string(output);
+      ctx->push_string(output, length);
     }
   }
 
@@ -542,33 +674,32 @@ namespace plorth
    */
   static void w_trim(const ref<context>& ctx)
   {
-    ref<string> a;
+    ref<string> str;
 
-    if (ctx->pop_string(a))
+    if (ctx->pop_string(str))
     {
-      const auto& str = a->value();
-      const std::size_t length = str.length();
-      std::size_t i, j;
+      const string::size_type length = str->length();
+      string::size_type i, j;
 
       for (i = 0; i < length; ++i)
       {
-        if (!unichar_isspace(str[i]))
+        if (!unichar_isspace(str->at(i)))
         {
           break;
         }
       }
       for (j = length; j != 0; --j)
       {
-        if (!unichar_isspace(str[j - 1]))
+        if (!unichar_isspace(str->at(j - 1)))
         {
           break;
         }
       }
       if (i != 0 || j != length)
       {
-        ctx->push(ctx->runtime()->value<string>(str.substr(i, j - i)));
+        ctx->push(ctx->runtime()->value<substring>(str, i, j - i));
       } else {
-        ctx->push(a);
+        ctx->push(str);
       }
     }
   }
@@ -587,26 +718,25 @@ namespace plorth
    */
   static void w_trim_left(const ref<context>& ctx)
   {
-    ref<string> a;
+    ref<string> str;
 
-    if (ctx->pop_string(a))
+    if (ctx->pop_string(str))
     {
-      const auto& str = a->value();
-      const std::size_t length = str.length();
-      std::size_t i;
+      const string::size_type length = str->length();
+      string::size_type i;
 
       for (i = 0; i < length; ++i)
       {
-        if (!unichar_isspace(str[i]))
+        if (!unichar_isspace(str->at(i)))
         {
           break;
         }
       }
       if (i != 0)
       {
-        ctx->push(ctx->runtime()->value<string>(str.substr(i, length - i)));
+        ctx->push(ctx->runtime()->value<substring>(str, i, length - i));
       } else {
-        ctx->push(a);
+        ctx->push(str);
       }
     }
   }
@@ -625,26 +755,25 @@ namespace plorth
    */
   static void w_trim_right(const ref<context>& ctx)
   {
-    ref<string> a;
+    ref<string> str;
 
-    if (ctx->pop_string(a))
+    if (ctx->pop_string(str))
     {
-      const auto& str = a->value();
-      const std::size_t length = str.length();
-      std::size_t i;
+      const string::size_type length = str->length();
+      string::size_type i;
 
       for (i = length; i != 0; --i)
       {
-        if (!unichar_isspace(str[i - 1]))
+        if (!unichar_isspace(str->at(i - 1)))
         {
           break;
         }
       }
       if (i != length)
       {
-        ctx->push(ctx->runtime()->value<string>(str.substr(0, i)));
+        ctx->push(ctx->runtime()->value<substring>(str, 0, i));
       } else {
-        ctx->push(a);
+        ctx->push(str);
       }
     }
   }
@@ -671,7 +800,7 @@ namespace plorth
     {
       return;
     }
-    else if (to_number(a->value(), number))
+    else if (to_number(a->to_string(), number))
     {
       ctx->push_number(number);
     } else {
@@ -699,7 +828,16 @@ namespace plorth
 
     if (ctx->pop_string(a) && ctx->pop_string(b))
     {
-      ctx->push_string(b->value() + a->value());
+      if (a->empty())
+      {
+        ctx->push(b);
+      }
+      else if (b->empty())
+      {
+        ctx->push(a);
+      } else {
+        ctx->push(ctx->runtime()->value<concat_string>(b, a));
+      }
     }
   }
 
@@ -723,7 +861,7 @@ namespace plorth
 
     if (ctx->pop_string(str) && ctx->pop_number(count))
     {
-      const unistring& s = str->value();
+      const auto length = str->length();
       unistring result;
 
       if (count < 0.0)
@@ -731,12 +869,15 @@ namespace plorth
         count = -count;
       }
 
-      result.reserve(s.length() * count);
+      result.reserve(length * count);
 
       while (count >= 1.0)
       {
         count -= 1.0;
-        result.append(s);
+        for (string::size_type i = 0; i < length; ++i)
+        {
+          result.append(1, str->at(i));
+        }
       }
 
       ctx->push_string(result);
@@ -765,22 +906,24 @@ namespace plorth
 
     if (ctx->pop_string(str) && ctx->pop_number(index))
     {
-      const unistring& s = str->value();
+      const auto length = str->length();
+      unichar c;
 
       if (index < 0.0)
       {
-        index += s.length();
+        index += length;
       }
 
       ctx->push(str);
 
-      if (index < 0.0 || index > s.length())
+      if (index < 0.0 || index > length)
       {
         ctx->error(error::code_range, "String index out of bounds.");
         return;
       }
 
-      ctx->push_string(unistring(1, s[index]));
+      c = str->at(index);
+      ctx->push(ctx->runtime()->string(&c, 1));
     }
   }
 

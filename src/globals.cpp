@@ -871,7 +871,7 @@ namespace plorth
       return;
     }
 
-    quote = ctx->compile(utf8_encode(source->value()));
+    quote = ctx->compile(utf8_encode(source->to_string()));
     if (quote)
     {
       ctx->push(quote);
@@ -921,7 +921,7 @@ namespace plorth
 
     if (ctx->pop_string(id) && ctx->pop(val))
     {
-      ctx->declare(id->value(), ctx->runtime()->constant(val));
+      ctx->declare(id->to_string(), ctx->runtime()->constant(val));
     }
   }
 
@@ -940,7 +940,7 @@ namespace plorth
 
     if (ctx->pop_string(path))
     {
-      ctx->runtime()->import(ctx, path->value());
+      ctx->runtime()->import(ctx, path->to_string());
     }
   }
 
@@ -958,7 +958,7 @@ namespace plorth
     {
       if (val->is(value::type_string))
       {
-        message = val.cast<string>()->value();
+        message = val.cast<string>()->to_string();
       } else {
         std::stringstream ss;
 

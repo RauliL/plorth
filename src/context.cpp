@@ -146,7 +146,12 @@ namespace plorth
 
   void context::push_string(const unistring& value)
   {
-    push(m_runtime->value<string>(value));
+    push(m_runtime->string(value.c_str(), value.length()));
+  }
+
+  void context::push_string(string::const_pointer chars, string::size_type length)
+  {
+    push(m_runtime->string(chars, length));
   }
 
   void context::push_array(array::const_pointer elements, array::size_type size)

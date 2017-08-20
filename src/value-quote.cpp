@@ -599,7 +599,7 @@ namespace plorth
     switch (token.type())
     {
       case token::type_string:
-        slot = ctx->runtime()->value<string>(token.text());
+        slot = ctx->runtime()->string(token.text());
         break;
 
       case token::type_lparen:
