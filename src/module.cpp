@@ -70,17 +70,25 @@ namespace plorth
 
       if (is.good())
       {
-        const std::string source = std::string(
+        const std::string input = std::string(
           std::istreambuf_iterator<char>(is),
           std::istreambuf_iterator<char>()
         );
-        const ref<class quote> compiled_module = ctx->compile(source);
+        unistring source;
+        ref<quote> compiled_module;
         ref<context> module_context;
 
         is.close();
 
+        if (!utf8_decode_test(input, source))
+        {
+          ctx->error(error::code_import, "Unable to decode source code into UTF-8.");
+
+          return false;
+        }
+
         // Did the compilation fail?
-        if (!compiled_module)
+        if (!(compiled_module = ctx->compile(source)))
         {
           return false;
         }

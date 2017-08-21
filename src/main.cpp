@@ -270,11 +270,18 @@ static void handle_error(const ref<context>& ctx)
   std::exit(EXIT_FAILURE);
 }
 
-static void compile_and_run(const ref<context>& ctx, const std::string& source)
+static void compile_and_run(const ref<context>& ctx, const std::string& input)
 {
-  const ref<quote> script = ctx->compile(source);
+  unistring source;
+  ref<quote> script;
 
-  if (!script)
+  if (!utf8_decode_test(input, source))
+  {
+    std::cerr << "Import error: Unable to decode source code as UTF-8." << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+
+  if (!(script = ctx->compile(source)))
   {
     handle_error(ctx);
     return;
@@ -358,7 +365,7 @@ static void count_open_braces(const std::string& input, std::stack<char>& open_b
 static void console_loop(const ref<class context>& context)
 {
   int line_counter = 0;
-  std::string source;
+  unistring source;
   std::stack<char> open_braces;
 
   initialize_repl_api(context->runtime());
@@ -381,16 +388,21 @@ static void console_loop(const ref<class context>& context)
     }
     else if (!line.empty())
     {
+      if (!utf8_decode_test(line, source))
+      {
+        std::cout << "Unable to decode given input as UTF-8." << std::endl;
+        continue;
+      }
+      source.append(1, '\n');
       count_open_braces(line, open_braces);
-      source.append(line).append(1, '\n');
       if (open_braces.empty())
       {
-        const ref<class quote> quote = context->compile(source);
+        const ref<quote> script = context->compile(source);
 
         source.clear();
-        if (quote)
+        if (script)
         {
-          quote->call(context);
+          script->call(context);
         }
         if (context->error())
         {

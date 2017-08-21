@@ -869,7 +869,7 @@ namespace plorth
       return;
     }
 
-    quote = ctx->compile(utf8_encode(source->to_string()));
+    quote = ctx->compile(source->to_string());
     if (quote)
     {
       ctx->push(quote);

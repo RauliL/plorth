@@ -28,18 +28,14 @@
 
 namespace plorth
 {
-  static bool compile_advance(context*,
-                              std::string::const_iterator&,
-                              const std::string::const_iterator&,
-                              unichar&);
   static bool compile_string_literal(context*,
                                      const unichar,
-                                     std::string::const_iterator&,
-                                     const std::string::const_iterator&,
+                                     unistring::const_iterator&,
+                                     const unistring::const_iterator&,
                                      std::vector<token>&,
                                      unistring&);
 
-  ref<quote> context::compile(const std::string& source)
+  ref<quote> context::compile(const unistring& source)
   {
     std::vector<token> tokens;
     auto it = std::begin(source);
@@ -48,12 +44,7 @@ namespace plorth
 
     while (it != end)
     {
-      unichar c;
-
-      if (!compile_advance(this, it, end, c))
-      {
-        return ref<quote>();
-      }
+      unichar c = *it++;
 
 retry_switch:
       switch (c)
@@ -62,11 +53,7 @@ retry_switch:
         case '#':
           while (it != end)
           {
-            if (!compile_advance(this, it, end, c))
-            {
-              return ref<quote>();
-            }
-            else if (c == '\n' || c == '\r')
+            if ((c = *it++) == '\n' || c == '\r')
             {
               break;
             }
@@ -119,11 +106,7 @@ retry_switch:
 
       while (it != end)
       {
-        if (!compile_advance(this, it, end, c))
-        {
-          return ref<quote>();
-        }
-        else if (!unichar_isword(c))
+        if (!unichar_isword(c = *it++))
         {
           tokens.push_back(token(token::type_word, buffer));
           goto retry_switch;
@@ -137,24 +120,10 @@ retry_switch:
     return m_runtime->compiled_quote(tokens);
   }
 
-  static bool compile_advance(context* ctx,
-                              std::string::const_iterator& it,
-                              const std::string::const_iterator& end,
-                              unichar& output)
-  {
-    if (utf8_advance(it, end, output))
-    {
-      return true;
-    }
-    ctx->error(error::code_syntax, "Unable to decode source code as UTF-8");
-
-    return false;
-  }
-
   static bool compile_string_literal(context* ctx,
                                      const unichar separator,
-                                     std::string::const_iterator& it,
-                                     const std::string::const_iterator& end,
+                                     unistring::const_iterator& it,
+                                     const unistring::const_iterator& end,
                                      std::vector<token>& tokens,
                                      unistring& buffer)
   {
@@ -170,12 +139,7 @@ retry_switch:
         return false;
       }
 
-      if (!compile_advance(ctx, it, end, c))
-      {
-        return false;
-      }
-
-      if (c == separator)
+      if ((c = *it++) == separator)
       {
         tokens.push_back(token(token::type_string, buffer));
 
@@ -193,12 +157,8 @@ retry_switch:
 
         return false;
       }
-      else if (!compile_advance(ctx, it, end, c))
-      {
-        return false;
-      }
 
-      switch (c)
+      switch (c = *it++)
       {
         case 'b':
           buffer.append(1, 010);
@@ -239,11 +199,7 @@ retry_switch:
 
                 return false;
               }
-              else if (!compile_advance(ctx, it, end, c))
-              {
-                return false;
-              }
-              else if (!std::isxdigit(c))
+              if (!std::isxdigit(c = *it++))
               {
                 ctx->error(error::code_syntax, "Illegal Unicode hex escape sequence.");
 

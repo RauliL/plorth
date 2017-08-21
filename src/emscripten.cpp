@@ -32,7 +32,7 @@ static void emscripten_execute(const std::string& source)
     initialize_repl_api(script_runtime);
   }
 
-  if ((quote = script_context->compile(source)))
+  if ((quote = script_context->compile(utf8_decode(source))))
   {
     quote->call(script_context);
   }
