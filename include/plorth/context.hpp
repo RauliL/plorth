@@ -141,7 +141,7 @@ namespace plorth
      * \return       Reference the quote that was compiled from given source,
      *               or null reference if syntax error was encountered.
      */
-    ref<quote> compile(const std::string& source);
+    ref<quote> compile(const unistring& source);
 
     /**
      * Provides direct access to the data stack.

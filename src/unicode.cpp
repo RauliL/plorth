@@ -28,6 +28,9 @@
 namespace plorth
 {
   static inline std::size_t utf8_sequence_length(unsigned char);
+  static bool utf8_advance(std::string::const_iterator&,
+                           const std::string::const_iterator&,
+                           unichar&);
 
   unistring operator+(const char* a, const unistring& b)
   {
@@ -137,9 +140,28 @@ namespace plorth
     return result;
   }
 
-  bool utf8_advance(std::string::const_iterator& it,
-                    const std::string::const_iterator& end,
-                    unichar& result)
+  bool utf8_decode_test(const std::string& input, unistring& output)
+  {
+    auto it = std::begin(input);
+    const auto end = std::end(input);
+
+    while (it != end)
+    {
+      unichar c;
+
+      if (!utf8_advance(it, end, c))
+      {
+        return false;
+      }
+      output.append(1, c);
+    }
+
+    return true;
+  }
+
+  static bool utf8_advance(std::string::const_iterator& it,
+                           const std::string::const_iterator& end,
+                           unichar& result)
   {
     const std::size_t sequence_length = utf8_sequence_length(*it);
 

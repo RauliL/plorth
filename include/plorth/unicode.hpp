@@ -47,22 +47,14 @@ namespace plorth
   unistring utf8_decode(const std::string&);
 
   /**
+   * Decodes UTF-8 encoded byte string into Unicode string with validation.
+   */
+  bool utf8_decode_test(const std::string&, unistring&);
+
+  /**
    * Encodes Unicode string into UTF-8 encoded byte string.
    */
   std::string utf8_encode(const unistring&);
-
-  /**
-   * Decodes single Unicode code point from given byte string iterator.
-   *
-   * \param it Current position of the byte string iterator.
-   * \param end Ending point of the byte string iterator.
-   * \param output Where the decoded Unicode code point will be stored into.
-   * \return       Boolean flag which tells whether the decoding was successfull
-   *               or not.
-   */
-  bool utf8_advance(std::string::const_iterator&,
-                    const std::string::const_iterator&,
-                    unichar&);
 
   /**
    * Determines whether given character is valid Unicode code point.
