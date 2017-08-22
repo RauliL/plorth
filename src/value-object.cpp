@@ -135,7 +135,7 @@ namespace plorth
       {
         result += property.second->to_source();
       } else {
-        result += utf8_decode("null");
+        result += U"null";
       }
     }
     result += '}';
@@ -295,16 +295,16 @@ namespace plorth
       return;
     }
 
-    if (!obj->property(runtime, utf8_decode("prototype"), prototype, false)
+    if (!obj->property(runtime, U"prototype", prototype, false)
         || !prototype->is(value::type_object))
     {
-      ctx->error(error::code_type, "Object has no prototype.");
+      ctx->error(error::code_type, U"Object has no prototype.");
       return;
     }
 
-    ctx->push_object({ { utf8_decode("__proto__"), prototype } });
+    ctx->push_object({ { U"__proto__", prototype } });
 
-    if (prototype.cast<object>()->property(runtime, utf8_decode("constructor"), constructor)
+    if (prototype.cast<object>()->property(runtime, U"constructor", constructor)
         && constructor->is(value::type_quote))
     {
       constructor.cast<quote>()->call(ctx);
@@ -343,7 +343,7 @@ namespace plorth
       } else {
         ctx->error(
           error::code_range,
-          "No such property: `" + id->to_string() + "'"
+          U"No such property: `" + id->to_string() + U"'"
         );
       }
     }
@@ -416,14 +416,14 @@ namespace plorth
     {
       return
       {
-        { "keys", w_keys },
-        { "values", w_values },
-        { "has?", w_has },
-        { "has-own?", w_has_own },
-        { "new", w_new },
-        { "@", w_get },
-        { "!", w_set },
-        { "+", w_concat }
+        { U"keys", w_keys },
+        { U"values", w_values },
+        { U"has?", w_has },
+        { U"has-own?", w_has_own },
+        { U"new", w_new },
+        { U"@", w_get },
+        { U"!", w_set },
+        { U"+", w_concat }
       };
     }
   }

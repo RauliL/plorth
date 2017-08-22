@@ -43,7 +43,7 @@ namespace plorth
     runtime::prototype_definition string_prototype();
   }
 
-  static inline ref<object> make_prototype(runtime*, const char*, const runtime::prototype_definition&);
+  static inline ref<object> make_prototype(runtime*, const char32_t*, const runtime::prototype_definition&);
 
   runtime::runtime(memory::manager* memory_manager)
     : m_memory_manager(memory_manager)
@@ -55,16 +55,16 @@ namespace plorth
 
     for (auto& entry : api::global_dictionary())
     {
-      m_dictionary[utf8_decode(entry.first)] = native_quote(entry.second);
+      m_dictionary[entry.first] = native_quote(entry.second);
     }
 
-    m_object_prototype = make_prototype(this, "object", api::object_prototype());
-    m_array_prototype = make_prototype(this, "array", api::array_prototype());
-    m_boolean_prototype = make_prototype(this, "boolean", api::boolean_prototype());
-    m_error_prototype = make_prototype(this, "error", api::error_prototype());
-    m_number_prototype = make_prototype(this, "number", api::number_prototype());
-    m_quote_prototype = make_prototype(this, "quote", api::quote_prototype());
-    m_string_prototype = make_prototype(this, "string", api::string_prototype());
+    m_object_prototype = make_prototype(this, U"object", api::object_prototype());
+    m_array_prototype = make_prototype(this, U"array", api::array_prototype());
+    m_boolean_prototype = make_prototype(this, U"boolean", api::boolean_prototype());
+    m_error_prototype = make_prototype(this, U"error", api::error_prototype());
+    m_number_prototype = make_prototype(this, U"number", api::number_prototype());
+    m_quote_prototype = make_prototype(this, U"quote", api::quote_prototype());
+    m_string_prototype = make_prototype(this, U"string", api::string_prototype());
   }
 
   ref<context> runtime::new_context()
@@ -95,7 +95,7 @@ namespace plorth
   }
 
   static inline ref<object> make_prototype(class runtime* runtime,
-                                           const char* name,
+                                           const char32_t* name,
                                            const runtime::prototype_definition& definition)
   {
     object::container_type properties;
@@ -103,13 +103,13 @@ namespace plorth
 
     for (auto& entry : definition)
     {
-      properties[utf8_decode(entry.first)] = runtime->native_quote(entry.second);
+      properties[entry.first] = runtime->native_quote(entry.second);
     }
-    properties[utf8_decode("prototype")] = runtime->object_prototype();
+    properties[U"prototype"] = runtime->object_prototype();
 
     prototype = runtime->value<object>(properties);
-    runtime->dictionary()[utf8_decode(name)] = runtime->value<object>(object::container_type({
-      { utf8_decode("prototype"), prototype }
+    runtime->dictionary()[name] = runtime->value<object>(object::container_type({
+      { U"prototype", prototype }
     }));
 
     return prototype;

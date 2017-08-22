@@ -78,6 +78,7 @@ namespace plorth
   };
 
   std::ostream& operator<<(std::ostream&, enum error::code);
+  uniostream& operator<<(uniostream&, enum error::code);
 }
 
 #endif /* !PLORTH_VALUE_ERROR_HPP_GUARD */

@@ -57,7 +57,7 @@ namespace plorth
       case type_object:
         {
           const auto& properties = static_cast<const object*>(this)->properties();
-          const auto property = properties.find(utf8_decode("__proto__"));
+          const auto property = properties.find(U"__proto__");
 
           if (property == std::end(properties))
           {
@@ -134,6 +134,59 @@ namespace plorth
       os << value->to_string();
     } else {
       os << "<no value>";
+    }
+
+    return os;
+  }
+
+  uniostream& operator<<(uniostream& os, enum value::type type)
+  {
+    switch (type)
+    {
+    case value::type_null:
+      os << U"null";
+      break;
+
+    case value::type_boolean:
+      os << U"boolean";
+      break;
+
+    case value::type_number:
+      os << U"number";
+      break;
+
+    case value::type_string:
+      os << U"string";
+      break;
+
+    case value::type_array:
+      os << U"array";
+      break;
+
+    case value::type_object:
+      os << U"object";
+      break;
+
+    case value::type_quote:
+      os << U"quote";
+      break;
+
+    case value::type_error:
+      os << U"error";
+      break;
+
+    }
+
+    return os;
+  }
+
+  uniostream& operator<<(uniostream& os, const ref<class value>& value)
+  {
+    if (value)
+    {
+      os << value->to_string();
+    } else {
+      os << U"<no value>";
     }
 
     return os;

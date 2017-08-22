@@ -42,7 +42,7 @@ namespace plorth
 
   unistring boolean::to_string() const
   {
-    return utf8_decode(m_value ? "true" : "false");
+    return m_value ? U"true" : U"false";
   }
 
   unistring boolean::to_source() const
@@ -150,10 +150,10 @@ namespace plorth
     {
       return
       {
-        { "and", w_and },
-        { "or", w_or },
-        { "xor", w_xor },
-        { "not", w_not },
+        { U"and", w_and },
+        { U"or", w_or },
+        { U"xor", w_xor },
+        { U"not", w_not },
       };
     }
   }

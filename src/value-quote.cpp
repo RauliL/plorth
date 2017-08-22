@@ -28,8 +28,6 @@
 
 #include "./utils.hpp"
 
-#include <sstream>
-
 namespace plorth
 {
   static bool parse_value(const ref<context>& ctx,
@@ -104,14 +102,12 @@ namespace plorth
             case token::type_rbrace:
             case token::type_comma:
             case token::type_semicolon:
-              {
-                std::stringstream ss;
+              ctx->error(
+                error::code_syntax,
+                U"Unexpected `" + current->to_source() + U"'"
+              );
 
-                ss << "Unexpected " << *current;
-                ctx->error(error::code_syntax, ss.str().c_str());
-
-                return false;
-              }
+              return false;
           }
         }
 
@@ -191,7 +187,7 @@ namespace plorth
 
       unistring to_source() const
       {
-        return utf8_decode("(\"native quote\")");
+        return U"(\"native quote\")";
       }
 
       bool equals(const ref<value>& that) const
@@ -248,7 +244,7 @@ namespace plorth
         result += m_argument->to_source();
         result += ' ';
         result += m_quote->to_source();
-        result += utf8_decode(" curry");
+        result += U" curry";
 
         return result;
       }
@@ -299,7 +295,7 @@ namespace plorth
         result += m_left->to_source();
         result += ' ';
         result += m_right->to_source();
-        result += utf8_decode(" compose");
+        result += U" compose";
 
         return result;
       }
@@ -351,7 +347,7 @@ namespace plorth
 
       unistring to_source() const
       {
-        return m_quote->to_source() + " negate";
+        return m_quote->to_source() + U" negate";
       }
 
     private:
@@ -402,7 +398,7 @@ namespace plorth
         {
           result += m_value->to_source();
         } else {
-          result += utf8_decode("null");
+          result += U"null";
         }
         result += ')';
 
@@ -467,7 +463,7 @@ namespace plorth
     }
     if (counter > 0)
     {
-      ctx->error(error::code_syntax, "Unterminated quote.");
+      ctx->error(error::code_syntax, U"Unterminated quote.");
 
       return ref<quote>();
     }
@@ -486,7 +482,7 @@ namespace plorth
     {
       if (it >= end)
       {
-        ctx->error(error::code_syntax, "Unterminated array literal.");
+        ctx->error(error::code_syntax, U"Unterminated array literal.");
 
         return ref<array>();
       }
@@ -502,7 +498,7 @@ namespace plorth
       elements.push_back(val);
       if (it >= end)
       {
-        ctx->error(error::code_syntax, "Unterminated array literal.");
+        ctx->error(error::code_syntax, U"Unterminated array literal.");
 
         return ref<array>();
       }
@@ -512,10 +508,10 @@ namespace plorth
       }
       else if (!it->is(token::type_rbrack))
       {
-        std::stringstream ss;
-
-        ss << "Unexpected " << *it << "; Missing `]'";
-        ctx->error(error::code_syntax, ss.str().c_str());
+        ctx->error(
+          error::code_syntax,
+          U"Unexpected `" + it->to_source() + U"'; Missing `]'"
+        );
 
         return ref<array>();
       }
@@ -536,7 +532,7 @@ namespace plorth
     {
       if (it >= end)
       {
-        ctx->error(error::code_syntax, "Unterminated object literal.");
+        ctx->error(error::code_syntax, U"Unterminated object literal.");
 
         return ref<object>();
       }
@@ -547,14 +543,14 @@ namespace plorth
       }
       else if (!it->is(token::type_string))
       {
-        ctx->error(error::code_syntax, "Missing key for object literal.");
+        ctx->error(error::code_syntax, U"Missing key for object literal.");
 
         return ref<object>();
       }
       id = it++->text();
       if (it >= end || !it++->is(token::type_colon))
       {
-        ctx->error(error::code_syntax, "Missing `:' after key of an object.");
+        ctx->error(error::code_syntax, U"Missing `:' after key of an object.");
 
         return ref<object>();
       }
@@ -565,7 +561,7 @@ namespace plorth
       properties[id] = val;
       if (it >= end)
       {
-        ctx->error(error::code_syntax, "Unterminated object literal.");
+        ctx->error(error::code_syntax, U"Unterminated object literal.");
 
         return ref<object>();
       }
@@ -575,10 +571,10 @@ namespace plorth
       }
       else if (!it->is(token::type_rbrace))
       {
-        std::stringstream ss;
-
-        ss << "Unexpected " << *it << "; Missing `]'";
-        ctx->error(error::code_syntax, ss.str().c_str());
+        ctx->error(
+          error::code_syntax,
+          U"Unexpected `" + it->to_source() + U"'; Missing `]'"
+        );
 
         return ref<object>();
       }
@@ -625,22 +621,22 @@ namespace plorth
         {
           const unistring& text = token.text();
 
-          if (!text.compare(utf8_decode("null")))
+          if (!text.compare(U"null"))
           {
             slot.release();
             break;
           }
-          else if (!text.compare(utf8_decode("true")))
+          else if (!text.compare(U"true"))
           {
             slot = ctx->runtime()->true_value();
             break;
           }
-          else if (!text.compare(utf8_decode("false")))
+          else if (!text.compare(U"false"))
           {
             slot = ctx->runtime()->false_value();
             break;
           }
-          else if (!text.compare(utf8_decode("drop")))
+          else if (!text.compare(U"drop"))
           {
             if (!ctx->pop(slot))
             {
@@ -656,14 +652,12 @@ namespace plorth
         }
 
       default:
-        {
-          std::stringstream ss;
+        ctx->error(
+          error::code_syntax,
+          U"Unexpected `" + token.to_source() + U"', missing value."
+        );
 
-          ss << "Unexpected " << token << ", expected value.";
-          ctx->error(error::code_syntax, ss.str().c_str());
-
-          return false;
-        }
+        return false;
     }
 
     return true;
@@ -679,7 +673,7 @@ namespace plorth
 
     if (++current >= end || !current->is(token::type_word))
     {
-      ctx->error(error::code_syntax, "Missing name after word declaration.");
+      ctx->error(error::code_syntax, U"Missing name after word declaration.");
 
       return false;
     }
@@ -700,7 +694,7 @@ namespace plorth
     }
     if (counter > 0)
     {
-      ctx->error(error::code_syntax, "Unterminated declaration.");
+      ctx->error(error::code_syntax, U"Unterminated declaration.");
 
       return false;
     }
@@ -806,10 +800,10 @@ namespace plorth
     {
       return
       {
-        { "call", w_call },
-        { "compose", w_compose },
-        { "curry", w_curry },
-        { "negate", w_negate }
+        { U"call", w_call },
+        { U"compose", w_compose },
+        { U"curry", w_curry },
+        { U"negate", w_negate }
       };
     }
   }

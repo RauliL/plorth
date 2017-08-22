@@ -97,7 +97,7 @@ retry_switch:
 
       if (!unichar_isword(c))
       {
-        error(error::code_syntax, "Unexpected input.");
+        error(error::code_syntax, U"Unexpected input.");
 
         return ref<quote>();
       }
@@ -134,7 +134,7 @@ retry_switch:
 
       if (it >= end)
       {
-        ctx->error(error::code_syntax, "Unterminated string literal.");
+        ctx->error(error::code_syntax, U"Unterminated string literal.");
 
         return false;
       }
@@ -153,7 +153,7 @@ retry_switch:
 
       if (it >= end)
       {
-        ctx->error(error::code_syntax, "Unterminated string literal.");
+        ctx->error(error::code_syntax, U"Unterminated string literal.");
 
         return false;
       }
@@ -195,13 +195,13 @@ retry_switch:
             {
               if (it >= end)
               {
-                ctx->error(error::code_syntax, "Unterminated string literal.");
+                ctx->error(error::code_syntax, U"Unterminated string literal.");
 
                 return false;
               }
               if (!std::isxdigit(c = *it++))
               {
-                ctx->error(error::code_syntax, "Illegal Unicode hex escape sequence.");
+                ctx->error(error::code_syntax, U"Illegal Unicode hex escape sequence.");
 
                 return false;
               }
@@ -220,7 +220,7 @@ retry_switch:
 
             if (!unichar_validate(result))
             {
-              ctx->error(error::code_syntax, "Illegal Unicode hex escape sequence.");
+              ctx->error(error::code_syntax, U"Illegal Unicode hex escape sequence.");
 
               return false;
             }
@@ -230,7 +230,7 @@ retry_switch:
           break;
 
         default:
-          ctx->error(error::code_syntax, "Illegal escape sequence in string literal.");
+          ctx->error(error::code_syntax, U"Illegal escape sequence in string literal.");
 
           return false;
       }

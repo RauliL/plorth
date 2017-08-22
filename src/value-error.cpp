@@ -49,20 +49,20 @@ namespace plorth
 
   unistring error::to_string() const
   {
-    std::stringstream ss;
+    std::basic_stringstream<char32_t> ss;
 
     ss << m_code;
     if (!m_message.empty())
     {
-      ss << ": " << m_message;
+      ss << U": " << m_message;
     }
 
-    return utf8_decode(ss.str());
+    return ss.str();
   }
 
   unistring error::to_source() const
   {
-    return "<" + to_string() + ">";
+    return U"<" + to_string() + U">";
   }
 
   std::ostream& operator<<(std::ostream& out, enum error::code code)
@@ -96,6 +96,42 @@ namespace plorth
       case error::code_unknown:
         out << "Unknown error";
         break;
+    }
+
+    return out;
+  }
+
+  uniostream& operator<<(uniostream& out, enum error::code code)
+  {
+    switch (code)
+    {
+    case error::code_syntax:
+      out << U"Syntax error";
+      break;
+
+    case error::code_reference:
+      out << U"Reference error";
+      break;
+
+    case error::code_type:
+      out << U"Type error";
+      break;
+
+    case error::code_value:
+      out << U"Value error";
+      break;
+
+    case error::code_range:
+      out << U"Range error";
+      break;
+
+    case error::code_import:
+      out << U"Import error";
+      break;
+
+    case error::code_unknown:
+      out << U"Unknown error";
+      break;
     }
 
     return out;
@@ -182,9 +218,9 @@ namespace plorth
     {
       return
       {
-        { "code", w_code },
-        { "message", w_message },
-        { "throw", w_throw },
+        { U"code", w_code },
+        { U"message", w_message },
+        { U"throw", w_throw },
       };
     }
   }

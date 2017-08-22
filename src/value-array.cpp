@@ -171,7 +171,7 @@ namespace plorth
       {
         result += element->to_source();
       } else {
-        result += utf8_decode("null");
+        result += U"null";
       }
     }
     result += ']';
@@ -594,7 +594,7 @@ namespace plorth
       {
         result += element->to_string();
       } else {
-        result += utf8_decode("null");
+        result += U"null";
       }
     }
 
@@ -745,7 +745,7 @@ namespace plorth
 
     if (size == 0)
     {
-      ctx->error(error::code_range, "Cannot reduce empty array.");
+      ctx->error(error::code_range, U"Cannot reduce empty array.");
       return;
     }
 
@@ -824,7 +824,7 @@ namespace plorth
         }
         ctx->push_array(result.data(), size * count);
       } else {
-        ctx->error(error::code_range, "Invalid repeat count.");
+        ctx->error(error::code_range, U"Invalid repeat count.");
       }
     }
   }
@@ -993,7 +993,7 @@ namespace plorth
 
       if (index < 0 || index > static_cast<std::int64_t>(ary->size()))
       {
-        ctx->error(error::code_range, "Array index out of bounds.");
+        ctx->error(error::code_range, U"Array index out of bounds.");
         return;
       }
 
@@ -1056,33 +1056,33 @@ namespace plorth
     {
       return
       {
-        { "length", w_length },
+        { U"length", w_length },
 
         // Search methods.
-        { "includes?", w_includes },
-        { "index-of", w_index_of },
-        { "find", w_find },
-        { "find-index", w_find_index },
-        { "every?", w_every },
-        { "some?", w_some },
+        { U"includes?", w_includes },
+        { U"index-of", w_index_of },
+        { U"find", w_find },
+        { U"find-index", w_find_index },
+        { U"every?", w_every },
+        { U"some?", w_some },
 
         // Conversions.
-        { "reverse", w_reverse },
-        { "uniq", w_uniq },
-        { "extract", w_extract },
-        { "join", w_join },
+        { U"reverse", w_reverse },
+        { U"uniq", w_uniq },
+        { U"extract", w_extract },
+        { U"join", w_join },
 
-        { "for-each", w_for_each },
-        { "map", w_map },
-        { "filter", w_filter },
-        { "reduce", w_reduce },
+        { U"for-each", w_for_each },
+        { U"map", w_map },
+        { U"filter", w_filter },
+        { U"reduce", w_reduce },
 
-        { "+", w_concat },
-        { "*", w_repeat },
-        { "&", w_intersect },
-        { "|", w_union },
-        { "@", w_get },
-        { "!", w_set }
+        { U"+", w_concat },
+        { U"*", w_repeat },
+        { U"&", w_intersect },
+        { U"|", w_union },
+        { U"@", w_get },
+        { U"!", w_set }
       };
     }
   }

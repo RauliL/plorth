@@ -808,30 +808,30 @@ namespace plorth
     {
       return
       {
-        { "nan?", w_is_nan },
-        { "finite?", w_is_finite },
+        { U"nan?", w_is_nan },
+        { U"finite?", w_is_finite },
 
-        { "times", w_times },
+        { U"times", w_times },
 
-        { "abs", w_abs },
-        { "round", w_round },
-        { "floor", w_floor },
-        { "ceil", w_ceil },
-        { "max", w_max },
-        { "min", w_min },
-        { "clamp", w_clamp },
-        { "in-range?", w_is_in_range },
+        { U"abs", w_abs },
+        { U"round", w_round },
+        { U"floor", w_floor },
+        { U"ceil", w_ceil },
+        { U"max", w_max },
+        { U"min", w_min },
+        { U"clamp", w_clamp },
+        { U"in-range?", w_is_in_range },
 
-        { "+", w_add },
-        { "-", w_sub },
-        { "*", w_mul },
-        { "/", w_div },
-        { "%", w_mod },
+        { U"+", w_add },
+        { U"-", w_sub },
+        { U"*", w_mul },
+        { U"/", w_div },
+        { U"%", w_mod },
 
-        { "<", w_lt },
-        { ">", w_gt },
-        { "<=", w_lte },
-        { ">=", w_gte }
+        { U"<", w_lt },
+        { U">", w_gt },
+        { U"<=", w_lte },
+        { U">=", w_gte }
       };
     }
   }

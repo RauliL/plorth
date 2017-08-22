@@ -564,12 +564,12 @@ namespace plorth
       ctx->push(value);
       if (value)
       {
-        std::stringstream ss;
+        std::basic_stringstream<char32_t> ss;
 
         ss << value->type();
-        ctx->push_string(utf8_decode(ss.str()));
+        ctx->push_string(ss.str());
       } else {
-        ctx->push_string(utf8_decode("null"));
+        ctx->push_string(U"null");
       }
     }
   }
@@ -655,7 +655,7 @@ namespace plorth
     {
       ctx->push_string(value->to_string());
     } else {
-      ctx->push_string(utf8_decode(""));
+      ctx->push_string(U"");
     }
   }
 
@@ -683,7 +683,7 @@ namespace plorth
     {
       ctx->push_string(value->to_source());
     } else {
-      ctx->push_string(utf8_decode("null"));
+      ctx->push_string(U"null");
     }
   }
 
@@ -965,10 +965,10 @@ namespace plorth
       {
         message = val.cast<string>()->to_string();
       } else {
-        std::stringstream ss;
+        std::basic_stringstream<char32_t> ss;
 
-        ss << "Expected string, got " << val->type() << " instead.";
-        ctx->error(error::code_type, utf8_decode(ss.str()));
+        ss << U"Expected string, got " << val->type() << U" instead.";
+        ctx->error(error::code_type, ss.str());
         return;
       }
     }
@@ -1106,7 +1106,7 @@ namespace plorth
 
       if (!unichar_validate(c))
       {
-        ctx->error(error::code_range, "Invalid Unicode code point.");
+        ctx->error(error::code_range, U"Invalid Unicode code point.");
       } else {
         ctx->runtime()->print(unistring(1, static_cast<unichar>(c)));
       }
@@ -1180,75 +1180,75 @@ namespace plorth
       return
       {
         // Constants.
-        { "null", w_null },
-        { "true", w_true },
-        { "false", w_false },
-        { "e", w_e },
-        { "pi", w_pi },
+        { U"null", w_null },
+        { U"true", w_true },
+        { U"false", w_false },
+        { U"e", w_e },
+        { U"pi", w_pi },
 
         // Stack manipulation.
-        { "nop", w_nop },
-        { "clear", w_clear },
-        { "depth", w_depth },
-        { "drop", w_drop },
-        { "2drop", w_drop2 },
-        { "dup", w_dup },
-        { "2dup", w_dup2 },
-        { "nip", w_nip },
-        { "over", w_over },
-        { "rot", w_rot },
-        { "swap", w_swap },
-        { "tuck", w_tuck },
+        { U"nop", w_nop },
+        { U"clear", w_clear },
+        { U"depth", w_depth },
+        { U"drop", w_drop },
+        { U"2drop", w_drop2 },
+        { U"dup", w_dup },
+        { U"2dup", w_dup2 },
+        { U"nip", w_nip },
+        { U"over", w_over },
+        { U"rot", w_rot },
+        { U"swap", w_swap },
+        { U"tuck", w_tuck },
 
         // Value types.
-        { "array?", w_is_array },
-        { "boolean?", w_is_boolean },
-        { "error?", w_is_error },
-        { "null?", w_is_null },
-        { "number?", w_is_number },
-        { "object?", w_is_object },
-        { "quote?", w_is_quote },
-        { "string?", w_is_string },
-        { "typeof" , w_typeof },
-        { "proto", w_proto },
+        { U"array?", w_is_array },
+        { U"boolean?", w_is_boolean },
+        { U"error?", w_is_error },
+        { U"null?", w_is_null },
+        { U"number?", w_is_number },
+        { U"object?", w_is_object },
+        { U"quote?", w_is_quote },
+        { U"string?", w_is_string },
+        { U"typeof" , w_typeof },
+        { U"proto", w_proto },
 
         // Conversions.
-        { ">boolean", w_to_boolean },
-        { ">string", w_to_string },
-        { ">source", w_to_source },
+        { U">boolean", w_to_boolean },
+        { U">string", w_to_string },
+        { U">source", w_to_source },
 
         // Logic.
-        { "if", w_if },
-        { "if-else", w_if_else },
-        { "while", w_while },
-        { "try", w_try },
-        { "try-else", w_try_else },
+        { U"if", w_if },
+        { U"if-else", w_if_else },
+        { U"while", w_while },
+        { U"try", w_try },
+        { U"try-else", w_try_else },
 
         // Interpreter related.
-        { "compile", w_compile },
-        { "globals", w_globals },
-        { "locals", w_locals },
-        { "const", w_const },
-        { "import", w_import },
-        { "args", w_args },
+        { U"compile", w_compile },
+        { U"globals", w_globals },
+        { U"locals", w_locals },
+        { U"const", w_const },
+        { U"import", w_import },
+        { U"args", w_args },
 
         // Different types of errors.
-        { "type-error", w_type_error },
-        { "value-error", w_value_error },
-        { "range-error", w_range_error },
-        { "unknown-error", w_unknown_error },
+        { U"type-error", w_type_error },
+        { U"value-error", w_value_error },
+        { U"range-error", w_range_error },
+        { U"unknown-error", w_unknown_error },
 
         // I/O related.
-        { "print", w_print },
-        { "println", w_println },
-        { "emit", w_emit },
+        { U"print", w_print },
+        { U"println", w_println },
+        { U"emit", w_emit },
 
         // Random utilities.
-        { "now", w_now },
+        { U"now", w_now },
 
         // Global operators.
-        { "=", w_eq },
-        { "!=", w_ne },
+        { U"=", w_eq },
+        { U"!=", w_ne },
       };
     }
   }
