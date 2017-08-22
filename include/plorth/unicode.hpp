@@ -33,11 +33,13 @@
 
 namespace plorth
 {
-  using unichar = std::uint32_t;
-  using unistring = std::basic_string<unichar>;
+  using unichar = char32_t;
+  using unistring = std::u32string;
+  using uniostream = std::basic_ostream<unichar>;
 
-  unistring operator+(const char*, const unistring&);
-  unistring operator+(const unistring&, const char*);
+  /**
+   * Decodes Unicode string into UTF-8 and outputs it into given byte stream.
+   */
   std::ostream& operator<<(std::ostream&, const unistring&);
 
   /**
@@ -100,33 +102,6 @@ namespace plorth
    * Converts given Unicode character into lower case.
    */
   unichar unichar_tolower(unichar);
-}
-
-namespace std
-{
-  /**
-   * Custom C++11 hashing function for Unicode strings. The hashing algorithm
-   * is stol^H^H^H^Hborrowed from Java.
-   */
-  template<>
-  struct hash<plorth::unistring>
-  {
-    using argument_type = plorth::unistring;
-    using result_type = std::int32_t;
-
-    result_type operator()(const plorth::unistring& s) const
-    {
-      const auto length = s.length();
-      result_type result = 0;
-
-      for (plorth::unistring::size_type i = 0; i < length; ++i)
-      {
-        result = 31 * result + s[i];
-      }
-
-      return result;
-    }
-  };
 }
 
 #endif /* !PLORTH_UNICODE_HPP_GUARD */

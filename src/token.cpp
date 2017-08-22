@@ -72,44 +72,44 @@ namespace plorth
 
   unistring token::to_source() const
   {
-    const char* str;
+    const char32_t* str;
 
     switch (m_type)
     {
       case type_lparen:
-        str = "(";
+        str = U"(";
         break;
 
       case type_rparen:
-        str = ")";
+        str = U")";
         break;
 
       case type_lbrack:
-        str = "[";
+        str = U"[";
         break;
 
       case type_rbrack:
-        str = "]";
+        str = U"]";
         break;
 
       case type_lbrace:
-        str = "{";
+        str = U"{";
         break;
 
       case type_rbrace:
-        str = "}";
+        str = U"}";
         break;
 
       case type_colon:
-        str = ":";
+        str = U":";
         break;
 
       case type_semicolon:
-        str = ";";
+        str = U";";
         break;
 
       case type_comma:
-        str = ",";
+        str = U",";
         break;
 
       case type_word:
@@ -119,7 +119,7 @@ namespace plorth
         return json_stringify(m_text);
     }
 
-    return utf8_decode(str);
+    return str;
   }
 
   std::ostream& operator<<(std::ostream& out, enum token::type type)
@@ -186,7 +186,82 @@ namespace plorth
 
       if (text.length() > 15)
       {
-        out << json_stringify(text.substr(0, 15) + "...");
+        out << json_stringify(text.substr(0, 15) + U"...");
+      } else {
+        out << json_stringify(text);
+      }
+    } else {
+      out << token.type();
+    }
+
+    return out;
+  }
+
+  uniostream& operator<<(uniostream& out, enum token::type type)
+  {
+    switch (type)
+    {
+    case token::type_lparen:
+      out << U"`('";
+      break;
+
+    case token::type_rparen:
+      out << U"`)'";
+      break;
+
+    case token::type_lbrack:
+      out << U"`['";
+      break;
+
+    case token::type_rbrack:
+      out << U"`]'";
+      break;
+
+    case token::type_lbrace:
+      out << U"`{'";
+      break;
+
+    case token::type_rbrace:
+      out << U"`}'";
+      break;
+
+    case token::type_colon:
+      out << U"`:'";
+      break;
+
+    case token::type_semicolon:
+      out << U"`;'";
+      break;
+
+    case token::type_comma:
+      out << U"`,'";
+      break;
+
+    case token::type_word:
+      out << U"word";
+      break;
+
+    case token::type_string:
+      out << U"string literal";
+      break;
+    }
+
+    return out;
+  }
+
+  uniostream& operator<<(uniostream& out, const class token& token)
+  {
+    if (token.is(token::type_word))
+    {
+      out << U"`" << token.text() << U"'";
+    }
+    else if (token.is(token::type_string))
+    {
+      const unistring& text = token.text();
+
+      if (text.length() > 15)
+      {
+        out << json_stringify(text.substr(0, 15) + U"...");
       } else {
         out << json_stringify(text);
       }

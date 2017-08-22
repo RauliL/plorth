@@ -107,6 +107,9 @@ namespace plorth
 
   std::ostream& operator<<(std::ostream&, enum value::type);
   std::ostream& operator<<(std::ostream&, const ref<value>&);
+
+  uniostream& operator<<(uniostream&, enum value::type);
+  uniostream& operator<<(uniostream&, const ref<value>&);
 }
 
 #endif /* !PLORTH_VALUE_HPP_GUARD */

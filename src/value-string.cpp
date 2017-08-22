@@ -803,7 +803,7 @@ namespace plorth
       {
         ctx->push_number(str);
       } else {
-        ctx->error(error::code_value, "Could not convert string to number.");
+        ctx->error(error::code_value, U"Could not convert string to number.");
       }
     }
   }
@@ -920,7 +920,7 @@ namespace plorth
 
       if (index < 0 || index > static_cast<std::int64_t>(length))
       {
-        ctx->error(error::code_range, "String index out of bounds.");
+        ctx->error(error::code_range, U"String index out of bounds.");
         return;
       }
 
@@ -935,41 +935,41 @@ namespace plorth
     {
       return
       {
-        { "length", w_length },
-        { "chars", w_chars },
-        { "runes", w_runes },
-        { "words", w_words },
-        { "lines", w_lines },
+        { U"length", w_length },
+        { U"chars", w_chars },
+        { U"runes", w_runes },
+        { U"words", w_words },
+        { U"lines", w_lines },
 
         // Tests.
         // TODO: includes?
         // TODO: index-of
         // TODO: starts-with?
         // TODO: ends-with?
-        { "space?", w_is_space },
-        { "lower-case?", w_is_lower_case },
-        { "upper-case?", w_is_upper_case },
+        { U"space?", w_is_space },
+        { U"lower-case?", w_is_lower_case },
+        { U"upper-case?", w_is_upper_case },
 
         // Conversions.
-        { "reverse", w_reverse },
-        { "upper-case", w_upper_case },
-        { "lower-case", w_lower_case },
-        { "swap-case", w_swap_case },
-        { "capitalize", w_capitalize },
-        { "trim", w_trim },
-        { "trim-left", w_trim_left },
-        { "trim-right", w_trim_right },
+        { U"reverse", w_reverse },
+        { U"upper-case", w_upper_case },
+        { U"lower-case", w_lower_case },
+        { U"swap-case", w_swap_case },
+        { U"capitalize", w_capitalize },
+        { U"trim", w_trim },
+        { U"trim-left", w_trim_left },
+        { U"trim-right", w_trim_right },
         // TODO: pad-left
         // TODO: pad-right
         // TODO: substring
         // TODO: split
         // TODO: replace
         // TODO: normalize
-        { ">number", w_to_number },
+        { U">number", w_to_number },
 
-        { "+", w_concat },
-        { "*", w_repeat },
-        { "@", w_get }
+        { U"+", w_concat },
+        { U"*", w_repeat },
+        { U"@", w_get }
       };
     }
   }

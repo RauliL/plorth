@@ -108,7 +108,7 @@ namespace plorth
     }
 
     // Otherwise it's reference error.
-    error(error::code_reference, "Unrecognized word: `" + word + "'");
+    error(error::code_reference, U"Unrecognized word: `" + word + U"'");
 
     return false;
   }
@@ -171,7 +171,7 @@ namespace plorth
 
       return true;
     }
-    error(error::code_range, "Stack underflow.");
+    error(error::code_range, U"Stack underflow.");
 
     return false;
   }
@@ -184,17 +184,17 @@ namespace plorth
 
       if ((!value && type != value::type_null) || (value && !value->is(type)))
       {
-        std::stringstream ss;
+        std::basic_stringstream<char32_t> ss;
 
-        ss << "Expected " << type << ", got ";
+        ss << U"Expected " << type << U", got ";
         if (value)
         {
           ss << value->type();
         } else {
-          ss << "null";
+          ss << U"null";
         }
-        ss << " instead.";
-        error(error::code_type, ss.str().c_str());
+        ss << U" instead.";
+        error(error::code_type, ss.str());
 
         return false;
       }
@@ -202,7 +202,7 @@ namespace plorth
 
       return true;
     }
-    error(error::code_range, "Stack underflow.");
+    error(error::code_range, U"Stack underflow.");
 
     return false;
   }
@@ -216,7 +216,7 @@ namespace plorth
 
       return true;
     }
-    error(error::code_range, "Stack underflow.");
+    error(error::code_range, U"Stack underflow.");
 
     return false;
   }
@@ -228,17 +228,17 @@ namespace plorth
       slot = m_data.back();
       if ((!slot && type != value::type_null) || (slot && !slot->is(type)))
       {
-        std::stringstream ss;
+        std::basic_stringstream<char32_t> ss;
 
-        ss << "Expected " << type << ", got ";
+        ss << U"Expected " << type << U", got ";
         if (slot)
         {
           ss << slot->type();
         } else {
-          ss << "null";
+          ss << U"null";
         }
-        ss << " instead.";
-        error(error::code_type, ss.str().c_str());
+        ss << U" instead.";
+        error(error::code_type, ss.str());
 
         return false;
       }
@@ -246,7 +246,7 @@ namespace plorth
 
       return true;
     }
-    error(error::code_range, "Stack underflow.");
+    error(error::code_range, U"Stack underflow.");
 
     return false;
   }

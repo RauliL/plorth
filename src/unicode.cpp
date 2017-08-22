@@ -32,16 +32,6 @@ namespace plorth
                            const std::string::const_iterator&,
                            unichar&);
 
-  unistring operator+(const char* a, const unistring& b)
-  {
-    return utf8_decode(a) + b;
-  }
-
-  unistring operator+(const unistring& a, const char* b)
-  {
-    return a + utf8_decode(b);
-  }
-
   std::ostream& operator<<(std::ostream& out, const unistring& s)
   {
     for (const auto& c : s)

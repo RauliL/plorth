@@ -82,17 +82,6 @@ namespace plorth
     void error(enum error::code code, const unistring& message);
 
     /**
-     * Constructs new error instance with given error code and error message
-     * and replaces this execution state's currently uncaught error with it.
-     *
-     * The error message is expected to be encoded in UTF-8 character encoding.
-     */
-    inline void error(enum error::code code, const char* message)
-    {
-      error(code, utf8_decode(message));
-    }
-
-    /**
      * Removes currently uncaught error in the context.
      */
     inline void clear_error()

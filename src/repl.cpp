@@ -27,7 +27,7 @@ static void w_stack(const ref<context>& ctx)
 
   if (!size)
   {
-    runtime->println(utf8_decode("Stack is empty."));
+    runtime->println(U"Stack is empty.");
     return;
   }
 
@@ -35,8 +35,8 @@ static void w_stack(const ref<context>& ctx)
   {
     const auto& value = stack[size - i - 1];
 
-    runtime->print(to_unistring(static_cast<std::int64_t>(size - i)) + ": ");
-    runtime->print(value ? value->to_source() : utf8_decode("null"));
+    runtime->print(to_unistring(static_cast<std::int64_t>(size - i)) + U": ");
+    runtime->print(value ? value->to_source() : U"null");
     runtime->println();
   }
 }
@@ -45,6 +45,6 @@ void initialize_repl_api(const ref<runtime>& runtime)
 {
   auto& dictionary = runtime->dictionary();
 
-  dictionary[utf8_decode(".q")] = runtime->native_quote(w_quit);
-  dictionary[utf8_decode(".s")] = runtime->native_quote(w_stack);
+  dictionary[U".q"] = runtime->native_quote(w_quit);
+  dictionary[U".s"] = runtime->native_quote(w_stack);
 }

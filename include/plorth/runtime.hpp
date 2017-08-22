@@ -40,7 +40,7 @@ namespace plorth
   class runtime : public memory::managed
   {
   public:
-    using prototype_definition = std::vector<std::pair<const char*, quote::callback>>;
+    using prototype_definition = std::vector<std::pair<const char32_t*, quote::callback>>;
 
     /**
      * Constructs new runtime.
