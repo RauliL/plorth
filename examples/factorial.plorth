@@ -1,0 +1,12 @@
+#!/usr/bin/env plorth-cli
+
+# Declare the factorial function recursively.
+: factorial
+  dup 0 =
+  (drop 1)
+  (dup 1 - factorial *)
+  if-else
+;
+
+# Map the factorial over the first few integers and print the result.
+(factorial) [0, 1, 2, 3, 4, 5, 6] map println
