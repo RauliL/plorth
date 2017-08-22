@@ -631,20 +631,7 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
-      {
-        ctx->push_real(a->as_real() / b->as_real());
-      } else {
-        const std::int64_t x = a->as_int();
-        const std::int64_t y = a->as_int();
-
-        if (y == 0)
-        {
-          ctx->push_real(y < 0 ? -INFINITY : INFINITY);
-        } else {
-          ctx->push_int(x / y);
-        }
-      }
+      ctx->push_real(a->as_real() / b->as_real());
     }
   }
 
@@ -669,20 +656,7 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
-      {
-        ctx->push_real(std::fmod(a->as_real(), b->as_real()));
-      } else {
-        const std::int64_t x = a->as_int();
-        const std::int64_t y = a->as_int();
-
-        if (y == 0)
-        {
-          ctx->push_real(NAN);
-        } else {
-          ctx->push_int(x % y);
-        }
-      }
+      ctx->push_real(std::fmod(a->as_real(), b->as_real()));
     }
   }
 
