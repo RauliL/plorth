@@ -1,0 +1,20 @@
+#!/usr/bin/env plorth-cli
+
+# Print the first few Fibonacci numbers
+
+# Declare a word for calculating the next Fibonacci number from the two
+# already on the stack.
+: fibo-next
+  2dup +
+;
+
+# Push the initial Fibonacci numbers on the stack.
+0 1
+
+# Print them in order.
+2dup swap println println
+
+# Print the rest of the Fibonacci numbers less than one thousand.
+( fibo-next dup 1000 < )
+( dup println )
+while
