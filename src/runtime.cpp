@@ -72,6 +72,28 @@ namespace plorth
     return new (*m_memory_manager) context(this);
   }
 
+  void runtime::print(const unistring& str) const
+  {
+    std::cout << str;
+  }
+
+  void runtime::println() const
+  {
+#if defined(_WIN32)
+    static const unistring newline = {'\r', '\n'};
+#else
+    static const unistring newline = {'\n'};
+#endif
+
+    print(newline);
+  }
+
+  void runtime::println(const unistring& str) const
+  {
+    print(str);
+    println();
+  }
+
   static inline ref<object> make_prototype(class runtime* runtime,
                                            const char* name,
                                            const runtime::prototype_definition& definition)

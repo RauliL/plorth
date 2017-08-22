@@ -120,6 +120,24 @@ namespace plorth
     ref<context> new_context();
 
     /**
+     * Outputs given Unicode string into the standard output stream of the
+     * interpreter.
+     */
+    void print(const unistring& str) const;
+
+    /**
+     * Outputs system specific newline into the standard output stream of the
+     * interpreter.
+     */
+    void println() const;
+
+    /**
+     * Outputs given Unicode string and system specific newline into the
+     * standard output stream of the interpreter.
+     */
+    void println(const unistring& str) const;
+
+    /**
      * Imports module from file system and inserts all of it's exported words
      * into dictionary of given execution context.
      *
