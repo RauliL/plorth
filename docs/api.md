@@ -15,7 +15,7 @@
   <dd>boolean</dd>
 </dl>
 
-Tests whether the two top-most values of the stack are not equal.
+Tests whether the two topmost values of the stack are not equal.
 
 ---
 
@@ -26,7 +26,7 @@ Tests whether the two top-most values of the stack are not equal.
   <dd>any, any</dd>
 </dl>
 
-Discards two top-most values from the stack.
+Discards the two topmost values from the stack.
 
 
     1 2 3 2drop #=> 1
@@ -42,7 +42,7 @@ Discards two top-most values from the stack.
   <dd>any, any, any, any</dd>
 </dl>
 
-Duplicates two top-most values of the stack.
+Duplicates two topmost values of the stack.
 
 
     1 2 2dup #=> 1 2 1 2
@@ -58,7 +58,7 @@ Duplicates two top-most values of the stack.
   <dd>boolean</dd>
 </dl>
 
-Tests whether the two top-most values of the stack are equal.
+Tests whether the two topmost values of the stack are equal.
 
 ---
 
@@ -71,8 +71,8 @@ Tests whether the two top-most values of the stack are equal.
   <dd>boolean</dd>
 </dl>
 
-Converts top-most value of the stack into boolean. Null and false will
-become false while everything else will be true.
+Converts the topmost value of the stack into a boolean. Null and false
+will become false while everything else will become true.
 
 ---
 
@@ -85,7 +85,7 @@ become false while everything else will be true.
   <dd>string</dd>
 </dl>
 
-Converts top-most value of the stack into a string that most accurately
+Converts the topmost value of the stack into a string that most accurately
 represents what the value would look like in source code.
 
 ---
@@ -99,7 +99,8 @@ represents what the value would look like in source code.
   <dd>string</dd>
 </dl>
 
-Converts top-most value of the stack into string.
+Converts the topmost value of the stack into a string. Null will become
+an empty string.
 
 ---
 
@@ -110,7 +111,7 @@ Converts top-most value of the stack into string.
   <dd>array<string></dd>
 </dl>
 
-Returns command line arguments given for the interpreter as an array of
+Returns command line arguments given to the interpreter as an array of
 strings.
 
 ---
@@ -124,7 +125,7 @@ strings.
   <dd>any, boolean</dd>
 </dl>
 
-Returns true if top-most value of the stack is array.
+Returns true if the topmost value of the stack is an array.
 
 ---
 
@@ -137,7 +138,7 @@ Returns true if top-most value of the stack is array.
   <dd>any, boolean</dd>
 </dl>
 
-Returns true if top-most value of the stack is boolean.
+Returns true if the topmost value of the stack is a boolean.
 
 ---
 
@@ -156,7 +157,7 @@ Clears the entire stack of current context.
   <dd>quote</dd>
 </dl>
 
-Compiles given string of source code into quote.
+Compiles given string of source code into a quote.
 
 ---
 
@@ -190,7 +191,7 @@ Pushes current depth of the stack onto stack.
   <dd>any</dd>
 </dl>
 
-Discards top-most value from the stack.
+Discards topmost value from the stack.
 
 
     1 drop #=> empty stack
@@ -206,7 +207,7 @@ Discards top-most value from the stack.
   <dd>any, any</dd>
 </dl>
 
-Duplicates top-most value of the stack.
+Duplicates the topmost value of the stack.
 
 
     1 dup #=> 1 1
@@ -220,7 +221,7 @@ Duplicates top-most value of the stack.
   <dd>number</dd>
 </dl>
 
-Pushes Eulers number onto stack.
+Pushes Euler's number onto stack.
 
 ---
 
@@ -232,7 +233,8 @@ Pushes Eulers number onto stack.
 </dl>
 
 Outputs given Unicode code point into the standard output stream. Range
-error will be thrown if the given number is not valid Unicode code point.
+error will be thrown if the given number is not a valid Unicode code
+point.
 
 ---
 
@@ -245,7 +247,7 @@ error will be thrown if the given number is not valid Unicode code point.
   <dd>any, boolean</dd>
 </dl>
 
-Returns true if top-most value of the stack is error.
+Returns true if the topmost value of the stack is an error.
 
 ---
 
@@ -256,7 +258,7 @@ Returns true if top-most value of the stack is error.
   <dd>boolean</dd>
 </dl>
 
-Pushes boolean value of false onto stack.
+Pushes the boolean value false onto stack.
 
 ---
 
@@ -267,7 +269,7 @@ Pushes boolean value of false onto stack.
   <dd>object</dd>
 </dl>
 
-Returns global dictionary as object.
+Returns the global dictionary as an object.
 
 ---
 
@@ -300,7 +302,7 @@ Calls first quote if boolean value is true, second quote otherwise.
   <dd>string</dd>
 </dl>
 
-Imports module from given path and adds all of it's exported words into
+Imports module from given path and adds all of its exported words into
 this execution context.
 
 ---
@@ -312,7 +314,7 @@ this execution context.
   <dd>object</dd>
 </dl>
 
-Returns local dictionary of current execution context as object.
+Returns the local dictionary of current execution context as an object.
 
 ---
 
@@ -325,7 +327,7 @@ Returns local dictionary of current execution context as object.
   <dd>any</dd>
 </dl>
 
-Drops the first value and pushes second value on the stack.
+Drops the first value and pushes the second value onto stack.
 
 
     1 2 nip #=> 2
@@ -345,8 +347,8 @@ Does nothing. Can be used to construct empty quotes.
   <dd>number</dd>
 </dl>
 
-Returns the timestamp of the number of seconds that have elapsed since the
-Unix epoch (1 January 1970 00:00:00 UTC).
+Returns the number of seconds that have elapsed since the  Unix epoch
+(1 January 1970 00:00:00 UTC) rounded to the nearest integer.
 
 ---
 
@@ -357,7 +359,7 @@ Unix epoch (1 January 1970 00:00:00 UTC).
   <dd>null</dd>
 </dl>
 
-Pushes null value onto stack.
+Pushes the null value onto stack.
 
 ---
 
@@ -370,7 +372,7 @@ Pushes null value onto stack.
   <dd>any, boolean</dd>
 </dl>
 
-Returns true if top-most value of the stack is null.
+Returns true if the topmost value of the stack is null.
 
 ---
 
@@ -383,7 +385,7 @@ Returns true if top-most value of the stack is null.
   <dd>any, boolean</dd>
 </dl>
 
-Returns true if top-most value of the stack is boolean.
+Returns true if the topmost value of the stack is a number.
 
 ---
 
@@ -396,7 +398,7 @@ Returns true if top-most value of the stack is boolean.
   <dd>any, boolean</dd>
 </dl>
 
-Returns true if top-most value of the stack is object.
+Returns true if the topmost value of the stack is an object.
 
 ---
 
@@ -409,7 +411,7 @@ Returns true if top-most value of the stack is object.
   <dd>any, any, any</dd>
 </dl>
 
-Copies second top-most value of the stack into top-most value of the
+Copies second topmost value of the stack into topmost value of the
 stack.
 
 
@@ -424,7 +426,7 @@ stack.
   <dd>number</dd>
 </dl>
 
-Pushes value of pi onto stack.
+Pushes the value of pi onto stack.
 
 ---
 
@@ -435,7 +437,7 @@ Pushes value of pi onto stack.
   <dd>any</dd>
 </dl>
 
-Prints top-most value of the stack to stdout.
+Prints topmost value of the stack to stdout.
 
 ---
 
@@ -446,7 +448,8 @@ Prints top-most value of the stack to stdout.
   <dd>any</dd>
 </dl>
 
-Prints top-most value of the stack to stdout with terminating new line.
+Prints the topmost value of the stack to stdout with a terminating new
+line.
 
 ---
 
@@ -459,7 +462,7 @@ Prints top-most value of the stack to stdout with terminating new line.
   <dd>any, object</dd>
 </dl>
 
-Retrieves proto of the top-most value. If the top-most value of the stack
+Retrieves proto of the topmost value. If the topmost value of the stack
 is null, null will be returned instead.
 
 ---
@@ -473,7 +476,7 @@ is null, null will be returned instead.
   <dd>any, boolean</dd>
 </dl>
 
-Returns true if top-most value of the stack is quote.
+Returns true if the topmost value of the stack is a quote.
 
 ---
 
@@ -486,7 +489,7 @@ Returns true if top-most value of the stack is quote.
   <dd>error</dd>
 </dl>
 
-Construct instance of range error with with given optional error message
+Construct an instance of range error with given optional error message
 and places it on the stack.
 
 ---
@@ -500,7 +503,7 @@ and places it on the stack.
   <dd>any, any, any</dd>
 </dl>
 
-Rotates three top-most values on the stack.
+Rotates the three topmost values on the stack.
 
 
     1 2 3 rot #=> 2 3 1
@@ -516,7 +519,7 @@ Rotates three top-most values on the stack.
   <dd>any, boolean</dd>
 </dl>
 
-Returns true if top-most value of the stack is string.
+Returns true if the topmost value of the stack is a string.
 
 ---
 
@@ -529,7 +532,7 @@ Returns true if top-most value of the stack is string.
   <dd>any, any</dd>
 </dl>
 
-Swaps positions of two top-most values on the stack.
+Swaps positions of the two topmost values on the stack.
 
 
     1 2 swap #=> 2 1
@@ -543,11 +546,23 @@ Swaps positions of two top-most values on the stack.
   <dd>boolean</dd>
 </dl>
 
-Pushes boolean value of true onto stack.
+Pushes the boolean value true onto stack.
 
 ---
 
 ### try
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>quote, quote</dd>
+</dl>
+
+Executes first quote and if it throws an error, calls second quote with
+the error on top of the stack.
+
+---
+
+### try-else
 
 <dl>
   <dt>Takes:</dt>
@@ -569,7 +584,7 @@ be called instead.
   <dd>any, any, any</dd>
 </dl>
 
-Copies top-most value of the stack as the third top-most value of the
+Copies the topmost value of the stack as the third topmost value of the
 stack.
 
 
@@ -586,8 +601,8 @@ stack.
   <dd>error</dd>
 </dl>
 
-Construct instance of type error with with given optional error message
-and places it on the stack.
+Construct an instance of type error with with given optional error
+message and places it on the stack.
 
 ---
 
@@ -600,7 +615,7 @@ and places it on the stack.
   <dd>any, string</dd>
 </dl>
 
-Returns name of the type of given value as string.
+Returns name of the type of the topmost value as a string.
 
 ---
 
@@ -613,7 +628,7 @@ Returns name of the type of given value as string.
   <dd>error</dd>
 </dl>
 
-Construct instance of unknown error with with given optional error
+Construct an instance of unknown error with with given optional error
 message and places it on the stack.
 
 ---
@@ -627,8 +642,8 @@ message and places it on the stack.
   <dd>error</dd>
 </dl>
 
-Constructs instance of value error with given optional error message and
-places it on the stack.
+Constructs an instance of value error with given optional error message
+and places it on the stack.
 
 ---
 
