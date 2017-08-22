@@ -178,7 +178,7 @@ namespace plorth
    * - number
    * - boolean
    *
-   * Returns true if given number if NaN.
+   * Returns true if given number is NaN.
    */
   static void w_is_nan(const ref<context>& ctx)
   {
@@ -233,7 +233,7 @@ namespace plorth
    * - quote
    * - number
    *
-   * Executes quote given number of times.
+   * Executes a quote given number of times.
    */
   static void w_times(const ref<context>& ctx)
   {
@@ -296,7 +296,7 @@ namespace plorth
    * Gives:
    * - number
    *
-   * Rounds number to nearest integer value.
+   * Rounds given number to nearest integer value.
    */
   static void w_round(const ref<context>& ctx)
   {
@@ -437,7 +437,7 @@ namespace plorth
    * Gives:
    * - number
    *
-   * Clamps top-most number between the minimum and maximum limits.
+   * Clamps the topmost number between the minimum and maximum limits.
    */
   static void w_clamp(const ref<context>& ctx)
   {
@@ -494,7 +494,7 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Tests whether the top-most number is in range of given minimum and maximum
+   * Tests whether the topmost number is in range of given minimum and maximum
    * numbers.
    */
   static void w_is_in_range(const ref<context>& ctx)
@@ -564,7 +564,7 @@ namespace plorth
    * Gives:
    * - number
    *
-   * Performs substraction on the two given numbers.
+   * Subtracts the second number from the first and returns the result.
    */
   static void w_sub(const ref<context>& ctx)
   {
@@ -622,7 +622,7 @@ namespace plorth
    * Gives:
    * - number
    *
-   * Performs division on the two given numbers.
+   * Divides the first number by the second and returns the result.
    */
   static void w_div(const ref<context>& ctx)
   {
@@ -697,7 +697,7 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Returns true if first number is lesser than the second one.
+   * Returns true if the first number is less than the second one.
    */
   static void w_lt(const ref<context>& ctx)
   {
@@ -726,7 +726,7 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Returns true if first number is greater than the second one.
+   * Returns true if the first number is greater than the second one.
    */
   static void w_gt(const ref<context>& ctx)
   {
@@ -755,7 +755,7 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Returns true if first number is less or equal than the second one.
+   * Returns true if the first number is less than or equal to the second one.
    */
   static void w_lte(const ref<context>& ctx)
   {
@@ -784,7 +784,8 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Returns true if first number is greater or equal than the second one.
+   * Returns true if the first number is greater than or equal to the second
+   * one.
    */
   static void w_gte(const ref<context>& ctx)
   {

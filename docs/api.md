@@ -1094,7 +1094,7 @@ Performs addition on the two given numbers.
   <dd>number</dd>
 </dl>
 
-Performs substraction on the two given numbers.
+Subtracts the second number from the first and returns the result.
 
 ---
 
@@ -1107,7 +1107,7 @@ Performs substraction on the two given numbers.
   <dd>number</dd>
 </dl>
 
-Performs division on the two given numbers.
+Divides the first number by the second and returns the result.
 
 ---
 
@@ -1120,7 +1120,7 @@ Performs division on the two given numbers.
   <dd>boolean</dd>
 </dl>
 
-Returns true if first number is lesser than the second one.
+Returns true if the first number is less than the second one.
 
 ---
 
@@ -1133,7 +1133,7 @@ Returns true if first number is lesser than the second one.
   <dd>boolean</dd>
 </dl>
 
-Returns true if first number is less or equal than the second one.
+Returns true if the first number is less than or equal to the second one.
 
 ---
 
@@ -1146,7 +1146,7 @@ Returns true if first number is less or equal than the second one.
   <dd>boolean</dd>
 </dl>
 
-Returns true if first number is greater than the second one.
+Returns true if the first number is greater than the second one.
 
 ---
 
@@ -1159,7 +1159,8 @@ Returns true if first number is greater than the second one.
   <dd>boolean</dd>
 </dl>
 
-Returns true if first number is greater or equal than the second one.
+Returns true if the first number is greater than or equal to the second
+one.
 
 ---
 
@@ -1198,7 +1199,7 @@ Computes the smallest integer value not less than given number.
   <dd>number</dd>
 </dl>
 
-Clamps top-most number between the minimum and maximum limits.
+Clamps the topmost number between the minimum and maximum limits.
 
 ---
 
@@ -1237,7 +1238,7 @@ Computes the largest integer value not greater than given number.
   <dd>boolean</dd>
 </dl>
 
-Tests whether the top-most number is in range of given minimum and maximum
+Tests whether the topmost number is in range of given minimum and maximum
 numbers.
 
 ---
@@ -1277,7 +1278,7 @@ Returns minimum of two numbers.
   <dd>number, boolean</dd>
 </dl>
 
-Returns true if given number if NaN.
+Returns true if given number is NaN.
 
 ---
 
@@ -1290,7 +1291,7 @@ Returns true if given number if NaN.
   <dd>number</dd>
 </dl>
 
-Rounds number to nearest integer value.
+Rounds given number to nearest integer value.
 
 ---
 
@@ -1301,7 +1302,7 @@ Rounds number to nearest integer value.
   <dd>quote, number</dd>
 </dl>
 
-Executes quote given number of times.
+Executes a quote given number of times.
 
 ## object
 
