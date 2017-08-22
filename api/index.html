@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="../css/highlight.css">
+  <link href="../repl/style.css" rel="stylesheet">
 
   
   <script>
@@ -33,6 +34,8 @@
   <script type="text/javascript" src="../js/highlight.pack.js"></script>
   <script src="../js/theme.js"></script> 
   <script src="../plorth-repl.js"></script>
+  <script src="../repl/plorth.js"></script>
+  <script src="../repl/repl.js"></script>
 
   
 </head>
@@ -153,7 +156,7 @@
   <dd>boolean</dd>
 </dl>
 
-<p>Tests whether the two top-most values of the stack are not equal.</p>
+<p>Tests whether the two topmost values of the stack are not equal.</p>
 <hr />
 <h3 id="2drop">2drop</h3>
 <dl>
@@ -161,7 +164,7 @@
   <dd>any, any</dd>
 </dl>
 
-<p>Discards two top-most values from the stack.</p>
+<p>Discards the two topmost values from the stack.</p>
 <pre><code>1 2 3 2drop #=&gt; 1
 </code></pre>
 <hr />
@@ -173,7 +176,7 @@
   <dd>any, any, any, any</dd>
 </dl>
 
-<p>Duplicates two top-most values of the stack.</p>
+<p>Duplicates two topmost values of the stack.</p>
 <pre><code>1 2 2dup #=&gt; 1 2 1 2
 </code></pre>
 <hr />
@@ -185,7 +188,7 @@
   <dd>boolean</dd>
 </dl>
 
-<p>Tests whether the two top-most values of the stack are equal.</p>
+<p>Tests whether the two topmost values of the stack are equal.</p>
 <hr />
 <h3 id="boolean">&gt;boolean</h3>
 <dl>
@@ -195,8 +198,8 @@
   <dd>boolean</dd>
 </dl>
 
-<p>Converts top-most value of the stack into boolean. Null and false will
-become false while everything else will be true.</p>
+<p>Converts the topmost value of the stack into a boolean. Null and false
+will become false while everything else will become true.</p>
 <hr />
 <h3 id="source">&gt;source</h3>
 <dl>
@@ -206,7 +209,7 @@ become false while everything else will be true.</p>
   <dd>string</dd>
 </dl>
 
-<p>Converts top-most value of the stack into a string that most accurately
+<p>Converts the topmost value of the stack into a string that most accurately
 represents what the value would look like in source code.</p>
 <hr />
 <h3 id="string">&gt;string</h3>
@@ -217,7 +220,8 @@ represents what the value would look like in source code.</p>
   <dd>string</dd>
 </dl>
 
-<p>Converts top-most value of the stack into string.</p>
+<p>Converts the topmost value of the stack into a string. Null will become
+an empty string.</p>
 <hr />
 <h3 id="args">args</h3>
 <dl>
@@ -225,7 +229,7 @@ represents what the value would look like in source code.</p>
   <dd>array<string></dd>
 </dl>
 
-<p>Returns command line arguments given for the interpreter as an array of
+<p>Returns command line arguments given to the interpreter as an array of
 strings.</p>
 <hr />
 <h3 id="array">array?</h3>
@@ -236,7 +240,7 @@ strings.</p>
   <dd>any, boolean</dd>
 </dl>
 
-<p>Returns true if top-most value of the stack is array.</p>
+<p>Returns true if the topmost value of the stack is an array.</p>
 <hr />
 <h3 id="boolean_1">boolean?</h3>
 <dl>
@@ -246,7 +250,7 @@ strings.</p>
   <dd>any, boolean</dd>
 </dl>
 
-<p>Returns true if top-most value of the stack is boolean.</p>
+<p>Returns true if the topmost value of the stack is a boolean.</p>
 <hr />
 <h3 id="clear">clear</h3>
 <p>Clears the entire stack of current context.</p>
@@ -259,7 +263,7 @@ strings.</p>
   <dd>quote</dd>
 </dl>
 
-<p>Compiles given string of source code into quote.</p>
+<p>Compiles given string of source code into a quote.</p>
 <hr />
 <h3 id="const">const</h3>
 <dl>
@@ -284,7 +288,7 @@ identified by given string.</p>
   <dd>any</dd>
 </dl>
 
-<p>Discards top-most value from the stack.</p>
+<p>Discards topmost value from the stack.</p>
 <pre><code>1 drop #=&gt; empty stack
 </code></pre>
 <hr />
@@ -296,7 +300,7 @@ identified by given string.</p>
   <dd>any, any</dd>
 </dl>
 
-<p>Duplicates top-most value of the stack.</p>
+<p>Duplicates the topmost value of the stack.</p>
 <pre><code>1 dup #=&gt; 1 1
 </code></pre>
 <hr />
@@ -306,7 +310,7 @@ identified by given string.</p>
   <dd>number</dd>
 </dl>
 
-<p>Pushes Eulers number onto stack.</p>
+<p>Pushes Euler's number onto stack.</p>
 <hr />
 <h3 id="emit">emit</h3>
 <dl>
@@ -315,7 +319,8 @@ identified by given string.</p>
 </dl>
 
 <p>Outputs given Unicode code point into the standard output stream. Range
-error will be thrown if the given number is not valid Unicode code point.</p>
+error will be thrown if the given number is not a valid Unicode code
+point.</p>
 <hr />
 <h3 id="error">error?</h3>
 <dl>
@@ -325,7 +330,7 @@ error will be thrown if the given number is not valid Unicode code point.</p>
   <dd>any, boolean</dd>
 </dl>
 
-<p>Returns true if top-most value of the stack is error.</p>
+<p>Returns true if the topmost value of the stack is an error.</p>
 <hr />
 <h3 id="false">false</h3>
 <dl>
@@ -333,7 +338,7 @@ error will be thrown if the given number is not valid Unicode code point.</p>
   <dd>boolean</dd>
 </dl>
 
-<p>Pushes boolean value of false onto stack.</p>
+<p>Pushes the boolean value false onto stack.</p>
 <hr />
 <h3 id="globals">globals</h3>
 <dl>
@@ -341,7 +346,7 @@ error will be thrown if the given number is not valid Unicode code point.</p>
   <dd>object</dd>
 </dl>
 
-<p>Returns global dictionary as object.</p>
+<p>Returns the global dictionary as an object.</p>
 <hr />
 <h3 id="if">if</h3>
 <dl>
@@ -365,7 +370,7 @@ error will be thrown if the given number is not valid Unicode code point.</p>
   <dd>string</dd>
 </dl>
 
-<p>Imports module from given path and adds all of it's exported words into
+<p>Imports module from given path and adds all of its exported words into
 this execution context.</p>
 <hr />
 <h3 id="locals">locals</h3>
@@ -374,7 +379,7 @@ this execution context.</p>
   <dd>object</dd>
 </dl>
 
-<p>Returns local dictionary of current execution context as object.</p>
+<p>Returns the local dictionary of current execution context as an object.</p>
 <hr />
 <h3 id="nip">nip</h3>
 <dl>
@@ -384,7 +389,7 @@ this execution context.</p>
   <dd>any</dd>
 </dl>
 
-<p>Drops the first value and pushes second value on the stack.</p>
+<p>Drops the first value and pushes the second value onto stack.</p>
 <pre><code>1 2 nip #=&gt; 2
 </code></pre>
 <hr />
@@ -397,8 +402,8 @@ this execution context.</p>
   <dd>number</dd>
 </dl>
 
-<p>Returns the timestamp of the number of seconds that have elapsed since the
-Unix epoch (1 January 1970 00:00:00 UTC).</p>
+<p>Returns the number of seconds that have elapsed since the  Unix epoch
+(1 January 1970 00:00:00 UTC) rounded to the nearest integer.</p>
 <hr />
 <h3 id="null">null</h3>
 <dl>
@@ -406,7 +411,7 @@ Unix epoch (1 January 1970 00:00:00 UTC).</p>
   <dd>null</dd>
 </dl>
 
-<p>Pushes null value onto stack.</p>
+<p>Pushes the null value onto stack.</p>
 <hr />
 <h3 id="null_1">null?</h3>
 <dl>
@@ -416,7 +421,7 @@ Unix epoch (1 January 1970 00:00:00 UTC).</p>
   <dd>any, boolean</dd>
 </dl>
 
-<p>Returns true if top-most value of the stack is null.</p>
+<p>Returns true if the topmost value of the stack is null.</p>
 <hr />
 <h3 id="number">number?</h3>
 <dl>
@@ -426,7 +431,7 @@ Unix epoch (1 January 1970 00:00:00 UTC).</p>
   <dd>any, boolean</dd>
 </dl>
 
-<p>Returns true if top-most value of the stack is boolean.</p>
+<p>Returns true if the topmost value of the stack is a number.</p>
 <hr />
 <h3 id="object">object?</h3>
 <dl>
@@ -436,7 +441,7 @@ Unix epoch (1 January 1970 00:00:00 UTC).</p>
   <dd>any, boolean</dd>
 </dl>
 
-<p>Returns true if top-most value of the stack is object.</p>
+<p>Returns true if the topmost value of the stack is an object.</p>
 <hr />
 <h3 id="over">over</h3>
 <dl>
@@ -446,7 +451,7 @@ Unix epoch (1 January 1970 00:00:00 UTC).</p>
   <dd>any, any, any</dd>
 </dl>
 
-<p>Copies second top-most value of the stack into top-most value of the
+<p>Copies second topmost value of the stack into topmost value of the
 stack.</p>
 <pre><code>1 2 over #=&gt; 1 2 1
 </code></pre>
@@ -457,7 +462,7 @@ stack.</p>
   <dd>number</dd>
 </dl>
 
-<p>Pushes value of pi onto stack.</p>
+<p>Pushes the value of pi onto stack.</p>
 <hr />
 <h3 id="print">print</h3>
 <dl>
@@ -465,7 +470,7 @@ stack.</p>
   <dd>any</dd>
 </dl>
 
-<p>Prints top-most value of the stack to stdout.</p>
+<p>Prints topmost value of the stack to stdout.</p>
 <hr />
 <h3 id="println">println</h3>
 <dl>
@@ -473,7 +478,8 @@ stack.</p>
   <dd>any</dd>
 </dl>
 
-<p>Prints top-most value of the stack to stdout with terminating new line.</p>
+<p>Prints the topmost value of the stack to stdout with a terminating new
+line.</p>
 <hr />
 <h3 id="proto">proto</h3>
 <dl>
@@ -483,7 +489,7 @@ stack.</p>
   <dd>any, object</dd>
 </dl>
 
-<p>Retrieves proto of the top-most value. If the top-most value of the stack
+<p>Retrieves proto of the topmost value. If the topmost value of the stack
 is null, null will be returned instead.</p>
 <hr />
 <h3 id="quote">quote?</h3>
@@ -494,7 +500,7 @@ is null, null will be returned instead.</p>
   <dd>any, boolean</dd>
 </dl>
 
-<p>Returns true if top-most value of the stack is quote.</p>
+<p>Returns true if the topmost value of the stack is a quote.</p>
 <hr />
 <h3 id="range-error">range-error</h3>
 <dl>
@@ -504,7 +510,7 @@ is null, null will be returned instead.</p>
   <dd>error</dd>
 </dl>
 
-<p>Construct instance of range error with with given optional error message
+<p>Construct an instance of range error with given optional error message
 and places it on the stack.</p>
 <hr />
 <h3 id="rot">rot</h3>
@@ -515,7 +521,7 @@ and places it on the stack.</p>
   <dd>any, any, any</dd>
 </dl>
 
-<p>Rotates three top-most values on the stack.</p>
+<p>Rotates the three topmost values on the stack.</p>
 <pre><code>1 2 3 rot #=&gt; 2 3 1
 </code></pre>
 <hr />
@@ -527,7 +533,7 @@ and places it on the stack.</p>
   <dd>any, boolean</dd>
 </dl>
 
-<p>Returns true if top-most value of the stack is string.</p>
+<p>Returns true if the topmost value of the stack is a string.</p>
 <hr />
 <h3 id="swap">swap</h3>
 <dl>
@@ -537,7 +543,7 @@ and places it on the stack.</p>
   <dd>any, any</dd>
 </dl>
 
-<p>Swaps positions of two top-most values on the stack.</p>
+<p>Swaps positions of the two topmost values on the stack.</p>
 <pre><code>1 2 swap #=&gt; 2 1
 </code></pre>
 <hr />
@@ -547,9 +553,18 @@ and places it on the stack.</p>
   <dd>boolean</dd>
 </dl>
 
-<p>Pushes boolean value of true onto stack.</p>
+<p>Pushes the boolean value true onto stack.</p>
 <hr />
 <h3 id="try">try</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>quote, quote</dd>
+</dl>
+
+<p>Executes first quote and if it throws an error, calls second quote with
+the error on top of the stack.</p>
+<hr />
+<h3 id="try-else">try-else</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>quote, quote, quote</dd>
@@ -567,7 +582,7 @@ be called instead.</p>
   <dd>any, any, any</dd>
 </dl>
 
-<p>Copies top-most value of the stack as the third top-most value of the
+<p>Copies the topmost value of the stack as the third topmost value of the
 stack.</p>
 <pre><code>1 2 tuck #=&gt; 2 1 2
 </code></pre>
@@ -580,8 +595,8 @@ stack.</p>
   <dd>error</dd>
 </dl>
 
-<p>Construct instance of type error with with given optional error message
-and places it on the stack.</p>
+<p>Construct an instance of type error with with given optional error
+message and places it on the stack.</p>
 <hr />
 <h3 id="typeof">typeof</h3>
 <dl>
@@ -591,7 +606,7 @@ and places it on the stack.</p>
   <dd>any, string</dd>
 </dl>
 
-<p>Returns name of the type of given value as string.</p>
+<p>Returns name of the type of the topmost value as a string.</p>
 <hr />
 <h3 id="unknown-error">unknown-error</h3>
 <dl>
@@ -601,7 +616,7 @@ and places it on the stack.</p>
   <dd>error</dd>
 </dl>
 
-<p>Construct instance of unknown error with with given optional error
+<p>Construct an instance of unknown error with with given optional error
 message and places it on the stack.</p>
 <hr />
 <h3 id="value-error">value-error</h3>
@@ -612,8 +627,8 @@ message and places it on the stack.</p>
   <dd>error</dd>
 </dl>
 
-<p>Constructs instance of value error with given optional error message and
-places it on the stack.</p>
+<p>Constructs an instance of value error with given optional error message
+and places it on the stack.</p>
 <hr />
 <h3 id="while">while</h3>
 <dl>
@@ -632,9 +647,9 @@ places it on the stack.</p>
   <dd>array</dd>
 </dl>
 
-<p>Sets value in the array at given index. Negative indexes count backwrds.
-If index is larger than number of elements in the array, value will be
-appended as the last element of the array.</p>
+<p>Sets value in the array at given index. Negative indices count backwards
+from the end. If the index is larger than the number of elements in the
+array, the value will be appended as the last element of the array.</p>
 <hr />
 <h3 id="_4">&amp;</h3>
 <dl>
@@ -644,7 +659,7 @@ appended as the last element of the array.</p>
   <dd>array</dd>
 </dl>
 
-<p>Set intersection: Returns new array containing unique elements common to
+<p>Set intersection: Returns a new array containing unique elements common to
 the two arrays.</p>
 <hr />
 <h3 id="_5">*</h3>
@@ -655,7 +670,7 @@ the two arrays.</p>
   <dd>array</dd>
 </dl>
 
-<p>Repeats array given number of times.</p>
+<p>Repeats the array given number of times.</p>
 <hr />
 <h3 id="_6">+</h3>
 <dl>
@@ -665,7 +680,7 @@ the two arrays.</p>
   <dd>array</dd>
 </dl>
 
-<p>Concatenates contents of two arrays and returns result.</p>
+<p>Concatenates the contents of two arrays and returns the result.</p>
 <hr />
 <h3 id="_7">@</h3>
 <dl>
@@ -675,9 +690,9 @@ the two arrays.</p>
   <dd>array, any</dd>
 </dl>
 
-<p>Retrieves value from array at given numerical index. Negative indexes
-count backwards. If given index is out of bounds, range error will be
-thrown.</p>
+<p>Retrieves a value from the array at given numerical index. Negative
+indices count backwards from the end. If the given index is out of bounds,
+arange error will be thrown.</p>
 <hr />
 <h3 id="every">every?</h3>
 <dl>
@@ -687,8 +702,8 @@ thrown.</p>
   <dd>array, boolean</dd>
 </dl>
 
-<p>Tests whether all elements in the array passes the test implemented by the
-provided quote.</p>
+<p>Tests whether all elements in the array satisfy the provided testing
+quote.</p>
 <hr />
 <h3 id="extract">extract</h3>
 <dl>
@@ -698,7 +713,7 @@ provided quote.</p>
   <dd>any...</dd>
 </dl>
 
-<p>Extracts all values from the array and places them into the stack.</p>
+<p>Extracts all values from the array and places them onto the stack.</p>
 <hr />
 <h3 id="filter">filter</h3>
 <dl>
@@ -708,8 +723,8 @@ provided quote.</p>
   <dd>array</dd>
 </dl>
 
-<p>Applies quote once for each element in the array and constructs new array
-from ones which passed the test.</p>
+<p>Removes elements of the array that do not satisfy the provided testing
+quote.</p>
 <hr />
 <h3 id="find">find</h3>
 <dl>
@@ -719,8 +734,8 @@ from ones which passed the test.</p>
   <dd>array, any|null</dd>
 </dl>
 
-<p>Returns first element from the array that satisfies the provided testing
-quote. Otherwise null is returned.</p>
+<p>Returns the first element from the array that satisfies the provided
+testing quote. Otherwise null is returned.</p>
 <hr />
 <h3 id="find-index">find-index</h3>
 <dl>
@@ -730,8 +745,8 @@ quote. Otherwise null is returned.</p>
   <dd>array, number|null</dd>
 </dl>
 
-<p>Returns index of first element from the array that satisfies the provided
-testing quote. Otherwise null is returned.</p>
+<p>Returns the index of the first element in the array that satisfies the
+provided testing quote. Otherwise null is returned.</p>
 <hr />
 <h3 id="for-each">for-each</h3>
 <dl>
@@ -749,8 +764,8 @@ testing quote. Otherwise null is returned.</p>
   <dd>array, boolean</dd>
 </dl>
 
-<p>Searches for given value from the array and returns true if it's included
-in the array and false if it's not.</p>
+<p>Searches for given value in the array and returns true if it's included
+and false if it's not.</p>
 <hr />
 <h3 id="index-of">index-of</h3>
 <dl>
@@ -760,8 +775,8 @@ in the array and false if it's not.</p>
   <dd>array, number|null</dd>
 </dl>
 
-<p>Searches for given value from the array and returns it's index in the array
-if it's included in the array and null when it's not.</p>
+<p>Searches for given value from the array and returns its index in the array
+if it's included in the array and null if it's not.</p>
 <hr />
 <h3 id="join">join</h3>
 <dl>
@@ -771,7 +786,7 @@ if it's included in the array and null when it's not.</p>
   <dd>string</dd>
 </dl>
 
-<p>Concatenates all elements from the array into single string, delimited by
+<p>Concatenates all elements from the array into single string delimited by
 the given separator string.</p>
 <hr />
 <h3 id="length">length</h3>
@@ -782,8 +797,8 @@ the given separator string.</p>
   <dd>array, number</dd>
 </dl>
 
-<p>Returns number of elements in the array, while keeping the array in the
-stack.</p>
+<p>Returns the number of elements in the array, while keeping the array on
+the stack.</p>
 <hr />
 <h3 id="map">map</h3>
 <dl>
@@ -793,8 +808,8 @@ stack.</p>
   <dd>array</dd>
 </dl>
 
-<p>Applies quote once for each element in the array and constructs new array
-from values returned by the quote.</p>
+<p>Applies quote once for each element in the array and constructs a new
+array from values returned by the quote.</p>
 <hr />
 <h3 id="reduce">reduce</h3>
 <dl>
@@ -804,8 +819,8 @@ from values returned by the quote.</p>
   <dd>any</dd>
 </dl>
 
-<p>Applies given quote against an acculumator and each element in array to
-reduce it into single value.</p>
+<p>Applies given quote against an accumulator and each element in the array
+to reduce it into a single value.</p>
 <hr />
 <h3 id="reverse">reverse</h3>
 <dl>
@@ -815,8 +830,8 @@ reduce it into single value.</p>
   <dd>array</dd>
 </dl>
 
-<p>Returns reversed copy of the array where the first array element becomes
-the last, and the last array element becomes first.</p>
+<p>Reverses the array. The first array element becomes the last and the last
+array element becomes first.</p>
 <hr />
 <h3 id="some">some?</h3>
 <dl>
@@ -826,8 +841,7 @@ the last, and the last array element becomes first.</p>
   <dd>array, boolean</dd>
 </dl>
 
-<p>Tests whether any element in the array passes the test implemented by the
-provided quote.</p>
+<p>Tests whether any element in the array satisfies the provided quote.</p>
 <hr />
 <h3 id="uniq">uniq</h3>
 <dl>
@@ -837,7 +851,7 @@ provided quote.</p>
   <dd>array</dd>
 </dl>
 
-<p>Creates a duplicate free version of the array.</p>
+<p>Removes duplicate elements from the array.</p>
 <hr />
 <h3 id="_8">|</h3>
 <dl>
@@ -847,8 +861,8 @@ provided quote.</p>
   <dd>array</dd>
 </dl>
 
-<p>Set union: Returns new array by joining the two given arrays, excluding any
-duplicates and preserving the order from the given arrays.</p>
+<p>Set union: Returns a new array by joining the two given arrays, excluding
+any duplicates and preserving the order of the given arrays.</p>
 <h2 id="boolean_2">boolean</h2>
 <hr />
 <h3 id="and">and</h3>
@@ -961,7 +975,7 @@ two given numbers.</p>
   <dd>number</dd>
 </dl>
 
-<p>Performs substraction on the two given numbers.</p>
+<p>Subtracts the second number from the first and returns the result.</p>
 <hr />
 <h3 id="_12">/</h3>
 <dl>
@@ -971,7 +985,7 @@ two given numbers.</p>
   <dd>number</dd>
 </dl>
 
-<p>Performs division on the two given numbers.</p>
+<p>Divides the first number by the second and returns the result.</p>
 <hr />
 <h3 id="_13">&lt;</h3>
 <dl>
@@ -981,7 +995,7 @@ two given numbers.</p>
   <dd>boolean</dd>
 </dl>
 
-<p>Returns true if first number is lesser than the second one.</p>
+<p>Returns true if the first number is less than the second one.</p>
 <hr />
 <h3 id="_14">&lt;=</h3>
 <dl>
@@ -991,7 +1005,7 @@ two given numbers.</p>
   <dd>boolean</dd>
 </dl>
 
-<p>Returns true if first number is less or equal than the second one.</p>
+<p>Returns true if the first number is less than or equal to the second one.</p>
 <hr />
 <h3 id="_15">&gt;</h3>
 <dl>
@@ -1001,7 +1015,7 @@ two given numbers.</p>
   <dd>boolean</dd>
 </dl>
 
-<p>Returns true if first number is greater than the second one.</p>
+<p>Returns true if the first number is greater than the second one.</p>
 <hr />
 <h3 id="_16">&gt;=</h3>
 <dl>
@@ -1011,7 +1025,8 @@ two given numbers.</p>
   <dd>boolean</dd>
 </dl>
 
-<p>Returns true if first number is greater or equal than the second one.</p>
+<p>Returns true if the first number is greater than or equal to the second
+one.</p>
 <hr />
 <h3 id="abs">abs</h3>
 <dl>
@@ -1041,7 +1056,7 @@ two given numbers.</p>
   <dd>number</dd>
 </dl>
 
-<p>Clamps top-most number between the minimum and maximum limits.</p>
+<p>Clamps the topmost number between the minimum and maximum limits.</p>
 <hr />
 <h3 id="finite">finite?</h3>
 <dl>
@@ -1071,7 +1086,7 @@ two given numbers.</p>
   <dd>boolean</dd>
 </dl>
 
-<p>Tests whether the top-most number is in range of given minimum and maximum
+<p>Tests whether the topmost number is in range of given minimum and maximum
 numbers.</p>
 <hr />
 <h3 id="max">max</h3>
@@ -1102,7 +1117,7 @@ numbers.</p>
   <dd>number, boolean</dd>
 </dl>
 
-<p>Returns true if given number if NaN.</p>
+<p>Returns true if given number is NaN.</p>
 <hr />
 <h3 id="round">round</h3>
 <dl>
@@ -1112,7 +1127,7 @@ numbers.</p>
   <dd>number</dd>
 </dl>
 
-<p>Rounds number to nearest integer value.</p>
+<p>Rounds given number to nearest integer value.</p>
 <hr />
 <h3 id="times">times</h3>
 <dl>
@@ -1120,7 +1135,7 @@ numbers.</p>
   <dd>quote, number</dd>
 </dl>
 
-<p>Executes quote given number of times.</p>
+<p>Executes a quote given number of times.</p>
 <h2 id="object_1">object</h2>
 <hr />
 <h3 id="_17">!</h3>

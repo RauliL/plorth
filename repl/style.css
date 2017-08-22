@@ -1,0 +1,62 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  outline: 0;
+}
+
+body {
+  background: #282c34;
+  color: #abb2bf;
+  font: 1.1em 'Inconsolata', monospace;
+}
+
+ul > li {
+  min-height: 1.9em;
+  padding: 0.4em 1em 0.4em 1em;
+  width: 100%;
+}
+
+ul > li.user-input {
+  color: #828997;
+}
+
+ul > li.error {
+  color: #e06c75;
+}
+
+ul > li:hover {
+  background: #383c44;
+}
+
+.prompt {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: stretch;
+  align-items: flex-start;
+  background: #99bbff;
+}
+
+.prompt > span {
+  order: 0;
+  flex: 0 1 auto;
+  align-self: auto;
+  color: #002b36;
+  display: inline-block;
+  padding: 0.4em 0.4em 0.4em 1em;
+}
+
+.prompt > input {
+  order: 0;
+  flex: 1 1 auto;
+  align-self: auto;
+  background: transparent;
+  border: 0;
+  color: #2c323b;
+  cursor: pointer;
+  display: inline-block;
+  font: 1.1em 'Inconsolata', monospace;
+  padding: 0.4em 0 0.4em 0em;
+}

@@ -132,7 +132,7 @@
         },
         {
             "location": "/api/",
-            "text": "API reference\n\n\n\n\n\nGlobal dictionary\n\n\n\n\n!=\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nTests whether the two top-most values of the stack are not equal.\n\n\n\n\n2drop\n\n\n\n  \nTakes:\n\n  \nany, any\n\n\n\n\n\nDiscards two top-most values from the stack.\n\n\n1 2 3 2drop #=> 1\n\n\n\n\n\n2dup\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any, any, any\n\n\n\n\n\nDuplicates two top-most values of the stack.\n\n\n1 2 2dup #=> 1 2 1 2\n\n\n\n\n\n=\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nTests whether the two top-most values of the stack are equal.\n\n\n\n\n>boolean\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nConverts top-most value of the stack into boolean. Null and false will\nbecome false while everything else will be true.\n\n\n\n\n>source\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts top-most value of the stack into a string that most accurately\nrepresents what the value would look like in source code.\n\n\n\n\n>string\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts top-most value of the stack into string.\n\n\n\n\nargs\n\n\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nReturns command line arguments given for the interpreter as an array of\nstrings.\n\n\n\n\narray?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is array.\n\n\n\n\nboolean?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is boolean.\n\n\n\n\nclear\n\n\nClears the entire stack of current context.\n\n\n\n\ncompile\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nCompiles given string of source code into quote.\n\n\n\n\nconst\n\n\n\n  \nTakes:\n\n  \nany, string\n\n\n\n\n\nDeclares given value as constant in the current context with name\nidentified by given string.\n\n\n\n\ndepth\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPushes current depth of the stack onto stack.\n\n\n\n\ndrop\n\n\n\n  \nTakes:\n\n  \nany\n\n\n\n\n\nDiscards top-most value from the stack.\n\n\n1 drop #=> empty stack\n\n\n\n\n\ndup\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, any\n\n\n\n\n\nDuplicates top-most value of the stack.\n\n\n1 dup #=> 1 1\n\n\n\n\n\ne\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPushes Eulers number onto stack.\n\n\n\n\nemit\n\n\n\n  \nTakes:\n\n  \nnumber\n\n\n\n\n\nOutputs given Unicode code point into the standard output stream. Range\nerror will be thrown if the given number is not valid Unicode code point.\n\n\n\n\nerror?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is error.\n\n\n\n\nfalse\n\n\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nPushes boolean value of false onto stack.\n\n\n\n\nglobals\n\n\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nReturns global dictionary as object.\n\n\n\n\nif\n\n\n\n  \nTakes:\n\n  \nboolean, quote\n\n\n\n\n\nExecutes quote if the boolean value is true.\n\n\n\n\nif-else\n\n\n\n  \nTakes:\n\n  \nboolean, quote, quote\n\n\n\n\n\nCalls first quote if boolean value is true, second quote otherwise.\n\n\n\n\nimport\n\n\n\n  \nTakes:\n\n  \nstring\n\n\n\n\n\nImports module from given path and adds all of it's exported words into\nthis execution context.\n\n\n\n\nlocals\n\n\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nReturns local dictionary of current execution context as object.\n\n\n\n\nnip\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany\n\n\n\n\n\nDrops the first value and pushes second value on the stack.\n\n\n1 2 nip #=> 2\n\n\n\n\n\nnop\n\n\nDoes nothing. Can be used to construct empty quotes.\n\n\n\n\nnow\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns the timestamp of the number of seconds that have elapsed since the\nUnix epoch (1 January 1970 00:00:00 UTC).\n\n\n\n\nnull\n\n\n\n  \nGives:\n\n  \nnull\n\n\n\n\n\nPushes null value onto stack.\n\n\n\n\nnull?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is null.\n\n\n\n\nnumber?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is boolean.\n\n\n\n\nobject?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is object.\n\n\n\n\nover\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any, any\n\n\n\n\n\nCopies second top-most value of the stack into top-most value of the\nstack.\n\n\n1 2 over #=> 1 2 1\n\n\n\n\n\npi\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPushes value of pi onto stack.\n\n\n\n\nprint\n\n\n\n  \nTakes:\n\n  \nany\n\n\n\n\n\nPrints top-most value of the stack to stdout.\n\n\n\n\nprintln\n\n\n\n  \nTakes:\n\n  \nany\n\n\n\n\n\nPrints top-most value of the stack to stdout with terminating new line.\n\n\n\n\nproto\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, object\n\n\n\n\n\nRetrieves proto of the top-most value. If the top-most value of the stack\nis null, null will be returned instead.\n\n\n\n\nquote?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is quote.\n\n\n\n\nrange-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstruct instance of range error with with given optional error message\nand places it on the stack.\n\n\n\n\nrot\n\n\n\n  \nTakes:\n\n  \nany, any, any\n\n  \nGives:\n\n  \nany, any, any\n\n\n\n\n\nRotates three top-most values on the stack.\n\n\n1 2 3 rot #=> 2 3 1\n\n\n\n\n\nstring?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if top-most value of the stack is string.\n\n\n\n\nswap\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any\n\n\n\n\n\nSwaps positions of two top-most values on the stack.\n\n\n1 2 swap #=> 2 1\n\n\n\n\n\ntrue\n\n\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nPushes boolean value of true onto stack.\n\n\n\n\ntry\n\n\n\n  \nTakes:\n\n  \nquote, quote, quote\n\n\n\n\n\nExecutes first quote and if it throws an error, calls second quote with\nthe error on top of the stack. If no error was thrown, third quote will\nbe called instead.\n\n\n\n\ntuck\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any, any\n\n\n\n\n\nCopies top-most value of the stack as the third top-most value of the\nstack.\n\n\n1 2 tuck #=> 2 1 2\n\n\n\n\n\ntype-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstruct instance of type error with with given optional error message\nand places it on the stack.\n\n\n\n\ntypeof\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, string\n\n\n\n\n\nReturns name of the type of given value as string.\n\n\n\n\nunknown-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstruct instance of unknown error with with given optional error\nmessage and places it on the stack.\n\n\n\n\nvalue-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstructs instance of value error with given optional error message and\nplaces it on the stack.\n\n\n\n\nwhile\n\n\n\n  \nTakes:\n\n  \nquote, quote\n\n\n\n\n\nExecutes second quote as long as the first quote returns true.\n\n\narray\n\n\n\n\n!\n\n\n\n  \nTakes:\n\n  \nany, number, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nSets value in the array at given index. Negative indexes count backwrds.\nIf index is larger than number of elements in the array, value will be\nappended as the last element of the array.\n\n\n\n\n&\n\n\n\n  \nTakes:\n\n  \narray, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nSet intersection: Returns new array containing unique elements common to\nthe two arrays.\n\n\n\n\n*\n\n\n\n  \nTakes:\n\n  \nnumber, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nRepeats array given number of times.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \narray, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nConcatenates contents of two arrays and returns result.\n\n\n\n\n@\n\n\n\n  \nTakes:\n\n  \nnumber, array\n\n  \nGives:\n\n  \narray, any\n\n\n\n\n\nRetrieves value from array at given numerical index. Negative indexes\ncount backwards. If given index is out of bounds, range error will be\nthrown.\n\n\n\n\nevery?\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, boolean\n\n\n\n\n\nTests whether all elements in the array passes the test implemented by the\nprovided quote.\n\n\n\n\nextract\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \nany...\n\n\n\n\n\nExtracts all values from the array and places them into the stack.\n\n\n\n\nfilter\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nApplies quote once for each element in the array and constructs new array\nfrom ones which passed the test.\n\n\n\n\nfind\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, any|null\n\n\n\n\n\nReturns first element from the array that satisfies the provided testing\nquote. Otherwise null is returned.\n\n\n\n\nfind-index\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, number|null\n\n\n\n\n\nReturns index of first element from the array that satisfies the provided\ntesting quote. Otherwise null is returned.\n\n\n\n\nfor-each\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n\n\n\n\nRuns quote once for every element in the array.\n\n\n\n\nincludes?\n\n\n\n  \nTakes:\n\n  \nany, array\n\n  \nGives:\n\n  \narray, boolean\n\n\n\n\n\nSearches for given value from the array and returns true if it's included\nin the array and false if it's not.\n\n\n\n\nindex-of\n\n\n\n  \nTakes:\n\n  \nany, array\n\n  \nGives:\n\n  \narray, number|null\n\n\n\n\n\nSearches for given value from the array and returns it's index in the array\nif it's included in the array and null when it's not.\n\n\n\n\njoin\n\n\n\n  \nTakes:\n\n  \nstring, array\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConcatenates all elements from the array into single string, delimited by\nthe given separator string.\n\n\n\n\nlength\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \narray, number\n\n\n\n\n\nReturns number of elements in the array, while keeping the array in the\nstack.\n\n\n\n\nmap\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nApplies quote once for each element in the array and constructs new array\nfrom values returned by the quote.\n\n\n\n\nreduce\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \nany\n\n\n\n\n\nApplies given quote against an acculumator and each element in array to\nreduce it into single value.\n\n\n\n\nreverse\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nReturns reversed copy of the array where the first array element becomes\nthe last, and the last array element becomes first.\n\n\n\n\nsome?\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, boolean\n\n\n\n\n\nTests whether any element in the array passes the test implemented by the\nprovided quote.\n\n\n\n\nuniq\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nCreates a duplicate free version of the array.\n\n\n\n\n|\n\n\n\n  \nTakes:\n\n  \narray, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nSet union: Returns new array by joining the two given arrays, excluding any\nduplicates and preserving the order from the given arrays.\n\n\nboolean\n\n\n\n\nand\n\n\n\n  \nTakes:\n\n  \nboolean, boolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nLogical AND. Returns true if both values are true.\n\n\n\n\nnot\n\n\n\n  \nTakes:\n\n  \nboolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nNegates given boolean value.\n\n\n\n\nor\n\n\n\n  \nTakes:\n\n  \nboolean, boolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nLogical OR. Returns true if either one of the values are true.\n\n\n\n\nxor\n\n\n\n  \nTakes:\n\n  \nboolean, boolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nExclusive OR.\n\n\nerror\n\n\n\n\ncode\n\n\n\n  \nTakes:\n\n  \nerror\n\n  \nGives:\n\n  \nerror, number\n\n\n\n\n\nReturns error code extracted from the error in numeric form.\n\n\n\n\nmessage\n\n\n\n  \nTakes:\n\n  \nerror\n\n  \nGives:\n\n  \nerror, string|null\n\n\n\n\n\nReturns error message extracted from the error, or null if the error does\nnot have any error message.\n\n\n\n\nthrow\n\n\n\n  \nTakes:\n\n  \nerror\n\n\n\n\n\nSets given error as current error of the execution context.\n\n\nnumber\n\n\n\n\n%\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nComputes the floating-point remainder of the division operation between the\ntwo given numbers.\n\n\n\n\n*\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPerforms multiplication on the two given numbers.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPerforms addition on the two given numbers.\n\n\n\n\n-\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPerforms substraction on the two given numbers.\n\n\n\n\n/\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPerforms division on the two given numbers.\n\n\n\n\n<\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if first number is lesser than the second one.\n\n\n\n\n<=\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if first number is less or equal than the second one.\n\n\n\n\n>\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if first number is greater than the second one.\n\n\n\n\n>=\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if first number is greater or equal than the second one.\n\n\n\n\nabs\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns absolute value of the number.\n\n\n\n\nceil\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nComputes the smallest integer value not less than given number.\n\n\n\n\nclamp\n\n\n\n  \nTakes:\n\n  \nnumber, number, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nClamps top-most number between the minimum and maximum limits.\n\n\n\n\nfinite?\n\n\n\n  \nTakes:\n\n  \nnum\n\n  \nGives:\n\n  \nnumber, boolean\n\n\n\n\n\nReturns true if given number is finite.\n\n\n\n\nfloor\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nComputes the largest integer value not greater than given number.\n\n\n\n\nin-range?\n\n\n\n  \nTakes:\n\n  \nnumber, number, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nTests whether the top-most number is in range of given minimum and maximum\nnumbers.\n\n\n\n\nmax\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns maximum of two numbers.\n\n\n\n\nmin\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns minimum of two numbers.\n\n\n\n\nnan?\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber, boolean\n\n\n\n\n\nReturns true if given number if NaN.\n\n\n\n\nround\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nRounds number to nearest integer value.\n\n\n\n\ntimes\n\n\n\n  \nTakes:\n\n  \nquote, number\n\n\n\n\n\nExecutes quote given number of times.\n\n\nobject\n\n\n\n\n!\n\n\n\n  \nTakes:\n\n  \nany, string, object\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nConstructs copy of the object with new named property either introduced\nor replaced.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \nobject, object\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nCombines contents of two objects together and returns result.\n\n\n\n\n@\n\n\n\n  \nTakes:\n\n  \nstring, object\n\n  \nGives:\n\n  \nobject, any\n\n\n\n\n\nRetrieves value identified by given string from properties of the object.\nIf the object does not have such property, range error will be thrown.\nNotice that inherited properties are also included in the search.\n\n\n\n\nhas-own?\n\n\n\n  \nTakes:\n\n  \nstring, object\n\n  \nGives:\n\n  \nobject, boolean\n\n\n\n\n\nTests whether object has own property with given identifier. Inherited\nproperties are not included in the search.\n\n\n\n\nhas?\n\n\n\n  \nTakes:\n\n  \nstring, object\n\n  \nGives:\n\n  \nobject, boolean\n\n\n\n\n\nTests whether object has property with given identifier. Notice that\ninherited properties are also included in the search.\n\n\n\n\nkeys\n\n\n\n  \nTakes:\n\n  \nobject\n\n  \nGives:\n\n  \nobject, array\n\n\n\n\n\nRetrieves all keys from the object and returns them in an array. Notice\nthat inherited properties are not included in the list.\n\n\n\n\nnew\n\n\n\n  \nTakes:\n\n  \nany...\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nConstructs new instance of the object and invokes it's constructor if it\nhas one with the newly constructed object pushed into top of the stack.\n\n\nType error will be thrown if the object has no \"prototype\" property.\n\n\n\n\nvalues\n\n\n\n  \nTakes:\n\n  \nobject\n\n  \nGives:\n\n  \nobject, array\n\n\n\n\n\nRetrieves all values from the object and returns them in an array. Notice\nthat inherited properties are not included in the list.\n\n\nquote\n\n\n\n\ncall\n\n\n\n  \nTakes:\n\n  \nquote\n\n\n\n\n\nExecutes quote taken from top of the stack.\n\n\n\n\ncompose\n\n\n\n  \nTakes:\n\n  \nquote, quote\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nConstructs new quote which will call the two given quotes in sequence.\n\n\n\n\ncurry\n\n\n\n  \nTakes:\n\n  \nany, quote\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nConstructs curried quote where given value will be pushed into the stack\nbefore calling the original quote.\n\n\n\n\nnegate\n\n\n\n  \nTakes:\n\n  \nquote\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nConstructs negated version of given quote which negates boolean result\nreturned by the original quote.\n\n\nstring\n\n\n\n\n*\n\n\n\n  \nTakes:\n\n  \nnumber, string\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nRepeats string given number of times.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \nstring, string\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConcatenates contents of two strings and returns the result.\n\n\n\n\n>number\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nConverts string into floating point decimal number, or throws value error\nif the number cannot be converted into one.\n\n\n\n\n@\n\n\n\n  \nTakes:\n\n  \nnumber, string\n\n  \nGives:\n\n  \nstring, string\n\n\n\n\n\nRetrieves character from given index. Negative indexes count backwards. If\ngiven index is out of bounds, range error will be thrown.\n\n\n\n\ncapitalize\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts first character of the string into upper case and remaining to\nlower case.\n\n\n\n\nchars\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts characters from the string and returns them in an array of\nsubstrings.\n\n\n\n\nlength\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, number\n\n\n\n\n\nReturns length of the string.\n\n\n\n\nlines\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts lines from the string and returns them in an array.\n\n\n\n\nlower-case\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts string into lower case.\n\n\n\n\nlower-case?\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, boolean\n\n\n\n\n\nTests whether the string contains only lower case characters. Empty strings\nreturn false.\n\n\n\n\nreverse\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nReturns reversed copy of the string.\n\n\n\n\nrunes\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts Unicode code points from the string and returns them in an array\nof numbers.\n\n\n\n\nspace?\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, boolean\n\n\n\n\n\nTests whether the string contains only whitespace characters. Empty strings\nreturn false.\n\n\n\n\nswap-case\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConstructs copy of string where lower case characters have been turned into\nupper case and vice versa.\n\n\n\n\ntrim\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nStrips whitespace from begining and end of the string and returns result.\n\n\n\n\ntrim-left\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nStrips whitespace from begining of the string and returns result.\n\n\n\n\ntrim-right\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nStrips whitespace from end of the string and returns result.\n\n\n\n\nupper-case?\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, boolean\n\n\n\n\n\nTests whether the string contains only upper case characters. Empty strings\nreturn false.\n\n\n\n\nwords\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts white space separated words from the string and returns them in\nan array.",
+            "text": "API reference\n\n\n\n\n\nGlobal dictionary\n\n\n\n\n!=\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nTests whether the two topmost values of the stack are not equal.\n\n\n\n\n2drop\n\n\n\n  \nTakes:\n\n  \nany, any\n\n\n\n\n\nDiscards the two topmost values from the stack.\n\n\n1 2 3 2drop #=> 1\n\n\n\n\n\n2dup\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any, any, any\n\n\n\n\n\nDuplicates two topmost values of the stack.\n\n\n1 2 2dup #=> 1 2 1 2\n\n\n\n\n\n=\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nTests whether the two topmost values of the stack are equal.\n\n\n\n\n>boolean\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nConverts the topmost value of the stack into a boolean. Null and false\nwill become false while everything else will become true.\n\n\n\n\n>source\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts the topmost value of the stack into a string that most accurately\nrepresents what the value would look like in source code.\n\n\n\n\n>string\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts the topmost value of the stack into a string. Null will become\nan empty string.\n\n\n\n\nargs\n\n\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nReturns command line arguments given to the interpreter as an array of\nstrings.\n\n\n\n\narray?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if the topmost value of the stack is an array.\n\n\n\n\nboolean?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if the topmost value of the stack is a boolean.\n\n\n\n\nclear\n\n\nClears the entire stack of current context.\n\n\n\n\ncompile\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nCompiles given string of source code into a quote.\n\n\n\n\nconst\n\n\n\n  \nTakes:\n\n  \nany, string\n\n\n\n\n\nDeclares given value as constant in the current context with name\nidentified by given string.\n\n\n\n\ndepth\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPushes current depth of the stack onto stack.\n\n\n\n\ndrop\n\n\n\n  \nTakes:\n\n  \nany\n\n\n\n\n\nDiscards topmost value from the stack.\n\n\n1 drop #=> empty stack\n\n\n\n\n\ndup\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, any\n\n\n\n\n\nDuplicates the topmost value of the stack.\n\n\n1 dup #=> 1 1\n\n\n\n\n\ne\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPushes Euler's number onto stack.\n\n\n\n\nemit\n\n\n\n  \nTakes:\n\n  \nnumber\n\n\n\n\n\nOutputs given Unicode code point into the standard output stream. Range\nerror will be thrown if the given number is not a valid Unicode code\npoint.\n\n\n\n\nerror?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if the topmost value of the stack is an error.\n\n\n\n\nfalse\n\n\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nPushes the boolean value false onto stack.\n\n\n\n\nglobals\n\n\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nReturns the global dictionary as an object.\n\n\n\n\nif\n\n\n\n  \nTakes:\n\n  \nboolean, quote\n\n\n\n\n\nExecutes quote if the boolean value is true.\n\n\n\n\nif-else\n\n\n\n  \nTakes:\n\n  \nboolean, quote, quote\n\n\n\n\n\nCalls first quote if boolean value is true, second quote otherwise.\n\n\n\n\nimport\n\n\n\n  \nTakes:\n\n  \nstring\n\n\n\n\n\nImports module from given path and adds all of its exported words into\nthis execution context.\n\n\n\n\nlocals\n\n\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nReturns the local dictionary of current execution context as an object.\n\n\n\n\nnip\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany\n\n\n\n\n\nDrops the first value and pushes the second value onto stack.\n\n\n1 2 nip #=> 2\n\n\n\n\n\nnop\n\n\nDoes nothing. Can be used to construct empty quotes.\n\n\n\n\nnow\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns the number of seconds that have elapsed since the  Unix epoch\n(1 January 1970 00:00:00 UTC) rounded to the nearest integer.\n\n\n\n\nnull\n\n\n\n  \nGives:\n\n  \nnull\n\n\n\n\n\nPushes the null value onto stack.\n\n\n\n\nnull?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if the topmost value of the stack is null.\n\n\n\n\nnumber?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if the topmost value of the stack is a number.\n\n\n\n\nobject?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if the topmost value of the stack is an object.\n\n\n\n\nover\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any, any\n\n\n\n\n\nCopies second topmost value of the stack into topmost value of the\nstack.\n\n\n1 2 over #=> 1 2 1\n\n\n\n\n\npi\n\n\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPushes the value of pi onto stack.\n\n\n\n\nprint\n\n\n\n  \nTakes:\n\n  \nany\n\n\n\n\n\nPrints topmost value of the stack to stdout.\n\n\n\n\nprintln\n\n\n\n  \nTakes:\n\n  \nany\n\n\n\n\n\nPrints the topmost value of the stack to stdout with a terminating new\nline.\n\n\n\n\nproto\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, object\n\n\n\n\n\nRetrieves proto of the topmost value. If the topmost value of the stack\nis null, null will be returned instead.\n\n\n\n\nquote?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if the topmost value of the stack is a quote.\n\n\n\n\nrange-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstruct an instance of range error with given optional error message\nand places it on the stack.\n\n\n\n\nrot\n\n\n\n  \nTakes:\n\n  \nany, any, any\n\n  \nGives:\n\n  \nany, any, any\n\n\n\n\n\nRotates the three topmost values on the stack.\n\n\n1 2 3 rot #=> 2 3 1\n\n\n\n\n\nstring?\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, boolean\n\n\n\n\n\nReturns true if the topmost value of the stack is a string.\n\n\n\n\nswap\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any\n\n\n\n\n\nSwaps positions of the two topmost values on the stack.\n\n\n1 2 swap #=> 2 1\n\n\n\n\n\ntrue\n\n\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nPushes the boolean value true onto stack.\n\n\n\n\ntry\n\n\n\n  \nTakes:\n\n  \nquote, quote\n\n\n\n\n\nExecutes first quote and if it throws an error, calls second quote with\nthe error on top of the stack.\n\n\n\n\ntry-else\n\n\n\n  \nTakes:\n\n  \nquote, quote, quote\n\n\n\n\n\nExecutes first quote and if it throws an error, calls second quote with\nthe error on top of the stack. If no error was thrown, third quote will\nbe called instead.\n\n\n\n\ntuck\n\n\n\n  \nTakes:\n\n  \nany, any\n\n  \nGives:\n\n  \nany, any, any\n\n\n\n\n\nCopies the topmost value of the stack as the third topmost value of the\nstack.\n\n\n1 2 tuck #=> 2 1 2\n\n\n\n\n\ntype-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstruct an instance of type error with with given optional error\nmessage and places it on the stack.\n\n\n\n\ntypeof\n\n\n\n  \nTakes:\n\n  \nany\n\n  \nGives:\n\n  \nany, string\n\n\n\n\n\nReturns name of the type of the topmost value as a string.\n\n\n\n\nunknown-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstruct an instance of unknown error with with given optional error\nmessage and places it on the stack.\n\n\n\n\nvalue-error\n\n\n\n  \nTakes:\n\n  \nstring|null\n\n  \nGives:\n\n  \nerror\n\n\n\n\n\nConstructs an instance of value error with given optional error message\nand places it on the stack.\n\n\n\n\nwhile\n\n\n\n  \nTakes:\n\n  \nquote, quote\n\n\n\n\n\nExecutes second quote as long as the first quote returns true.\n\n\narray\n\n\n\n\n!\n\n\n\n  \nTakes:\n\n  \nany, number, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nSets value in the array at given index. Negative indices count backwards\nfrom the end. If the index is larger than the number of elements in the\narray, the value will be appended as the last element of the array.\n\n\n\n\n&\n\n\n\n  \nTakes:\n\n  \narray, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nSet intersection: Returns a new array containing unique elements common to\nthe two arrays.\n\n\n\n\n*\n\n\n\n  \nTakes:\n\n  \nnumber, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nRepeats the array given number of times.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \narray, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nConcatenates the contents of two arrays and returns the result.\n\n\n\n\n@\n\n\n\n  \nTakes:\n\n  \nnumber, array\n\n  \nGives:\n\n  \narray, any\n\n\n\n\n\nRetrieves a value from the array at given numerical index. Negative\nindices count backwards from the end. If the given index is out of bounds,\narange error will be thrown.\n\n\n\n\nevery?\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, boolean\n\n\n\n\n\nTests whether all elements in the array satisfy the provided testing\nquote.\n\n\n\n\nextract\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \nany...\n\n\n\n\n\nExtracts all values from the array and places them onto the stack.\n\n\n\n\nfilter\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nRemoves elements of the array that do not satisfy the provided testing\nquote.\n\n\n\n\nfind\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, any|null\n\n\n\n\n\nReturns the first element from the array that satisfies the provided\ntesting quote. Otherwise null is returned.\n\n\n\n\nfind-index\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, number|null\n\n\n\n\n\nReturns the index of the first element in the array that satisfies the\nprovided testing quote. Otherwise null is returned.\n\n\n\n\nfor-each\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n\n\n\n\nRuns quote once for every element in the array.\n\n\n\n\nincludes?\n\n\n\n  \nTakes:\n\n  \nany, array\n\n  \nGives:\n\n  \narray, boolean\n\n\n\n\n\nSearches for given value in the array and returns true if it's included\nand false if it's not.\n\n\n\n\nindex-of\n\n\n\n  \nTakes:\n\n  \nany, array\n\n  \nGives:\n\n  \narray, number|null\n\n\n\n\n\nSearches for given value from the array and returns its index in the array\nif it's included in the array and null if it's not.\n\n\n\n\njoin\n\n\n\n  \nTakes:\n\n  \nstring, array\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConcatenates all elements from the array into single string delimited by\nthe given separator string.\n\n\n\n\nlength\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \narray, number\n\n\n\n\n\nReturns the number of elements in the array, while keeping the array on\nthe stack.\n\n\n\n\nmap\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nApplies quote once for each element in the array and constructs a new\narray from values returned by the quote.\n\n\n\n\nreduce\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \nany\n\n\n\n\n\nApplies given quote against an accumulator and each element in the array\nto reduce it into a single value.\n\n\n\n\nreverse\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nReverses the array. The first array element becomes the last and the last\narray element becomes first.\n\n\n\n\nsome?\n\n\n\n  \nTakes:\n\n  \nquote, array\n\n  \nGives:\n\n  \narray, boolean\n\n\n\n\n\nTests whether any element in the array satisfies the provided quote.\n\n\n\n\nuniq\n\n\n\n  \nTakes:\n\n  \narray\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nRemoves duplicate elements from the array.\n\n\n\n\n|\n\n\n\n  \nTakes:\n\n  \narray, array\n\n  \nGives:\n\n  \narray\n\n\n\n\n\nSet union: Returns a new array by joining the two given arrays, excluding\nany duplicates and preserving the order of the given arrays.\n\n\nboolean\n\n\n\n\nand\n\n\n\n  \nTakes:\n\n  \nboolean, boolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nLogical AND. Returns true if both values are true.\n\n\n\n\nnot\n\n\n\n  \nTakes:\n\n  \nboolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nNegates given boolean value.\n\n\n\n\nor\n\n\n\n  \nTakes:\n\n  \nboolean, boolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nLogical OR. Returns true if either one of the values are true.\n\n\n\n\nxor\n\n\n\n  \nTakes:\n\n  \nboolean, boolean\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nExclusive OR.\n\n\nerror\n\n\n\n\ncode\n\n\n\n  \nTakes:\n\n  \nerror\n\n  \nGives:\n\n  \nerror, number\n\n\n\n\n\nReturns error code extracted from the error in numeric form.\n\n\n\n\nmessage\n\n\n\n  \nTakes:\n\n  \nerror\n\n  \nGives:\n\n  \nerror, string|null\n\n\n\n\n\nReturns error message extracted from the error, or null if the error does\nnot have any error message.\n\n\n\n\nthrow\n\n\n\n  \nTakes:\n\n  \nerror\n\n\n\n\n\nSets given error as current error of the execution context.\n\n\nnumber\n\n\n\n\n%\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nComputes the floating-point remainder of the division operation between the\ntwo given numbers.\n\n\n\n\n*\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPerforms multiplication on the two given numbers.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nPerforms addition on the two given numbers.\n\n\n\n\n-\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nSubtracts the second number from the first and returns the result.\n\n\n\n\n/\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nDivides the first number by the second and returns the result.\n\n\n\n\n<\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if the first number is less than the second one.\n\n\n\n\n<=\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if the first number is less than or equal to the second one.\n\n\n\n\n>\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if the first number is greater than the second one.\n\n\n\n\n>=\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nReturns true if the first number is greater than or equal to the second\none.\n\n\n\n\nabs\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns absolute value of the number.\n\n\n\n\nceil\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nComputes the smallest integer value not less than given number.\n\n\n\n\nclamp\n\n\n\n  \nTakes:\n\n  \nnumber, number, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nClamps the topmost number between the minimum and maximum limits.\n\n\n\n\nfinite?\n\n\n\n  \nTakes:\n\n  \nnum\n\n  \nGives:\n\n  \nnumber, boolean\n\n\n\n\n\nReturns true if given number is finite.\n\n\n\n\nfloor\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nComputes the largest integer value not greater than given number.\n\n\n\n\nin-range?\n\n\n\n  \nTakes:\n\n  \nnumber, number, number\n\n  \nGives:\n\n  \nboolean\n\n\n\n\n\nTests whether the topmost number is in range of given minimum and maximum\nnumbers.\n\n\n\n\nmax\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns maximum of two numbers.\n\n\n\n\nmin\n\n\n\n  \nTakes:\n\n  \nnumber, number\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nReturns minimum of two numbers.\n\n\n\n\nnan?\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber, boolean\n\n\n\n\n\nReturns true if given number is NaN.\n\n\n\n\nround\n\n\n\n  \nTakes:\n\n  \nnumber\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nRounds given number to nearest integer value.\n\n\n\n\ntimes\n\n\n\n  \nTakes:\n\n  \nquote, number\n\n\n\n\n\nExecutes a quote given number of times.\n\n\nobject\n\n\n\n\n!\n\n\n\n  \nTakes:\n\n  \nany, string, object\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nConstructs copy of the object with new named property either introduced\nor replaced.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \nobject, object\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nCombines contents of two objects together and returns result.\n\n\n\n\n@\n\n\n\n  \nTakes:\n\n  \nstring, object\n\n  \nGives:\n\n  \nobject, any\n\n\n\n\n\nRetrieves value identified by given string from properties of the object.\nIf the object does not have such property, range error will be thrown.\nNotice that inherited properties are also included in the search.\n\n\n\n\nhas-own?\n\n\n\n  \nTakes:\n\n  \nstring, object\n\n  \nGives:\n\n  \nobject, boolean\n\n\n\n\n\nTests whether object has own property with given identifier. Inherited\nproperties are not included in the search.\n\n\n\n\nhas?\n\n\n\n  \nTakes:\n\n  \nstring, object\n\n  \nGives:\n\n  \nobject, boolean\n\n\n\n\n\nTests whether object has property with given identifier. Notice that\ninherited properties are also included in the search.\n\n\n\n\nkeys\n\n\n\n  \nTakes:\n\n  \nobject\n\n  \nGives:\n\n  \nobject, array\n\n\n\n\n\nRetrieves all keys from the object and returns them in an array. Notice\nthat inherited properties are not included in the list.\n\n\n\n\nnew\n\n\n\n  \nTakes:\n\n  \nany...\n\n  \nGives:\n\n  \nobject\n\n\n\n\n\nConstructs new instance of the object and invokes it's constructor if it\nhas one with the newly constructed object pushed into top of the stack.\n\n\nType error will be thrown if the object has no \"prototype\" property.\n\n\n\n\nvalues\n\n\n\n  \nTakes:\n\n  \nobject\n\n  \nGives:\n\n  \nobject, array\n\n\n\n\n\nRetrieves all values from the object and returns them in an array. Notice\nthat inherited properties are not included in the list.\n\n\nquote\n\n\n\n\ncall\n\n\n\n  \nTakes:\n\n  \nquote\n\n\n\n\n\nExecutes quote taken from top of the stack.\n\n\n\n\ncompose\n\n\n\n  \nTakes:\n\n  \nquote, quote\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nConstructs new quote which will call the two given quotes in sequence.\n\n\n\n\ncurry\n\n\n\n  \nTakes:\n\n  \nany, quote\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nConstructs curried quote where given value will be pushed into the stack\nbefore calling the original quote.\n\n\n\n\nnegate\n\n\n\n  \nTakes:\n\n  \nquote\n\n  \nGives:\n\n  \nquote\n\n\n\n\n\nConstructs negated version of given quote which negates boolean result\nreturned by the original quote.\n\n\nstring\n\n\n\n\n*\n\n\n\n  \nTakes:\n\n  \nnumber, string\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nRepeats string given number of times.\n\n\n\n\n+\n\n\n\n  \nTakes:\n\n  \nstring, string\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConcatenates contents of two strings and returns the result.\n\n\n\n\n>number\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nnumber\n\n\n\n\n\nConverts string into floating point decimal number, or throws value error\nif the number cannot be converted into one.\n\n\n\n\n@\n\n\n\n  \nTakes:\n\n  \nnumber, string\n\n  \nGives:\n\n  \nstring, string\n\n\n\n\n\nRetrieves character from given index. Negative indexes count backwards. If\ngiven index is out of bounds, range error will be thrown.\n\n\n\n\ncapitalize\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts first character of the string into upper case and remaining to\nlower case.\n\n\n\n\nchars\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts characters from the string and returns them in an array of\nsubstrings.\n\n\n\n\nlength\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, number\n\n\n\n\n\nReturns length of the string.\n\n\n\n\nlines\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts lines from the string and returns them in an array.\n\n\n\n\nlower-case\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConverts string into lower case.\n\n\n\n\nlower-case?\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, boolean\n\n\n\n\n\nTests whether the string contains only lower case characters. Empty strings\nreturn false.\n\n\n\n\nreverse\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nReturns reversed copy of the string.\n\n\n\n\nrunes\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts Unicode code points from the string and returns them in an array\nof numbers.\n\n\n\n\nspace?\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, boolean\n\n\n\n\n\nTests whether the string contains only whitespace characters. Empty strings\nreturn false.\n\n\n\n\nswap-case\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nConstructs copy of string where lower case characters have been turned into\nupper case and vice versa.\n\n\n\n\ntrim\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nStrips whitespace from begining and end of the string and returns result.\n\n\n\n\ntrim-left\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nStrips whitespace from begining of the string and returns result.\n\n\n\n\ntrim-right\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring\n\n\n\n\n\nStrips whitespace from end of the string and returns result.\n\n\n\n\nupper-case?\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, boolean\n\n\n\n\n\nTests whether the string contains only upper case characters. Empty strings\nreturn false.\n\n\n\n\nwords\n\n\n\n  \nTakes:\n\n  \nstring\n\n  \nGives:\n\n  \nstring, array\n\n\n\n\n\nExtracts white space separated words from the string and returns them in\nan array.",
             "title": "API reference"
         },
         {
@@ -147,52 +147,52 @@
         },
         {
             "location": "/api/#_1",
-            "text": "Takes: \n   any, any \n   Gives: \n   boolean   Tests whether the two top-most values of the stack are not equal.",
+            "text": "Takes: \n   any, any \n   Gives: \n   boolean   Tests whether the two topmost values of the stack are not equal.",
             "title": "!="
         },
         {
             "location": "/api/#2drop",
-            "text": "Takes: \n   any, any   Discards two top-most values from the stack.  1 2 3 2drop #=> 1",
+            "text": "Takes: \n   any, any   Discards the two topmost values from the stack.  1 2 3 2drop #=> 1",
             "title": "2drop"
         },
         {
             "location": "/api/#2dup",
-            "text": "Takes: \n   any, any \n   Gives: \n   any, any, any, any   Duplicates two top-most values of the stack.  1 2 2dup #=> 1 2 1 2",
+            "text": "Takes: \n   any, any \n   Gives: \n   any, any, any, any   Duplicates two topmost values of the stack.  1 2 2dup #=> 1 2 1 2",
             "title": "2dup"
         },
         {
             "location": "/api/#_2",
-            "text": "Takes: \n   any, any \n   Gives: \n   boolean   Tests whether the two top-most values of the stack are equal.",
+            "text": "Takes: \n   any, any \n   Gives: \n   boolean   Tests whether the two topmost values of the stack are equal.",
             "title": "="
         },
         {
             "location": "/api/#boolean",
-            "text": "Takes: \n   any \n   Gives: \n   boolean   Converts top-most value of the stack into boolean. Null and false will\nbecome false while everything else will be true.",
+            "text": "Takes: \n   any \n   Gives: \n   boolean   Converts the topmost value of the stack into a boolean. Null and false\nwill become false while everything else will become true.",
             "title": "&gt;boolean"
         },
         {
             "location": "/api/#source",
-            "text": "Takes: \n   any \n   Gives: \n   string   Converts top-most value of the stack into a string that most accurately\nrepresents what the value would look like in source code.",
+            "text": "Takes: \n   any \n   Gives: \n   string   Converts the topmost value of the stack into a string that most accurately\nrepresents what the value would look like in source code.",
             "title": "&gt;source"
         },
         {
             "location": "/api/#string",
-            "text": "Takes: \n   any \n   Gives: \n   string   Converts top-most value of the stack into string.",
+            "text": "Takes: \n   any \n   Gives: \n   string   Converts the topmost value of the stack into a string. Null will become\nan empty string.",
             "title": "&gt;string"
         },
         {
             "location": "/api/#args",
-            "text": "Gives: \n   array   Returns command line arguments given for the interpreter as an array of\nstrings.",
+            "text": "Gives: \n   array   Returns command line arguments given to the interpreter as an array of\nstrings.",
             "title": "args"
         },
         {
             "location": "/api/#array",
-            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is array.",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if the topmost value of the stack is an array.",
             "title": "array?"
         },
         {
             "location": "/api/#boolean_1",
-            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is boolean.",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if the topmost value of the stack is a boolean.",
             "title": "boolean?"
         },
         {
@@ -202,7 +202,7 @@
         },
         {
             "location": "/api/#compile",
-            "text": "Takes: \n   string \n   Gives: \n   quote   Compiles given string of source code into quote.",
+            "text": "Takes: \n   string \n   Gives: \n   quote   Compiles given string of source code into a quote.",
             "title": "compile"
         },
         {
@@ -217,37 +217,37 @@
         },
         {
             "location": "/api/#drop",
-            "text": "Takes: \n   any   Discards top-most value from the stack.  1 drop #=> empty stack",
+            "text": "Takes: \n   any   Discards topmost value from the stack.  1 drop #=> empty stack",
             "title": "drop"
         },
         {
             "location": "/api/#dup",
-            "text": "Takes: \n   any \n   Gives: \n   any, any   Duplicates top-most value of the stack.  1 dup #=> 1 1",
+            "text": "Takes: \n   any \n   Gives: \n   any, any   Duplicates the topmost value of the stack.  1 dup #=> 1 1",
             "title": "dup"
         },
         {
             "location": "/api/#e",
-            "text": "Gives: \n   number   Pushes Eulers number onto stack.",
+            "text": "Gives: \n   number   Pushes Euler's number onto stack.",
             "title": "e"
         },
         {
             "location": "/api/#emit",
-            "text": "Takes: \n   number   Outputs given Unicode code point into the standard output stream. Range\nerror will be thrown if the given number is not valid Unicode code point.",
+            "text": "Takes: \n   number   Outputs given Unicode code point into the standard output stream. Range\nerror will be thrown if the given number is not a valid Unicode code\npoint.",
             "title": "emit"
         },
         {
             "location": "/api/#error",
-            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is error.",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if the topmost value of the stack is an error.",
             "title": "error?"
         },
         {
             "location": "/api/#false",
-            "text": "Gives: \n   boolean   Pushes boolean value of false onto stack.",
+            "text": "Gives: \n   boolean   Pushes the boolean value false onto stack.",
             "title": "false"
         },
         {
             "location": "/api/#globals",
-            "text": "Gives: \n   object   Returns global dictionary as object.",
+            "text": "Gives: \n   object   Returns the global dictionary as an object.",
             "title": "globals"
         },
         {
@@ -262,17 +262,17 @@
         },
         {
             "location": "/api/#import",
-            "text": "Takes: \n   string   Imports module from given path and adds all of it's exported words into\nthis execution context.",
+            "text": "Takes: \n   string   Imports module from given path and adds all of its exported words into\nthis execution context.",
             "title": "import"
         },
         {
             "location": "/api/#locals",
-            "text": "Gives: \n   object   Returns local dictionary of current execution context as object.",
+            "text": "Gives: \n   object   Returns the local dictionary of current execution context as an object.",
             "title": "locals"
         },
         {
             "location": "/api/#nip",
-            "text": "Takes: \n   any, any \n   Gives: \n   any   Drops the first value and pushes second value on the stack.  1 2 nip #=> 2",
+            "text": "Takes: \n   any, any \n   Gives: \n   any   Drops the first value and pushes the second value onto stack.  1 2 nip #=> 2",
             "title": "nip"
         },
         {
@@ -282,112 +282,117 @@
         },
         {
             "location": "/api/#now",
-            "text": "Gives: \n   number   Returns the timestamp of the number of seconds that have elapsed since the\nUnix epoch (1 January 1970 00:00:00 UTC).",
+            "text": "Gives: \n   number   Returns the number of seconds that have elapsed since the  Unix epoch\n(1 January 1970 00:00:00 UTC) rounded to the nearest integer.",
             "title": "now"
         },
         {
             "location": "/api/#null",
-            "text": "Gives: \n   null   Pushes null value onto stack.",
+            "text": "Gives: \n   null   Pushes the null value onto stack.",
             "title": "null"
         },
         {
             "location": "/api/#null_1",
-            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is null.",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if the topmost value of the stack is null.",
             "title": "null?"
         },
         {
             "location": "/api/#number",
-            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is boolean.",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if the topmost value of the stack is a number.",
             "title": "number?"
         },
         {
             "location": "/api/#object",
-            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is object.",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if the topmost value of the stack is an object.",
             "title": "object?"
         },
         {
             "location": "/api/#over",
-            "text": "Takes: \n   any, any \n   Gives: \n   any, any, any   Copies second top-most value of the stack into top-most value of the\nstack.  1 2 over #=> 1 2 1",
+            "text": "Takes: \n   any, any \n   Gives: \n   any, any, any   Copies second topmost value of the stack into topmost value of the\nstack.  1 2 over #=> 1 2 1",
             "title": "over"
         },
         {
             "location": "/api/#pi",
-            "text": "Gives: \n   number   Pushes value of pi onto stack.",
+            "text": "Gives: \n   number   Pushes the value of pi onto stack.",
             "title": "pi"
         },
         {
             "location": "/api/#print",
-            "text": "Takes: \n   any   Prints top-most value of the stack to stdout.",
+            "text": "Takes: \n   any   Prints topmost value of the stack to stdout.",
             "title": "print"
         },
         {
             "location": "/api/#println",
-            "text": "Takes: \n   any   Prints top-most value of the stack to stdout with terminating new line.",
+            "text": "Takes: \n   any   Prints the topmost value of the stack to stdout with a terminating new\nline.",
             "title": "println"
         },
         {
             "location": "/api/#proto",
-            "text": "Takes: \n   any \n   Gives: \n   any, object   Retrieves proto of the top-most value. If the top-most value of the stack\nis null, null will be returned instead.",
+            "text": "Takes: \n   any \n   Gives: \n   any, object   Retrieves proto of the topmost value. If the topmost value of the stack\nis null, null will be returned instead.",
             "title": "proto"
         },
         {
             "location": "/api/#quote",
-            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is quote.",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if the topmost value of the stack is a quote.",
             "title": "quote?"
         },
         {
             "location": "/api/#range-error",
-            "text": "Takes: \n   string|null \n   Gives: \n   error   Construct instance of range error with with given optional error message\nand places it on the stack.",
+            "text": "Takes: \n   string|null \n   Gives: \n   error   Construct an instance of range error with given optional error message\nand places it on the stack.",
             "title": "range-error"
         },
         {
             "location": "/api/#rot",
-            "text": "Takes: \n   any, any, any \n   Gives: \n   any, any, any   Rotates three top-most values on the stack.  1 2 3 rot #=> 2 3 1",
+            "text": "Takes: \n   any, any, any \n   Gives: \n   any, any, any   Rotates the three topmost values on the stack.  1 2 3 rot #=> 2 3 1",
             "title": "rot"
         },
         {
             "location": "/api/#string_1",
-            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if top-most value of the stack is string.",
+            "text": "Takes: \n   any \n   Gives: \n   any, boolean   Returns true if the topmost value of the stack is a string.",
             "title": "string?"
         },
         {
             "location": "/api/#swap",
-            "text": "Takes: \n   any, any \n   Gives: \n   any, any   Swaps positions of two top-most values on the stack.  1 2 swap #=> 2 1",
+            "text": "Takes: \n   any, any \n   Gives: \n   any, any   Swaps positions of the two topmost values on the stack.  1 2 swap #=> 2 1",
             "title": "swap"
         },
         {
             "location": "/api/#true",
-            "text": "Gives: \n   boolean   Pushes boolean value of true onto stack.",
+            "text": "Gives: \n   boolean   Pushes the boolean value true onto stack.",
             "title": "true"
         },
         {
             "location": "/api/#try",
-            "text": "Takes: \n   quote, quote, quote   Executes first quote and if it throws an error, calls second quote with\nthe error on top of the stack. If no error was thrown, third quote will\nbe called instead.",
+            "text": "Takes: \n   quote, quote   Executes first quote and if it throws an error, calls second quote with\nthe error on top of the stack.",
             "title": "try"
         },
         {
+            "location": "/api/#try-else",
+            "text": "Takes: \n   quote, quote, quote   Executes first quote and if it throws an error, calls second quote with\nthe error on top of the stack. If no error was thrown, third quote will\nbe called instead.",
+            "title": "try-else"
+        },
+        {
             "location": "/api/#tuck",
-            "text": "Takes: \n   any, any \n   Gives: \n   any, any, any   Copies top-most value of the stack as the third top-most value of the\nstack.  1 2 tuck #=> 2 1 2",
+            "text": "Takes: \n   any, any \n   Gives: \n   any, any, any   Copies the topmost value of the stack as the third topmost value of the\nstack.  1 2 tuck #=> 2 1 2",
             "title": "tuck"
         },
         {
             "location": "/api/#type-error",
-            "text": "Takes: \n   string|null \n   Gives: \n   error   Construct instance of type error with with given optional error message\nand places it on the stack.",
+            "text": "Takes: \n   string|null \n   Gives: \n   error   Construct an instance of type error with with given optional error\nmessage and places it on the stack.",
             "title": "type-error"
         },
         {
             "location": "/api/#typeof",
-            "text": "Takes: \n   any \n   Gives: \n   any, string   Returns name of the type of given value as string.",
+            "text": "Takes: \n   any \n   Gives: \n   any, string   Returns name of the type of the topmost value as a string.",
             "title": "typeof"
         },
         {
             "location": "/api/#unknown-error",
-            "text": "Takes: \n   string|null \n   Gives: \n   error   Construct instance of unknown error with with given optional error\nmessage and places it on the stack.",
+            "text": "Takes: \n   string|null \n   Gives: \n   error   Construct an instance of unknown error with with given optional error\nmessage and places it on the stack.",
             "title": "unknown-error"
         },
         {
             "location": "/api/#value-error",
-            "text": "Takes: \n   string|null \n   Gives: \n   error   Constructs instance of value error with given optional error message and\nplaces it on the stack.",
+            "text": "Takes: \n   string|null \n   Gives: \n   error   Constructs an instance of value error with given optional error message\nand places it on the stack.",
             "title": "value-error"
         },
         {
@@ -402,52 +407,52 @@
         },
         {
             "location": "/api/#_3",
-            "text": "Takes: \n   any, number, array \n   Gives: \n   array   Sets value in the array at given index. Negative indexes count backwrds.\nIf index is larger than number of elements in the array, value will be\nappended as the last element of the array.",
+            "text": "Takes: \n   any, number, array \n   Gives: \n   array   Sets value in the array at given index. Negative indices count backwards\nfrom the end. If the index is larger than the number of elements in the\narray, the value will be appended as the last element of the array.",
             "title": "!"
         },
         {
             "location": "/api/#_4",
-            "text": "Takes: \n   array, array \n   Gives: \n   array   Set intersection: Returns new array containing unique elements common to\nthe two arrays.",
+            "text": "Takes: \n   array, array \n   Gives: \n   array   Set intersection: Returns a new array containing unique elements common to\nthe two arrays.",
             "title": "&amp;"
         },
         {
             "location": "/api/#_5",
-            "text": "Takes: \n   number, array \n   Gives: \n   array   Repeats array given number of times.",
+            "text": "Takes: \n   number, array \n   Gives: \n   array   Repeats the array given number of times.",
             "title": "*"
         },
         {
             "location": "/api/#_6",
-            "text": "Takes: \n   array, array \n   Gives: \n   array   Concatenates contents of two arrays and returns result.",
+            "text": "Takes: \n   array, array \n   Gives: \n   array   Concatenates the contents of two arrays and returns the result.",
             "title": "+"
         },
         {
             "location": "/api/#_7",
-            "text": "Takes: \n   number, array \n   Gives: \n   array, any   Retrieves value from array at given numerical index. Negative indexes\ncount backwards. If given index is out of bounds, range error will be\nthrown.",
+            "text": "Takes: \n   number, array \n   Gives: \n   array, any   Retrieves a value from the array at given numerical index. Negative\nindices count backwards from the end. If the given index is out of bounds,\narange error will be thrown.",
             "title": "@"
         },
         {
             "location": "/api/#every",
-            "text": "Takes: \n   quote, array \n   Gives: \n   array, boolean   Tests whether all elements in the array passes the test implemented by the\nprovided quote.",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array, boolean   Tests whether all elements in the array satisfy the provided testing\nquote.",
             "title": "every?"
         },
         {
             "location": "/api/#extract",
-            "text": "Takes: \n   array \n   Gives: \n   any...   Extracts all values from the array and places them into the stack.",
+            "text": "Takes: \n   array \n   Gives: \n   any...   Extracts all values from the array and places them onto the stack.",
             "title": "extract"
         },
         {
             "location": "/api/#filter",
-            "text": "Takes: \n   quote, array \n   Gives: \n   array   Applies quote once for each element in the array and constructs new array\nfrom ones which passed the test.",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array   Removes elements of the array that do not satisfy the provided testing\nquote.",
             "title": "filter"
         },
         {
             "location": "/api/#find",
-            "text": "Takes: \n   quote, array \n   Gives: \n   array, any|null   Returns first element from the array that satisfies the provided testing\nquote. Otherwise null is returned.",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array, any|null   Returns the first element from the array that satisfies the provided\ntesting quote. Otherwise null is returned.",
             "title": "find"
         },
         {
             "location": "/api/#find-index",
-            "text": "Takes: \n   quote, array \n   Gives: \n   array, number|null   Returns index of first element from the array that satisfies the provided\ntesting quote. Otherwise null is returned.",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array, number|null   Returns the index of the first element in the array that satisfies the\nprovided testing quote. Otherwise null is returned.",
             "title": "find-index"
         },
         {
@@ -457,52 +462,52 @@
         },
         {
             "location": "/api/#includes",
-            "text": "Takes: \n   any, array \n   Gives: \n   array, boolean   Searches for given value from the array and returns true if it's included\nin the array and false if it's not.",
+            "text": "Takes: \n   any, array \n   Gives: \n   array, boolean   Searches for given value in the array and returns true if it's included\nand false if it's not.",
             "title": "includes?"
         },
         {
             "location": "/api/#index-of",
-            "text": "Takes: \n   any, array \n   Gives: \n   array, number|null   Searches for given value from the array and returns it's index in the array\nif it's included in the array and null when it's not.",
+            "text": "Takes: \n   any, array \n   Gives: \n   array, number|null   Searches for given value from the array and returns its index in the array\nif it's included in the array and null if it's not.",
             "title": "index-of"
         },
         {
             "location": "/api/#join",
-            "text": "Takes: \n   string, array \n   Gives: \n   string   Concatenates all elements from the array into single string, delimited by\nthe given separator string.",
+            "text": "Takes: \n   string, array \n   Gives: \n   string   Concatenates all elements from the array into single string delimited by\nthe given separator string.",
             "title": "join"
         },
         {
             "location": "/api/#length",
-            "text": "Takes: \n   array \n   Gives: \n   array, number   Returns number of elements in the array, while keeping the array in the\nstack.",
+            "text": "Takes: \n   array \n   Gives: \n   array, number   Returns the number of elements in the array, while keeping the array on\nthe stack.",
             "title": "length"
         },
         {
             "location": "/api/#map",
-            "text": "Takes: \n   quote, array \n   Gives: \n   array   Applies quote once for each element in the array and constructs new array\nfrom values returned by the quote.",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array   Applies quote once for each element in the array and constructs a new\narray from values returned by the quote.",
             "title": "map"
         },
         {
             "location": "/api/#reduce",
-            "text": "Takes: \n   quote, array \n   Gives: \n   any   Applies given quote against an acculumator and each element in array to\nreduce it into single value.",
+            "text": "Takes: \n   quote, array \n   Gives: \n   any   Applies given quote against an accumulator and each element in the array\nto reduce it into a single value.",
             "title": "reduce"
         },
         {
             "location": "/api/#reverse",
-            "text": "Takes: \n   array \n   Gives: \n   array   Returns reversed copy of the array where the first array element becomes\nthe last, and the last array element becomes first.",
+            "text": "Takes: \n   array \n   Gives: \n   array   Reverses the array. The first array element becomes the last and the last\narray element becomes first.",
             "title": "reverse"
         },
         {
             "location": "/api/#some",
-            "text": "Takes: \n   quote, array \n   Gives: \n   array, boolean   Tests whether any element in the array passes the test implemented by the\nprovided quote.",
+            "text": "Takes: \n   quote, array \n   Gives: \n   array, boolean   Tests whether any element in the array satisfies the provided quote.",
             "title": "some?"
         },
         {
             "location": "/api/#uniq",
-            "text": "Takes: \n   array \n   Gives: \n   array   Creates a duplicate free version of the array.",
+            "text": "Takes: \n   array \n   Gives: \n   array   Removes duplicate elements from the array.",
             "title": "uniq"
         },
         {
             "location": "/api/#_8",
-            "text": "Takes: \n   array, array \n   Gives: \n   array   Set union: Returns new array by joining the two given arrays, excluding any\nduplicates and preserving the order from the given arrays.",
+            "text": "Takes: \n   array, array \n   Gives: \n   array   Set union: Returns a new array by joining the two given arrays, excluding\nany duplicates and preserving the order of the given arrays.",
             "title": "|"
         },
         {
@@ -572,32 +577,32 @@
         },
         {
             "location": "/api/#-",
-            "text": "Takes: \n   number, number \n   Gives: \n   number   Performs substraction on the two given numbers.",
+            "text": "Takes: \n   number, number \n   Gives: \n   number   Subtracts the second number from the first and returns the result.",
             "title": "-"
         },
         {
             "location": "/api/#_12",
-            "text": "Takes: \n   number, number \n   Gives: \n   number   Performs division on the two given numbers.",
+            "text": "Takes: \n   number, number \n   Gives: \n   number   Divides the first number by the second and returns the result.",
             "title": "/"
         },
         {
             "location": "/api/#_13",
-            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if first number is lesser than the second one.",
+            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if the first number is less than the second one.",
             "title": "&lt;"
         },
         {
             "location": "/api/#_14",
-            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if first number is less or equal than the second one.",
+            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if the first number is less than or equal to the second one.",
             "title": "&lt;="
         },
         {
             "location": "/api/#_15",
-            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if first number is greater than the second one.",
+            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if the first number is greater than the second one.",
             "title": "&gt;"
         },
         {
             "location": "/api/#_16",
-            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if first number is greater or equal than the second one.",
+            "text": "Takes: \n   number, number \n   Gives: \n   boolean   Returns true if the first number is greater than or equal to the second\none.",
             "title": "&gt;="
         },
         {
@@ -612,7 +617,7 @@
         },
         {
             "location": "/api/#clamp",
-            "text": "Takes: \n   number, number, number \n   Gives: \n   number   Clamps top-most number between the minimum and maximum limits.",
+            "text": "Takes: \n   number, number, number \n   Gives: \n   number   Clamps the topmost number between the minimum and maximum limits.",
             "title": "clamp"
         },
         {
@@ -627,7 +632,7 @@
         },
         {
             "location": "/api/#in-range",
-            "text": "Takes: \n   number, number, number \n   Gives: \n   boolean   Tests whether the top-most number is in range of given minimum and maximum\nnumbers.",
+            "text": "Takes: \n   number, number, number \n   Gives: \n   boolean   Tests whether the topmost number is in range of given minimum and maximum\nnumbers.",
             "title": "in-range?"
         },
         {
@@ -642,17 +647,17 @@
         },
         {
             "location": "/api/#nan",
-            "text": "Takes: \n   number \n   Gives: \n   number, boolean   Returns true if given number if NaN.",
+            "text": "Takes: \n   number \n   Gives: \n   number, boolean   Returns true if given number is NaN.",
             "title": "nan?"
         },
         {
             "location": "/api/#round",
-            "text": "Takes: \n   number \n   Gives: \n   number   Rounds number to nearest integer value.",
+            "text": "Takes: \n   number \n   Gives: \n   number   Rounds given number to nearest integer value.",
             "title": "round"
         },
         {
             "location": "/api/#times",
-            "text": "Takes: \n   quote, number   Executes quote given number of times.",
+            "text": "Takes: \n   quote, number   Executes a quote given number of times.",
             "title": "times"
         },
         {
