@@ -687,24 +687,6 @@ namespace plorth
   }
 
   /**
-   * Word: print
-   *
-   * Takes:
-   * - any
-   *
-   * Prints top-most value of the stack to stdout.
-   */
-  static void w_print(const ref<context>& ctx)
-  {
-    ref<class value> value;
-
-    if (ctx->pop(value) && value)
-    {
-      std::cout << value;
-    }
-  }
-
-  /**
    * Word: if
    *
    * Takes:
@@ -1062,6 +1044,24 @@ namespace plorth
   }
 
   /**
+   * Word: print
+   *
+   * Takes:
+   * - any
+   *
+   * Prints top-most value of the stack to stdout.
+   */
+  static void w_print(const ref<context>& ctx)
+  {
+    ref<value> val;
+
+    if (ctx->pop(val) && val)
+    {
+      ctx->runtime()->print(val->to_string());
+    }
+  }
+
+  /**
    * Word: println
    *
    * Takes:
@@ -1071,15 +1071,16 @@ namespace plorth
    */
   static void w_println(const ref<context>& ctx)
   {
-    ref<class value> value;
+    const auto& runtime = ctx->runtime();
+    ref<value> val;
 
-    if (ctx->pop(value))
+    if (ctx->pop(val))
     {
-      if (value)
+      if (val)
       {
-        std::cout << value;
+        runtime->print(val->to_string());
       }
-      std::cout << std::endl;
+      runtime->println();
     }
   }
 
@@ -1104,7 +1105,7 @@ namespace plorth
       {
         ctx->error(error::code_range, "Invalid Unicode code point.");
       } else {
-        std::cout << unistring(1, static_cast<unichar>(c));
+        ctx->runtime()->print(unistring(1, static_cast<unichar>(c)));
       }
     }
   }

@@ -1,5 +1,7 @@
 #include <plorth/context.hpp>
 
+#include "./utils.hpp"
+
 using namespace plorth;
 
 /**
@@ -17,28 +19,25 @@ static void w_quit(const ref<context>&)
  *
  * Displays ten of the top-most values from the data stack.
  */
-static void w_stack(const ref<class context>& context)
+static void w_stack(const ref<context>& ctx)
 {
-  const auto& stack = context->data();
+  const auto& runtime = ctx->runtime();
+  const auto& stack = ctx->data();
   const std::size_t size = stack.size();
 
   if (!size)
   {
-    std::cout << "Stack is empty." << std::endl;
+    runtime->println(utf8_decode("Stack is empty."));
     return;
   }
 
   for (std::size_t i = 0; i < size && i < 10; ++i)
   {
-    const ref<class value>& value = stack[size - i - 1];
-    std::cout << (size - i) << ": ";
-    if (value)
-    {
-      std::cout << value->to_source();
-    } else {
-      std::cout << "null";
-    }
-    std::cout << std::endl;
+    const auto& value = stack[size - i - 1];
+
+    runtime->print(to_unistring(static_cast<std::int64_t>(size - i)) + ": ");
+    runtime->print(value ? value->to_source() : utf8_decode("null"));
+    runtime->println();
   }
 }
 
