@@ -195,8 +195,8 @@ namespace plorth
    * - array
    * - number
    *
-   * Returns number of elements in the array, while keeping the array in the
-   * stack.
+   * Returns the number of elements in the array, while keeping the array on
+   * the stack.
    */
   static void w_length(const ref<context>& ctx)
   {
@@ -221,8 +221,8 @@ namespace plorth
    * - array
    * - boolean
    *
-   * Searches for given value from the array and returns true if it's included
-   * in the array and false if it's not.
+   * Searches for given value in the array and returns true if it's included
+   * and false if it's not.
    */
   static void w_includes(const ref<context>& ctx)
   {
@@ -258,8 +258,8 @@ namespace plorth
    * - array
    * - number|null
    *
-   * Searches for given value from the array and returns it's index in the array
-   * if it's included in the array and null when it's not.
+   * Searches for given value from the array and returns its index in the array
+   * if it's included in the array and null if it's not.
    */
   static void w_index_of(const ref<context>& ctx)
   {
@@ -295,8 +295,8 @@ namespace plorth
    * - array
    * -any|null
    *
-   * Returns first element from the array that satisfies the provided testing
-   * quote. Otherwise null is returned.
+   * Returns the first element from the array that satisfies the provided
+   * testing quote. Otherwise null is returned.
    */
   static void w_find(const ref<context>& ctx)
   {
@@ -338,8 +338,8 @@ namespace plorth
    * - array
    * - number|null
    *
-   * Returns index of first element from the array that satisfies the provided
-   * testing quote. Otherwise null is returned.
+   * Returns the index of the first element in the array that satisfies the
+   * provided testing quote. Otherwise null is returned.
    */
   static void w_find_index(const ref<context>& ctx)
   {
@@ -382,8 +382,8 @@ namespace plorth
    * - array
    * -boolean
    *
-   * Tests whether all elements in the array passes the test implemented by the
-   * provided quote.
+   * Tests whether all elements in the array satisfy the provided testing
+   * quote.
    */
   static void w_every(const ref<context>& ctx)
   {
@@ -425,8 +425,7 @@ namespace plorth
    * - array
    * - boolean
    *
-   * Tests whether any element in the array passes the test implemented by the
-   * provided quote.
+   * Tests whether any element in the array satisfies the provided quote.
    */
   static void w_some(const ref<context>& ctx)
   {
@@ -466,8 +465,8 @@ namespace plorth
    * Gives:
    * - array
    *
-   * Returns reversed copy of the array where the first array element becomes
-   * the last, and the last array element becomes first.
+   * Reverses the array. The first array element becomes the last and the last
+   * array element becomes first.
    */
   static void w_reverse(const ref<context>& ctx)
   {
@@ -497,7 +496,7 @@ namespace plorth
    * Gives:
    * - array
    *
-   * Creates a duplicate free version of the array.
+   * Removes duplicate elements from the array.
    */
   static void w_uniq(const ref<context>& ctx)
   {
@@ -541,7 +540,7 @@ namespace plorth
    * Gives:
    * - any...
    *
-   * Extracts all values from the array and places them into the stack.
+   * Extracts all values from the array and places them onto the stack.
    */
   static void w_extract(const ref<context>& ctx)
   {
@@ -568,7 +567,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Concatenates all elements from the array into single string, delimited by
+   * Concatenates all elements from the array into single string delimited by
    * the given separator string.
    */
   static void w_join(const ref<context>& ctx)
@@ -642,8 +641,8 @@ namespace plorth
    * Gives:
    * - array
    *
-   * Applies quote once for each element in the array and constructs new array
-   * from values returned by the quote.
+   * Applies quote once for each element in the array and constructs a new
+   * array from values returned by the quote.
    */
   static void w_map(const ref<context>& ctx)
   {
@@ -682,8 +681,8 @@ namespace plorth
    * Gives:
    * - array
    *
-   * Applies quote once for each element in the array and constructs new array
-   * from ones which passed the test.
+   * Removes elements of the array that do not satisfy the provided testing
+   * quote.
    */
   static void w_filter(const ref<context>& ctx)
   {
@@ -726,8 +725,8 @@ namespace plorth
    * Gives:
    * - any
    *
-   * Applies given quote against an acculumator and each element in array to
-   * reduce it into single value.
+   * Applies given quote against an accumulator and each element in the array
+   * to reduce it into a single value.
    */
   static void w_reduce(const ref<context>& ctx)
   {
@@ -775,7 +774,7 @@ namespace plorth
    * Gives:
    * - array
    *
-   * Concatenates contents of two arrays and returns result.
+   * Concatenates the contents of two arrays and returns the result.
    */
   static void w_concat(const ref<context>& ctx)
   {
@@ -799,7 +798,7 @@ namespace plorth
    * Gives:
    * - array
    *
-   * Repeats array given number of times.
+   * Repeats the array given number of times.
    */
   static void w_repeat(const ref<context>& ctx)
   {
@@ -840,7 +839,7 @@ namespace plorth
    * Gives:
    * - array
    *
-   * Set intersection: Returns new array containing unique elements common to
+   * Set intersection: Returns a new array containing unique elements common to
    * the two arrays.
    */
   static void w_intersect(const ref<context>& ctx)
@@ -903,8 +902,8 @@ namespace plorth
    * Gives:
    * - array
    *
-   * Set union: Returns new array by joining the two given arrays, excluding any
-   * duplicates and preserving the order from the given arrays.
+   * Set union: Returns a new array by joining the two given arrays, excluding
+   * any duplicates and preserving the order of the given arrays.
    */
   static void w_union(const ref<context>& ctx)
   {
@@ -971,9 +970,9 @@ namespace plorth
    * - array
    * - any
    *
-   * Retrieves value from array at given numerical index. Negative indexes
-   * count backwards. If given index is out of bounds, range error will be
-   * thrown.
+   * Retrieves a value from the array at given numerical index. Negative
+   * indices count backwards from the end. If the given index is out of bounds,
+   * arange error will be thrown.
    */
   static void w_get(const ref<context>& ctx)
   {
@@ -1013,9 +1012,9 @@ namespace plorth
    * Gives:
    * - array
    *
-   * Sets value in the array at given index. Negative indexes count backwrds.
-   * If index is larger than number of elements in the array, value will be
-   * appended as the last element of the array.
+   * Sets value in the array at given index. Negative indices count backwards
+   * from the end. If the index is larger than the number of elements in the
+   * array, the value will be appended as the last element of the array.
    */
   static void w_set(const ref<context>& ctx)
   {

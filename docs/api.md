@@ -669,9 +669,9 @@ Executes second quote as long as the first quote returns true.
   <dd>array</dd>
 </dl>
 
-Sets value in the array at given index. Negative indexes count backwrds.
-If index is larger than number of elements in the array, value will be
-appended as the last element of the array.
+Sets value in the array at given index. Negative indices count backwards
+from the end. If the index is larger than the number of elements in the
+array, the value will be appended as the last element of the array.
 
 ---
 
@@ -684,7 +684,7 @@ appended as the last element of the array.
   <dd>array</dd>
 </dl>
 
-Set intersection: Returns new array containing unique elements common to
+Set intersection: Returns a new array containing unique elements common to
 the two arrays.
 
 ---
@@ -698,7 +698,7 @@ the two arrays.
   <dd>array</dd>
 </dl>
 
-Repeats array given number of times.
+Repeats the array given number of times.
 
 ---
 
@@ -711,7 +711,7 @@ Repeats array given number of times.
   <dd>array</dd>
 </dl>
 
-Concatenates contents of two arrays and returns result.
+Concatenates the contents of two arrays and returns the result.
 
 ---
 
@@ -724,9 +724,9 @@ Concatenates contents of two arrays and returns result.
   <dd>array, any</dd>
 </dl>
 
-Retrieves value from array at given numerical index. Negative indexes
-count backwards. If given index is out of bounds, range error will be
-thrown.
+Retrieves a value from the array at given numerical index. Negative
+indices count backwards from the end. If the given index is out of bounds,
+arange error will be thrown.
 
 ---
 
@@ -739,8 +739,8 @@ thrown.
   <dd>array, boolean</dd>
 </dl>
 
-Tests whether all elements in the array passes the test implemented by the
-provided quote.
+Tests whether all elements in the array satisfy the provided testing
+quote.
 
 ---
 
@@ -753,7 +753,7 @@ provided quote.
   <dd>any...</dd>
 </dl>
 
-Extracts all values from the array and places them into the stack.
+Extracts all values from the array and places them onto the stack.
 
 ---
 
@@ -766,8 +766,8 @@ Extracts all values from the array and places them into the stack.
   <dd>array</dd>
 </dl>
 
-Applies quote once for each element in the array and constructs new array
-from ones which passed the test.
+Removes elements of the array that do not satisfy the provided testing
+quote.
 
 ---
 
@@ -780,8 +780,8 @@ from ones which passed the test.
   <dd>array, any|null</dd>
 </dl>
 
-Returns first element from the array that satisfies the provided testing
-quote. Otherwise null is returned.
+Returns the first element from the array that satisfies the provided
+testing quote. Otherwise null is returned.
 
 ---
 
@@ -794,8 +794,8 @@ quote. Otherwise null is returned.
   <dd>array, number|null</dd>
 </dl>
 
-Returns index of first element from the array that satisfies the provided
-testing quote. Otherwise null is returned.
+Returns the index of the first element in the array that satisfies the
+provided testing quote. Otherwise null is returned.
 
 ---
 
@@ -819,8 +819,8 @@ Runs quote once for every element in the array.
   <dd>array, boolean</dd>
 </dl>
 
-Searches for given value from the array and returns true if it's included
-in the array and false if it's not.
+Searches for given value in the array and returns true if it's included
+and false if it's not.
 
 ---
 
@@ -833,8 +833,8 @@ in the array and false if it's not.
   <dd>array, number|null</dd>
 </dl>
 
-Searches for given value from the array and returns it's index in the array
-if it's included in the array and null when it's not.
+Searches for given value from the array and returns its index in the array
+if it's included in the array and null if it's not.
 
 ---
 
@@ -847,7 +847,7 @@ if it's included in the array and null when it's not.
   <dd>string</dd>
 </dl>
 
-Concatenates all elements from the array into single string, delimited by
+Concatenates all elements from the array into single string delimited by
 the given separator string.
 
 ---
@@ -861,8 +861,8 @@ the given separator string.
   <dd>array, number</dd>
 </dl>
 
-Returns number of elements in the array, while keeping the array in the
-stack.
+Returns the number of elements in the array, while keeping the array on
+the stack.
 
 ---
 
@@ -875,8 +875,8 @@ stack.
   <dd>array</dd>
 </dl>
 
-Applies quote once for each element in the array and constructs new array
-from values returned by the quote.
+Applies quote once for each element in the array and constructs a new
+array from values returned by the quote.
 
 ---
 
@@ -889,8 +889,8 @@ from values returned by the quote.
   <dd>any</dd>
 </dl>
 
-Applies given quote against an acculumator and each element in array to
-reduce it into single value.
+Applies given quote against an accumulator and each element in the array
+to reduce it into a single value.
 
 ---
 
@@ -903,8 +903,8 @@ reduce it into single value.
   <dd>array</dd>
 </dl>
 
-Returns reversed copy of the array where the first array element becomes
-the last, and the last array element becomes first.
+Reverses the array. The first array element becomes the last and the last
+array element becomes first.
 
 ---
 
@@ -917,8 +917,7 @@ the last, and the last array element becomes first.
   <dd>array, boolean</dd>
 </dl>
 
-Tests whether any element in the array passes the test implemented by the
-provided quote.
+Tests whether any element in the array satisfies the provided quote.
 
 ---
 
@@ -931,7 +930,7 @@ provided quote.
   <dd>array</dd>
 </dl>
 
-Creates a duplicate free version of the array.
+Removes duplicate elements from the array.
 
 ---
 
@@ -944,8 +943,8 @@ Creates a duplicate free version of the array.
   <dd>array</dd>
 </dl>
 
-Set union: Returns new array by joining the two given arrays, excluding any
-duplicates and preserving the order from the given arrays.
+Set union: Returns a new array by joining the two given arrays, excluding
+any duplicates and preserving the order of the given arrays.
 
 ## boolean
 
