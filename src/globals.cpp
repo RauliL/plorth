@@ -38,7 +38,7 @@ namespace plorth
    * Gives:
    * - null
    *
-   * Pushes null value onto stack.
+   * Pushes the null value onto stack.
    */
   static void w_null(const ref<context>& ctx)
   {
@@ -51,7 +51,7 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Pushes boolean value of true onto stack.
+   * Pushes the boolean value true onto stack.
    */
   static void w_true(const ref<context>& ctx)
   {
@@ -64,7 +64,7 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Pushes boolean value of false onto stack.
+   * Pushes the boolean value false onto stack.
    */
   static void w_false(const ref<context>& ctx)
   {
@@ -77,7 +77,7 @@ namespace plorth
    * Gives:
    * - number
    *
-   * Pushes Eulers number onto stack.
+   * Pushes Euler's number onto stack.
    */
   static void w_e(const ref<context>& ctx)
   {
@@ -90,7 +90,7 @@ namespace plorth
    * Gives:
    * - number
    *
-   * Pushes value of pi onto stack.
+   * Pushes the value of pi onto stack.
    */
   static void w_pi(const ref<context>& ctx)
   {
@@ -133,7 +133,7 @@ namespace plorth
    * Takes:
    * - any
    *
-   * Discards top-most value from the stack.
+   * Discards topmost value from the stack.
    *
    *     1 drop #=> empty stack
    */
@@ -149,7 +149,7 @@ namespace plorth
    * - any
    * - any
    *
-   * Discards two top-most values from the stack.
+   * Discards the two topmost values from the stack.
    *
    *     1 2 3 2drop #=> 1
    */
@@ -171,7 +171,7 @@ namespace plorth
    * - any
    * - any
    *
-   * Duplicates top-most value of the stack.
+   * Duplicates the topmost value of the stack.
    *
    *     1 dup #=> 1 1
    */
@@ -199,7 +199,7 @@ namespace plorth
    * - any
    * - any
    *
-   * Duplicates two top-most values of the stack.
+   * Duplicates two topmost values of the stack.
    *
    *     1 2 2dup #=> 1 2 1 2
    */
@@ -227,7 +227,7 @@ namespace plorth
    * Gives:
    * - any
    *
-   * Drops the first value and pushes second value on the stack.
+   * Drops the first value and pushes the second value onto stack.
    *
    *     1 2 nip #=> 2
    */
@@ -253,7 +253,7 @@ namespace plorth
    * - any
    * - any
    *
-   * Copies second top-most value of the stack into top-most value of the
+   * Copies second topmost value of the stack into topmost value of the
    * stack.
    *
    *     1 2 over #=> 1 2 1
@@ -284,7 +284,7 @@ namespace plorth
    * - any
    * - any
    *
-   * Rotates three top-most values on the stack.
+   * Rotates the three topmost values on the stack.
    *
    *     1 2 3 rot #=> 2 3 1
    */
@@ -313,7 +313,7 @@ namespace plorth
    * - any
    * - any
    *
-   * Swaps positions of two top-most values on the stack.
+   * Swaps positions of the two topmost values on the stack.
    *
    *     1 2 swap #=> 2 1
    */
@@ -341,7 +341,7 @@ namespace plorth
    * - any
    * - any
    *
-   * Copies top-most value of the stack as the third top-most value of the
+   * Copies the topmost value of the stack as the third topmost value of the
    * stack.
    *
    *     1 2 tuck #=> 2 1 2
@@ -369,7 +369,7 @@ namespace plorth
    * - any
    * - boolean
    *
-   * Returns true if top-most value of the stack is array.
+   * Returns true if the topmost value of the stack is an array.
    */
   static void w_is_array(const ref<context>& ctx)
   {
@@ -392,7 +392,7 @@ namespace plorth
    * - any
    * - boolean
    *
-   * Returns true if top-most value of the stack is boolean.
+   * Returns true if the topmost value of the stack is a boolean.
    */
   static void w_is_boolean(const ref<context>& ctx)
   {
@@ -415,7 +415,7 @@ namespace plorth
    * - any
    * - boolean
    *
-   * Returns true if top-most value of the stack is error.
+   * Returns true if the topmost value of the stack is an error.
    */
   static void w_is_error(const ref<context>& ctx)
   {
@@ -438,7 +438,7 @@ namespace plorth
    * - any
    * - boolean
    *
-   * Returns true if top-most value of the stack is boolean.
+   * Returns true if the topmost value of the stack is a number.
    */
   static void w_is_number(const ref<context>& ctx)
   {
@@ -461,7 +461,7 @@ namespace plorth
    * - any
    * - boolean
    *
-   * Returns true if top-most value of the stack is null.
+   * Returns true if the topmost value of the stack is null.
    */
   static void w_is_null(const ref<context>& ctx)
   {
@@ -484,7 +484,7 @@ namespace plorth
    * - any
    * - boolean
    *
-   * Returns true if top-most value of the stack is object.
+   * Returns true if the topmost value of the stack is an object.
    */
   static void w_is_object(const ref<context>& ctx)
   {
@@ -507,7 +507,7 @@ namespace plorth
    * - any
    * - boolean
    *
-   * Returns true if top-most value of the stack is quote.
+   * Returns true if the topmost value of the stack is a quote.
    */
   static void w_is_quote(const ref<context>& ctx)
   {
@@ -530,7 +530,7 @@ namespace plorth
    * - any
    * - boolean
    *
-   * Returns true if top-most value of the stack is string.
+   * Returns true if the topmost value of the stack is a string.
    */
   static void w_is_string(const ref<context>& ctx)
   {
@@ -553,7 +553,7 @@ namespace plorth
    * - any
    * - string
    *
-   * Returns name of the type of given value as string.
+   * Returns name of the type of the topmost value as a string.
    */
   static void w_typeof(const ref<context>& ctx)
   {
@@ -584,7 +584,7 @@ namespace plorth
    * - any
    * - object
    *
-   * Retrieves proto of the top-most value. If the top-most value of the stack
+   * Retrieves proto of the topmost value. If the topmost value of the stack
    * is null, null will be returned instead.
    */
   static void w_proto(const ref<context>& ctx)
@@ -612,8 +612,8 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Converts top-most value of the stack into boolean. Null and false will
-   * become false while everything else will be true.
+   * Converts the topmost value of the stack into a boolean. Null and false
+   * will become false while everything else will become true.
    */
   static void w_to_boolean(const ref<context>& ctx)
   {
@@ -640,7 +640,8 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Converts top-most value of the stack into string.
+   * Converts the topmost value of the stack into a string. Null will become
+   * an empty string.
    */
   static void w_to_string(const ref<context>& ctx)
   {
@@ -667,7 +668,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Converts top-most value of the stack into a string that most accurately
+   * Converts the topmost value of the stack into a string that most accurately
    * represents what the value would look like in source code.
    */
   static void w_to_source(const ref<context>& ctx)
@@ -796,7 +797,7 @@ namespace plorth
   }
 
   /**
-   * Word: try
+   * Word: try-else
    *
    * Takes:
    * - quote
@@ -839,7 +840,7 @@ namespace plorth
    * Gives:
    * - quote
    *
-   * Compiles given string of source code into quote.
+   * Compiles given string of source code into a quote.
    */
   static void w_compile(const ref<context>& ctx)
   {
@@ -864,7 +865,7 @@ namespace plorth
    * Gives:
    * - object
    *
-   * Returns global dictionary as object.
+   * Returns the global dictionary as an object.
    */
   static void w_globals(const ref<context>& ctx)
   {
@@ -877,7 +878,7 @@ namespace plorth
    * Gives:
    * - object
    *
-   * Returns local dictionary of current execution context as object.
+   * Returns the local dictionary of current execution context as an object.
    */
   static void w_locals(const ref<context>& ctx)
   {
@@ -911,7 +912,7 @@ namespace plorth
    * Takes:
    * - string
    *
-   * Imports module from given path and adds all of it's exported words into
+   * Imports module from given path and adds all of its exported words into
    * this execution context.
    */
   static void w_import(const ref<context>& ctx)
@@ -930,7 +931,7 @@ namespace plorth
    * Gives:
    * - array<string>
    *
-   * Returns command line arguments given for the interpreter as an array of
+   * Returns command line arguments given to the interpreter as an array of
    * strings.
    */
   static void w_args(const ref<context>& ctx)
@@ -984,8 +985,8 @@ namespace plorth
    * Gives:
    * - error
    *
-   * Construct instance of type error with with given optional error message
-   * and places it on the stack.
+   * Construct an instance of type error with with given optional error
+   * message and places it on the stack.
    */
   static void w_type_error(const ref<context>& ctx)
   {
@@ -1001,8 +1002,8 @@ namespace plorth
    * Gives:
    * - error
    *
-   * Constructs instance of value error with given optional error message and
-   * places it on the stack.
+   * Constructs an instance of value error with given optional error message
+   * and places it on the stack.
    */
   static void w_value_error(const ref<context>& ctx)
   {
@@ -1018,7 +1019,7 @@ namespace plorth
    * Gives:
    * - error
    *
-   * Construct instance of range error with with given optional error message
+   * Construct an instance of range error with given optional error message
    * and places it on the stack.
    */
   static void w_range_error(const ref<context>& ctx)
@@ -1035,7 +1036,7 @@ namespace plorth
    * Gives:
    * - error
    *
-   * Construct instance of unknown error with with given optional error
+   * Construct an instance of unknown error with with given optional error
    * message and places it on the stack.
    */
   static void w_unknown_error(const ref<context>& ctx)
@@ -1049,7 +1050,7 @@ namespace plorth
    * Takes:
    * - any
    *
-   * Prints top-most value of the stack to stdout.
+   * Prints topmost value of the stack to stdout.
    */
   static void w_print(const ref<context>& ctx)
   {
@@ -1067,7 +1068,8 @@ namespace plorth
    * Takes:
    * - any
    *
-   * Prints top-most value of the stack to stdout with terminating new line.
+   * Prints the topmost value of the stack to stdout with a terminating new
+   * line.
    */
   static void w_println(const ref<context>& ctx)
   {
@@ -1091,7 +1093,8 @@ namespace plorth
    * - number
    *
    * Outputs given Unicode code point into the standard output stream. Range
-   * error will be thrown if the given number is not valid Unicode code point.
+   * error will be thrown if the given number is not a valid Unicode code
+   * point.
    */
   static void w_emit(const ref<context>& ctx)
   {
@@ -1116,8 +1119,8 @@ namespace plorth
    * Gives:
    * - number
    *
-   * Returns the timestamp of the number of seconds that have elapsed since the
-   * Unix epoch (1 January 1970 00:00:00 UTC).
+   * Returns the number of seconds that have elapsed since the  Unix epoch
+   * (1 January 1970 00:00:00 UTC) rounded to the nearest integer.
    */
   static void w_now(const ref<context>& ctx)
   {
@@ -1134,7 +1137,7 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Tests whether the two top-most values of the stack are equal.
+   * Tests whether the two topmost values of the stack are equal.
    */
   static void w_eq(const ref<context>& ctx)
   {
@@ -1157,7 +1160,7 @@ namespace plorth
    * Gives:
    * - boolean
    *
-   * Tests whether the two top-most values of the stack are not equal.
+   * Tests whether the two topmost values of the stack are not equal.
    */
   static void w_ne(const ref<context>& ctx)
   {
