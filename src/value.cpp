@@ -25,10 +25,45 @@
  */
 #include <plorth/runtime.hpp>
 
-#include <sstream>
-
 namespace plorth
 {
+  unistring value::type_description() const
+  {
+    return type_description(type());
+  }
+
+  unistring value::type_description(enum type type)
+  {
+    switch (type)
+    {
+    case value::type_null:
+      return U"null";
+
+    case value::type_boolean:
+      return U"boolean";
+
+    case value::type_number:
+      return U"number";
+
+    case value::type_string:
+      return U"string";
+
+    case value::type_array:
+      return U"array";
+
+    case value::type_object:
+      return U"object";
+
+    case value::type_quote:
+      return U"quote";
+
+    case value::type_error:
+      return U"error";
+    }
+
+    return U"unknown";
+  }
+
   ref<object> value::prototype(const ref<class runtime>& runtime) const
   {
     switch (type())
@@ -86,45 +121,11 @@ namespace plorth
     return a ? !b || !a->equals(b) : !!b;
   }
 
-  std::ostream& operator<<(std::ostream& os, enum value::type type)
+  std::ostream& operator<<(std::ostream& out, enum value::type type)
   {
-    switch (type)
-    {
-      case value::type_null:
-        os << "null";
-        break;
+    out << value::type_description(type);
 
-      case value::type_boolean:
-        os << "boolean";
-        break;
-
-      case value::type_number:
-        os << "number";
-        break;
-
-      case value::type_string:
-        os << "string";
-        break;
-
-      case value::type_array:
-        os << "array";
-        break;
-
-      case value::type_object:
-        os << "object";
-        break;
-
-      case value::type_quote:
-        os << "quote";
-        break;
-
-      case value::type_error:
-        os << "error";
-        break;
-
-    }
-
-    return os;
+    return out;
   }
 
   std::ostream& operator<<(std::ostream& os, const ref<class value>& value)
@@ -134,59 +135,6 @@ namespace plorth
       os << value->to_string();
     } else {
       os << "<no value>";
-    }
-
-    return os;
-  }
-
-  uniostream& operator<<(uniostream& os, enum value::type type)
-  {
-    switch (type)
-    {
-    case value::type_null:
-      os << U"null";
-      break;
-
-    case value::type_boolean:
-      os << U"boolean";
-      break;
-
-    case value::type_number:
-      os << U"number";
-      break;
-
-    case value::type_string:
-      os << U"string";
-      break;
-
-    case value::type_array:
-      os << U"array";
-      break;
-
-    case value::type_object:
-      os << U"object";
-      break;
-
-    case value::type_quote:
-      os << U"quote";
-      break;
-
-    case value::type_error:
-      os << U"error";
-      break;
-
-    }
-
-    return os;
-  }
-
-  uniostream& operator<<(uniostream& os, const ref<class value>& value)
-  {
-    if (value)
-    {
-      os << value->to_string();
-    } else {
-      os << U"<no value>";
     }
 
     return os;

@@ -66,6 +66,16 @@ namespace plorth
     virtual enum type type() const = 0;
 
     /**
+     * Returns textual description of type of the value.
+     */
+    unistring type_description() const;
+
+    /**
+     * Returns textual description of given value type.
+     */
+    static unistring type_description(enum type type);
+
+    /**
      * Tests whether the value is of given type.
      */
     inline bool is(enum type t) const
@@ -107,9 +117,6 @@ namespace plorth
 
   std::ostream& operator<<(std::ostream&, enum value::type);
   std::ostream& operator<<(std::ostream&, const ref<value>&);
-
-  uniostream& operator<<(uniostream&, enum value::type);
-  uniostream& operator<<(uniostream&, const ref<value>&);
 }
 
 #endif /* !PLORTH_VALUE_HPP_GUARD */

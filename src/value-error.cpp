@@ -25,13 +25,45 @@
  */
 #include <plorth/context.hpp>
 
-#include <sstream>
-
 namespace plorth
 {
   error::error(enum code code, const unistring& message)
     : m_code(code)
     , m_message(message) {}
+
+  unistring error::code_description() const
+  {
+    return code_description(m_code);
+  }
+
+  unistring error::code_description(enum code code)
+  {
+    switch (code)
+    {
+    case error::code_syntax:
+      return U"Syntax error";
+
+    case error::code_reference:
+      return U"Reference error";
+
+    case error::code_type:
+      return U"Type error";
+
+    case error::code_value:
+      return U"Value error";
+
+    case error::code_range:
+      return U"Range error";
+
+    case error::code_import:
+      return U"Import error";
+
+    case error::code_unknown:
+      return U"Unknown error";
+    }
+
+    return U"Unknown error";
+  }
 
   bool error::equals(const ref<value>& that) const
   {
@@ -49,15 +81,15 @@ namespace plorth
 
   unistring error::to_string() const
   {
-    std::basic_stringstream<char32_t> ss;
+    unistring result;
 
-    ss << m_code;
+    result += code_description();
     if (!m_message.empty())
     {
-      ss << U": " << m_message;
+      result += U": " + m_message;
     }
 
-    return ss.str();
+    return result;
   }
 
   unistring error::to_source() const
@@ -67,72 +99,7 @@ namespace plorth
 
   std::ostream& operator<<(std::ostream& out, enum error::code code)
   {
-    switch (code)
-    {
-      case error::code_syntax:
-        out << "Syntax error";
-        break;
-
-      case error::code_reference:
-        out << "Reference error";
-        break;
-
-      case error::code_type:
-        out << "Type error";
-        break;
-
-      case error::code_value:
-        out << "Value error";
-        break;
-
-      case error::code_range:
-        out << "Range error";
-        break;
-
-      case error::code_import:
-        out << "Import error";
-        break;
-
-      case error::code_unknown:
-        out << "Unknown error";
-        break;
-    }
-
-    return out;
-  }
-
-  uniostream& operator<<(uniostream& out, enum error::code code)
-  {
-    switch (code)
-    {
-    case error::code_syntax:
-      out << U"Syntax error";
-      break;
-
-    case error::code_reference:
-      out << U"Reference error";
-      break;
-
-    case error::code_type:
-      out << U"Type error";
-      break;
-
-    case error::code_value:
-      out << U"Value error";
-      break;
-
-    case error::code_range:
-      out << U"Range error";
-      break;
-
-    case error::code_import:
-      out << U"Import error";
-      break;
-
-    case error::code_unknown:
-      out << U"Unknown error";
-      break;
-    }
+    out << error::code_description(code);
 
     return out;
   }

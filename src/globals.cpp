@@ -28,8 +28,6 @@
 #include <cmath>
 #include <ctime>
 
-#include <sstream>
-
 namespace plorth
 {
   /**
@@ -604,10 +602,7 @@ namespace plorth
       ctx->push(value);
       if (value)
       {
-        std::basic_stringstream<char32_t> ss;
-
-        ss << value->type();
-        ctx->push_string(ss.str());
+        ctx->push_string(value->type_description());
       } else {
         ctx->push_string(U"null");
       }
@@ -1005,10 +1000,10 @@ namespace plorth
       {
         message = val.cast<string>()->to_string();
       } else {
-        std::basic_stringstream<char32_t> ss;
-
-        ss << U"Expected string, got " << val->type() << U" instead.";
-        ctx->error(error::code_type, ss.str());
+        ctx->error(
+          error::code_type,
+          U"Expected string, got " + val->type_description() + U" instead."
+        );
         return;
       }
     }

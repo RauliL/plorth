@@ -35,7 +35,6 @@ namespace plorth
 {
   using unichar = char32_t;
   using unistring = std::u32string;
-  using uniostream = std::basic_ostream<unichar>;
 
   /**
    * Decodes Unicode string into UTF-8 and outputs it into given byte stream.

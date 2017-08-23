@@ -58,6 +58,16 @@ namespace plorth
       return m_code;
     }
 
+    /**
+     * Returns textual description of the error code.
+     */
+    unistring code_description() const;
+
+    /**
+     * Returns textual description of given error code.
+     */
+    static unistring code_description(enum code code);
+
     inline const unistring& message() const
     {
       return m_message;
@@ -78,7 +88,6 @@ namespace plorth
   };
 
   std::ostream& operator<<(std::ostream&, enum error::code);
-  uniostream& operator<<(uniostream&, enum error::code);
 }
 
 #endif /* !PLORTH_VALUE_ERROR_HPP_GUARD */

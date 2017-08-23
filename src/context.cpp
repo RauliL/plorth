@@ -27,8 +27,6 @@
 
 #include "./utils.hpp"
 
-#include <sstream>
-
 namespace plorth
 {
   context::context(const ref<class runtime>& runtime)
@@ -184,17 +182,12 @@ namespace plorth
 
       if ((!value && type != value::type_null) || (value && !value->is(type)))
       {
-        std::basic_stringstream<char32_t> ss;
-
-        ss << U"Expected " << type << U", got ";
-        if (value)
-        {
-          ss << value->type();
-        } else {
-          ss << U"null";
-        }
-        ss << U" instead.";
-        error(error::code_type, ss.str());
+        error(
+          error::code_type,
+          U"Expected " + value::type_description(type) + U", got " +
+          (value ? value->type_description().c_str() : U"null") +
+          U" instead."
+        );
 
         return false;
       }
@@ -228,17 +221,12 @@ namespace plorth
       slot = m_data.back();
       if ((!slot && type != value::type_null) || (slot && !slot->is(type)))
       {
-        std::basic_stringstream<char32_t> ss;
-
-        ss << U"Expected " << type << U", got ";
-        if (slot)
-        {
-          ss << slot->type();
-        } else {
-          ss << U"null";
-        }
-        ss << U" instead.";
-        error(error::code_type, ss.str());
+        error(
+          error::code_type,
+          U"Expected " + value::type_description(type) + U", got " +
+          (slot ? slot->type_description().c_str() : U"null") +
+          U" instead."
+        );
 
         return false;
       }
