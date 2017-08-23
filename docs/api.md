@@ -1316,7 +1316,7 @@ Executes a quote given number of times.
   <dd>object</dd>
 </dl>
 
-Constructs copy of the object with new named property either introduced
+Constructs a copy of the object with new named property either introduced
 or replaced.
 
 ---
@@ -1330,7 +1330,8 @@ or replaced.
   <dd>object</dd>
 </dl>
 
-Combines contents of two objects together and returns result.
+Combines the contents of two objects together and returns the result. If
+the two objects share keys the second object's values take precedence.
 
 ---
 
@@ -1343,9 +1344,9 @@ Combines contents of two objects together and returns result.
   <dd>object, any</dd>
 </dl>
 
-Retrieves value identified by given string from properties of the object.
-If the object does not have such property, range error will be thrown.
-Notice that inherited properties are also included in the search.
+Retrieves the value identified by given string from properties of the
+object. If the object does not have such a property, range error will be
+thrown. Notice that inherited properties are also included in the search.
 
 ---
 
@@ -1358,7 +1359,7 @@ Notice that inherited properties are also included in the search.
   <dd>object, boolean</dd>
 </dl>
 
-Tests whether object has own property with given identifier. Inherited
+Tests whether the object has own property with given identifier. Inherited
 properties are not included in the search.
 
 ---
@@ -1372,7 +1373,7 @@ properties are not included in the search.
   <dd>object, boolean</dd>
 </dl>
 
-Tests whether object has property with given identifier. Notice that
+Tests whether the object has property with given identifier. Notice that
 inherited properties are also included in the search.
 
 ---
@@ -1400,8 +1401,8 @@ that inherited properties are not included in the list.
   <dd>object</dd>
 </dl>
 
-Constructs new instance of the object and invokes it's constructor if it
-has one with the newly constructed object pushed into top of the stack.
+Constructs a new instance of the object and invokes its constructor if it
+has one with the newly constructed object pushed on top of the stack.
 
 Type error will be thrown if the object has no "prototype" property.
 
