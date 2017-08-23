@@ -155,6 +155,14 @@
 
 <p>Tests whether the two topmost values of the stack are not equal.</p>
 <hr />
+<h3 id="-inf">-inf</h3>
+<dl>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+<p>Pushes the value of negative infinity onto stack.</p>
+<hr />
 <h3 id="2drop">2drop</h3>
 <dl>
   <dt>Takes:</dt>
@@ -370,6 +378,14 @@ point.</p>
 <p>Imports module from given path and adds all of its exported words into
 this execution context.</p>
 <hr />
+<h3 id="inf">inf</h3>
+<dl>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+<p>Pushes the value of positive infinity onto stack.</p>
+<hr />
 <h3 id="locals">locals</h3>
 <dl>
   <dt>Gives:</dt>
@@ -377,6 +393,14 @@ this execution context.</p>
 </dl>
 
 <p>Returns the local dictionary of current execution context as an object.</p>
+<hr />
+<h3 id="nan">nan</h3>
+<dl>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+<p>Pushes the value of NaN (not a number) onto stack.</p>
 <hr />
 <h3 id="nip">nip</h3>
 <dl>
@@ -1106,7 +1130,7 @@ numbers.</p>
 
 <p>Returns minimum of two numbers.</p>
 <hr />
-<h3 id="nan">nan?</h3>
+<h3 id="nan_1">nan?</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number</dd>
@@ -1143,7 +1167,7 @@ numbers.</p>
   <dd>object</dd>
 </dl>
 
-<p>Constructs copy of the object with new named property either introduced
+<p>Constructs a copy of the object with new named property either introduced
 or replaced.</p>
 <hr />
 <h3 id="_18">+</h3>
@@ -1154,7 +1178,8 @@ or replaced.</p>
   <dd>object</dd>
 </dl>
 
-<p>Combines contents of two objects together and returns result.</p>
+<p>Combines the contents of two objects together and returns the result. If
+the two objects share keys the second object's values take precedence.</p>
 <hr />
 <h3 id="_19">@</h3>
 <dl>
@@ -1164,9 +1189,9 @@ or replaced.</p>
   <dd>object, any</dd>
 </dl>
 
-<p>Retrieves value identified by given string from properties of the object.
-If the object does not have such property, range error will be thrown.
-Notice that inherited properties are also included in the search.</p>
+<p>Retrieves the value identified by given string from properties of the
+object. If the object does not have such a property, range error will be
+thrown. Notice that inherited properties are also included in the search.</p>
 <hr />
 <h3 id="has-own">has-own?</h3>
 <dl>
@@ -1176,7 +1201,7 @@ Notice that inherited properties are also included in the search.</p>
   <dd>object, boolean</dd>
 </dl>
 
-<p>Tests whether object has own property with given identifier. Inherited
+<p>Tests whether the object has own property with given identifier. Inherited
 properties are not included in the search.</p>
 <hr />
 <h3 id="has">has?</h3>
@@ -1187,7 +1212,7 @@ properties are not included in the search.</p>
   <dd>object, boolean</dd>
 </dl>
 
-<p>Tests whether object has property with given identifier. Notice that
+<p>Tests whether the object has property with given identifier. Notice that
 inherited properties are also included in the search.</p>
 <hr />
 <h3 id="keys">keys</h3>
@@ -1209,8 +1234,8 @@ that inherited properties are not included in the list.</p>
   <dd>object</dd>
 </dl>
 
-<p>Constructs new instance of the object and invokes it's constructor if it
-has one with the newly constructed object pushed into top of the stack.</p>
+<p>Constructs a new instance of the object and invokes its constructor if it
+has one with the newly constructed object pushed on top of the stack.</p>
 <p>Type error will be thrown if the object has no "prototype" property.</p>
 <hr />
 <h3 id="values">values</h3>
@@ -1231,7 +1256,7 @@ that inherited properties are not included in the list.</p>
   <dd>quote</dd>
 </dl>
 
-<p>Executes quote taken from top of the stack.</p>
+<p>Executes the quote taken from the top of the stack.</p>
 <hr />
 <h3 id="compose">compose</h3>
 <dl>
@@ -1241,7 +1266,7 @@ that inherited properties are not included in the list.</p>
   <dd>quote</dd>
 </dl>
 
-<p>Constructs new quote which will call the two given quotes in sequence.</p>
+<p>Constructs a new quote which will call the two given quotes in sequence.</p>
 <hr />
 <h3 id="curry">curry</h3>
 <dl>
@@ -1251,7 +1276,7 @@ that inherited properties are not included in the list.</p>
   <dd>quote</dd>
 </dl>
 
-<p>Constructs curried quote where given value will be pushed into the stack
+<p>Constructs a curried quote where given value will be pushed onto the stack
 before calling the original quote.</p>
 <hr />
 <h3 id="negate">negate</h3>
@@ -1262,8 +1287,8 @@ before calling the original quote.</p>
   <dd>quote</dd>
 </dl>
 
-<p>Constructs negated version of given quote which negates boolean result
-returned by the original quote.</p>
+<p>Constructs a negated version of given quote which negates the boolean
+result returned by the original quote.</p>
 <h2 id="string_2">string</h2>
 <hr />
 <h3 id="_20">*</h3>
@@ -1274,7 +1299,7 @@ returned by the original quote.</p>
   <dd>string</dd>
 </dl>
 
-<p>Repeats string given number of times.</p>
+<p>Repeats the string given number of times.</p>
 <hr />
 <h3 id="_21">+</h3>
 <dl>
@@ -1284,7 +1309,7 @@ returned by the original quote.</p>
   <dd>string</dd>
 </dl>
 
-<p>Concatenates contents of two strings and returns the result.</p>
+<p>Concatenates the contents of the two strings and returns the result.</p>
 <hr />
 <h3 id="number_2">&gt;number</h3>
 <dl>
@@ -1294,8 +1319,8 @@ returned by the original quote.</p>
   <dd>number</dd>
 </dl>
 
-<p>Converts string into floating point decimal number, or throws value error
-if the number cannot be converted into one.</p>
+<p>Converts string into a floating point decimal number, or throws a value
+error if the number cannot be converted into one.</p>
 <hr />
 <h3 id="_22">@</h3>
 <dl>
@@ -1305,8 +1330,9 @@ if the number cannot be converted into one.</p>
   <dd>string, string</dd>
 </dl>
 
-<p>Retrieves character from given index. Negative indexes count backwards. If
-given index is out of bounds, range error will be thrown.</p>
+<p>Retrieves a character at given index. Negative indices count backwards
+from the end of the string. If given index is out of bounds, a range error
+will be thrown.</p>
 <hr />
 <h3 id="capitalize">capitalize</h3>
 <dl>
@@ -1316,8 +1342,8 @@ given index is out of bounds, range error will be thrown.</p>
   <dd>string</dd>
 </dl>
 
-<p>Converts first character of the string into upper case and remaining to
-lower case.</p>
+<p>Converts the first character of the string into upper case and the
+remaining characters into lower case.</p>
 <hr />
 <h3 id="chars">chars</h3>
 <dl>
@@ -1338,7 +1364,7 @@ substrings.</p>
   <dd>string, number</dd>
 </dl>
 
-<p>Returns length of the string.</p>
+<p>Returns the length of the string.</p>
 <hr />
 <h3 id="lines">lines</h3>
 <dl>
@@ -1358,7 +1384,7 @@ substrings.</p>
   <dd>string</dd>
 </dl>
 
-<p>Converts string into lower case.</p>
+<p>Converts the string into lower case.</p>
 <hr />
 <h3 id="lower-case_1">lower-case?</h3>
 <dl>
@@ -1379,7 +1405,7 @@ return false.</p>
   <dd>string</dd>
 </dl>
 
-<p>Returns reversed copy of the string.</p>
+<p>Reverses the string.</p>
 <hr />
 <h3 id="runes">runes</h3>
 <dl>
@@ -1411,8 +1437,7 @@ return false.</p>
   <dd>string</dd>
 </dl>
 
-<p>Constructs copy of string where lower case characters have been turned into
-upper case and vice versa.</p>
+<p>Turns lower case characters in the string into upper case and vice versa.</p>
 <hr />
 <h3 id="trim">trim</h3>
 <dl>
@@ -1422,7 +1447,7 @@ upper case and vice versa.</p>
   <dd>string</dd>
 </dl>
 
-<p>Strips whitespace from begining and end of the string and returns result.</p>
+<p>Strips whitespace from the begining and the end of the string.</p>
 <hr />
 <h3 id="trim-left">trim-left</h3>
 <dl>
@@ -1432,7 +1457,7 @@ upper case and vice versa.</p>
   <dd>string</dd>
 </dl>
 
-<p>Strips whitespace from begining of the string and returns result.</p>
+<p>Strips whitespace from the begining of the string.</p>
 <hr />
 <h3 id="trim-right">trim-right</h3>
 <dl>
@@ -1442,7 +1467,7 @@ upper case and vice versa.</p>
   <dd>string</dd>
 </dl>
 
-<p>Strips whitespace from end of the string and returns result.</p>
+<p>Strips whitespace from the end of the string.</p>
 <hr />
 <h3 id="upper-case">upper-case?</h3>
 <dl>
