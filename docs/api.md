@@ -1431,7 +1431,7 @@ that inherited properties are not included in the list.
   <dd>quote</dd>
 </dl>
 
-Executes quote taken from top of the stack.
+Executes the quote taken from the top of the stack.
 
 ---
 
@@ -1444,7 +1444,7 @@ Executes quote taken from top of the stack.
   <dd>quote</dd>
 </dl>
 
-Constructs new quote which will call the two given quotes in sequence.
+Constructs a new quote which will call the two given quotes in sequence.
 
 ---
 
@@ -1457,7 +1457,7 @@ Constructs new quote which will call the two given quotes in sequence.
   <dd>quote</dd>
 </dl>
 
-Constructs curried quote where given value will be pushed into the stack
+Constructs a curried quote where given value will be pushed onto the stack
 before calling the original quote.
 
 ---
@@ -1471,8 +1471,8 @@ before calling the original quote.
   <dd>quote</dd>
 </dl>
 
-Constructs negated version of given quote which negates boolean result
-returned by the original quote.
+Constructs a negated version of given quote which negates the boolean
+result returned by the original quote.
 
 ## string
 
@@ -1487,7 +1487,7 @@ returned by the original quote.
   <dd>string</dd>
 </dl>
 
-Repeats string given number of times.
+Repeats the string given number of times.
 
 ---
 
@@ -1500,7 +1500,7 @@ Repeats string given number of times.
   <dd>string</dd>
 </dl>
 
-Concatenates contents of two strings and returns the result.
+Concatenates the contents of the two strings and returns the result.
 
 ---
 
@@ -1513,8 +1513,8 @@ Concatenates contents of two strings and returns the result.
   <dd>number</dd>
 </dl>
 
-Converts string into floating point decimal number, or throws value error
-if the number cannot be converted into one.
+Converts string into a floating point decimal number, or throws a value
+error if the number cannot be converted into one.
 
 ---
 
@@ -1527,8 +1527,9 @@ if the number cannot be converted into one.
   <dd>string, string</dd>
 </dl>
 
-Retrieves character from given index. Negative indexes count backwards. If
-given index is out of bounds, range error will be thrown.
+Retrieves a character at given index. Negative indices count backwards
+from the end of the string. If given index is out of bounds, a range error
+will be thrown.
 
 ---
 
@@ -1541,8 +1542,8 @@ given index is out of bounds, range error will be thrown.
   <dd>string</dd>
 </dl>
 
-Converts first character of the string into upper case and remaining to
-lower case.
+Converts the first character of the string into upper case and the
+remaining characters into lower case.
 
 ---
 
@@ -1569,7 +1570,7 @@ substrings.
   <dd>string, number</dd>
 </dl>
 
-Returns length of the string.
+Returns the length of the string.
 
 ---
 
@@ -1595,7 +1596,7 @@ Extracts lines from the string and returns them in an array.
   <dd>string</dd>
 </dl>
 
-Converts string into lower case.
+Converts the string into lower case.
 
 ---
 
@@ -1622,7 +1623,7 @@ return false.
   <dd>string</dd>
 </dl>
 
-Returns reversed copy of the string.
+Reverses the string.
 
 ---
 
@@ -1663,8 +1664,7 @@ return false.
   <dd>string</dd>
 </dl>
 
-Constructs copy of string where lower case characters have been turned into
-upper case and vice versa.
+Turns lower case characters in the string into upper case and vice versa.
 
 ---
 
@@ -1677,7 +1677,7 @@ upper case and vice versa.
   <dd>string</dd>
 </dl>
 
-Strips whitespace from begining and end of the string and returns result.
+Strips whitespace from the begining and the end of the string.
 
 ---
 
@@ -1690,7 +1690,7 @@ Strips whitespace from begining and end of the string and returns result.
   <dd>string</dd>
 </dl>
 
-Strips whitespace from begining of the string and returns result.
+Strips whitespace from the begining of the string.
 
 ---
 
@@ -1703,7 +1703,7 @@ Strips whitespace from begining of the string and returns result.
   <dd>string</dd>
 </dl>
 
-Strips whitespace from end of the string and returns result.
+Strips whitespace from the end of the string.
 
 ---
 

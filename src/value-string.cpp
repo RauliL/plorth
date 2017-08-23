@@ -193,7 +193,7 @@ namespace plorth
    * - string
    * - number
    *
-   * Returns length of the string.
+   * Returns the length of the string.
    */
   static void w_length(const ref<context>& ctx)
   {
@@ -507,7 +507,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Returns reversed copy of the string.
+   * Reverses the string.
    */
   static void w_reverse(const ref<context>& ctx)
   {
@@ -536,7 +536,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Converts string into upper case.
+   * Converts the string into upper case.
    */
   static void w_upper_case(const ref<context>& ctx)
   {
@@ -565,7 +565,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Converts string into lower case.
+   * Converts the string into lower case.
    */
   static void w_lower_case(const ref<context>& ctx)
   {
@@ -594,8 +594,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Constructs copy of string where lower case characters have been turned into
-   * upper case and vice versa.
+   * Turns lower case characters in the string into upper case and vice versa.
    */
   static void w_swap_case(const ref<context>& ctx)
   {
@@ -632,8 +631,8 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Converts first character of the string into upper case and remaining to
-   * lower case.
+   * Converts the first character of the string into upper case and the
+   * remaining characters into lower case.
    */
   static void w_capitalize(const ref<context>& ctx)
   {
@@ -670,7 +669,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Strips whitespace from begining and end of the string and returns result.
+   * Strips whitespace from the begining and the end of the string.
    */
   static void w_trim(const ref<context>& ctx)
   {
@@ -714,7 +713,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Strips whitespace from begining of the string and returns result.
+   * Strips whitespace from the begining of the string.
    */
   static void w_trim_left(const ref<context>& ctx)
   {
@@ -751,7 +750,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Strips whitespace from end of the string and returns result.
+   * Strips whitespace from the end of the string.
    */
   static void w_trim_right(const ref<context>& ctx)
   {
@@ -788,8 +787,8 @@ namespace plorth
    * Gives:
    * - number
    *
-   * Converts string into floating point decimal number, or throws value error
-   * if the number cannot be converted into one.
+   * Converts string into a floating point decimal number, or throws a value
+   * error if the number cannot be converted into one.
    */
   static void w_to_number(const ref<context>& ctx)
   {
@@ -819,7 +818,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Concatenates contents of two strings and returns the result.
+   * Concatenates the contents of the two strings and returns the result.
    */
   static void w_concat(const ref<context>& ctx)
   {
@@ -852,7 +851,7 @@ namespace plorth
    * Gives:
    * - string
    *
-   * Repeats string given number of times.
+   * Repeats the string given number of times.
    */
   static void w_repeat(const ref<context>& ctx)
   {
@@ -897,8 +896,9 @@ namespace plorth
    * - string
    * - string
    *
-   * Retrieves character from given index. Negative indexes count backwards. If
-   * given index is out of bounds, range error will be thrown.
+   * Retrieves a character at given index. Negative indices count backwards
+   * from the end of the string. If given index is out of bounds, a range error
+   * will be thrown.
    */
   static void w_get(const ref<context>& ctx)
   {

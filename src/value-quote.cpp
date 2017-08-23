@@ -710,7 +710,7 @@ namespace plorth
    * Takes:
    * - quote
    *
-   * Executes quote taken from top of the stack.
+   * Executes the quote taken from the top of the stack.
    */
   static void w_call(const ref<context>& ctx)
   {
@@ -733,7 +733,7 @@ namespace plorth
    * Gives:
    * - quote
    *
-   * Constructs new quote which will call the two given quotes in sequence.
+   * Constructs a new quote which will call the two given quotes in sequence.
    */
   static void w_compose(const ref<context>& ctx)
   {
@@ -757,7 +757,7 @@ namespace plorth
    * Gives:
    * - quote
    *
-   * Constructs curried quote where given value will be pushed into the stack
+   * Constructs a curried quote where given value will be pushed onto the stack
    * before calling the original quote.
    */
   static void w_curry(const ref<context>& ctx)
@@ -781,8 +781,8 @@ namespace plorth
    * Gives:
    * - quote
    *
-   * Constructs negated version of given quote which negates boolean result
-   * returned by the original quote.
+   * Constructs a negated version of given quote which negates the boolean
+   * result returned by the original quote.
    */
   static void w_negate(const ref<context>& ctx)
   {
