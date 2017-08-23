@@ -19,6 +19,17 @@ Tests whether the two topmost values of the stack are not equal.
 
 ---
 
+### -inf
+
+<dl>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+Pushes the value of negative infinity onto stack.
+
+---
+
 ### 2drop
 
 <dl>
@@ -307,6 +318,17 @@ this execution context.
 
 ---
 
+### inf
+
+<dl>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+Pushes the value of positive infinity onto stack.
+
+---
+
 ### locals
 
 <dl>
@@ -315,6 +337,17 @@ this execution context.
 </dl>
 
 Returns the local dictionary of current execution context as an object.
+
+---
+
+### nan
+
+<dl>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+Pushes the value of NaN (not a number) onto stack.
 
 ---
 
