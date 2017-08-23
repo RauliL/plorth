@@ -98,6 +98,46 @@ namespace plorth
   }
 
   /**
+   * Word: inf
+   *
+   * Gives:
+   * - number
+   *
+   * Pushes the value of positive infinity onto stack.
+   */
+  static void w_inf(const ref<context>& ctx)
+  {
+    ctx->push_real(INFINITY);
+  }
+
+  /**
+   * Word: -inf
+   *
+   * Gives:
+   * - number
+   *
+   * Pushes the value of negative infinity onto stack.
+   */
+  static void w_minus_inf(const ref<context>& ctx)
+  {
+    ctx->push_real(-INFINITY);
+  }
+
+  /**
+   * Word: nan
+   *
+   * Gives:
+   * - number
+   *
+   * Pushes the value of NaN (not a number) onto stack.
+   */
+  static void w_nan(const ref<context>& ctx)
+  {
+    ctx->push_real(NAN);
+  }
+
+
+  /**
    * Word: nop
    *
    * Does nothing. Can be used to construct empty quotes.
@@ -1185,6 +1225,9 @@ namespace plorth
         { U"false", w_false },
         { U"e", w_e },
         { U"pi", w_pi },
+        { U"inf", w_inf },
+        { U"-inf", w_minus_inf },
+        { U"nan", w_nan },
 
         // Stack manipulation.
         { U"nop", w_nop },
