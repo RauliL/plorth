@@ -163,8 +163,6 @@ namespace plorth
 
   std::ostream& operator<<(std::ostream&, enum token::type);
   std::ostream& operator<<(std::ostream&, const token&);
-  uniostream& operator<<(uniostream&, enum token::type);
-  uniostream& operator<<(uniostream&, const token&);
 }
 
 #endif /* !PLORTH_TOKEN_HPP_GUARD */
