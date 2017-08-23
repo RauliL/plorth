@@ -222,7 +222,7 @@ namespace plorth
    * - object
    * - boolean
    *
-   * Tests whether object has property with given identifier. Notice that
+   * Tests whether the object has property with given identifier. Notice that
    * inherited properties are also included in the search.
    */
   static void w_has(const ref<context>& ctx)
@@ -251,7 +251,7 @@ namespace plorth
    * - object
    * - boolean
    *
-   * Tests whether object has own property with given identifier. Inherited
+   * Tests whether the object has own property with given identifier. Inherited
    * properties are not included in the search.
    */
   static void w_has_own(const ref<context>& ctx)
@@ -278,8 +278,8 @@ namespace plorth
    * Gives:
    * - object
    *
-   * Constructs new instance of the object and invokes it's constructor if it
-   * has one with the newly constructed object pushed into top of the stack.
+   * Constructs a new instance of the object and invokes its constructor if it
+   * has one with the newly constructed object pushed on top of the stack.
    *
    * Type error will be thrown if the object has no "prototype" property.
    */
@@ -323,9 +323,9 @@ namespace plorth
    * - object
    * - any
    *
-   * Retrieves value identified by given string from properties of the object.
-   * If the object does not have such property, range error will be thrown.
-   * Notice that inherited properties are also included in the search.
+   * Retrieves the value identified by given string from properties of the
+   * object. If the object does not have such a property, range error will be
+   * thrown. Notice that inherited properties are also included in the search.
    */
   static void w_get(const ref<context>& ctx)
   {
@@ -361,7 +361,7 @@ namespace plorth
    * Gives:
    * - object
    *
-   * Constructs copy of the object with new named property either introduced
+   * Constructs a copy of the object with new named property either introduced
    * or replaced.
    */
   static void w_set(const ref<context>& ctx)
@@ -390,7 +390,8 @@ namespace plorth
    * Gives:
    * - object
    *
-   * Combines contents of two objects together and returns result.
+   * Combines the contents of two objects together and returns the result. If
+   * the two objects share keys the second object's values take precedence.
    */
   static void w_concat(const ref<context>& ctx)
   {
