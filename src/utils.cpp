@@ -105,6 +105,7 @@ namespace plorth
     const auto length = input.length();
     unistring::size_type start;
     bool dot_seen = false;
+    bool exponent_seen = false;
 
     if (!length)
     {
@@ -128,11 +129,26 @@ namespace plorth
 
       if (c == '.')
       {
-        if (dot_seen || i == start || i + 1 > length)
+        if (dot_seen || exponent_seen || i == start || i + 1 > length)
         {
           return false;
         }
         dot_seen = true;
+      }
+      else if (c == 'e' || c == 'E')
+      {
+        if (exponent_seen || i == start || i + 2 > length)
+        {
+          return false;
+        }
+        if (input[i + 1] == '+' || input[i + 1] == '-')
+        {
+          if (i + 3 > length) {
+            return false;
+          }
+          ++i;
+        }
+        exponent_seen = true;
       }
       else if (!std::isdigit(c))
       {
@@ -298,27 +314,12 @@ namespace plorth
     // Parse exponent.
     if (offset < length && (input[offset] == 'e' || input[offset] == 'E'))
     {
-      exponent = to_integer(input.substr(offset + 1));
+      exponent += to_integer(input.substr(offset + 1));
     }
 
     if (number == 0.0)
     {
       return 0.0;
-    }
-
-    if (exponent < 0)
-    {
-      if (number < DBL_MIN * std::pow(10.0, static_cast<double>(-exponent)))
-      {
-        return NAN; // Float underflow.
-      }
-    }
-    else if (exponent > 0)
-    {
-      if (number > DBL_MAX * std::pow(10.0, static_cast<double>(exponent)))
-      {
-        return NAN; // Float overflow.
-      }
     }
 
     number *= std::pow(10.0, static_cast<double>(exponent));
