@@ -913,6 +913,39 @@ array from values returned by the quote.
 
 ---
 
+### pop
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>array</dd>
+  <dt>Gives:</dt>
+  <dd>array, any</dd>
+</dl>
+
+Removes last element from the array and places it onto the stack.
+
+
+    [1, 2, 3] pop  #=> [1, 2] 3
+
+---
+
+### push
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, array</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+Constructs new array where first value has been pushed as the last element
+of the existing array.
+
+
+    4 [1, 2, 3] push  #=> [1, 2, 3, 4]
+
+---
+
 ### reduce
 
 <dl>

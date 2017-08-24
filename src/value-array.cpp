@@ -100,6 +100,66 @@ namespace plorth
       const ref<array> m_left;
       const ref<array> m_right;
     };
+
+    /**
+     * Implementation of array which consists from existing array and extra
+     * element. Used mainly for the "push" word.
+     */
+    class push_array : public array
+    {
+    public:
+      explicit push_array(const ref<class array>& array, const ref<value>& extra)
+        : m_array(array)
+        , m_extra(extra) {}
+
+      size_type size() const
+      {
+        return m_array->size() + 1;
+      }
+
+      const_reference at(size_type offset) const
+      {
+        if (offset == m_array->size())
+        {
+          return m_extra;
+        } else {
+          return m_array->at(offset);
+        }
+      }
+
+    private:
+      const ref<array> m_array;
+      const ref<value> m_extra;
+    };
+
+    /**
+     * Array implementation which is actually portion of already existing array.
+     */
+    class subarray : public array
+    {
+    public:
+      explicit subarray(const ref<class array>& array,
+                        size_type offset,
+                        size_type size)
+        : m_array(array)
+        , m_offset(offset)
+        , m_size(size) {}
+
+      size_type size() const
+      {
+        return m_size;
+      }
+
+      const_reference at(size_type offset) const
+      {
+        return m_array->at(m_offset + offset);
+      }
+
+    private:
+      const ref<array> m_array;
+      const size_type m_offset;
+      const size_type m_size;
+    };
   }
 
   bool array::equals(const ref<value>& that) const
@@ -206,6 +266,68 @@ namespace plorth
     {
       ctx->push(ary);
       ctx->push_int(ary->size());
+    }
+  }
+
+  /**
+   * Word: push
+   * Prototype: array
+   *
+   * Takes:
+   * - any
+   * - array
+   *
+   * Gives:
+   * - array
+   *
+   * Constructs new array where first value has been pushed as the last element
+   * of the existing array.
+   *
+   *     4 [1, 2, 3] push  #=> [1, 2, 3, 4]
+   */
+  static void w_push(const ref<context>& ctx)
+  {
+    ref<value> val;
+    ref<array> ary;
+
+    if (ctx->pop_array(ary) && ctx->pop(val))
+    {
+      ctx->push(ctx->runtime()->value<push_array>(ary, val));
+    }
+  }
+
+  /**
+   * Word: pop
+   * Prototype: array
+   *
+   * Takes:
+   * - array
+   *
+   * Gives:
+   * - array
+   * - any
+   *
+   * Removes last element from the array and places it onto the stack.
+   *
+   *     [1, 2, 3] pop  #=> [1, 2] 3
+   */
+  static void w_pop(const ref<context>& ctx)
+  {
+    ref<array> ary;
+
+    if (ctx->pop_array(ary))
+    {
+      const auto size = ary->size();
+
+      if (!size)
+      {
+        ctx->push(ary);
+        ctx->error(error::code_range, U"Array is empty.");
+        return;
+      }
+
+      ctx->push(ctx->runtime()->value<subarray>(ary, 0, size - 1));
+      ctx->push(ary->at(size - 1));
     }
   }
 
@@ -1057,6 +1179,10 @@ namespace plorth
       return
       {
         { U"length", w_length },
+
+        // Modification.
+        { U"push", w_push },
+        { U"pop", w_pop },
 
         // Search methods.
         { U"includes?", w_includes },
