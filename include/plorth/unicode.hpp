@@ -41,6 +41,14 @@ namespace plorth
    */
   std::ostream& operator<<(std::ostream&, const unistring&);
 
+#if defined(__EMSCRIPTEN__)
+  /**
+   * Decodes Unicode string into UTF-32LE and outputs it into given wide char
+   * stream.
+   */
+  std::wostream& operator<<(std::wostream&, const unistring&);
+#endif
+
   /**
    * Decodes UTF-8 encoded byte string into Unicode string. Encountered encoding
    * errors are ignored.
@@ -56,6 +64,19 @@ namespace plorth
    * Encodes Unicode string into UTF-8 encoded byte string.
    */
   std::string utf8_encode(const unistring&);
+
+#if defined(__EMSCRIPTEN__)
+  /**
+   * Decodes UTF-32LE encoded wide character string into Unicode string.
+   * Encountered encoding errors are ignored.
+   */
+  unistring utf32le_decode(const std::wstring&);
+
+  /**
+   * Encodes Unicode string into UTF-32LE encoded wide character string.
+   */
+  std::wstring utf32le_encode(const unistring&);
+#endif
 
   /**
    * Determines whether given character is valid Unicode code point.
