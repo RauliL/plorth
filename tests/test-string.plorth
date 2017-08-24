@@ -135,5 +135,6 @@ test-case
 [
   ( 0 "foo" @ "f" = nip ),
   ( -1 "foo" @ "o" = nip ),
+  ( ( 0 "" @ ) ( drop true ) ( false ) try-else nip ),
 ]
 test-case

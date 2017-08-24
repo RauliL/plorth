@@ -981,6 +981,7 @@ namespace plorth
 
     if (ctx->pop_array(ary) && ctx->pop_number(num))
     {
+      const auto size = ary->size();
       std::int64_t index = num->as_int();
 
       if (index < 0)
@@ -990,7 +991,7 @@ namespace plorth
 
       ctx->push(ary);
 
-      if (index < 0 || index > static_cast<std::int64_t>(ary->size()))
+      if (!size || index < 0 || index > static_cast<std::int64_t>(size))
       {
         ctx->error(error::code_range, U"Array index out of bounds.");
         return;
@@ -1038,7 +1039,7 @@ namespace plorth
         result.push_back(ary->at(i));
       }
 
-      if (index < 0 || index > static_cast<std::int64_t>(size))
+      if (!size || index < 0 || index > static_cast<std::int64_t>(size))
       {
         result.push_back(val);
       } else {
