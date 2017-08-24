@@ -158,10 +158,25 @@ namespace plorth
   ref<class number> runtime::number(const unistring& value)
   {
     const auto dot_index = value.find('.');
+    const auto exponent_index_lower_case = value.find('e');
+    const auto exponent_index_upper_case = value.find('E');
 
-    if (dot_index == unistring::npos)
+    if (
+      dot_index == unistring::npos &&
+      exponent_index_lower_case == unistring::npos &&
+      exponent_index_upper_case == unistring::npos
+    )
     {
-      return number(to_integer(value));
+      std::int64_t result = to_integer(value);
+      if (result == false)
+      {
+        double big_result = to_real(value);
+        if (big_result != result)
+        {
+          return number(big_result);
+        }
+      }
+      return number(result);
     } else {
       return number(to_real(value));
     }
