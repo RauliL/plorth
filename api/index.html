@@ -831,6 +831,31 @@ the stack.</p>
 <p>Applies quote once for each element in the array and constructs a new
 array from values returned by the quote.</p>
 <hr />
+<h3 id="pop">pop</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>array</dd>
+  <dt>Gives:</dt>
+  <dd>array, any</dd>
+</dl>
+
+<p>Removes last element from the array and places it onto the stack.</p>
+<pre><code>[1, 2, 3] pop  #=&gt; [1, 2] 3
+</code></pre>
+<hr />
+<h3 id="push">push</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, array</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+<p>Constructs new array where first value has been pushed as the last element
+of the existing array.</p>
+<pre><code>4 [1, 2, 3] push  #=&gt; [1, 2, 3, 4]
+</code></pre>
+<hr />
 <h3 id="reduce">reduce</h3>
 <dl>
   <dt>Takes:</dt>
