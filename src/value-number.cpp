@@ -661,17 +661,26 @@ namespace plorth
    * Gives:
    * - number
    *
-   * Computes the floating-point remainder of the division operation between the
-   * two given numbers.
+   * Computes the modulo of the first number with respect to the second number
+   * i.e. the remainder after floor division.
    */
   static void w_mod(const ref<context>& ctx)
   {
     ref<number> a;
     ref<number> b;
+    double dividend;
+    double divider;
+    double result;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      ctx->push_real(std::fmod(a->as_real(), b->as_real()));
+      dividend = a->as_real();
+      divider = b->as_real();
+      result = std::fmod(dividend, divider);
+      if (std::signbit(dividend) != std::signbit(divider)) {
+         result += divider;
+      }
+      ctx->push_real(result);
     }
   }
 
