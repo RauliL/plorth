@@ -539,8 +539,12 @@ namespace plorth
     }
   }
 
-  template< typename Operation >
-  static void number_op(const ref<context>& ctx, const Operation& op)
+  template< typename RealOperation, typename IntOperation >
+  static void number_op(
+    const ref<context>& ctx,
+    const RealOperation& real_op,
+    const IntOperation& int_op
+  )
   {
     ref<number> a;
     ref<number> b;
@@ -551,14 +555,14 @@ namespace plorth
       return;
     }
 
-    result = op(a->as_real(), b->as_real());
+    result = real_op(a->as_real(), b->as_real());
 
     if (a->is(number::number_type_int) &&
         b->is(number::number_type_int) &&
         std::fabs(result) <= INT64_MAX)
     {
-      // Keep the number as integer.
-      ctx->push_int(static_cast<std::int64_t>(result));
+      // Repeat the operation with full integer precision
+      ctx->push_int(int_op(a->as_int(), b->as_int()));
       return;
     }
 
@@ -582,7 +586,7 @@ namespace plorth
    */
   static void w_add(const ref<context>& ctx)
   {
-    number_op(ctx, std::plus<double>());
+    number_op(ctx, std::plus<double>(), std::plus<int64_t>());
   }
 
   /**
@@ -600,7 +604,7 @@ namespace plorth
    */
   static void w_sub(const ref<context>& ctx)
   {
-    number_op(ctx, std::minus<double>());
+    number_op(ctx, std::minus<double>(), std::minus<int64_t>());
   }
 
   /**
@@ -618,7 +622,7 @@ namespace plorth
    */
   static void w_mul(const ref<context>& ctx)
   {
-    number_op(ctx, std::multiplies<double>());
+    number_op(ctx, std::multiplies<double>(), std::multiplies<int64_t>());
   }
 
   /**
