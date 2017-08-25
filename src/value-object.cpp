@@ -380,6 +380,40 @@ namespace plorth
   }
 
   /**
+   * Word: delete
+   * Prototype: object
+   *
+   * Takes:
+   * - string
+   * - object
+   *
+   * Gives:
+   * - object
+   *
+   * Constructs a copy of the object with the named property removed.
+   */
+  static void w_delete(const ref<context>& ctx)
+  {
+    ref<object> obj;
+    ref<string> id;
+
+    if (ctx->pop_object(obj) && ctx->pop_string(id))
+    {
+      object::container_type result = obj->properties();
+
+      if (result.erase(id->to_string()) < 1)
+      {
+        ctx->error(
+          error::code_range,
+          U"No such property: `" + id->to_string() + U"'"
+        );
+      } else {
+        ctx->push_object(result);
+      }
+    }
+  }
+
+  /**
    * Word: +
    * Prototype: object
    *
@@ -424,6 +458,7 @@ namespace plorth
         { U"new", w_new },
         { U"@", w_get },
         { U"!", w_set },
+        { U"delete", w_delete },
         { U"+", w_concat }
       };
     }
