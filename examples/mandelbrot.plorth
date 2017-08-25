@@ -1,0 +1,117 @@
+#!/usr/bin/env plorth-cli
+
+# Mandelbrot fractal renderer with command line arguments for image size
+
+# Complex number prototype
+{
+  "prototype": {
+    "constructor": (
+      "real" swap !
+      "imag" swap !
+    ),
+
+    "println": (
+      "real" swap @ print
+      " " print
+      "imag" swap @ print
+      " j +" println drop
+    ),
+
+    "_add_real": (
+      "imag" swap @ rot rot
+      "real" swap @ nip
+      +
+      complex new
+    ),
+
+    "_add_complex": (
+      "real" swap @
+      rot "real" swap @ rot
+      +
+      "real" rot !
+
+      "imag" swap @
+      rot "imag" swap @ nip
+      +
+      "imag" rot !
+    ),
+
+    "+": (
+      swap object? (_add_complex) (swap _add_real) if-else
+    ),
+
+    "-": (
+      swap 0 swap - swap +
+    ),
+
+    "square": (
+      "real" swap @ swap
+      "imag" swap @ rot
+      # Calculate the real part of the square.
+      tuck dup * swap tuck dup * -
+      # Calculate the imaginary part of the square.
+      rot rot * 2 *
+      # Store results.
+      rot "imag" swap !
+      "real" swap !
+    ),
+
+    "abs^2": (
+      "real" swap @ swap
+      "imag" swap @ nip
+      dup * swap dup * +
+    )
+  },
+} "complex" const
+
+: j 0 complex new ;
+
+# Fractal iteration bailout and escape time definitions
+
+16 "bailout" const
+56 "max-iter" const
+
+: bailout?
+  over abs^2 bailout < swap dup max-iter < rot and
+;
+
+: escape-time
+  0 j  # squaring accumulator
+  0    # iteration counter
+  ( 1 + bailout? )
+  ( rot rot over + square rot )
+  while
+  nip nip
+;
+
+# Parse image dimensions from command line arguments or use defaults
+
+args length 0 =
+(
+  70 "width" const
+  32 "height" const
+) if
+args length 2 =
+(
+  0 args @ >number "width" const
+  1 args @ >number "height" const
+) if
+
+3 width / "x-step" const
+3 height / "y-step" const
+
+: color-print
+  "\u001b[3" print dup 8 % print ";1m" print 10 % print
+;
+
+: sweep-x
+  x-step 0 j + + dup escape-time color-print
+;
+
+: sweep-y
+  y-step j + dup (sweep-x) width times drop "\n" print
+;
+
+-2.25 -1.5 j + (sweep-y) height 1 - times
+
+"\u001b[0m" print
