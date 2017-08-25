@@ -794,6 +794,69 @@ namespace plorth
     }
   }
 
+  /**
+   * Word: dip
+   * Prototype: quote
+   *
+   * Takes:
+   * - any
+   * - quote
+   *
+   * Gives:
+   * - any
+   *
+   * Temporarily hides given value from the stack and calls given quote. Once
+   * the quote has returned from it's execution, hidden value will be placed
+   * back on the stack.
+   */
+  static void w_dip(const ref<context>& ctx)
+  {
+    ref<value> val;
+    ref<quote> quo;
+
+    if (!ctx->pop_quote(quo) || !ctx->pop(val))
+    {
+      return;
+    }
+
+    quo->call(ctx);
+    ctx->push(val);
+  }
+
+  /**
+   * Word: 2dip
+   * Prototype: quote
+   *
+   * Takes:
+   * - any
+   * - any
+   * - quote
+   *
+   * Gives:
+   * - any
+   * - any
+   *
+   *
+   * Temporarily hides two given values from the stack and calls given quote.
+   * Once the quote has returned from it's execution, hidden values will be
+   * placed back on the stack.
+   */
+  static void w_2dip(const ref<context>& ctx)
+  {
+    ref<value> val1;
+    ref<value> val2;
+    ref<quote> quo;
+
+    if (!ctx->pop_quote(quo) || !ctx->pop(val2) || !ctx->pop(val1))
+    {
+      return;
+    }
+
+    quo->call(ctx);
+    ctx->push(val1);
+    ctx->push(val2);
+  }
+
   namespace api
   {
     runtime::prototype_definition quote_prototype()
@@ -803,7 +866,9 @@ namespace plorth
         { U"call", w_call },
         { U"compose", w_compose },
         { U"curry", w_curry },
-        { U"negate", w_negate }
+        { U"negate", w_negate },
+        { U"dip", w_dip },
+        { U"2dip", w_2dip }
       };
     }
   }

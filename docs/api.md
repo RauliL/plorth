@@ -1503,6 +1503,21 @@ that inherited properties are not included in the list.
 
 ---
 
+### 2dip
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, any, quote</dd>
+  <dt>Gives:</dt>
+  <dd>any, any</dd>
+</dl>
+
+Temporarily hides two given values from the stack and calls given quote.
+Once the quote has returned from it's execution, hidden values will be
+placed back on the stack.
+
+---
+
 ### call
 
 <dl>
@@ -1538,6 +1553,21 @@ Constructs a new quote which will call the two given quotes in sequence.
 
 Constructs a curried quote where given value will be pushed onto the stack
 before calling the original quote.
+
+---
+
+### dip
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, quote</dd>
+  <dt>Gives:</dt>
+  <dd>any</dd>
+</dl>
+
+Temporarily hides given value from the stack and calls given quote. Once
+the quote has returned from it's execution, hidden value will be placed
+back on the stack.
 
 ---
 

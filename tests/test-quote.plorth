@@ -34,3 +34,15 @@ test-case
   ( ( true ) negate call not ),
 ]
 test-case
+
+"dip"
+[
+  ( "foo" ( depth 1 = ) dip "foo" = and ),
+]
+test-case
+
+"2dip"
+[
+  ( "foo" "bar" ( depth 1 = ) 2dip "bar" = swap "foo" = and and ),
+]
+test-case
