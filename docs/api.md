@@ -1416,6 +1416,19 @@ thrown. Notice that inherited properties are also included in the search.
 
 ---
 
+### delete
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, object</dd>
+  <dt>Gives:</dt>
+  <dd>object</dd>
+</dl>
+
+Constructs a copy of the object with the named property removed.
+
+---
+
 ### has-own?
 
 <dl>

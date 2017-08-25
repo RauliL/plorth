@@ -60,6 +60,13 @@ test-case
 ]
 test-case
 
+"delete"
+[
+  ( "a" { "a": 1 } delete {} = ),
+  ( ( "a" {} delete ) ( drop true ) ( false ) try-else ),
+]
+test-case
+
 "+"
 [
   ( { "a": 1 } {} + keys length 1 = nip nip ),
