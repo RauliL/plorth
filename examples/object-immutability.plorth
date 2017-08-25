@@ -1,0 +1,35 @@
+#!/usr/bin/env plorth-cli
+
+# Demonstrate object immutability
+
+# Define some helper words with more natural argument order.
+:get swap @;
+:set rot !;
+:del swap delete;
+:prettyprint >source println;
+
+# Construct an object and save a copy for later.
+{"key1": "value1", "key2": "value2"}
+dup
+
+# Delete a value-key pair.
+"key2" del
+
+# Construct a second object and add it as a value to the first object.
+{"foo": "bar"}
+"child" set
+
+# Get the object and change it.
+"child" get
+"baz" "qux" set
+
+# This prints the modified second object: {"qux": "baz", "foo": "bar"}
+prettyprint
+
+# Print the modified first object: {"child": {"foo": "bar"}, "key1": "value1"}
+# Notice that the child object is unmodified here.
+prettyprint
+
+# Print the original object.
+# It is still intact: {"key2": "value2", "key1": "value1"}
+prettyprint
