@@ -556,12 +556,18 @@ namespace plorth
   {
     ref<number> a;
     ref<number> b;
+    double real_result;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
+      real_result = a->as_real() + b->as_real();
+      if (
+        a->is(number::number_type_real) ||
+        b->is(number::number_type_real) ||
+        fabs(real_result) > INT64_MAX
+      )
       {
-        ctx->push_real(a->as_real() + b->as_real());
+        ctx->push_real(real_result);
       } else {
         ctx->push_int(a->as_int() + b->as_int());
       }
@@ -585,12 +591,18 @@ namespace plorth
   {
     ref<number> a;
     ref<number> b;
+    double real_result;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
+      real_result = a->as_real() - b->as_real();
+      if (
+        a->is(number::number_type_real) ||
+        b->is(number::number_type_real) ||
+        fabs(real_result) > INT64_MAX
+      )
       {
-        ctx->push_real(a->as_real() - b->as_real());
+        ctx->push_real(real_result);
       } else {
         ctx->push_int(a->as_int() - b->as_int());
       }
@@ -614,12 +626,18 @@ namespace plorth
   {
     ref<number> a;
     ref<number> b;
+    double real_result;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
+      real_result = a->as_real() * b->as_real();
+      if (
+          a->is(number::number_type_real) ||
+          b->is(number::number_type_real) ||
+          fabs(real_result) > INT64_MAX
+      )
       {
-        ctx->push_real(a->as_real() * b->as_real());
+        ctx->push_real(real_result);
       } else {
         ctx->push_int(a->as_int() * b->as_int());
       }

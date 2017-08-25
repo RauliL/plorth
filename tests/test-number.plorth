@@ -52,7 +52,8 @@ test-case
   ( ( 1e+ ) ( nop ) try error? nip ),
   ( ( 1e-- ) ( nop ) try error? nip ),
   ( ( 1e1.1 ) ( nop ) try error? nip ),
-  # ( 10000000000 dup * 1e19 > ),  #  fails due to overflow in *
-  # ( 8000000000000000000 dup + 1e19 > ),  # fails due to overflow in +
+  ( 10000000000 dup * 1e19 > ),
+  ( 8000000000000000000 dup + 1e19 > ),
+  ( -8000000000000000000 dup 0 swap - - -1e19 < ),
 ]
 test-case
