@@ -539,6 +539,34 @@ namespace plorth
     }
   }
 
+  template< typename Operation >
+  static void number_op(const ref<context>& ctx, const Operation& op)
+  {
+    ref<number> a;
+    ref<number> b;
+    double result;
+
+    if (!ctx->pop_number(b) || !ctx->pop_number(a))
+    {
+      return;
+    }
+
+    result = op(a->as_real(), b->as_real());
+
+    if (a->is(number::number_type_int) &&
+        b->is(number::number_type_int) &&
+        std::fabs(result) <= INT64_MAX)
+    {
+      // Keep the number as integer.
+      ctx->push_int(static_cast<std::int64_t>(result));
+      return;
+    }
+
+    // Otherwise keep it real as it seems to be integer overflow or either of
+    // the arguments are real numbers.
+    ctx->push_real(result);
+  }
+
   /**
    * Word: +
    * Prototype: number
@@ -554,24 +582,7 @@ namespace plorth
    */
   static void w_add(const ref<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
-    double real_result;
-
-    if (ctx->pop_number(b) && ctx->pop_number(a))
-    {
-      real_result = a->as_real() + b->as_real();
-      if (
-        a->is(number::number_type_real) ||
-        b->is(number::number_type_real) ||
-        fabs(real_result) > INT64_MAX
-      )
-      {
-        ctx->push_real(real_result);
-      } else {
-        ctx->push_int(a->as_int() + b->as_int());
-      }
-    }
+    number_op(ctx, std::plus<double>());
   }
 
   /**
@@ -589,24 +600,7 @@ namespace plorth
    */
   static void w_sub(const ref<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
-    double real_result;
-
-    if (ctx->pop_number(b) && ctx->pop_number(a))
-    {
-      real_result = a->as_real() - b->as_real();
-      if (
-        a->is(number::number_type_real) ||
-        b->is(number::number_type_real) ||
-        fabs(real_result) > INT64_MAX
-      )
-      {
-        ctx->push_real(real_result);
-      } else {
-        ctx->push_int(a->as_int() - b->as_int());
-      }
-    }
+    number_op(ctx, std::minus<double>());
   }
 
   /**
@@ -624,24 +618,7 @@ namespace plorth
    */
   static void w_mul(const ref<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
-    double real_result;
-
-    if (ctx->pop_number(b) && ctx->pop_number(a))
-    {
-      real_result = a->as_real() * b->as_real();
-      if (
-          a->is(number::number_type_real) ||
-          b->is(number::number_type_real) ||
-          fabs(real_result) > INT64_MAX
-      )
-      {
-        ctx->push_real(real_result);
-      } else {
-        ctx->push_int(a->as_int() * b->as_int());
-      }
-    }
+    number_op(ctx, std::multiplies<double>());
   }
 
   /**
