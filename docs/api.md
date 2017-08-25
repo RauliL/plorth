@@ -1119,8 +1119,8 @@ Sets given error as current error of the execution context.
   <dd>number</dd>
 </dl>
 
-Computes the floating-point remainder of the division operation between the
-two given numbers.
+Computes the modulo of the first number with respect to the second number
+i.e. the remainder after floor division.
 
 ---
 
