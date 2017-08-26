@@ -1030,6 +1030,19 @@ namespace plorth
     ctx->push_array(result.data(), size);
   }
 
+  /**
+   * Word: version
+   *
+   * Gives:
+   * - string
+   *
+   * Returns version of the Plorth interpreter as string.
+   */
+  static void w_version(const ref<context>& ctx)
+  {
+    ctx->push_string(PLORTH_VERSION);
+  }
+
   static void make_error(const ref<context>& ctx, enum error::code code)
   {
     ref<value> val;
@@ -1317,6 +1330,7 @@ namespace plorth
         { U"const", w_const },
         { U"import", w_import },
         { U"args", w_args },
+        { U"version", w_version },
 
         // Different types of errors.
         { U"type-error", w_type_error },
