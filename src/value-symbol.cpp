@@ -23,35 +23,68 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PLORTH_PLORTH_HPP_GUARD
-#define PLORTH_PLORTH_HPP_GUARD
-
-#include <plorth/config.hpp>
+#include <plorth/context.hpp>
+#include <plorth/value-symbol.hpp>
 
 namespace plorth
 {
-  class context;
-  class runtime;
-  class token;
+  symbol::symbol(const unistring& id)
+    : m_id(id) {}
 
-  // Different types of values.
-  class array;
-  class boolean;
-  class error;
-  class number;
-  class object;
-  class quote;
-  class string;
-  class symbol;
-
-  namespace memory
+  bool symbol::equals(const ref<value>& that) const
   {
-    struct pool;
-    struct slot;
+    if (that && that->is(type_symbol))
+    {
+      return !m_id.compare(that.cast<symbol>()->m_id);
+    } else {
+      return false;
+    }
+  }
 
-    class managed;
-    class manager;
+  bool symbol::exec(const ref<context>& ctx)
+  {
+    return ctx->call(m_id);
+  }
+
+  bool symbol::eval(const ref<context>& ctx, ref<value>& slot)
+  {
+    if (!m_id.compare(U"null"))
+    {
+      slot.release();
+
+      return true;
+    }
+    else if (!m_id.compare(U"true"))
+    {
+      slot = ctx->runtime()->true_value();
+
+      return true;
+    }
+    else if (!m_id.compare(U"false"))
+    {
+      slot = ctx->runtime()->false_value();
+
+      return true;
+    }
+    else if (!m_id.compare(U"drop"))
+    {
+      return ctx->pop(slot);
+    }
+    ctx->error(
+      error::code_syntax,
+      U"Unexpected `" + m_id + U"'; Missing value."
+    );
+
+    return false;
+  }
+
+  unistring symbol::to_string() const
+  {
+    return to_source();
+  }
+
+  unistring symbol::to_source() const
+  {
+    return m_id;
   }
 }
-
-#endif /* !PLORTH_PLORTH_HPP_GUARD */

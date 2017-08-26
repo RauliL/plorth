@@ -23,35 +23,49 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PLORTH_PLORTH_HPP_GUARD
-#define PLORTH_PLORTH_HPP_GUARD
+#ifndef PLORTH_VALUE_SYMBOL_HPP_GUARD
+#define PLORTH_VALUE_SYMBOL_HPP_GUARD
 
-#include <plorth/config.hpp>
+#include <plorth/value.hpp>
 
 namespace plorth
 {
-  class context;
-  class runtime;
-  class token;
-
-  // Different types of values.
-  class array;
-  class boolean;
-  class error;
-  class number;
-  class object;
-  class quote;
-  class string;
-  class symbol;
-
-  namespace memory
+  /**
+   * Symbol represents identifier in Plorth source code.
+   */
+  class symbol : public value
   {
-    struct pool;
-    struct slot;
+  public:
+    /**
+     * Constructs new symbol.
+     *
+     * \param id String which acts as identifier for the symbol.
+     */
+    explicit symbol(const unistring& id);
 
-    class managed;
-    class manager;
-  }
+    /**
+     * Returns string which acts as identifier for the symbol.
+     */
+    inline const unistring& id() const
+    {
+      return m_id;
+    }
+
+    inline enum type type() const
+    {
+      return type_symbol;
+    }
+
+    bool equals(const ref<value>& that) const;
+    bool exec(const ref<context>& ctx);
+    bool eval(const ref<context>& ctx, ref<value>& slot);
+    unistring to_string() const;
+    unistring to_source() const;
+
+  private:
+    /** Identifier of the symbol. */
+    const unistring m_id;
+  };
 }
 
-#endif /* !PLORTH_PLORTH_HPP_GUARD */
+#endif /* !PLORTH_VALUE_SYMBOL_HPP_GUARD */

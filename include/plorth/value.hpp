@@ -54,6 +54,8 @@ namespace plorth
       type_array,
       /** Other type of objects. */
       type_object,
+      /** Symbols. */
+      type_symbol,
       /** Quotes. */
       type_quote,
       /** Errors. */

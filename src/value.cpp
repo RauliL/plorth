@@ -54,6 +54,9 @@ namespace plorth
     case value::type_object:
       return U"object";
 
+    case value::type_symbol:
+      return U"symbol";
+
     case value::type_quote:
       return U"quote";
 
@@ -82,6 +85,9 @@ namespace plorth
 
       case type_array:
         return runtime->array_prototype();
+
+      case type_symbol:
+        return runtime->symbol_prototype();
 
       case type_quote:
         return runtime->quote_prototype();
