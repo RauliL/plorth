@@ -30,6 +30,12 @@ OPTION(
 )
 
 OPTION(
+  PLORTH_ENABLE_SYMBOL_CACHE
+  "Whether symbols should be cached or not."
+  OFF
+)
+
+OPTION(
   PLORTH_ENABLE_INTEGER_CACHE
   "Whether commonly used integer numbers should be cached or not."
   ON
@@ -93,7 +99,6 @@ SET(
   src/memory.cpp
   src/module.cpp
   src/runtime.cpp
-  src/token.cpp
   src/unicode.cpp
   src/utils.cpp
   src/value.cpp
@@ -104,6 +109,8 @@ SET(
   src/value-object.cpp
   src/value-quote.cpp
   src/value-string.cpp
+  src/value-symbol.cpp
+  src/value-word.cpp
 )
 
 IF(PLORTH_ENABLE_TARGET_INTERPRETER_LIBRARY)

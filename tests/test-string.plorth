@@ -138,3 +138,13 @@ test-case
   ( ( 0 "" @ ) ( drop true ) ( false ) try-else nip ),
 ]
 test-case
+
+">symbol"
+[
+  ( "foo" >symbol symbol? nip ),
+  ( ( "" >symbol ) ( drop true ) ( false ) try-else ),
+  ( ( "  " >symbol ) ( drop true ) ( false ) try-else ),
+  ( ( ":foo" >symbol ) ( drop true ) ( false ) try-else ),
+  ( ( "(foo)" >symbol ) ( drop true ) ( false ) try-else ),
+]
+test-case

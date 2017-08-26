@@ -46,3 +46,9 @@ test-case
   ( "foo" "bar" ( depth 1 = ) 2dip "bar" = swap "foo" = and and ),
 ]
 test-case
+
+">word"
+[
+  ( "foo" >symbol ( bar ) >word word? nip ),
+]
+test-case

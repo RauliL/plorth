@@ -42,6 +42,8 @@ namespace plorth
   class object;
   class quote;
   class string;
+  class symbol;
+  class word;
 
   namespace memory
   {

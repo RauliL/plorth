@@ -41,6 +41,8 @@ namespace plorth
     runtime::prototype_definition object_prototype();
     runtime::prototype_definition quote_prototype();
     runtime::prototype_definition string_prototype();
+    runtime::prototype_definition symbol_prototype();
+    runtime::prototype_definition word_prototype();
   }
 
   static inline ref<object> make_prototype(runtime*, const char32_t*, const runtime::prototype_definition&);
@@ -65,6 +67,8 @@ namespace plorth
     m_number_prototype = make_prototype(this, U"number", api::number_prototype());
     m_quote_prototype = make_prototype(this, U"quote", api::quote_prototype());
     m_string_prototype = make_prototype(this, U"string", api::string_prototype());
+    m_symbol_prototype = make_prototype(this, U"symbol", api::symbol_prototype());
+    m_word_prototype = make_prototype(this, U"word", api::word_prototype());
   }
 
   ref<context> runtime::new_context()

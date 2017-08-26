@@ -23,41 +23,49 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PLORTH_VALUE_ARRAY_HPP_GUARD
-#define PLORTH_VALUE_ARRAY_HPP_GUARD
+#ifndef PLORTH_VALUE_SYMBOL_HPP_GUARD
+#define PLORTH_VALUE_SYMBOL_HPP_GUARD
 
 #include <plorth/value.hpp>
 
 namespace plorth
 {
   /**
-   * Array is an indexed sequence of other values. It is one of the basic data
-   * types of Plorth.
+   * Symbol represents identifier in Plorth source code.
    */
-  class array : public value
+  class symbol : public value
   {
   public:
-    using size_type = std::size_t;
-    using value_type = ref<value>;
-    using reference = value_type&;
-    using const_reference = const value_type&;
-    using pointer = value_type*;
-    using const_pointer = const value_type*;
+    /**
+     * Constructs new symbol.
+     *
+     * \param id String which acts as identifier for the symbol.
+     */
+    explicit symbol(const unistring& id);
 
-    virtual size_type size() const = 0;
-
-    virtual const_reference at(size_type offset) const = 0;
+    /**
+     * Returns string which acts as identifier for the symbol.
+     */
+    inline const unistring& id() const
+    {
+      return m_id;
+    }
 
     inline enum type type() const
     {
-      return type_array;
+      return type_symbol;
     }
 
     bool equals(const ref<value>& that) const;
+    bool exec(const ref<context>& ctx);
     bool eval(const ref<context>& ctx, ref<value>& slot);
-    unistring to_string () const;
+    unistring to_string() const;
     unistring to_source() const;
+
+  private:
+    /** Identifier of the symbol. */
+    const unistring m_id;
   };
 }
 
-#endif /* !PLORTH_VALUE_ARRAY_HPP_GUARD */
+#endif /* !PLORTH_VALUE_SYMBOL_HPP_GUARD */

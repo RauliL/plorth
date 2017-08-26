@@ -572,6 +572,19 @@ Swaps positions of the two topmost values on the stack.
 
 ---
 
+### symbol?
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>any</dd>
+  <dt>Gives:</dt>
+  <dd>any, boolean</dd>
+</dl>
+
+Returns true if the topmost value of the stack is symbol.
+
+---
+
 ### true
 
 <dl>
@@ -688,6 +701,19 @@ and places it on the stack.
 </dl>
 
 Executes second quote as long as the first quote returns true.
+
+---
+
+### word?
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>any</dd>
+  <dt>Gives:</dt>
+  <dd>any, boolean</dd>
+</dl>
+
+Returns true if the topmost value of the stack is word.
 
 ## array
 
@@ -1536,6 +1562,19 @@ placed back on the stack.
 
 ---
 
+### >word
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>symbol, quote</dd>
+  <dt>Gives:</dt>
+  <dd>word</dd>
+</dl>
+
+Constructs word from given pair of symbol and quote.
+
+---
+
 ### call
 
 <dl>
@@ -1642,6 +1681,20 @@ Concatenates the contents of the two strings and returns the result.
 
 Converts string into a floating point decimal number, or throws a value
 error if the number cannot be converted into one.
+
+---
+
+### >symbol
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>string</dd>
+  <dt>Gives:</dt>
+  <dd>symbol</dd>
+</dl>
+
+Converts given string into symbol. Value error will be thrown if the string
+is empty or contains whitespace or non-symbolic characters such as separators.
 
 ---
 
@@ -1859,4 +1912,71 @@ return false.
 
 Extracts white space separated words from the string and returns them in
 an array.
+
+## symbol
+
+---
+
+### call
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>symbol</dd>
+</dl>
+
+Resolves given symbol into word or value, depending on the contents of the
+data stack, local dictionary and global dictionary and executes it. If the
+symbol does not resolve into any kind of word or value, number conversion
+is attempted on it. If that also fails, reference error will be thrown.
+
+## word
+
+---
+
+### call
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>word</dd>
+</dl>
+
+Executes body of the given word.
+
+---
+
+### define
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>word</dd>
+</dl>
+
+Inserts given word into current local dictionary.
+
+---
+
+### quote
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>word</dd>
+  <dt>Gives:</dt>
+  <dd>word, quote</dd>
+</dl>
+
+Extracts quote which acts as the body of the word and places it onto top
+of the stack.
+
+---
+
+### symbol
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>word</dd>
+  <dt>Gives:</dt>
+  <dd>word, symbol</dd>
+</dl>
+
+Extracts symbol from the word and places it onto top of the stack.
 

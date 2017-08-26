@@ -23,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <plorth/runtime.hpp>
+#include <plorth/context.hpp>
 
 namespace plorth
 {
@@ -54,8 +54,14 @@ namespace plorth
     case value::type_object:
       return U"object";
 
+    case value::type_symbol:
+      return U"symbol";
+
     case value::type_quote:
       return U"quote";
+
+    case value::type_word:
+      return U"word";
 
     case value::type_error:
       return U"error";
@@ -83,8 +89,14 @@ namespace plorth
       case type_array:
         return runtime->array_prototype();
 
+      case type_symbol:
+        return runtime->symbol_prototype();
+
       case type_quote:
         return runtime->quote_prototype();
+
+      case type_word:
+        return runtime->word_prototype();
 
       case type_error:
         return runtime->error_prototype();
@@ -109,6 +121,26 @@ namespace plorth
     }
 
     return ref<object>(); // Just to make GCC happy.
+  }
+
+  bool value::exec(const ref<context>& ctx)
+  {
+    ref<value> slot;
+
+    if (!eval(ctx, slot))
+    {
+      return false;
+    }
+    ctx->push(slot);
+
+    return true;
+  }
+
+  bool value::eval(const ref<context>& ctx, ref<value>& slot)
+  {
+    slot = this;
+
+    return true;
   }
 
   bool operator==(const ref<value>& a, const ref<value>& b)

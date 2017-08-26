@@ -1,0 +1,26 @@
+"./framework" import
+
+"symbol"
+[
+  ( "foo" >symbol dup () >word symbol nip symbol? nip ),
+]
+test-case
+
+"quote"
+[
+  ( "foo" >symbol ( foo ) >word quote nip quote? nip ),
+]
+test-case
+
+"call"
+[
+  ( "foo" >symbol ( true ) >word call ),
+]
+test-case
+
+"define"
+[
+  ( "testtest" >symbol ( true ) >word define "testtest" locals has-own? nip ),
+]
+test-case
+

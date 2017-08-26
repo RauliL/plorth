@@ -32,6 +32,7 @@
 #include <plorth/value-object.hpp>
 #include <plorth/value-quote.hpp>
 #include <plorth/value-string.hpp>
+#include <plorth/value-symbol.hpp>
 
 #include <vector>
 
@@ -202,38 +203,22 @@ namespace plorth
     ref<class string> string(string::const_pointer chars, string::size_type length);
 
     /**
-     * Constructs compiled quote from given sequence of tokens.
+     * Constructs symbol from given identifier string.
+     *
+     * \param id String which acts as identifier for the symbol.
+     * \return   Reference to the created symbol.
      */
-    ref<quote> compiled_quote(const std::vector<token>& tokens);
+    ref<class symbol> symbol(const unistring& id);
+
+    /**
+     * Constructs compiled quote from given sequence of values.
+     */
+    ref<quote> compiled_quote(const std::vector<ref<value>>& values);
 
     /**
      * Constructs native quote from given C++ callback.
      */
     ref<quote> native_quote(quote::callback callback);
-
-    /**
-     * Constructs curried quote from given value and quote.
-     *
-     * \param value Argument to push into stack before calling the quote.
-     * \param quote Quote to curry.
-     */
-    ref<class quote> curry(const ref<class value>& argument, const ref<class quote>& quote);
-
-    /**
-     * Constructs composed quote from two quotes. The two quotes will be
-     * called in sequence.
-     *
-     * \param left  First quote to call.
-     * \param right Second quote to call.
-     */
-    ref<class quote> compose(const ref<class quote>& left, const ref<class quote>& right);
-
-    /**
-     * Constructs constant quote that always returns given value.
-     *
-     * \param value Value to be returned by the quote.
-     */
-    ref<class quote> constant(const ref<class value>& value);
 
     /**
      * Helper method for constructing managed objects (such as values) using
@@ -326,6 +311,22 @@ namespace plorth
       return m_string_prototype;
     }
 
+    /**
+     * Returns prototype for symbols.
+     */
+    inline const ref<object>& symbol_prototype() const
+    {
+      return m_symbol_prototype;
+    }
+
+    /**
+     * Returns prototype for words.
+     */
+    inline const ref<object>& word_prototype() const
+    {
+      return m_word_prototype;
+    }
+
   private:
     /** Memory manager associated with this runtime. */
     memory::manager* m_memory_manager;
@@ -349,12 +350,20 @@ namespace plorth
     ref<object> m_quote_prototype;
     /** Prototype for string values. */
     ref<object> m_string_prototype;
+    /** Prototype for symbol values. */
+    ref<object> m_symbol_prototype;
+    /** Prototype for words. */
+    ref<object> m_word_prototype;
     /** List of command line arguments given for the interpreter. */
     std::vector<unistring> m_arguments;
     /** List of file system paths where to look modules from. */
     std::vector<unistring> m_module_paths;
     /** Container for already imported modules. */
     object::container_type m_imported_modules;
+#if PLORTH_ENABLE_SYMBOL_CACHE
+    /** Cache for symbols used by the runtime. */
+    std::unordered_map<unistring, ref<class symbol>> m_symbol_cache;
+#endif
 #if PLORTH_ENABLE_INTEGER_CACHE
     /** Cache for commonly used integer numbers. */
     ref<class number> m_integer_cache[256];

@@ -929,6 +929,47 @@ namespace plorth
     }
   }
 
+  /**
+   * Word: >symbol
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   *
+   * Gives:
+   * - symbol
+   *
+   * Converts given string into symbol. Value error will be thrown if the string
+   * is empty or contains whitespace or non-symbolic characters such as separators.
+   */
+  static void w_to_symbol(const ref<context>& ctx)
+  {
+    ref<string> str;
+
+    if (ctx->pop_string(str))
+    {
+      const auto length = str->length();
+
+      if (!length)
+      {
+        ctx->error(error::code_value, U"Cannot construct empty symbol.");
+        return;
+      }
+      for (string::size_type i = 0; i < length; ++i)
+      {
+        if (!unichar_isword(str->at(i)))
+        {
+          ctx->error(
+            error::code_value,
+            U"Cannot convert " + str->to_source() + U" into symbol."
+          );
+          return;
+        }
+      }
+      ctx->push_symbol(str->to_string());
+    }
+  }
+
   namespace api
   {
     runtime::prototype_definition string_prototype()
@@ -969,7 +1010,10 @@ namespace plorth
 
         { U"+", w_concat },
         { U"*", w_repeat },
-        { U"@", w_get }
+        { U"@", w_get },
+
+        // Type conversions.
+        { U">symbol", w_to_symbol }
       };
     }
   }

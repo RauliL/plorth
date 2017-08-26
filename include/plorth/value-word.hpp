@@ -23,41 +23,62 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PLORTH_VALUE_ARRAY_HPP_GUARD
-#define PLORTH_VALUE_ARRAY_HPP_GUARD
+#ifndef PLORTH_VALUE_WORD_HPP_GUARD
+#define PLORTH_VALUE_WORD_HPP_GUARD
 
-#include <plorth/value.hpp>
+#include <plorth/value-quote.hpp>
+#include <plorth/value-symbol.hpp>
 
 namespace plorth
 {
   /**
-   * Array is an indexed sequence of other values. It is one of the basic data
-   * types of Plorth.
+   * Word is a pair of symbol and quote, which can be placed into dictionary.
    */
-  class array : public value
+  class word : public value
   {
   public:
-    using size_type = std::size_t;
-    using value_type = ref<value>;
-    using reference = value_type&;
-    using const_reference = const value_type&;
-    using pointer = value_type*;
-    using const_pointer = const value_type*;
+    /**
+     * Constructs new word.
+     *
+     * \param symbol Identifier of the word.
+     * \param quote  Executable portion of the word.
+     */
+    explicit word(const ref<class symbol>& symbol,
+                  const ref<class quote>& quote);
 
-    virtual size_type size() const = 0;
+    /**
+     * Returns identifier of the word.
+     */
+    inline const ref<class symbol>& symbol() const
+    {
+      return m_symbol;
+    }
 
-    virtual const_reference at(size_type offset) const = 0;
+    /**
+     * Returns executable portion of the word.
+     */
+    inline const ref<class quote>& quote() const
+    {
+      return m_quote;
+    }
 
     inline enum type type() const
     {
-      return type_array;
+      return type_word;
     }
 
     bool equals(const ref<value>& that) const;
+    bool exec(const ref<context>& ctx);
     bool eval(const ref<context>& ctx, ref<value>& slot);
-    unistring to_string () const;
+    unistring to_string() const;
     unistring to_source() const;
+
+  private:
+    /** Identifier of the word. */
+    const ref<class symbol> m_symbol;
+    /** Executable portion of the word. */
+    const ref<class quote> m_quote;
   };
 }
 
-#endif /* !PLORTH_VALUE_ARRAY_HPP_GUARD */
+#endif /* !PLORTH_VALUE_WORD_HPP_GUARD */

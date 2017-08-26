@@ -54,8 +54,12 @@ namespace plorth
       type_array,
       /** Other type of objects. */
       type_object,
+      /** Symbols. */
+      type_symbol,
       /** Quotes. */
       type_quote,
+      /** Words. */
+      type_word,
       /** Errors. */
       type_error
     };
@@ -99,6 +103,27 @@ namespace plorth
      * \param that Other value to test this one against.
      */
     virtual bool equals(const ref<value>& that) const = 0;
+
+    /**
+     * Executes value as part of compiled quote. Default implementation
+     * evaluates the value and pushes result into the context.
+     *
+     * \param ctx Execution context to execute the value in.
+     * \return    Boolean flag telling whether the execution was successfull or
+     *            whether an error was encountered.
+     */
+    virtual bool exec(const ref<context>& ctx);
+
+    /**
+     * Evaluates value as element of an array or value of object's property.
+     * Default implementation just returns the value itself.
+     *
+     * \param ctx  Execution context to evaluate the value in.
+     * \param slot Where result of the evaluation will be placed into.
+     * \return     Boolean flag telling whether the execution was successfull or
+     *             whether an error was encountered.
+     */
+    virtual bool eval(const ref<context>& ctx, ref<value>& slot);
 
     /**
      * Constructs string representation of the value.
