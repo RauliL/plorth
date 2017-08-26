@@ -910,6 +910,20 @@ array element becomes first.</p>
 any duplicates and preserving the order of the given arrays.</p>
 <h2 id="boolean_2">boolean</h2>
 <hr />
+<h3 id="_9">?</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, any, boolean</dd>
+  <dt>Gives:</dt>
+  <dd>any</dd>
+</dl>
+
+<p>Selects between two values based on the boolean value. First value is
+returned when the boolean value is true and the second one is returned
+when it's false.</p>
+<pre><code>"greater" "less" 5 6 &gt; ?  #=&gt; "less"
+</code></pre>
+<hr />
 <h3 id="and">and</h3>
 <dl>
   <dt>Takes:</dt>
@@ -981,7 +995,7 @@ not have any error message.</p>
 <p>Sets given error as current error of the execution context.</p>
 <h2 id="number_1">number</h2>
 <hr />
-<h3 id="_9">%</h3>
+<h3 id="_10">%</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -989,10 +1003,10 @@ not have any error message.</p>
   <dd>number</dd>
 </dl>
 
-<p>Computes the floating-point remainder of the division operation between the
-two given numbers.</p>
+<p>Computes the modulo of the first number with respect to the second number
+i.e. the remainder after floor division.</p>
 <hr />
-<h3 id="_10">*</h3>
+<h3 id="_11">*</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1002,7 +1016,7 @@ two given numbers.</p>
 
 <p>Performs multiplication on the two given numbers.</p>
 <hr />
-<h3 id="_11">+</h3>
+<h3 id="_12">+</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1022,7 +1036,7 @@ two given numbers.</p>
 
 <p>Subtracts the second number from the first and returns the result.</p>
 <hr />
-<h3 id="_12">/</h3>
+<h3 id="_13">/</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1032,7 +1046,7 @@ two given numbers.</p>
 
 <p>Divides the first number by the second and returns the result.</p>
 <hr />
-<h3 id="_13">&lt;</h3>
+<h3 id="_14">&lt;</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1042,7 +1056,7 @@ two given numbers.</p>
 
 <p>Returns true if the first number is less than the second one.</p>
 <hr />
-<h3 id="_14">&lt;=</h3>
+<h3 id="_15">&lt;=</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1052,7 +1066,7 @@ two given numbers.</p>
 
 <p>Returns true if the first number is less than or equal to the second one.</p>
 <hr />
-<h3 id="_15">&gt;</h3>
+<h3 id="_16">&gt;</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1062,7 +1076,7 @@ two given numbers.</p>
 
 <p>Returns true if the first number is greater than the second one.</p>
 <hr />
-<h3 id="_16">&gt;=</h3>
+<h3 id="_17">&gt;=</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1183,7 +1197,7 @@ numbers.</p>
 <p>Executes a quote given number of times.</p>
 <h2 id="object_1">object</h2>
 <hr />
-<h3 id="_17">!</h3>
+<h3 id="_18">!</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>any, string, object</dd>
@@ -1194,7 +1208,7 @@ numbers.</p>
 <p>Constructs a copy of the object with new named property either introduced
 or replaced.</p>
 <hr />
-<h3 id="_18">+</h3>
+<h3 id="_19">+</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>object, object</dd>
@@ -1205,7 +1219,7 @@ or replaced.</p>
 <p>Combines the contents of two objects together and returns the result. If
 the two objects share keys the second object's values take precedence.</p>
 <hr />
-<h3 id="_19">@</h3>
+<h3 id="_20">@</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>string, object</dd>
@@ -1216,6 +1230,16 @@ the two objects share keys the second object's values take precedence.</p>
 <p>Retrieves the value identified by given string from properties of the
 object. If the object does not have such a property, range error will be
 thrown. Notice that inherited properties are also included in the search.</p>
+<hr />
+<h3 id="delete">delete</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, object</dd>
+  <dt>Gives:</dt>
+  <dd>object</dd>
+</dl>
+
+<p>Constructs a copy of the object with the named property removed.</p>
 <hr />
 <h3 id="has-own">has-own?</h3>
 <dl>
@@ -1274,6 +1298,18 @@ has one with the newly constructed object pushed on top of the stack.</p>
 that inherited properties are not included in the list.</p>
 <h2 id="quote_1">quote</h2>
 <hr />
+<h3 id="2dip">2dip</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, any, quote</dd>
+  <dt>Gives:</dt>
+  <dd>any, any</dd>
+</dl>
+
+<p>Temporarily hides two given values from the stack and calls given quote.
+Once the quote has returned from it's execution, hidden values will be
+placed back on the stack.</p>
+<hr />
 <h3 id="call">call</h3>
 <dl>
   <dt>Takes:</dt>
@@ -1303,6 +1339,18 @@ that inherited properties are not included in the list.</p>
 <p>Constructs a curried quote where given value will be pushed onto the stack
 before calling the original quote.</p>
 <hr />
+<h3 id="dip">dip</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, quote</dd>
+  <dt>Gives:</dt>
+  <dd>any</dd>
+</dl>
+
+<p>Temporarily hides given value from the stack and calls given quote. Once
+the quote has returned from it's execution, hidden value will be placed
+back on the stack.</p>
+<hr />
 <h3 id="negate">negate</h3>
 <dl>
   <dt>Takes:</dt>
@@ -1315,7 +1363,7 @@ before calling the original quote.</p>
 result returned by the original quote.</p>
 <h2 id="string_2">string</h2>
 <hr />
-<h3 id="_20">*</h3>
+<h3 id="_21">*</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, string</dd>
@@ -1325,7 +1373,7 @@ result returned by the original quote.</p>
 
 <p>Repeats the string given number of times.</p>
 <hr />
-<h3 id="_21">+</h3>
+<h3 id="_22">+</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>string, string</dd>
@@ -1346,7 +1394,7 @@ result returned by the original quote.</p>
 <p>Converts string into a floating point decimal number, or throws a value
 error if the number cannot be converted into one.</p>
 <hr />
-<h3 id="_22">@</h3>
+<h3 id="_23">@</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, string</dd>
