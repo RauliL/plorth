@@ -71,7 +71,7 @@ namespace plorth
 
   unistring word::to_source() const
   {
-    return U": " + m_symbol->id() + U" " + m_quote->to_source() + U" ;";
+    return U": " + m_symbol->id() + U" " + m_quote->to_string() + U" ;";
   }
 
   /**

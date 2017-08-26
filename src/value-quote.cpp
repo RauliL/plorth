@@ -64,12 +64,11 @@ namespace plorth
         return true;
       }
 
-      unistring to_source() const
+      unistring to_string() const
       {
         unistring result;
         bool first = true;
 
-        result += '(';
         for (const auto& value : m_values)
         {
           if (first)
@@ -85,7 +84,6 @@ namespace plorth
             result += U"null";
           }
         }
-        result += ')';
 
         return result;
       }
@@ -140,9 +138,9 @@ namespace plorth
         return !ctx->error();
       }
 
-      unistring to_source() const
+      unistring to_string() const
       {
-        return U"(\"native quote\")";
+        return U"\"native quote\"";
       }
 
       bool equals(const ref<value>& that) const
@@ -167,9 +165,9 @@ namespace plorth
     return new (*m_memory_manager) class native_quote(callback);
   }
 
-  unistring quote::to_string() const
+  unistring quote::to_source() const
   {
-    return to_source();
+    return U"(" + to_string() + U")";
   }
 
   /**
