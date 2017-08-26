@@ -60,6 +60,9 @@ namespace plorth
     case value::type_quote:
       return U"quote";
 
+    case value::type_word:
+      return U"word";
+
     case value::type_error:
       return U"error";
     }
@@ -91,6 +94,9 @@ namespace plorth
 
       case type_quote:
         return runtime->quote_prototype();
+
+      case type_word:
+        return runtime->word_prototype();
 
       case type_error:
         return runtime->error_prototype();

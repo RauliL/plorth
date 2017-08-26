@@ -58,6 +58,8 @@ namespace plorth
       type_symbol,
       /** Quotes. */
       type_quote,
+      /** Words. */
+      type_word,
       /** Errors. */
       type_error
     };

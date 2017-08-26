@@ -105,6 +105,7 @@ SET(
   src/value-quote.cpp
   src/value-string.cpp
   src/value-symbol.cpp
+  src/value-word.cpp
 )
 
 IF(PLORTH_ENABLE_TARGET_INTERPRETER_LIBRARY)

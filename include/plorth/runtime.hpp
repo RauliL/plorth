@@ -334,6 +334,14 @@ namespace plorth
       return m_symbol_prototype;
     }
 
+    /**
+     * Returns prototype for words.
+     */
+    inline const ref<object>& word_prototype() const
+    {
+      return m_word_prototype;
+    }
+
   private:
     /** Memory manager associated with this runtime. */
     memory::manager* m_memory_manager;
@@ -359,6 +367,8 @@ namespace plorth
     ref<object> m_string_prototype;
     /** Prototype for symbol values. */
     ref<object> m_symbol_prototype;
+    /** Prototype for words. */
+    ref<object> m_word_prototype;
     /** List of command line arguments given for the interpreter. */
     std::vector<unistring> m_arguments;
     /** List of file system paths where to look modules from. */

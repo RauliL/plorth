@@ -66,6 +66,7 @@ namespace plorth
     m_quote_prototype = make_prototype(this, U"quote", api::quote_prototype());
     m_string_prototype = make_prototype(this, U"string", api::string_prototype());
     m_symbol_prototype = make_prototype(this, U"symbol", {});
+    m_word_prototype = make_prototype(this, U"word", {});
   }
 
   ref<context> runtime::new_context()
