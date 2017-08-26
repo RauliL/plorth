@@ -693,6 +693,17 @@ and places it on the stack.
 
 ---
 
+### version
+
+<dl>
+  <dt>Gives:</dt>
+  <dd>string</dd>
+</dl>
+
+Returns version of the Plorth interpreter as string.
+
+---
+
 ### while
 
 <dl>
