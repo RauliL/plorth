@@ -93,7 +93,6 @@ SET(
   src/memory.cpp
   src/module.cpp
   src/runtime.cpp
-  src/token.cpp
   src/unicode.cpp
   src/utils.cpp
   src/value.cpp
