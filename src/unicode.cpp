@@ -74,8 +74,6 @@ namespace plorth
 #if defined(__EMSCRIPTEN__)
   std::wostream& operator<<(std::wostream& out, const unistring& s)
   {
-    unsigned char buffer[4];
-
     for (const auto& c : s)
     {
       if (!unichar_validate(c))
