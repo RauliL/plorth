@@ -26,6 +26,8 @@
 #include <plorth/context.hpp>
 #include <plorth/value-symbol.hpp>
 
+#include "./utils.hpp"
+
 namespace plorth
 {
   symbol::symbol(const unistring& id)
@@ -69,6 +71,12 @@ namespace plorth
     else if (!m_id.compare(U"drop"))
     {
       return ctx->pop(slot);
+    }
+    else if (is_number(m_id))
+    {
+      slot = ctx->runtime()->number(m_id);
+
+      return true;
     }
     ctx->error(
       error::code_syntax,
