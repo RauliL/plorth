@@ -189,6 +189,29 @@ namespace plorth
     return true;
   }
 
+  bool array::eval(const ref<context>& ctx, ref<value>& slot)
+  {
+    const auto s = size();
+    ref<value>* elements = new ref<value>[s];
+
+    for (size_type i = 0; i < s; ++i)
+    {
+      ref<value> element_slot;
+
+      if (!at(i)->eval(ctx, element_slot))
+      {
+        delete[] elements;
+
+        return false;
+      }
+      elements[i] = element_slot;
+    }
+    slot = ctx->runtime()->array(elements, s);
+    delete[] elements;
+
+    return true;
+  }
+
   unistring array::to_string() const
   {
     const size_type s = size();

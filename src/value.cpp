@@ -23,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <plorth/runtime.hpp>
+#include <plorth/context.hpp>
 
 namespace plorth
 {
@@ -109,6 +109,26 @@ namespace plorth
     }
 
     return ref<object>(); // Just to make GCC happy.
+  }
+
+  bool value::exec(const ref<context>& ctx)
+  {
+    ref<value> slot;
+
+    if (!eval(ctx, slot))
+    {
+      return false;
+    }
+    ctx->push(slot);
+
+    return true;
+  }
+
+  bool value::eval(const ref<context>& ctx, ref<value>& slot)
+  {
+    slot = this;
+
+    return true;
   }
 
   bool operator==(const ref<value>& a, const ref<value>& b)

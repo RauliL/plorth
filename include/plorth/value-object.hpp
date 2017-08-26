@@ -68,6 +68,7 @@ namespace plorth
     }
 
     bool equals(const ref<value>& that) const;
+    bool eval(const ref<context>& ctx, ref<value>& slot);
     unistring to_string() const;
     unistring to_source() const;
 

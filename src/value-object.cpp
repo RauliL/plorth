@@ -88,6 +88,25 @@ namespace plorth
     return true;
   }
 
+  bool object::eval(const ref<context>& ctx, ref<value>& slot)
+  {
+    container_type properties;
+
+    for (const auto& property : m_properties)
+    {
+      ref<value> value_slot;
+
+      if (!property.second->eval(ctx, value_slot))
+      {
+        return false;
+      }
+      properties[property.first] = value_slot;
+    }
+    slot = ctx->runtime()->value<object>(properties);
+
+    return true;
+  }
+
   unistring object::to_string() const
   {
     unistring result;
