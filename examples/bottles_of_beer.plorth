@@ -1,0 +1,18 @@
+: describe
+  dup 1 > (dup >string " bottles" +) if
+  dup 1 = ("1 bottle") if
+  dup 0 = ("no more bottles") if
+  " of beer" +
+;
+
+: sing
+  describe print " on the wall, " print describe print "." println
+  "Take one down and pass it around, " print
+  1 -
+  describe print " on the wall." println
+;
+
+99 (sing) 99 times
+
+describe capitalize print " on the wall, " print describe print "." println
+"Go to the store and buy some more, 99 bottles of beer on the wall." println
