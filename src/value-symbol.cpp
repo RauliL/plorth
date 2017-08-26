@@ -57,7 +57,7 @@ namespace plorth
 
         if (prototype && prototype->property(ctx->runtime(), m_id, value))
         {
-          if (value->is(value::type_quote))
+          if (value && value->is(value::type_quote))
           {
             return value.cast<quote>()->call(ctx);
           }
