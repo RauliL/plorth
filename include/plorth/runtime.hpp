@@ -202,9 +202,9 @@ namespace plorth
     ref<class string> string(string::const_pointer chars, string::size_type length);
 
     /**
-     * Constructs compiled quote from given sequence of tokens.
+     * Constructs compiled quote from given sequence of values.
      */
-    ref<quote> compiled_quote(const std::vector<token>& tokens);
+    ref<quote> compiled_quote(const std::vector<ref<value>>& values);
 
     /**
      * Constructs native quote from given C++ callback.

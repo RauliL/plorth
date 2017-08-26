@@ -24,33 +24,23 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
-#include <plorth/token.hpp>
 
 #include "./utils.hpp"
 
 namespace plorth
 {
-  static bool parse_value(const ref<context>& ctx,
-                          std::vector<token>::const_iterator&,
-                          const std::vector<token>::const_iterator&,
-                          ref<value>&);
-  static bool parse_declaration(const ref<context>&,
-                                std::vector<token>::const_iterator&,
-                                const std::vector<token>::const_iterator&);
-
   namespace
   {
     /**
-     * Compiled quote consists from sequence of tokens parsed from source code.
-     * When called, the tokens are being iterated, string, array, object and
-     * quote literals are parsed, converted into appropriate values and placed
-     * into the stack, while words are being called under the execution context.
+     * Compiled quote consists from sequence of words parsed from source code.
+     * When called, values are iterated and each value is being executed as part
+     * of a script.
      */
     class compiled_quote : public quote
     {
     public:
-      explicit compiled_quote(const std::vector<token>& tokens)
-        : m_tokens(tokens) {}
+      explicit compiled_quote(const std::vector<ref<value>>& values)
+        : m_values(values) {}
 
       inline enum quote_type quote_type() const
       {
@@ -59,55 +49,15 @@ namespace plorth
 
       bool call(const ref<context>& ctx) const
       {
-        auto current = std::begin(m_tokens);
-        const auto end = std::end(m_tokens);
-
-        while (current != end)
+        for (const auto& value : m_values)
         {
-          const class token& token = *current;
-
-          switch (token.type())
+          if (!value)
           {
-            case token::type_string:
-            case token::type_lparen:
-            case token::type_lbrack:
-            case token::type_lbrace:
-              {
-                ref<value> val;
-
-                if (!parse_value(ctx, current, end, val))
-                {
-                  return false;
-                }
-                ctx->push(val);
-              }
-              break;
-
-            case token::type_colon:
-              if (!parse_declaration(ctx, current, end))
-              {
-                return false;
-              }
-              break;
-
-            case token::type_word:
-              if (!ctx->call(current++->text()))
-              {
-                return false;
-              }
-              break;
-
-            case token::type_rparen:
-            case token::type_rbrack:
-            case token::type_rbrace:
-            case token::type_comma:
-            case token::type_semicolon:
-              ctx->error(
-                error::code_syntax,
-                U"Unexpected `" + current->to_source() + U"'"
-              );
-
-              return false;
+            ctx->push_null();
+          }
+          else if (!value->exec(ctx))
+          {
+            return false;
           }
         }
 
@@ -120,7 +70,7 @@ namespace plorth
         bool first = true;
 
         result += '(';
-        for (const auto& token : m_tokens)
+        for (const auto& value : m_values)
         {
           if (first)
           {
@@ -128,7 +78,12 @@ namespace plorth
           } else {
             result += ' ';
           }
-          result += token.to_source();
+          if (value)
+          {
+            result += value->to_source();
+          } else {
+            result += U"null";
+          }
         }
         result += ')';
 
@@ -144,13 +99,13 @@ namespace plorth
           return false;
         }
         q = that.cast<compiled_quote>();
-        if (m_tokens.size() != q->m_tokens.size())
+        if (m_values.size() != q->m_values.size())
         {
           return false;
         }
-        for (std::size_t i = 0; i < m_tokens.size(); ++i)
+        for (std::size_t i = 0; i < m_values.size(); ++i)
         {
-          if (m_tokens[i] != q->m_tokens[i])
+          if (m_values[i] != q->m_values[i])
           {
             return false;
           }
@@ -160,7 +115,7 @@ namespace plorth
       }
 
     private:
-      const std::vector<token> m_tokens;
+      const std::vector<ref<value>> m_values;
     };
 
     /**
@@ -410,9 +365,9 @@ namespace plorth
     };
   }
 
-  ref<quote> runtime::compiled_quote(const std::vector<token>& tokens)
+  ref<quote> runtime::compiled_quote(const std::vector<ref<class value>>& values)
   {
-    return new (*m_memory_manager) class compiled_quote(tokens);
+    return new (*m_memory_manager) class compiled_quote(values);
   }
 
   ref<quote> runtime::native_quote(quote::callback callback)
@@ -438,269 +393,6 @@ namespace plorth
   unistring quote::to_string() const
   {
     return to_source();
-  }
-
-  static ref<quote> parse_quote(const ref<context>& ctx,
-                                std::vector<token>::const_iterator& it,
-                                const std::vector<token>::const_iterator& end)
-  {
-    std::vector<token> result;
-    int counter = 1;
-
-    while (it != end)
-    {
-      const class token& token = *it++;
-
-      if (token.is(token::type_lparen))
-      {
-        ++counter;
-      }
-      else if (token.is(token::type_rparen) && !--counter)
-      {
-        break;
-      }
-      result.push_back(token);
-    }
-    if (counter > 0)
-    {
-      ctx->error(error::code_syntax, U"Unterminated quote.");
-
-      return ref<quote>();
-    }
-
-    return ctx->runtime()->value<compiled_quote>(result);
-  }
-
-  static ref<array> parse_array(const ref<context>& ctx,
-                                std::vector<token>::const_iterator& it,
-                                const std::vector<token>::const_iterator& end)
-  {
-    std::vector<ref<value>> elements;
-    ref<value> val;
-
-    for (;;)
-    {
-      if (it >= end)
-      {
-        ctx->error(error::code_syntax, U"Unterminated array literal.");
-
-        return ref<array>();
-      }
-      else if (it->is(token::type_rbrack))
-      {
-        ++it;
-        break;
-      }
-      if (!parse_value(ctx, it, end, val))
-      {
-        return ref<array>();
-      }
-      elements.push_back(val);
-      if (it >= end)
-      {
-        ctx->error(error::code_syntax, U"Unterminated array literal.");
-
-        return ref<array>();
-      }
-      else if (it->is(token::type_comma))
-      {
-        ++it;
-      }
-      else if (!it->is(token::type_rbrack))
-      {
-        ctx->error(
-          error::code_syntax,
-          U"Unexpected `" + it->to_source() + U"'; Missing `]'"
-        );
-
-        return ref<array>();
-      }
-    }
-
-    return ctx->runtime()->array(elements.data(), elements.size());
-  }
-
-  static ref<object> parse_object(const ref<context>& ctx,
-                                  std::vector<token>::const_iterator& it,
-                                  const std::vector<token>::const_iterator& end)
-  {
-    object::container_type properties;
-    unistring id;
-    ref<value> val;
-
-    for (;;)
-    {
-      if (it >= end)
-      {
-        ctx->error(error::code_syntax, U"Unterminated object literal.");
-
-        return ref<object>();
-      }
-      else if (it->is(token::type_rbrace))
-      {
-        ++it;
-        break;
-      }
-      else if (!it->is(token::type_string))
-      {
-        ctx->error(error::code_syntax, U"Missing key for object literal.");
-
-        return ref<object>();
-      }
-      id = it++->text();
-      if (it >= end || !it++->is(token::type_colon))
-      {
-        ctx->error(error::code_syntax, U"Missing `:' after key of an object.");
-
-        return ref<object>();
-      }
-      else if (!parse_value(ctx, it, end, val))
-      {
-        return ref<object>();
-      }
-      properties[id] = val;
-      if (it >= end)
-      {
-        ctx->error(error::code_syntax, U"Unterminated object literal.");
-
-        return ref<object>();
-      }
-      else if (it->is(token::type_comma))
-      {
-        ++it;
-      }
-      else if (!it->is(token::type_rbrace))
-      {
-        ctx->error(
-          error::code_syntax,
-          U"Unexpected `" + it->to_source() + U"'; Missing `]'"
-        );
-
-        return ref<object>();
-      }
-    }
-
-    return ctx->runtime()->value<object>(properties);
-  }
-
-  static bool parse_value(const ref<context>& ctx,
-                          std::vector<token>::const_iterator& it,
-                          const std::vector<token>::const_iterator& end,
-                          ref<value>& slot)
-  {
-    const class token& token = *it++;
-
-    switch (token.type())
-    {
-      case token::type_string:
-        slot = ctx->runtime()->string(token.text());
-        break;
-
-      case token::type_lparen:
-        if (!(slot = parse_quote(ctx, it, end)))
-        {
-          return false;
-        }
-        break;
-
-      case token::type_lbrack:
-        if (!(slot = parse_array(ctx, it, end)))
-        {
-          return false;
-        }
-        break;
-
-      case token::type_lbrace:
-        if (!(slot = parse_object(ctx, it, end)))
-        {
-          return false;
-        }
-        break;
-
-      case token::type_word:
-        {
-          const unistring& text = token.text();
-
-          if (!text.compare(U"null"))
-          {
-            slot.release();
-            break;
-          }
-          else if (!text.compare(U"true"))
-          {
-            slot = ctx->runtime()->true_value();
-            break;
-          }
-          else if (!text.compare(U"false"))
-          {
-            slot = ctx->runtime()->false_value();
-            break;
-          }
-          else if (!text.compare(U"drop"))
-          {
-            if (!ctx->pop(slot))
-            {
-              return false;
-            }
-            break;
-          }
-          else if (is_number(text))
-          {
-            slot = ctx->runtime()->number(text);
-            break;
-          }
-        }
-
-      default:
-        ctx->error(
-          error::code_syntax,
-          U"Unexpected `" + token.to_source() + U"', missing value."
-        );
-
-        return false;
-    }
-
-    return true;
-  }
-
-  static bool parse_declaration(const ref<context>& ctx,
-                                std::vector<token>::const_iterator& current,
-                                const std::vector<token>::const_iterator& end)
-  {
-    unistring name;
-    std::vector<token> tokens;
-    int counter = 1;
-
-    if (++current >= end || !current->is(token::type_word))
-    {
-      ctx->error(error::code_syntax, U"Missing name after word declaration.");
-
-      return false;
-    }
-    name = current++->text();
-    while (current != end)
-    {
-      const class token& token = *current++;
-
-      if (token.is(token::type_colon))
-      {
-        ++counter;
-      }
-      else if (token.is(token::type_semicolon) && !--counter)
-      {
-        break;
-      }
-      tokens.push_back(token);
-    }
-    if (counter > 0)
-    {
-      ctx->error(error::code_syntax, U"Unterminated declaration.");
-
-      return false;
-    }
-    ctx->declare(name, ctx->runtime()->value<compiled_quote>(tokens));
-
-    return true;
   }
 
   /**
