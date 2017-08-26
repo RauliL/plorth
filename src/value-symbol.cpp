@@ -45,8 +45,6 @@ namespace plorth
 
   bool symbol::exec(const ref<context>& ctx)
   {
-    ref<class value> value;
-
     // Look from prototype of the current item.
     {
       const auto& stack = ctx->data();
@@ -54,14 +52,15 @@ namespace plorth
       if (!stack.empty() && stack.back())
       {
         const ref<object> prototype = stack.back()->prototype(ctx->runtime());
+        ref<value> val;
 
-        if (prototype && prototype->property(ctx->runtime(), m_id, value))
+        if (prototype && prototype->property(ctx->runtime(), m_id, val))
         {
-          if (value && value->is(value::type_quote))
+          if (val && val->is(value::type_quote))
           {
-            return value.cast<quote>()->call(ctx);
+            return val.cast<quote>()->call(ctx);
           }
-          ctx->push(value);
+          ctx->push(val);
 
           return true;
         }
@@ -73,16 +72,9 @@ namespace plorth
       const auto& local_dictionary = ctx->dictionary();
       const auto entry = local_dictionary.find(m_id);
 
-      if (entry != std::end(local_dictionary))
+      if (entry != std::end(local_dictionary) && entry->second)
       {
-        value = entry->second;
-        if (value && value->is(value::type_quote))
-        {
-          return value.cast<quote>()->call(ctx);
-        }
-        ctx->push(value);
-
-        return true;
+        return entry->second->call(ctx);
       }
     }
 
@@ -95,16 +87,9 @@ namespace plorth
       const auto& global_dictionary = ctx->runtime()->dictionary();
       const auto entry = global_dictionary.find(m_id);
 
-      if (entry != std::end(global_dictionary))
+      if (entry != std::end(global_dictionary) && entry->second)
       {
-        value = entry->second;
-        if (value && value->is(value::type_quote))
-        {
-          return value.cast<quote>()->call(ctx);
-        }
-        ctx->push(value);
-
-        return true;
+        return entry->second->call(ctx);
       }
     }
 

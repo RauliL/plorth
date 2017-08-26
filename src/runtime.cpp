@@ -159,12 +159,19 @@ namespace plorth
       properties[entry.first] = runtime->native_quote(entry.second);
     }
     properties[U"__proto__"] = parent_prototype;
-
     prototype = runtime->value<object>(properties);
-    runtime->dictionary()[name] = runtime->value<object>(object::container_type({
-      { U"__proto__", runtime->object_prototype() },
-      { U"prototype", prototype }
-    }));
+
+    // Define prototype into global dictionary as constant if name has been
+    // given.
+    if (name)
+    {
+      runtime->dictionary()[name] = runtime->compiled_quote({
+        runtime->value<object>(object::container_type({
+          { U"__proto__", runtime->object_prototype() },
+          { U"prototype", prototype }
+        }))
+      });
+    }
 
     return prototype;
   }

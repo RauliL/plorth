@@ -42,6 +42,7 @@ namespace plorth
   {
   public:
     using prototype_definition = std::vector<std::pair<const char32_t*, quote::callback>>;
+    using dictionary_type = std::unordered_map<unistring, ref<quote>>;
 
     /**
      * Constructs new runtime.
@@ -66,7 +67,16 @@ namespace plorth
      * This non-constant version of the method can be used to define new words
      * into the global dictionary, or remove existing ones.
      */
-    inline object::container_type& dictionary()
+    inline dictionary_type& dictionary()
+    {
+      return m_dictionary;
+    }
+
+    /**
+     * Returns the global dictionary that contains core word set available to
+     * all contexts.
+     */
+    inline const dictionary_type& dictionary() const
     {
       return m_dictionary;
     }
@@ -103,15 +113,6 @@ namespace plorth
     inline const std::vector<unistring>& module_paths() const
     {
       return m_module_paths;
-    }
-
-    /**
-     * Returns the global dictionary that contains core word set available to
-     * all contexts.
-     */
-    inline const object::container_type& dictionary() const
-    {
-      return m_dictionary;
     }
 
     /**
@@ -331,7 +332,7 @@ namespace plorth
     /** Memory manager associated with this runtime. */
     memory::manager* m_memory_manager;
     /** Global dictionary available to all contexts. */
-    object::container_type m_dictionary;
+    dictionary_type m_dictionary;
     /** Shared instance of true boolean value. */
     ref<class boolean> m_true_value;
     /** Shared instance of false boolean value. */

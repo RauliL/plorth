@@ -40,6 +40,7 @@ namespace plorth
   {
   public:
     using container_type = std::deque<ref<value>>;
+    using dictionary_type = std::unordered_map<unistring, ref<quote>>;
 
     /**
      * Constructs new context.
@@ -92,7 +93,7 @@ namespace plorth
     /**
      * Returns the dictionary used by this context to store words.
      */
-    inline object::container_type& dictionary()
+    inline dictionary_type& dictionary()
     {
       return m_dictionary;
     }
@@ -100,7 +101,7 @@ namespace plorth
     /**
      * Returns the dictionary used by this context to store words.
      */
-    inline const object::container_type& dictionary() const
+    inline const dictionary_type& dictionary() const
     {
       return m_dictionary;
     }
@@ -368,7 +369,7 @@ namespace plorth
     /** Data stack used for storing values in this context. */
     container_type m_data;
     /** Container for words associated with this context. */
-    object::container_type m_dictionary;
+    dictionary_type m_dictionary;
   };
 }
 
