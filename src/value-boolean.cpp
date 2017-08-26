@@ -144,6 +144,38 @@ namespace plorth
     }
   }
 
+  /**
+   * Word: ?
+   * Prototype: boolean
+   *
+   * Takes:
+   * - any
+   * - any
+   * - boolean
+   *
+   * Gives:
+   * - any
+   *
+   * Selects between two values based on the boolean value. First value is
+   * returned when the boolean value is true and the second one is returned
+   * when it's false.
+   *
+   *     "greater" "less" 5 6 > ?  #=> "less"
+   */
+  static void w_select(const ref<context>& ctx)
+  {
+    ref<value> true_value;
+    ref<value> false_value;
+    bool condition;
+
+    if (ctx->pop_boolean(condition) &&
+        ctx->pop(false_value) &&
+        ctx->pop(true_value))
+    {
+      ctx->push(condition ? true_value : false_value);
+    }
+  }
+
   namespace api
   {
     runtime::prototype_definition boolean_prototype()
@@ -154,6 +186,7 @@ namespace plorth
         { U"or", w_or },
         { U"xor", w_xor },
         { U"not", w_not },
+        { U"?", w_select },
       };
     }
   }

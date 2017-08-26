@@ -1016,6 +1016,24 @@ any duplicates and preserving the order of the given arrays.
 
 ---
 
+### ?
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, any, boolean</dd>
+  <dt>Gives:</dt>
+  <dd>any</dd>
+</dl>
+
+Selects between two values based on the boolean value. First value is
+returned when the boolean value is true and the second one is returned
+when it's false.
+
+
+    "greater" "less" 5 6 > ?  #=> "less"
+
+---
+
 ### and
 
 <dl>
