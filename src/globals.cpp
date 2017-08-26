@@ -983,7 +983,7 @@ namespace plorth
 
     if (ctx->pop_string(id) && ctx->pop(val))
     {
-      ctx->dictionary()[id->to_string()] = val;
+      ctx->dictionary()[id->to_string()] = ctx->runtime()->compiled_quote({ val });
     }
   }
 
