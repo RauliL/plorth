@@ -72,14 +72,16 @@
 56 "max-iter" const
 
 : bailout?
-  over abs^2 bailout < swap dup max-iter < rot and
+  ( dup abs^2 bailout < ) dip swap
+  ( dup max-iter < ) dip
+  and
 ;
 
 : escape-time
   0 j  # squaring accumulator
   0    # iteration counter
   ( 1 + bailout? )
-  ( rot rot over + square rot )
+  ( ( over + square ) dip )
   while
   nip nip
 ;
