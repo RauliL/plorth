@@ -84,7 +84,7 @@ static std::wstring plorth_stack(int index)
 
 EMSCRIPTEN_BINDINGS(plorth)
 {
-  emscripten::constant("VERSION", std::string(PLORTH_VERSION));
+  emscripten::constant("VERSION", utf32le_encode(PLORTH_VERSION));
 
   emscripten::function("execute", &plorth_execute);
   emscripten::function("depth", &plorth_depth);
