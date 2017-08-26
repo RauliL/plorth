@@ -308,61 +308,6 @@ namespace plorth
     private:
       const ref<quote> m_quote;
     };
-
-    /**
-     * Constant quote consists from single value. When called, the value is just
-     * placed into the stack and nothing else happens.
-     */
-    class constant_quote : public quote
-    {
-    public:
-      explicit constant_quote(const ref<value>& val)
-        : m_value(val) {}
-
-      bool call(const ref<context>& ctx) const
-      {
-        ctx->push(m_value);
-
-        return true;
-      }
-
-      inline enum quote_type quote_type() const
-      {
-        return quote_type_constant;
-      }
-
-      bool equals(const ref<value>& that) const
-      {
-        const constant_quote* q;
-
-        if (!that->is(type_quote) || !that.cast<quote>()->is(quote_type_negated))
-        {
-          return false;
-        }
-        q = that.cast<constant_quote>();
-
-        return m_value->equals(q->m_value);
-      }
-
-      unistring to_source() const
-      {
-        unistring result;
-
-        result += '(';
-        if (m_value)
-        {
-          result += m_value->to_source();
-        } else {
-          result += U"null";
-        }
-        result += ')';
-
-        return result;
-      }
-
-    private:
-      const ref<value> m_value;
-    };
   }
 
   ref<quote> runtime::compiled_quote(const std::vector<ref<class value>>& values)
@@ -383,11 +328,6 @@ namespace plorth
   ref<quote> runtime::compose(const ref<class quote>& left, const ref<class quote>& right)
   {
     return new (*m_memory_manager) composed_quote(left, right);
-  }
-
-  ref<quote> runtime::constant(const ref<class value>& value)
-  {
-    return new (*m_memory_manager) constant_quote(value);
   }
 
   unistring quote::to_string() const

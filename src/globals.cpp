@@ -937,7 +937,7 @@ namespace plorth
 
     if (ctx->pop_string(id) && ctx->pop(val))
     {
-      ctx->declare(id->to_string(), ctx->runtime()->constant(val));
+      ctx->dictionary()[id->to_string()] = val;
     }
   }
 

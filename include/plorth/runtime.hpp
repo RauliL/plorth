@@ -229,13 +229,6 @@ namespace plorth
     ref<class quote> compose(const ref<class quote>& left, const ref<class quote>& right);
 
     /**
-     * Constructs constant quote that always returns given value.
-     *
-     * \param value Value to be returned by the quote.
-     */
-    ref<class quote> constant(const ref<class value>& value);
-
-    /**
      * Helper method for constructing managed objects (such as values) using
      * the memory manager associated with this runtime instance.
      */

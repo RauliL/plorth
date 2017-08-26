@@ -45,7 +45,81 @@ namespace plorth
 
   bool symbol::exec(const ref<context>& ctx)
   {
-    return ctx->call(m_id);
+    ref<class value> value;
+
+    // Look from prototype of the current item.
+    {
+      const auto& stack = ctx->data();
+
+      if (!stack.empty() && stack.back())
+      {
+        const ref<object> prototype = stack.back()->prototype(ctx->runtime());
+
+        if (prototype && prototype->property(ctx->runtime(), m_id, value))
+        {
+          if (value->is(value::type_quote))
+          {
+            return value.cast<quote>()->call(ctx);
+          }
+          ctx->push(value);
+
+          return true;
+        }
+      }
+    }
+
+    // Look for a word from dictionary of current context.
+    {
+      const auto& local_dictionary = ctx->dictionary();
+      const auto entry = local_dictionary.find(m_id);
+
+      if (entry != std::end(local_dictionary))
+      {
+        value = entry->second;
+        if (value && value->is(value::type_quote))
+        {
+          return value.cast<quote>()->call(ctx);
+        }
+        ctx->push(value);
+
+        return true;
+      }
+    }
+
+    // TODO: If not found, see if it's a "fully qualified" name, e.g. a name
+    // with a namespace name, colon and a word - Such as "num:+", and then look
+    // for that from the specified namespace.
+
+    // Look from global dictionary.
+    {
+      const auto& global_dictionary = ctx->runtime()->dictionary();
+      const auto entry = global_dictionary.find(m_id);
+
+      if (entry != std::end(global_dictionary))
+      {
+        value = entry->second;
+        if (value && value->is(value::type_quote))
+        {
+          return value.cast<quote>()->call(ctx);
+        }
+        ctx->push(value);
+
+        return true;
+      }
+    }
+
+    // If the name of the word can be converted into number, then do just that.
+    if (is_number(m_id))
+    {
+      ctx->push_number(m_id);
+
+      return true;
+    }
+
+    // Otherwise it's reference error.
+    ctx->error(error::code_reference, U"Unrecognized word: `" + m_id + U"'");
+
+    return false;
   }
 
   bool symbol::eval(const ref<context>& ctx, ref<value>& slot)

@@ -106,24 +106,6 @@ namespace plorth
     }
 
     /**
-     * Executes a word within this context.
-     *
-     * \param word Name of the word to execute.
-     * \return     A boolean flag which tells whether the execution was
-     *             successfull or whether an error was encountered.
-     */
-    bool call(const unistring& word);
-
-    /**
-     * Inserts given quote into the context dictionary with given word as it's
-     * name.
-     *
-     * \param word  Name of the word to define.
-     * \param quote Quote which is executed when the word is called.
-     */
-    void declare(const unistring& word, const ref<class quote>& quote);
-
-    /**
      * Compiles given source code into a quote.
      *
      * \param source Source code to compile into quote.

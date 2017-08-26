@@ -51,8 +51,7 @@ namespace plorth
       quote_type_compiled,
       quote_type_curried,
       quote_type_composed,
-      quote_type_negated,
-      quote_type_constant
+      quote_type_negated
     };
 
     /**
