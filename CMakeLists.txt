@@ -30,6 +30,12 @@ OPTION(
 )
 
 OPTION(
+  PLORTH_ENABLE_SYMBOL_CACHE
+  "Whether symbols should be cached or not."
+  OFF
+)
+
+OPTION(
   PLORTH_ENABLE_INTEGER_CACHE
   "Whether commonly used integer numbers should be cached or not."
   ON

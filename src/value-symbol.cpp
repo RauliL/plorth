@@ -172,6 +172,21 @@ namespace plorth
 
   ref<class symbol> runtime::symbol(const unistring& id)
   {
+#if PLORTH_ENABLE_SYMBOL_CACHE
+    const auto entry = m_symbol_cache.find(id);
+
+    if (entry == std::end(m_symbol_cache))
+    {
+      const ref<class symbol> reference = new (*m_memory_manager) class symbol(id);
+
+      m_symbol_cache[id] = reference;
+
+      return reference;
+    }
+
+    return entry->second;
+#else
     return new (*m_memory_manager) class symbol(id);
+#endif
   }
 }

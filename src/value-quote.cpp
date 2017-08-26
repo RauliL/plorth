@@ -24,7 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
-#include <plorth/value-symbol.hpp>
 
 #include "./utils.hpp"
 

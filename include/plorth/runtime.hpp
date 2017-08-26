@@ -32,6 +32,7 @@
 #include <plorth/value-object.hpp>
 #include <plorth/value-quote.hpp>
 #include <plorth/value-string.hpp>
+#include <plorth/value-symbol.hpp>
 
 #include <vector>
 
@@ -359,6 +360,10 @@ namespace plorth
     std::vector<unistring> m_module_paths;
     /** Container for already imported modules. */
     object::container_type m_imported_modules;
+#if PLORTH_ENABLE_SYMBOL_CACHE
+    /** Cache for symbols used by the runtime. */
+    std::unordered_map<unistring, ref<class symbol>> m_symbol_cache;
+#endif
 #if PLORTH_ENABLE_INTEGER_CACHE
     /** Cache for commonly used integer numbers. */
     ref<class number> m_integer_cache[256];
