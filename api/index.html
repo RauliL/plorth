@@ -99,6 +99,10 @@
                 
                     <li><a class="toctree-l4" href="#string_2">string</a></li>
                 
+                    <li><a class="toctree-l4" href="#symbol_2">symbol</a></li>
+                
+                    <li><a class="toctree-l4" href="#word_2">word</a></li>
+                
             
             </ul>
         
@@ -567,6 +571,16 @@ and places it on the stack.</p>
 <pre><code>1 2 swap #=&gt; 2 1
 </code></pre>
 <hr />
+<h3 id="symbol">symbol?</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>any</dd>
+  <dt>Gives:</dt>
+  <dd>any, boolean</dd>
+</dl>
+
+<p>Returns true if the topmost value of the stack is symbol.</p>
+<hr />
 <h3 id="true">true</h3>
 <dl>
   <dt>Gives:</dt>
@@ -650,6 +664,14 @@ message and places it on the stack.</p>
 <p>Constructs an instance of value error with given optional error message
 and places it on the stack.</p>
 <hr />
+<h3 id="version">version</h3>
+<dl>
+  <dt>Gives:</dt>
+  <dd>string</dd>
+</dl>
+
+<p>Returns version of the Plorth interpreter as string.</p>
+<hr />
 <h3 id="while">while</h3>
 <dl>
   <dt>Takes:</dt>
@@ -657,6 +679,16 @@ and places it on the stack.</p>
 </dl>
 
 <p>Executes second quote as long as the first quote returns true.</p>
+<hr />
+<h3 id="word">word?</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>any</dd>
+  <dt>Gives:</dt>
+  <dd>any, boolean</dd>
+</dl>
+
+<p>Returns true if the topmost value of the stack is word.</p>
 <h2 id="array_1">array</h2>
 <hr />
 <h3 id="_3">!</h3>
@@ -1310,6 +1342,16 @@ that inherited properties are not included in the list.</p>
 Once the quote has returned from it's execution, hidden values will be
 placed back on the stack.</p>
 <hr />
+<h3 id="word_1">&gt;word</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>symbol, quote</dd>
+  <dt>Gives:</dt>
+  <dd>word</dd>
+</dl>
+
+<p>Constructs word from given pair of symbol and quote.</p>
+<hr />
 <h3 id="call">call</h3>
 <dl>
   <dt>Takes:</dt>
@@ -1393,6 +1435,17 @@ result returned by the original quote.</p>
 
 <p>Converts string into a floating point decimal number, or throws a value
 error if the number cannot be converted into one.</p>
+<hr />
+<h3 id="symbol_1">&gt;symbol</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>string</dd>
+  <dt>Gives:</dt>
+  <dd>symbol</dd>
+</dl>
+
+<p>Converts given string into symbol. Value error will be thrown if the string
+is empty or contains whitespace or non-symbolic characters such as separators.</p>
 <hr />
 <h3 id="_23">@</h3>
 <dl>
@@ -1562,6 +1615,56 @@ return false.</p>
 
 <p>Extracts white space separated words from the string and returns them in
 an array.</p>
+<h2 id="symbol_2">symbol</h2>
+<hr />
+<h3 id="call_1">call</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>symbol</dd>
+</dl>
+
+<p>Resolves given symbol into word or value, depending on the contents of the
+data stack, local dictionary and global dictionary and executes it. If the
+symbol does not resolve into any kind of word or value, number conversion
+is attempted on it. If that also fails, reference error will be thrown.</p>
+<h2 id="word_2">word</h2>
+<hr />
+<h3 id="call_2">call</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>word</dd>
+</dl>
+
+<p>Executes body of the given word.</p>
+<hr />
+<h3 id="define">define</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>word</dd>
+</dl>
+
+<p>Inserts given word into current local dictionary.</p>
+<hr />
+<h3 id="quote_2">quote</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>word</dd>
+  <dt>Gives:</dt>
+  <dd>word, quote</dd>
+</dl>
+
+<p>Extracts quote which acts as the body of the word and places it onto top
+of the stack.</p>
+<hr />
+<h3 id="symbol_3">symbol</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>word</dd>
+  <dt>Gives:</dt>
+  <dd>word, symbol</dd>
+</dl>
+
+<p>Extracts symbol from the word and places it onto top of the stack.</p>
               
             </div>
           </div>
