@@ -212,6 +212,12 @@ namespace plorth
     void push_object(const object::container_type& properties);
 
     /**
+     * Constructs quote from given sequence of values and pushes it onto the
+     * data stack.
+     */
+    void push_quote(const std::vector<ref<value>>& values);
+
+    /**
      * Pops value from the data stack and discards it. If the stack is empty,
      * range error will be set.
      *

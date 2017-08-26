@@ -48,10 +48,7 @@ namespace plorth
     enum quote_type
     {
       quote_type_native,
-      quote_type_compiled,
-      quote_type_curried,
-      quote_type_composed,
-      quote_type_negated
+      quote_type_compiled
     };
 
     /**

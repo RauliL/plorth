@@ -24,6 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
+#include <plorth/value-symbol.hpp>
 
 #include "./utils.hpp"
 
@@ -155,159 +156,6 @@ namespace plorth
     private:
       const callback m_callback;
     };
-
-    /**
-     * Curried quote consists from value and quote. When called, the value is
-     * placed into the stack and the wrapped quote is called.
-     */
-    class curried_quote : public quote
-    {
-    public:
-      explicit curried_quote(const ref<value>& argument, const ref<class quote>& quote)
-        : m_argument(argument)
-        , m_quote(quote) {}
-
-      inline enum quote_type quote_type() const
-      {
-        return quote_type_curried;
-      }
-
-      bool call(const ref<context>& ctx) const
-      {
-        ctx->push(m_argument);
-
-        return m_quote->call(ctx);
-      }
-
-      bool equals(const ref<value>& that) const
-      {
-        const curried_quote* q;
-
-        if (!that->is(type_quote) || !that.cast<quote>()->is(quote_type_curried))
-        {
-          return false;
-        }
-        q = that.cast<curried_quote>();
-
-        return m_argument->equals(q->m_argument) && m_quote->equals(q->m_quote);
-      }
-
-      unistring to_source() const
-      {
-        unistring result;
-
-        result += m_argument->to_source();
-        result += ' ';
-        result += m_quote->to_source();
-        result += U" curry";
-
-        return result;
-      }
-
-    private:
-      const ref<value> m_argument;
-      const ref<quote> m_quote;
-    };
-
-    /**
-     * Composed quote consists from two quotes that are being called in
-     * sequence.
-     */
-    class composed_quote : public quote
-    {
-    public:
-      explicit composed_quote(const ref<quote>& left, const ref<quote>& right)
-        : m_left(left)
-        , m_right(right) {}
-
-      inline enum quote_type quote_type() const
-      {
-        return quote_type_composed;
-      }
-
-      bool call(const ref<context>& ctx) const
-      {
-        return m_left->call(ctx) && m_right->call(ctx);
-      }
-
-      bool equals(const ref<value>& that) const
-      {
-        const composed_quote* q;
-
-        if (!that->is(type_quote) || !that.cast<quote>()->is(quote_type_composed))
-        {
-          return false;
-        }
-        q = that.cast<composed_quote>();
-
-        return m_left->equals(q->m_left) && m_right->equals(q->m_right);
-      }
-
-      unistring to_source() const
-      {
-        unistring result;
-
-        result += m_left->to_source();
-        result += ' ';
-        result += m_right->to_source();
-        result += U" compose";
-
-        return result;
-      }
-
-    private:
-      const ref<quote> m_left;
-      const ref<quote> m_right;
-    };
-
-    /**
-     * Negated quote calls another quote and negates it's boolean result.
-     */
-    class negated_quote : public quote
-    {
-    public:
-      explicit negated_quote(const ref<class quote>& quote)
-        : m_quote(quote) {}
-
-      inline enum quote_type quote_type() const
-      {
-        return quote_type_negated;
-      }
-
-      bool call(const ref<context>& ctx) const
-      {
-        bool result;
-
-        if (!m_quote->call(ctx) || !ctx->pop_boolean(result))
-        {
-          return false;
-        }
-        ctx->push_boolean(!result);
-
-        return true;
-      }
-
-      bool equals(const ref<value>& that) const
-      {
-        const negated_quote* q;
-
-        if (!that->is(type_quote) || !that.cast<quote>()->is(quote_type_negated))
-        {
-          return false;
-        }
-        q = that.cast<negated_quote>();
-
-        return m_quote->equals(q->m_quote);
-      }
-
-      unistring to_source() const
-      {
-        return m_quote->to_source() + U" negate";
-      }
-
-    private:
-      const ref<quote> m_quote;
-    };
   }
 
   ref<quote> runtime::compiled_quote(const std::vector<ref<class value>>& values)
@@ -318,16 +166,6 @@ namespace plorth
   ref<quote> runtime::native_quote(quote::callback callback)
   {
     return new (*m_memory_manager) class native_quote(callback);
-  }
-
-  ref<quote> runtime::curry(const ref<class value>& argument, const ref<class quote>& quote)
-  {
-    return new (*m_memory_manager) curried_quote(argument, quote);
-  }
-
-  ref<quote> runtime::compose(const ref<class quote>& left, const ref<class quote>& right)
-  {
-    return new (*m_memory_manager) composed_quote(left, right);
   }
 
   unistring quote::to_string() const
@@ -369,12 +207,18 @@ namespace plorth
    */
   static void w_compose(const ref<context>& ctx)
   {
+    const auto& runtime = ctx->runtime();
     ref<quote> left;
     ref<quote> right;
 
     if (ctx->pop_quote(right) && ctx->pop_quote(left))
     {
-      ctx->push(ctx->runtime()->compose(left, right));
+      ctx->push_quote({
+        left,
+        runtime->symbol(U"call"),
+        right,
+        runtime->symbol(U"call")
+      });
     }
   }
 
@@ -395,11 +239,11 @@ namespace plorth
   static void w_curry(const ref<context>& ctx)
   {
     ref<value> argument;
-    ref<quote> q;
+    ref<quote> quo;
 
-    if (ctx->pop_quote(q) && ctx->pop(argument))
+    if (ctx->pop_quote(quo) && ctx->pop(argument))
     {
-      ctx->push(ctx->runtime()->curry(argument, q));
+      ctx->push_quote({ argument, quo });
     }
   }
 
@@ -418,11 +262,16 @@ namespace plorth
    */
   static void w_negate(const ref<context>& ctx)
   {
+    const auto& runtime = ctx->runtime();
     ref<quote> quo;
 
     if (ctx->pop_quote(quo))
     {
-      ctx->push(ctx->runtime()->value<negated_quote>(quo));
+      ctx->push_quote({
+        quo,
+        runtime->symbol(U"call"),
+        runtime->symbol(U"not")
+      });
     }
   }
 

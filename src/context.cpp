@@ -82,6 +82,11 @@ namespace plorth
     push(m_runtime->value<object>(properties));
   }
 
+  void context::push_quote(const std::vector<ref<value>>& values)
+  {
+    push(m_runtime->compiled_quote(values));
+  }
+
   bool context::pop()
   {
     if (!m_data.empty())

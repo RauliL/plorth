@@ -169,4 +169,9 @@ namespace plorth
   {
     return m_id;
   }
+
+  ref<class symbol> runtime::symbol(const unistring& id)
+  {
+    return new (*m_memory_manager) class symbol(id);
+  }
 }

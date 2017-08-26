@@ -202,6 +202,14 @@ namespace plorth
     ref<class string> string(string::const_pointer chars, string::size_type length);
 
     /**
+     * Constructs symbol from given identifier string.
+     *
+     * \param id String which acts as identifier for the symbol.
+     * \return   Reference to the created symbol.
+     */
+    ref<class symbol> symbol(const unistring& id);
+
+    /**
      * Constructs compiled quote from given sequence of values.
      */
     ref<quote> compiled_quote(const std::vector<ref<value>>& values);
@@ -210,23 +218,6 @@ namespace plorth
      * Constructs native quote from given C++ callback.
      */
     ref<quote> native_quote(quote::callback callback);
-
-    /**
-     * Constructs curried quote from given value and quote.
-     *
-     * \param value Argument to push into stack before calling the quote.
-     * \param quote Quote to curry.
-     */
-    ref<class quote> curry(const ref<class value>& argument, const ref<class quote>& quote);
-
-    /**
-     * Constructs composed quote from two quotes. The two quotes will be
-     * called in sequence.
-     *
-     * \param left  First quote to call.
-     * \param right Second quote to call.
-     */
-    ref<class quote> compose(const ref<class quote>& left, const ref<class quote>& right);
 
     /**
      * Helper method for constructing managed objects (such as values) using
