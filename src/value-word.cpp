@@ -73,4 +73,106 @@ namespace plorth
   {
     return U": " + m_symbol->id() + U" " + m_quote->to_source() + U" ;";
   }
+
+  /**
+   * Word: symbol
+   * Prototype: word
+   *
+   * Takes:
+   * - word
+   *
+   * Gives:
+   * - word
+   * - symbol
+   *
+   * Extracts symbol from the word and places it onto top of the stack.
+   */
+  static void w_symbol(const ref<context>& ctx)
+  {
+    ref<word> wrd;
+
+    if (ctx->pop_word(wrd))
+    {
+      ctx->push(wrd);
+      ctx->push(wrd->symbol());
+    }
+  }
+
+  /**
+   * Word: quote
+   * Prototype: word
+   *
+   * Takes:
+   * - word
+   *
+   * Gives:
+   * - word
+   * - quote
+   *
+   * Extracts quote which acts as the body of the word and places it onto top
+   * of the stack.
+   */
+  static void w_quote(const ref<context>& ctx)
+  {
+    ref<word> wrd;
+
+    if (ctx->pop_word(wrd))
+    {
+      ctx->push(wrd);
+      ctx->push(wrd->quote());
+    }
+  }
+
+  /**
+   * Word: call
+   * Prototype: word
+   *
+   * Takes:
+   * - word
+   *
+   * Executes body of the given word.
+   */
+  static void w_call(const ref<context>& ctx)
+  {
+    ref<word> wrd;
+
+    if (ctx->pop_word(wrd))
+    {
+      wrd->quote()->call(ctx);
+    }
+  }
+
+  /**
+   * Word: define
+   * Prototype: word
+   *
+   * Takes:
+   * - word
+   *
+   * Inserts given word into current local dictionary.
+   */
+  void w_define(const ref<context>& ctx)
+  {
+    ref<word> wrd;
+
+    if (ctx->pop_word(wrd))
+    {
+      wrd->exec(ctx);
+    }
+  }
+
+  namespace api
+  {
+    runtime::prototype_definition word_prototype()
+    {
+      return
+      {
+        { U"symbol", w_symbol },
+        { U"quote", w_quote },
+
+        { U"call", w_call },
+        { U"define", w_define }
+      };
+    }
+  }
 }

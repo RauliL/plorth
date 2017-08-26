@@ -1,0 +1,9 @@
+"./framework" import
+
+"call"
+[
+  ( "true" >symbol call true = ),
+  ( "foo" dup "=" >symbol call ),
+]
+test-case
+

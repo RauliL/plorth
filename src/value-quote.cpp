@@ -338,6 +338,30 @@ namespace plorth
     ctx->push(val2);
   }
 
+  /**
+   * Word: >word
+   * Prototype: quote
+   *
+   * Takes:
+   * - symbol
+   * - quote
+   *
+   * Gives:
+   * - word
+   *
+   * Constructs word from given pair of symbol and quote.
+   */
+  static void w_to_word(const ref<context>& ctx)
+  {
+    ref<symbol> sym;
+    ref<quote> quo;
+
+    if (ctx->pop_quote(quo) && ctx->pop_symbol(sym))
+    {
+      ctx->push_word(sym, quo);
+    }
+  }
+
   namespace api
   {
     runtime::prototype_definition quote_prototype()
@@ -349,7 +373,10 @@ namespace plorth
         { U"curry", w_curry },
         { U"negate", w_negate },
         { U"dip", w_dip },
-        { U"2dip", w_2dip }
+        { U"2dip", w_2dip },
+
+        // Type conversions.
+        { U">word", w_to_word }
       };
     }
   }

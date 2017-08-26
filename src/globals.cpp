@@ -582,6 +582,52 @@ namespace plorth
   }
 
   /**
+   * Word: symbol?
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - boolean
+   *
+   * Returns true if the topmost value of the stack is symbol.
+   */
+  static void w_is_symbol(const ref<context>& ctx)
+  {
+    ref<value> val;
+
+    if (ctx->pop(val))
+    {
+      ctx->push(val);
+      ctx->push_boolean(val && val->is(value::type_symbol));
+    }
+  }
+
+  /**
+   * Word: word?
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - any
+   * - boolean
+   *
+   * Returns true if the topmost value of the stack is word.
+   */
+  static void w_is_word(const ref<context>& ctx)
+  {
+    ref<value> val;
+
+    if (ctx->pop(val))
+    {
+      ctx->push(val);
+      ctx->push_boolean(val && val->is(value::type_word));
+    }
+  }
+
+  /**
    * Word: typeof
    *
    * Takes:
@@ -1247,6 +1293,8 @@ namespace plorth
         { U"object?", w_is_object },
         { U"quote?", w_is_quote },
         { U"string?", w_is_string },
+        { U"symbol?", w_is_symbol },
+        { U"word?", w_is_word },
         { U"typeof" , w_typeof },
         { U"proto", w_proto },
 

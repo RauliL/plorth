@@ -24,6 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
+#include <plorth/value-word.hpp>
 
 #include "./utils.hpp"
 
@@ -82,9 +83,20 @@ namespace plorth
     push(m_runtime->value<object>(properties));
   }
 
+  void context::push_symbol(const unistring& id)
+  {
+    push(m_runtime->symbol(id));
+  }
+
   void context::push_quote(const std::vector<ref<value>>& values)
   {
     push(m_runtime->compiled_quote(values));
+  }
+
+  void context::push_word(const ref<class symbol>& symbol,
+                          const ref<class quote>& quote)
+  {
+    push(m_runtime->value<word>(symbol, quote));
   }
 
   bool context::pop()
@@ -239,6 +251,32 @@ namespace plorth
       return false;
     }
     slot = value.cast<quote>();
+
+    return true;
+  }
+
+  bool context::pop_symbol(ref<symbol>& slot)
+  {
+    ref<class value> value;
+
+    if (!pop(value, value::type_symbol))
+    {
+      return false;
+    }
+    slot = value.cast<symbol>();
+
+    return true;
+  }
+
+  bool context::pop_word(ref<word>& slot)
+  {
+    ref<class value> value;
+
+    if (!pop(value, value::type_word))
+    {
+      return false;
+    }
+    slot = value.cast<word>();
 
     return true;
   }

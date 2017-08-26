@@ -189,4 +189,37 @@ namespace plorth
     return new (*m_memory_manager) class symbol(id);
 #endif
   }
+
+  /**
+   * Word: call
+   * Prototype: symbol
+   *
+   * Takes:
+   * - symbol
+   *
+   * Resolves given symbol into word or value, depending on the contents of the
+   * data stack, local dictionary and global dictionary and executes it. If the
+   * symbol does not resolve into any kind of word or value, number conversion
+   * is attempted on it. If that also fails, reference error will be thrown.
+   */
+  static void w_call(const ref<context>& ctx)
+  {
+    ref<symbol> sym;
+
+    if (ctx->pop_symbol(sym))
+    {
+      sym->exec(ctx);
+    }
+  }
+
+  namespace api
+  {
+    runtime::prototype_definition symbol_prototype()
+    {
+      return
+      {
+        { U"call", w_call }
+      };
+    }
+  }
 }

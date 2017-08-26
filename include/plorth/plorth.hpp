@@ -43,6 +43,7 @@ namespace plorth
   class quote;
   class string;
   class symbol;
+  class word;
 
   namespace memory
   {

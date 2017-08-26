@@ -212,10 +212,23 @@ namespace plorth
     void push_object(const object::container_type& properties);
 
     /**
+     * Constructs symbol from given identifier and pushes it onto the data
+     * stack.
+     */
+    void push_symbol(const unistring& id);
+
+    /**
      * Constructs quote from given sequence of values and pushes it onto the
      * data stack.
      */
     void push_quote(const std::vector<ref<value>>& values);
+
+    /**
+     * Constructs word from given pair of symbol and quote and pushes it onto
+     * the data stack.
+     */
+    void push_word(const ref<class symbol>& symbol,
+                   const ref<class quote>& quote);
 
     /**
      * Pops value from the data stack and discards it. If the stack is empty,
@@ -315,6 +328,17 @@ namespace plorth
     bool pop_object(ref<object>& slot);
 
     /**
+     * Pops symbol from the data stack and places it into given slot. If the
+     * stack is empty, range error will be set. If something else than symbol
+     * is as top-most value of the stack, type error will be set.
+     *
+     * \param slot Where the symbol will be placed into.
+     * \return     Boolean flag that tells whether the operation was
+     *             successfull or not.
+     */
+    bool pop_symbol(ref<symbol>& slot);
+
+    /**
      * Pops quote from the data stack and places it into given slot. If the
      * stack is empty, range error will be set. If something else than quote
      * is as top-most value of the stack, type error will be set.
@@ -324,6 +348,17 @@ namespace plorth
      *             successfull or not.
      */
     bool pop_quote(ref<quote>& slot);
+
+    /**
+     * Pops word from the data stack and places it into given slot. If the
+     * stack is empty, range error will be set. If something else than word
+     * is as top-most value of the stack, type error will be set.
+     *
+     * \param slot Where the word will be placed into.
+     * \return     Boolean flag that tells whether the operation was
+     *             successfull or not.
+     */
+    bool pop_word(ref<word>& slot);
 
   private:
     /** Runtime associated with this context. */
