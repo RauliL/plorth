@@ -26,7 +26,7 @@
 #ifndef PLORTH_CONFIG_HPP_GUARD
 #define PLORTH_CONFIG_HPP_GUARD
 
-#define PLORTH_VERSION "1.0.0-alpha.3"
+#define PLORTH_VERSION "1.0.0-alpha.4"
 
 // Optional features.
 #cmakedefine PLORTH_ENABLE_MODULES 1
