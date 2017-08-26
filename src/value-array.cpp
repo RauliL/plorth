@@ -196,9 +196,10 @@ namespace plorth
 
     for (size_type i = 0; i < s; ++i)
     {
+      const auto& element = at(i);
       ref<value> element_slot;
 
-      if (!at(i)->eval(ctx, element_slot))
+      if (element && !element->eval(ctx, element_slot))
       {
         delete[] elements;
 

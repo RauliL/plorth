@@ -96,7 +96,7 @@ namespace plorth
     {
       ref<value> value_slot;
 
-      if (!property.second->eval(ctx, value_slot))
+      if (property.second && !property.second->eval(ctx, value_slot))
       {
         return false;
       }
