@@ -238,12 +238,13 @@ namespace plorth
    */
   static void w_curry(const ref<context>& ctx)
   {
+    const auto& runtime = ctx->runtime();
     ref<value> argument;
     ref<quote> quo;
 
     if (ctx->pop_quote(quo) && ctx->pop(argument))
     {
-      ctx->push_quote({ argument, quo });
+      ctx->push_quote({ argument, quo, runtime->symbol(U"call") });
     }
   }
 
