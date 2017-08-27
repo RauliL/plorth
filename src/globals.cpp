@@ -656,6 +656,61 @@ namespace plorth
   }
 
   /**
+   * Word: instance-of?
+   *
+   * Takes:
+   * - any
+   * - object
+   *
+   * Gives:
+   * - any
+   * - boolean
+   *
+   * Tests whether prototype chain of given value inherits from given object.
+   */
+  static void w_is_instance_of(const ref<context>& ctx)
+  {
+    const auto& runtime = ctx->runtime();
+    ref<value> val;
+    ref<object> obj;
+
+    if (ctx->pop_object(obj) && ctx->pop(val))
+    {
+      ref<value> prototype1;
+      ref<value> prototype2 = val->prototype(runtime);
+
+      ctx->push(val);
+
+      if (!obj->property(runtime, U"prototype", prototype1, false) ||
+          !prototype1 ||
+          !prototype1->is(value::type_object) ||
+          !prototype2)
+      {
+        ctx->push_boolean(false);
+        return;
+      }
+      else if (prototype1->equals(prototype2))
+      {
+        ctx->push_boolean(true);
+        return;
+      }
+
+      while (prototype2.cast<object>()->property(runtime, U"__proto__", prototype2, false) &&
+             prototype2 &&
+             prototype2->is(value::type_object))
+      {
+        if (prototype1->equals(prototype2))
+        {
+          ctx->push_boolean(true);
+          return;
+        }
+      }
+
+      ctx->push_boolean(false);
+    }
+  }
+
+  /**
    * Word: proto
    *
    * Takes:
@@ -1309,6 +1364,7 @@ namespace plorth
         { U"symbol?", w_is_symbol },
         { U"word?", w_is_word },
         { U"typeof" , w_typeof },
+        { U"instance-of?", w_is_instance_of },
         { U"proto", w_proto },
 
         // Conversions.
