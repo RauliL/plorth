@@ -824,6 +824,100 @@ namespace plorth
   }
 
   /**
+   * Word: 1array
+   *
+   * Takes:
+   * - any
+   *
+   * Gives:
+   * - array
+   *
+   * Constructs array from given value.
+   */
+  static void w_1array(const ref<context>& ctx)
+  {
+    ref<value> val;
+
+    if (ctx->pop(val))
+    {
+      ctx->push_array(&val, 1);
+    }
+  }
+
+  /**
+   * Word: 2array
+   *
+   * Takes:
+   * - any
+   * - any
+   *
+   * Gives:
+   * - array
+   *
+   * Constructs array from given two values.
+   */
+  static void w_2array(const ref<context>& ctx)
+  {
+    ref<value> val1;
+    ref<value> val2;
+
+    if (ctx->pop(val2) && ctx->pop(val1))
+    {
+      ref<value> buffer[2];
+
+      buffer[0] = val1;
+      buffer[1] = val2;
+      ctx->push_array(buffer, 2);
+    }
+  }
+
+  /**
+   * Word: narray
+   *
+   * Takes:
+   * - any...
+   * - number
+   *
+   * Gives:
+   * - array
+   *
+   * Constructs array from given amount of values from the stack.
+   */
+  static void w_narray(const ref<context>& ctx)
+  {
+    ref<number> num;
+
+    if (ctx->pop_number(num))
+    {
+      const std::int64_t size = num->as_int();
+      ref<value>* buffer;
+
+      if (size < 0)
+      {
+        ctx->error(error::code_range, U"Negative array size.");
+        return;
+      }
+
+      buffer = new ref<value>[size];
+
+      for (std::int64_t i = 0; i < size; ++i)
+      {
+        ref<value> val;
+
+        if (!ctx->pop(val))
+        {
+          delete[] buffer;
+          return;
+        }
+        buffer[size - i - 1] = val;
+      }
+
+      ctx->push_array(buffer, size);
+      delete[] buffer;
+    }
+  }
+
+  /**
    * Word: if
    *
    * Takes:
@@ -1383,6 +1477,11 @@ namespace plorth
         { U">boolean", w_to_boolean },
         { U">string", w_to_string },
         { U">source", w_to_source },
+
+        // Constructors.
+        { U"1array", w_1array },
+        { U"2array", w_2array },
+        { U"narray", w_narray },
 
         // Logic.
         { U"if", w_if },

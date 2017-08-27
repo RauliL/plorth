@@ -12,3 +12,12 @@
   ( {} {} instance-of? not nip ),
 ]
 test-case
+
+"array constructors"
+[
+  ( 1 1array [1] = ),
+  ( 1 2 2array [1, 2] = ),
+  ( 1 2 3 dup narray [1, 2, 3] = ),
+  ( ( -5 narray ) ( drop true ) ( false ) try-else ),
+]
+test-case
