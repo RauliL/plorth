@@ -166,6 +166,26 @@
 
 <p>Pushes the value of negative infinity onto stack.</p>
 <hr />
+<h3 id="1array">1array</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>any</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+<p>Constructs array from given value.</p>
+<hr />
+<h3 id="2array">2array</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, any</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+<p>Constructs array from given two values.</p>
+<hr />
 <h3 id="2drop">2drop</h3>
 <dl>
   <dt>Takes:</dt>
@@ -389,6 +409,16 @@ this execution context.</p>
 
 <p>Pushes the value of positive infinity onto stack.</p>
 <hr />
+<h3 id="instance-of">instance-of?</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, object</dd>
+  <dt>Gives:</dt>
+  <dd>any, boolean</dd>
+</dl>
+
+<p>Tests whether prototype chain of given value inherits from given object.</p>
+<hr />
 <h3 id="locals">locals</h3>
 <dl>
   <dt>Gives:</dt>
@@ -404,6 +434,16 @@ this execution context.</p>
 </dl>
 
 <p>Pushes the value of NaN (not a number) onto stack.</p>
+<hr />
+<h3 id="narray">narray</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>any..., number</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+<p>Constructs array from given amount of values from the stack.</p>
 <hr />
 <h3 id="nip">nip</h3>
 <dl>
@@ -1038,7 +1078,17 @@ not have any error message.</p>
 <p>Computes the modulo of the first number with respect to the second number
 i.e. the remainder after floor division.</p>
 <hr />
-<h3 id="_11">*</h3>
+<h3 id="_11">&amp;</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+<p>Performs bitwise and on the two given numbers.</p>
+<hr />
+<h3 id="_12">*</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1048,7 +1098,7 @@ i.e. the remainder after floor division.</p>
 
 <p>Performs multiplication on the two given numbers.</p>
 <hr />
-<h3 id="_12">+</h3>
+<h3 id="_13">+</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1068,7 +1118,7 @@ i.e. the remainder after floor division.</p>
 
 <p>Subtracts the second number from the first and returns the result.</p>
 <hr />
-<h3 id="_13">/</h3>
+<h3 id="_14">/</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1078,7 +1128,7 @@ i.e. the remainder after floor division.</p>
 
 <p>Divides the first number by the second and returns the result.</p>
 <hr />
-<h3 id="_14">&lt;</h3>
+<h3 id="_15">&lt;</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1088,7 +1138,17 @@ i.e. the remainder after floor division.</p>
 
 <p>Returns true if the first number is less than the second one.</p>
 <hr />
-<h3 id="_15">&lt;=</h3>
+<h3 id="_16">&lt;&lt;</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+<p>Returns the first value with bits shifted left by the second value.</p>
+<hr />
+<h3 id="_17">&lt;=</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1098,7 +1158,7 @@ i.e. the remainder after floor division.</p>
 
 <p>Returns true if the first number is less than or equal to the second one.</p>
 <hr />
-<h3 id="_16">&gt;</h3>
+<h3 id="_18">&gt;</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1108,7 +1168,7 @@ i.e. the remainder after floor division.</p>
 
 <p>Returns true if the first number is greater than the second one.</p>
 <hr />
-<h3 id="_17">&gt;=</h3>
+<h3 id="_19">&gt;=</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, number</dd>
@@ -1118,6 +1178,26 @@ i.e. the remainder after floor division.</p>
 
 <p>Returns true if the first number is greater than or equal to the second
 one.</p>
+<hr />
+<h3 id="_20">&gt;&gt;</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+<p>Returns the first value with bits shifted right by the second value.</p>
+<hr />
+<h3 id="_21">^</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+<p>Performs bitwise xor on the two given numbers.</p>
 <hr />
 <h3 id="abs">abs</h3>
 <dl>
@@ -1227,9 +1307,29 @@ numbers.</p>
 </dl>
 
 <p>Executes a quote given number of times.</p>
+<hr />
+<h3 id="_22">|</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+<p>Performs bitwise or on the two given numbers.</p>
+<hr />
+<h3 id="_23">~</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+<p>Flips the bits of the value.</p>
 <h2 id="object_1">object</h2>
 <hr />
-<h3 id="_18">!</h3>
+<h3 id="_24">!</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>any, string, object</dd>
@@ -1240,7 +1340,7 @@ numbers.</p>
 <p>Constructs a copy of the object with new named property either introduced
 or replaced.</p>
 <hr />
-<h3 id="_19">+</h3>
+<h3 id="_25">+</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>object, object</dd>
@@ -1251,7 +1351,7 @@ or replaced.</p>
 <p>Combines the contents of two objects together and returns the result. If
 the two objects share keys the second object's values take precedence.</p>
 <hr />
-<h3 id="_20">@</h3>
+<h3 id="_26">@</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>string, object</dd>
@@ -1405,7 +1505,7 @@ back on the stack.</p>
 result returned by the original quote.</p>
 <h2 id="string_2">string</h2>
 <hr />
-<h3 id="_21">*</h3>
+<h3 id="_27">*</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, string</dd>
@@ -1415,7 +1515,7 @@ result returned by the original quote.</p>
 
 <p>Repeats the string given number of times.</p>
 <hr />
-<h3 id="_22">+</h3>
+<h3 id="_28">+</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>string, string</dd>
@@ -1447,7 +1547,7 @@ error if the number cannot be converted into one.</p>
 <p>Converts given string into symbol. Value error will be thrown if the string
 is empty or contains whitespace or non-symbolic characters such as separators.</p>
 <hr />
-<h3 id="_23">@</h3>
+<h3 id="_29">@</h3>
 <dl>
   <dt>Takes:</dt>
   <dd>number, string</dd>
