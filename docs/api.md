@@ -329,6 +329,19 @@ Pushes the value of positive infinity onto stack.
 
 ---
 
+### instance-of?
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, object</dd>
+  <dt>Gives:</dt>
+  <dd>any, boolean</dd>
+</dl>
+
+Tests whether prototype chain of given value inherits from given object.
+
+---
+
 ### locals
 
 <dl>

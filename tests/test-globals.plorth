@@ -1,0 +1,14 @@
+"./framework" import
+
+"instance-of?"
+[
+  ( [] array instance-of? nip ),
+  ( true boolean instance-of? nip ),
+  ( "" string instance-of? nip ),
+  ( {} object instance-of? nip ),
+  ( "foo" >symbol symbol instance-of? nip ),
+  ( [] string instance-of? not nip ),
+  ( "" array instance-of? not nip ),
+  ( {} {} instance-of? not nip ),
+]
+test-case
