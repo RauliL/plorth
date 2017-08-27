@@ -68,9 +68,11 @@ namespace plorth
       return false;
     }
 
-    obj = that.cast<object>();
-
-    if (m_properties.size() != obj->m_properties.size())
+    if (this == (obj = that.cast<object>()))
+    {
+      return true;
+    }
+    else if (m_properties.size() != obj->m_properties.size())
     {
       return false;
     }
