@@ -156,7 +156,7 @@ static void scan_arguments(const ref<class runtime>& runtime,
       }
       else if (!std::strcmp(arg, "--version"))
       {
-        std::cerr << "Plorth " << PLORTH_VERSION << std::endl;
+        std::cerr << "Plorth " << utf8_encode(PLORTH_VERSION) << std::endl;
         std::exit(EXIT_SUCCESS);
       }
       else if (!std::strcmp(arg, "--"))
