@@ -25,6 +25,8 @@
  */
 #include <plorth/unicode.hpp>
 
+#include "./utils.hpp"
+
 #include <cfloat>
 #include <climits>
 #include <cmath>
@@ -329,5 +331,35 @@ namespace plorth
     }
 
     return number;
+  }
+
+  unistring dirname(const unistring& path)
+  {
+    const auto length = path.length();
+    unistring::size_type index;
+
+    if (!length)
+    {
+      return unistring();
+    }
+
+    index = path.find_last_of(PLORTH_FILE_SEPARATOR);
+    // No slashes found?
+    if (index == unistring::npos)
+    {
+      return U".";
+    }
+    // Slash is the first character?
+    else if (index == 0)
+    {
+      return unistring(1, PLORTH_FILE_SEPARATOR);
+    }
+    // Slash is the last character?
+    else if (index == length - 1)
+    {
+      return dirname(path.substr(0, index - 1));
+    } else {
+      return path.substr(0, index);
+    }
   }
 }
