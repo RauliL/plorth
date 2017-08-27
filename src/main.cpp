@@ -82,6 +82,9 @@ int main(int argc, char** argv)
 
       is.close();
       context->clear();
+#if PLORTH_ENABLE_MODULES
+      context->filename(utf8_decode(script_filename));
+#endif
       compile_and_run(context, source);
     } else {
       std::cerr << argv[0]
