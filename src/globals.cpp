@@ -1005,7 +1005,13 @@ namespace plorth
    */
   static void w_globals(const ref<context>& ctx)
   {
-    ctx->push_object(ctx->runtime()->dictionary());
+    object::container_type result;
+
+    for (const auto& entry : ctx->runtime()->dictionary())
+    {
+      result[entry.first] = entry.second;
+    }
+    ctx->push_object(result);
   }
 
   /**
@@ -1018,7 +1024,13 @@ namespace plorth
    */
   static void w_locals(const ref<context>& ctx)
   {
-    ctx->push_object(ctx->dictionary());
+    object::container_type result;
+
+    for (const auto& entry : ctx->dictionary())
+    {
+      result[entry.first] = entry.second;
+    }
+    ctx->push_object(result);
   }
 
   /**

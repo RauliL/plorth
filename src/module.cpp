@@ -77,6 +77,7 @@ namespace plorth
         unistring source;
         ref<quote> compiled_module;
         ref<context> module_context;
+        object::container_type result;
 
         is.close();
 
@@ -108,7 +109,11 @@ namespace plorth
         }
 
         // TODO: Add some kind of way to selectively export words from a module.
-        module = value<object>(module_context->dictionary());
+        for (const auto& entry : module_context->dictionary())
+        {
+          result[entry.first] = entry.second;
+        }
+        module = value<object>(result);
         m_imported_modules[resolved_path] = module;
       } else {
         ctx->error(error::code_import, U"Unable to import `" + resolved_path + U"'");
@@ -121,7 +126,10 @@ namespace plorth
     // context.
     for (const auto& property : module->properties())
     {
-      ctx->dictionary()[property.first] = property.second;
+      if (property.second && property.second->is(value::type_quote))
+      {
+        ctx->dictionary()[property.first] = property.second.cast<quote>();
+      }
     }
 
     return true;
