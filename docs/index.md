@@ -10,4 +10,4 @@ by [Forth] and [Factor] programming languages.
 
 [Forth]: https://www.forth.com
 [Factor]: http://www.factorcode.org
-[REPL]: https://raulil.github.io/repl/
+[REPL]: https://raulil.github.io/plorth-ide/
