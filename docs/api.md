@@ -30,6 +30,32 @@ Pushes the value of negative infinity onto stack.
 
 ---
 
+### 1array
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>any</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+Constructs array from given value.
+
+---
+
+### 2array
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>any, any</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+Constructs array from given two values.
+
+---
+
 ### 2drop
 
 <dl>
@@ -361,6 +387,19 @@ Returns the local dictionary of current execution context as an object.
 </dl>
 
 Pushes the value of NaN (not a number) onto stack.
+
+---
+
+### narray
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>any..., number</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+Constructs array from given amount of values from the stack.
 
 ---
 
