@@ -1192,6 +1192,19 @@ i.e. the remainder after floor division.
 
 ---
 
+### &
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+Performs bitwise and on the two given numbers.
+
+---
+
 ### *
 
 <dl>
@@ -1257,6 +1270,19 @@ Returns true if the first number is less than the second one.
 
 ---
 
+### <<
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+Returns the first value with bits shifted left by the second value.
+
+---
+
 ### <=
 
 <dl>
@@ -1294,6 +1320,32 @@ Returns true if the first number is greater than the second one.
 
 Returns true if the first number is greater than or equal to the second
 one.
+
+---
+
+### >>
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+Returns the first value with bits shifted right by the second value.
+
+---
+
+### ^
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+Performs bitwise xor on the two given numbers.
 
 ---
 
@@ -1436,6 +1488,32 @@ Rounds given number to nearest integer value.
 </dl>
 
 Executes a quote given number of times.
+
+---
+
+### |
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+Performs bitwise or on the two given numbers.
+
+---
+
+### ~
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>number</dd>
+  <dt>Gives:</dt>
+  <dd>number</dd>
+</dl>
+
+Flips the bits of the value.
 
 ## object
 
