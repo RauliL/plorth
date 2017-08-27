@@ -1,0 +1,22 @@
+#!/usr/bin/env plorth-cli
+
+# Implement the Turing complete SKI combinator calculus in Plorth.
+# It lacks lazy evaluation features so it's not really that useful.
+
+: I nop ;
+: K (nip) curry ;
+: S' rot tuck swap call rot rot swap call swap call;
+: S ((S') curry) curry;
+
+: hello "Hello " print ;
+: world "World " print ;
+: shout "!" print ;
+
+# Push the greetings onto the stack in wrong order.
+null (println) (shout) (hello) (world)
+
+# Reverse the order of (hello) and (world).
+(K) (I) (S) call (K) call (S) call call call
+
+# Evaluate everything on the stack.
+call call call call
