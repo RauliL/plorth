@@ -683,6 +683,142 @@ namespace plorth
     }
   }
 
+  template<typename Operation >
+  static void number_bit_op(const ref<context>& ctx, const Operation& op)
+  {
+    ref<number> a;
+    ref<number> b;
+
+    if (ctx->pop_number(b) && ctx->pop_number(a))
+    {
+      ctx->push_int(op(a->as_int(), b->as_int()));
+    }
+  }
+
+  /**
+   * Word: &
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
+   *
+   * Performs bitwise and on the two given numbers.
+   */
+  static void w_bit_and(const ref<context>& ctx)
+  {
+    number_bit_op(ctx, std::bit_and<int64_t>());
+  }
+
+  /**
+   * Word: |
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
+   *
+   * Performs bitwise or on the two given numbers.
+   */
+  static void w_bit_or(const ref<context>& ctx)
+  {
+    number_bit_op(ctx, std::bit_or<int64_t>());
+  }
+
+  /**
+   * Word: ^
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
+   *
+   * Performs bitwise xor on the two given numbers.
+   */
+  static void w_bit_xor(const ref<context>& ctx)
+  {
+    number_bit_op(ctx, std::bit_xor<int64_t>());
+  }
+
+  /**
+   * Word: >>
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
+   *
+   * Returns the first value with bits shifted right by the second value.
+   */
+  static void w_shift_right(const ref<context>& ctx)
+  {
+    ref<number> a;
+    ref<number> b;
+
+    if (ctx->pop_number(b) && ctx->pop_number(a))
+    {
+      ctx->push_int(a->as_int() >> b->as_int());
+    }
+  }
+
+  /**
+   * Word: <<
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   * - number
+   *
+   * Gives:
+   * - number
+   *
+   * Returns the first value with bits shifted left by the second value.
+   */
+  static void w_shift_left(const ref<context>& ctx)
+  {
+    ref<number> a;
+    ref<number> b;
+
+    if (ctx->pop_number(b) && ctx->pop_number(a))
+    {
+      ctx->push_int(a->as_int() << b->as_int());
+    }
+  }
+
+  /**
+   * Word: ~
+   * Prototype: number
+   *
+   * Takes:
+   * - number
+   *
+   * Gives:
+   * - number
+   *
+   * Flips the bits of the value.
+   */
+  static void w_bit_not(const ref<context>& ctx)
+  {
+    ref<number> a;
+
+    if (ctx->pop_number(a))
+    {
+      ctx->push_int(~a->as_int());
+    }
+  }
+
   /**
    * Word: <
    * Prototype: number
@@ -825,6 +961,13 @@ namespace plorth
         { U"*", w_mul },
         { U"/", w_div },
         { U"%", w_mod },
+
+        { U"&", w_bit_and },
+        { U"|", w_bit_or },
+        { U"^", w_bit_xor },
+        { U"<<", w_shift_left },
+        { U">>", w_shift_right },
+        { U"~", w_bit_not },
 
         { U"<", w_lt },
         { U">", w_gt },
