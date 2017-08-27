@@ -6,9 +6,8 @@ mkdir -p build
 cd build
 env CXXFLAGS="-Wall -Werror" cmake ..
 make
-cd ../tests
-for file in test-*.plorth
+for file in ../tests/test-*.plorth
 do
   echo $file
-  ../build/plorth-cli $file
+  ./plorth-cli $file
 done

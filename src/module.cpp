@@ -16,19 +16,18 @@
 #include <algorithm>
 #include <cstring>
 
+#include "./utils.hpp"
+
 namespace plorth
 {
 #if PLORTH_ENABLE_MODULES
   static const char* plorth_file_extension = ".plorth";
-# if defined(_WIN32)
-  static const unichar file_separator = '\\';
-# else
-  static const unichar file_separator = '/';
-# endif
 
-  static bool resolve_path(const unistring&,
-                           unistring&,
-                           const std::vector<unistring>&);
+  static ref<object> module_import(const ref<context>&,
+                                   const unistring&);
+  static bool module_resolve_path(const ref<context>&,
+                                  const unistring&,
+                                  unistring&);
 #endif
 
   bool runtime::import(const ref<context>& ctx, const unistring& path)
@@ -43,11 +42,11 @@ namespace plorth
 
 #if PLORTH_ENABLE_MODULES
     unistring resolved_path;
-    object::container_type::const_iterator entry;
+    object::container_type::iterator entry;
     ref<object> module;
 
     // First attempt to resolve the module path into actual file system path.
-    if (!resolve_path(path, resolved_path, m_module_paths))
+    if (!module_resolve_path(ctx, path, resolved_path))
     {
       ctx->error(error::code_import, U"No such file or directory.");
 
@@ -65,61 +64,12 @@ namespace plorth
     if (entry != std::end(m_imported_modules))
     {
       module = entry->second.cast<object>();
+    }
+    else if ((module = module_import(ctx, resolved_path)))
+    {
+      m_imported_modules[resolved_path] = module;
     } else {
-      std::fstream is(utf8_encode(resolved_path));
-
-      if (is.good())
-      {
-        const std::string input = std::string(
-          std::istreambuf_iterator<char>(is),
-          std::istreambuf_iterator<char>()
-        );
-        unistring source;
-        ref<quote> compiled_module;
-        ref<context> module_context;
-        object::container_type result;
-
-        is.close();
-
-        if (!utf8_decode_test(input, source))
-        {
-          ctx->error(error::code_import, U"Unable to decode source code into UTF-8.");
-
-          return false;
-        }
-
-        // Did the compilation fail?
-        if (!(compiled_module = ctx->compile(source)))
-        {
-          return false;
-        }
-
-        // Run the module code inside new execution context.
-        module_context = new_context();
-        if (!compiled_module->call(module_context))
-        {
-          if (module_context->error())
-          {
-            ctx->error(module_context->error());
-          } else {
-            ctx->error(error::code_import, U"Module import failed.");
-          }
-
-          return false;
-        }
-
-        // TODO: Add some kind of way to selectively export words from a module.
-        for (const auto& entry : module_context->dictionary())
-        {
-          result[entry.first] = entry.second;
-        }
-        module = value<object>(result);
-        m_imported_modules[resolved_path] = module;
-      } else {
-        ctx->error(error::code_import, U"Unable to import `" + resolved_path + U"'");
-
-        return false;
-      }
+      return false;
     }
 
     // Transfer all exported words from the module into the calling execution
@@ -141,29 +91,99 @@ namespace plorth
   }
 
 #if PLORTH_ENABLE_MODULES
+  static ref<object> module_import(const ref<context>& ctx,
+                                   const unistring& path)
+  {
+    std::fstream is(utf8_encode(path));
+    std::string raw_source;
+    unistring source;
+    ref<quote> compiled_module;
+    ref<context> module_ctx;
+    object::container_type result;
+
+    if (!is.good())
+    {
+      ctx->error(error::code_import, U"Unable to import `" + path + U"'");
+
+      return ref<object>();
+    }
+
+    raw_source = std::string(
+      std::istreambuf_iterator<char>(is),
+      std::istreambuf_iterator<char>()
+    );
+    is.close();
+
+    // First decode the source as UTF-8.
+    if (!utf8_decode_test(raw_source, source))
+    {
+      ctx->error(
+        error::code_import,
+        U"Unable to decode source code into UTF-8."
+      );
+
+      return ref<object>();
+    }
+
+    // Then attempt to compile it.
+    if (!(compiled_module = ctx->compile(source)))
+    {
+      return ref<object>();
+    }
+
+    // Run the module code inside new execution context.
+    module_ctx = ctx->runtime()->new_context();
+    module_ctx->filename(path);
+    if (!compiled_module->call(module_ctx))
+    {
+      if (module_ctx->error())
+      {
+        ctx->error(module_ctx->error());
+      } else {
+        ctx->error(error::code_import, U"Module import failed.");
+      }
+
+      return ref<object>();
+    }
+
+    // Finally convert the module into object.
+    for (const auto& entry : module_ctx->dictionary())
+    {
+      result[entry.first] = entry.second;
+    }
+
+    return ctx->runtime()->value<object>(result);
+  }
+
   static bool is_absolute_path(const unistring& path)
   {
     const auto length = path.length();
 
     // Does the path begin file separator?
-    if (length > 0 && path[0] == file_separator)
+    if (length > 0 && path[0] == PLORTH_FILE_SEPARATOR)
     {
       return true;
     }
 #if defined(_WIN32)
     // Does the path begin with drive letter on Windows?
-    else if (length > 3 && std::isalpha(path[0]) && path[1] == ':' && path[2] == file_separator)
+    else if (length > 3 &&
+             std::isalpha(path[0]) &&
+             path[1] == ':' &&
+             path[2] == PLORTH_FILE_SEPARATOR)
     {
       return true;
     }
 #endif
     // Does the path begin with './'?
-    if (length > 1 && path[0] == '.' && path[1] == file_separator)
+    if (length > 1 && path[0] == '.' && path[1] == PLORTH_FILE_SEPARATOR)
     {
       return true;
     }
     // Does the path begin with '../'?
-    else if (length > 2 && path[0] == '.' && path[1] == '.' && path[2] == file_separator)
+    else if (length > 2 &&
+             path[0] == '.' &&
+             path[1] == '.' &&
+             path[2] == PLORTH_FILE_SEPARATOR)
     {
       return true;
     }
@@ -199,9 +219,9 @@ namespace plorth
     {
       std::string index_file_path = path;
 
-      if (index_file_path.back() != file_separator)
+      if (index_file_path.back() != PLORTH_FILE_SEPARATOR)
       {
-        index_file_path += file_separator;
+        index_file_path += PLORTH_FILE_SEPARATOR;
       }
       index_file_path += "index";
       index_file_path += plorth_file_extension;
@@ -226,9 +246,9 @@ namespace plorth
     return false;
   }
 
-  static bool resolve_path(const unistring& path,
-                           unistring& resolved_path,
-                           const std::vector<unistring>& module_directories)
+  static bool module_resolve_path(const ref<context>& ctx,
+                                  const unistring& path,
+                                  unistring& resolved_path)
   {
     std::string encoded_path = utf8_encode(path);
     char buffer[PATH_MAX];
@@ -236,6 +256,12 @@ namespace plorth
     // If the path is absolute, resolve it into full path and use that directly.
     if (is_absolute_path(path))
     {
+      const auto dir = utf8_encode(dirname(ctx->filename()));
+
+      if (!dir.empty())
+      {
+        encoded_path = dir + PLORTH_FILE_SEPARATOR + encoded_path;
+      }
       if (!::realpath(encoded_path.c_str(), buffer))
       {
         // Try again with appended file extension.
@@ -252,7 +278,7 @@ namespace plorth
 
     // Otherwise go through the module directories and look for a matching file
     // from each of them.
-    for (const auto& directory : module_directories)
+    for (const auto& directory : ctx->runtime()->module_paths())
     {
       std::string module_path;
 
@@ -274,9 +300,9 @@ namespace plorth
       // Append the filename into the module directory path and try whether that
       // one exists or not.
       module_path = buffer;
-      if (module_path.back() != file_separator)
+      if (module_path.back() != PLORTH_FILE_SEPARATOR)
       {
-        module_path += file_separator;
+        module_path += PLORTH_FILE_SEPARATOR;
       }
       if (!::realpath(module_path.c_str(), buffer))
       {

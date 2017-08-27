@@ -361,6 +361,26 @@ namespace plorth
      */
     bool pop_word(ref<word>& slot);
 
+#if PLORTH_ENABLE_MODULES
+    /**
+     * Returns optional filename of the context, when the context is executed as
+     * module.
+     */
+    inline const unistring& filename() const
+    {
+      return m_filename;
+    }
+
+    /**
+     * Sets optional filename of the context, when the context is executed as
+     * module.
+     */
+    inline void filename(const unistring& fn)
+    {
+      m_filename = fn;
+    }
+#endif
+
   private:
     /** Runtime associated with this context. */
     const ref<class runtime> m_runtime;
@@ -370,6 +390,10 @@ namespace plorth
     container_type m_data;
     /** Container for words associated with this context. */
     dictionary_type m_dictionary;
+#if PLORTH_ENABLE_MODULES
+    /** Optional filename of the context, when executed as module. */
+    unistring m_filename;
+#endif
   };
 }
 

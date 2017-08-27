@@ -28,6 +28,12 @@
 
 #include <plorth/unicode.hpp>
 
+#if defined(_WIN32)
+# define PLORTH_FILE_SEPARATOR '\\'
+#else
+# define PLORTH_FILE_SEPARATOR '/'
+#endif
+
 namespace plorth
 {
   unistring json_stringify(const unistring&);
@@ -36,6 +42,7 @@ namespace plorth
   bool is_number(const unistring&);
   unistring to_unistring(std::int64_t);
   unistring to_unistring(double);
+  unistring dirname(const unistring&);
 }
 
 #endif /* !PLORTH_UTILS_HPP_GUARD */
