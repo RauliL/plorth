@@ -33,5 +33,5 @@ binary to start Plorth REPL.
 [Factor]: http://www.factorcode.org
 [CMake]: https://www.cmake.org
 [Documentation]: https://raulil.github.io/plorth/
-[REPL]: https://raulil.github.io/plorth-repl/
+[REPL]: https://raulil.github.io/plorth-ide/
 [Build Status]: https://travis-ci.org/RauliL/plorth.svg?branch=master
