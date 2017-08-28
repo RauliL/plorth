@@ -27,6 +27,7 @@
 #define PLORTH_CONFIG_HPP_GUARD
 
 #define PLORTH_VERSION U"1.0.0-alpha.4"
+#define PLORTH_RUNTIME_LIBRARY_PATH U"${CMAKE_INSTALL_PREFIX}/lib/plorth"
 
 // Optional features.
 #cmakedefine PLORTH_ENABLE_MODULES 1

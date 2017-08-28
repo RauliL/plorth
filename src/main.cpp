@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
   if (script_filename)
   {
-    std::fstream is(script_filename, std::ios_base::in);
+    std::ifstream is(script_filename, std::ios_base::in);
 
     if (is.good())
     {
@@ -221,29 +221,34 @@ static void scan_module_path(const ref<class runtime>& runtime)
   const char* begin = std::getenv("PLORTHPATH");
   const char* end = begin;
 
-  if (!end)
+  if (end)
   {
-    return;
-  }
-
-  for (; *end; ++end)
-  {
-    if (*end != path_separator)
+    for (; *end; ++end)
     {
-      continue;
+      if (*end != path_separator)
+      {
+        continue;
+      }
+
+      if (end - begin > 0)
+      {
+        module_paths.push_back(utf8_decode(std::string(begin, end - begin)));
+      }
+      begin = end + 1;
     }
 
     if (end - begin > 0)
     {
       module_paths.push_back(utf8_decode(std::string(begin, end - begin)));
     }
-    begin = end + 1;
   }
 
-  if (end - begin > 0)
+#if defined(PLORTH_RUNTIME_LIBRARY_PATH)
+  if (module_paths.empty())
   {
-    module_paths.push_back(utf8_decode(std::string(begin, end - begin)));
+    module_paths.push_back(PLORTH_RUNTIME_LIBRARY_PATH);
   }
+#endif
 }
 #endif
 
