@@ -9,5 +9,5 @@ make
 for file in ../tests/test-*.plorth
 do
   echo $file
-  ./plorth-cli $file
+  ./plorth $file
 done

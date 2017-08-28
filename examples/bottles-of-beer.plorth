@@ -1,3 +1,5 @@
+#!/usr/bin/env plorth
+
 : describe
   dup 1 > (dup >string " bottles" +) if
   dup 1 = ("1 bottle") if

@@ -1,4 +1,4 @@
-#!/usr/bin/env plorth-cli
+#!/usr/bin/env plorth
 
 # Reduce an array of integers into single value using word "reduce" with
 # operator "+".

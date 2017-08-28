@@ -141,6 +141,10 @@ IF(PLORTH_ENABLE_TARGET_CLI)
     plorth-cli
     plorth
   )
+  SET_TARGET_PROPERTIES(
+    plorth-cli
+    PROPERTIES OUTPUT_NAME plorth
+  )
   INSTALL(
     TARGETS
       plorth-cli
