@@ -1,0 +1,49 @@
+#!/usr/bin/env plorth
+#
+# Easy to use class creation library. You push an object which contains methods
+# for your class as quotes and call the `class` word with name of the class. It
+# will construct prototype from the object, store it as constant and finally
+# define new word which calls the constructor of the class.
+#
+# You can also inherit from other classes by using `class-extend` word, in
+# which case you also need to be place the class you wish the new class to
+# inherit from onto the stack.
+#
+
+: class
+  swap class-create swap tuck "-prototype" + tuck const " new" + compile swap
+  >symbol swap >word define
+;
+
+: class-extend
+  "prototype" swap @ nip rot "__proto__" swap ! class
+;
+
+: class-create
+  # If class declaration has "fields" property, use it to automatically create
+  # setters and getters.
+  "fields" swap has-own?
+  (
+    "fields" swap @ class-add-fields
+    # Finally remove the now obsolete "fields" property.
+    "fields" swap delete
+  ) if
+
+  # Finally create the class object.
+  "prototype" {} !
+;
+
+: class-add-fields
+  # Make sure that we are dealing with an array.
+  array? not ( "Fields are not stored in array." value-error throw ) if
+
+  # Iterate through each field name and create getters and setters.
+  (
+    tuck dup
+    # Create setter.
+    "!" swap + swap >string >source " swap !" + compile swap rot !
+    # Create getter.
+    swap dup "@" swap + swap >string >source " swap @" + compile swap rot !
+  )
+  swap for-each
+;

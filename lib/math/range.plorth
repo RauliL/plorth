@@ -1,0 +1,62 @@
+#!/usr/bin/env plorth
+#
+# Simple numeric range class implemented as iterator.
+#
+
+"../class" import
+
+{
+  "fields": [
+    "current",
+    "end",
+    "stepper",
+    "comparator",
+  ],
+
+  "constructor": (
+    !end
+    !current
+    "+" >symbol swap !stepper
+    "<" >symbol swap !comparator
+  ),
+
+  "reverse-stepper": (
+    @stepper >string
+    "-" >symbol swap
+    "+" >symbol swap
+    "+" = ?
+  ),
+
+  "reverse-comparator": (
+    @comparator >string
+    ">" >symbol swap
+    "<" >symbol swap
+    "<" = ?
+  ),
+
+  "reverse": (
+    @current swap @end rot rot !end !current
+    reverse-stepper swap !stepper
+    reverse-comparator swap !comparator
+  ),
+
+  "has-next?": (
+    dup @current swap @end swap @comparator nip call
+  ),
+
+  "next": (
+    has-next?
+    (
+      dup
+      @current swap @stepper nip 1 swap call
+      dup rot !current swap
+    )
+    ( "Range has reached it's end." range-error throw )
+    if-else
+  ),
+
+  ">array": (
+    @current 1array swap ( has-next? ) ( next 1array rot swap + swap ) while
+    drop
+  ),
+} "range" class
