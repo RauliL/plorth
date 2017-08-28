@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
   if (script_filename)
   {
-    std::fstream is(script_filename, std::ios_base::in);
+    std::ifstream is(script_filename, std::ios_base::in);
 
     if (is.good())
     {
