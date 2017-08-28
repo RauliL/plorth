@@ -94,7 +94,7 @@ namespace plorth
   static ref<object> module_import(const ref<context>& ctx,
                                    const unistring& path)
   {
-    std::fstream is(utf8_encode(path));
+    std::ifstream is(utf8_encode(path));
     std::string raw_source;
     unistring source;
     ref<quote> compiled_module;
@@ -290,7 +290,11 @@ namespace plorth
         continue;
       }
 
-      module_path = encoded_path;
+      module_path = utf8_encode(directory);
+      if (module_path.back() != PLORTH_FILE_SEPARATOR)
+      {
+        module_path += PLORTH_FILE_SEPARATOR;
+      }
       if (!::realpath(module_path.c_str(), buffer))
       {
         // Unable to locate the directory. Continue to next one.
@@ -304,6 +308,7 @@ namespace plorth
       {
         module_path += PLORTH_FILE_SEPARATOR;
       }
+      module_path += encoded_path;
       if (!::realpath(module_path.c_str(), buffer))
       {
         // Try again with appended file extension.
