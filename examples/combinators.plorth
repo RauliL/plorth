@@ -1,4 +1,4 @@
-#!/usr/bin/env plorth-cli
+#!/usr/bin/env plorth
 
 # Implement the Turing complete SKI combinator calculus in Plorth.
 # It lacks lazy evaluation features so it's not really that useful.

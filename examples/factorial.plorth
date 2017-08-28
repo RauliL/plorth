@@ -1,4 +1,4 @@
-#!/usr/bin/env plorth-cli
+#!/usr/bin/env plorth
 
 # Declare the factorial function recursively.
 : factorial

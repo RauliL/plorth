@@ -1,4 +1,4 @@
-#!/usr/bin/env plorth-cli
+#!/usr/bin/env plorth
 
 # Mandelbrot fractal renderer with command line arguments for image size
 
