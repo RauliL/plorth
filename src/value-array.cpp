@@ -817,6 +817,51 @@ namespace plorth
   }
 
   /**
+   * Word: 2map
+   * Prototype: array
+   *
+   * Takes:
+   * - quote
+   * - array
+   * - array
+   *
+   * Gives:
+   * - array
+   *
+   * Applies quote taking two arguments once for each element pair in the
+   * arrays and constructs a new array from values returned by the quote.
+   */
+  static void w_2map(const ref<context>& ctx)
+  {
+    ref<array> ary_a;
+    ref<array> ary_b;
+    ref<quote> quo;
+
+    if (ctx->pop_array(ary_b) && ctx->pop_array(ary_a) && ctx->pop_quote(quo))
+    {
+      const auto size_a = ary_a->size();
+      const auto size_b = ary_b->size();
+      const auto size = size_a < size_b ? size_a : size_b;
+      std::vector<ref<value>> result;
+
+      result.reserve(size);
+      for (array::size_type i = 0; i < size; ++i)
+      {
+        ref<value> quote_result;
+
+        ctx->push(ary_a->at(i));
+        ctx->push(ary_b->at(i));
+        if (!quo->call(ctx) || !ctx->pop(quote_result))
+        {
+          return;
+        }
+        result.push_back(quote_result);
+      }
+      ctx->push_array(result.data(), size);
+    }
+  }
+
+  /**
    * Word: filter
    * Prototype: array
    *
@@ -1224,6 +1269,7 @@ namespace plorth
 
         { U"for-each", w_for_each },
         { U"map", w_map },
+        { U"2map", w_2map },
         { U"filter", w_filter },
         { U"reduce", w_reduce },
 
