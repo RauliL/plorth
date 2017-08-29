@@ -837,6 +837,20 @@ Concatenates the contents of two arrays and returns the result.
 
 ---
 
+### 2map
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>quote, array, array</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+Applies quote taking two arguments once for each element pair in the
+arrays and constructs a new array from values returned by the quote.
+
+---
+
 ### @
 
 <dl>

@@ -99,6 +99,13 @@ test-case
 ]
 test-case
 
+"2map"
+[
+  ( (-) [1, 2, 3] [3, 2, 1, 0] 2map [-2, 0, 2] = ),
+  ( (swap [] push push) [1, 2, 3] [4, 5, 6] 2map [[1, 4], [2, 5], [3, 6]] = ),
+]
+test-case
+
 "filter"
 [
   ( ( 1 > ) [1, 2, 3] filter [2, 3] = ),
