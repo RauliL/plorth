@@ -1,0 +1,66 @@
+#!/usr/bin/env plorth
+#
+# Collection of ANSI terminal escape sequences as string constants.
+#
+
+# Control sequence introducer as constant.
+"\u001b[" "ansi-csi" const
+
+# Colors
+# ======
+
+# Resets all modifiers and colors.
+ansi-csi "0m" + "ansi-reset" const
+
+# Foreground colors.
+ansi-csi "30m" + "ansi-black" const
+ansi-csi "31m" + "ansi-red" const
+ansi-csi "32m" + "ansi-green" const
+ansi-csi "33m" + "ansi-yellow" const
+ansi-csi "34m" + "ansi-blue" const
+ansi-csi "35m" + "ansi-magenta" const
+ansi-csi "36m" + "ansi-cyan" const
+ansi-csi "37m" + "ansi-white" const
+
+# Background colors.
+ansi-csi "40m" + "ansi-bg-black" const
+ansi-csi "41m" + "ansi-bg-red" const
+ansi-csi "42m" + "ansi-bg-green" const
+ansi-csi "43m" + "ansi-bg-yellow" const
+ansi-csi "44m" + "ansi-bg-blue" const
+ansi-csi "45m" + "ansi-bg-magenta" const
+ansi-csi "46m" + "ansi-bg-cyan" const
+ansi-csi "47m" + "ansi-bg-white" const
+
+# Constructs true color escape sequence and pushes it onto the stack. Requires
+# RGB values as integers to be pushed onto the stack.
+: ansi-rgb
+  rot ansi-csi "38;2;" + swap round 0 256 rot clamp >string + ";" +
+  rot round 0 256 rot clamp >string + ";" +
+  swap round 0 256 rot clamp >string + "m" +
+;
+: ansi-rgb-bg
+  rot ansi-csi "48;2;" + swap round 0 256 rot clamp >string + ";" +
+  rot round 0 256 rot clamp >string + ";" +
+  swap round 0 256 rot clamp >string + "m" +
+;
+
+# Screen control
+# ==============
+
+# Clears entire screen.
+ansi-csi "2J" + "ansi-clear" const
+
+# Moves cursor up given number of rows.
+: ansi-cursor-up ansi-csi swap round >string + "A" + ;
+# Moves cursor down given number of rows.
+: ansi-cursor-down ansi-csi swap round >string + "B" + ;
+# Moves cursor forward given number of rows.
+: ansi-cursor-forward ansi-csi swap round >string + "C" + ;
+# Moves cursor backward given number of rows.
+: ansi-cursor-forward ansi-csi swap round >string + "D" + ;
+
+# Set explicitly cursor position.
+: ansi-cursor-pos
+  ansi-csi swap round >string + ";" + swap round >string + "H" +
+;
