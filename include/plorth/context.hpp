@@ -33,6 +33,8 @@
 
 namespace plorth
 {
+  class word;
+
   /**
    * Represents program execution state.
    */

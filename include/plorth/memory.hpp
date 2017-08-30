@@ -26,14 +26,20 @@
 #ifndef PLORTH_MEMORY_HPP_GUARD
 #define PLORTH_MEMORY_HPP_GUARD
 
+#include <plorth/config.hpp>
 #include <plorth/ref.hpp>
 
 #include <cstddef>
 
 namespace plorth
 {
+  class runtime;
+
   namespace memory
   {
+    struct pool;
+    struct slot;
+
     /**
      * Memory manager manages memory pools used by the interpreter and is used
      * for allocated memory for managed objects.

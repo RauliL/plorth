@@ -26,6 +26,8 @@
 #ifndef PLORTH_UNICODE_HPP_GUARD
 #define PLORTH_UNICODE_HPP_GUARD
 
+#include <plorth/config.hpp>
+
 #include <cstdint>
 
 #include <iostream>

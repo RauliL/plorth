@@ -26,8 +26,6 @@
 #ifndef PLORTH_REF_HPP_GUARD
 #define PLORTH_REF_HPP_GUARD
 
-#include <plorth/plorth.hpp>
-
 namespace plorth
 {
   /**

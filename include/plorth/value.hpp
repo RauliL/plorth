@@ -31,6 +31,9 @@
 
 namespace plorth
 {
+  class context;
+  class object;
+
   /**
    * Abstract base class for everything that acts as an value in Plorth.
    */
