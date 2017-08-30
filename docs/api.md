@@ -837,6 +837,18 @@ Concatenates the contents of two arrays and returns the result.
 
 ---
 
+### 2for-each
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>quote, array, array</dd>
+</dl>
+
+Runs quote taking two arguments once for each element pair in the
+arrays.
+
+---
+
 ### 2map
 
 <dl>

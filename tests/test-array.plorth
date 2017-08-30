@@ -93,6 +93,13 @@ test-case
 ]
 test-case
 
+"2for-each"
+[
+  ( (2drop true) [1] [2] 2for-each ),
+  ( {} (rot !) [1, 2] ["foo", "bar"] 2for-each { "foo": 1, "bar": 2 } = ),
+]
+test-case
+
 "map"
 [
   ( ( 1 + ) [1, 2, 3] map [2, 3, 4] = ),
