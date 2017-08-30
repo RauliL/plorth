@@ -125,6 +125,29 @@ namespace plorth
       const size_type m_offset;
       const size_type m_length;
     };
+
+    /**
+     * Implementation of string which reverses already existing string.
+     */
+    class reversed_string : public string
+    {
+    public:
+      explicit reversed_string(const ref<string>& original)
+        : m_original(original) {}
+
+      size_type length() const
+      {
+        return m_original->length();
+      }
+
+      value_type at(size_type offset) const
+      {
+        return m_original->at(length() - offset - 1);
+      }
+
+    private:
+      const ref<string> m_original;
+    };
   }
 
   bool string::equals(const ref<class value>& that) const
@@ -515,14 +538,7 @@ namespace plorth
 
     if (ctx->pop_string(str))
     {
-      const auto length = str->length();
-      unichar result[length];
-
-      for (string::size_type i = length; i > 0; --i)
-      {
-        result[length - i] = str->at(i - 1);
-      }
-      ctx->push_string(result, length);
+      ctx->push(ctx->runtime()->value<reversed_string>(str));
     }
   }
 
