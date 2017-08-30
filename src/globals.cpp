@@ -889,7 +889,7 @@ namespace plorth
 
     if (ctx->pop_number(num))
     {
-      const std::int64_t size = num->as_int();
+      const number::int_type size = num->as_int();
       ref<value>* buffer;
 
       if (size < 0)
@@ -900,7 +900,7 @@ namespace plorth
 
       buffer = new ref<value>[size];
 
-      for (std::int64_t i = 0; i < size; ++i)
+      for (number::int_type i = 0; i < size; ++i)
       {
         ref<value> val;
 
@@ -1357,7 +1357,7 @@ namespace plorth
 
     if (ctx->pop_number(num))
     {
-      std::int64_t c = num->as_int();
+      number::int_type c = num->as_int();
 
       if (!unichar_validate(c))
       {

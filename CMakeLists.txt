@@ -48,6 +48,12 @@ OPTION(
 )
 
 OPTION(
+  PLORTH_ENABLE_32BIT_INT
+  "Enable if you want to use 32-bit integers instead of 64-bit."
+  OFF
+)
+
+OPTION(
   PLORTH_ENABLE_GC_DEBUG
   "Display debug messages from garbage collector."
   OFF
