@@ -48,12 +48,12 @@ namespace plorth
     push(m_runtime->boolean(value));
   }
 
-  void context::push_int(std::int64_t value)
+  void context::push_int(number::int_type value)
   {
     push(m_runtime->number(value));
   }
 
-  void context::push_real(double value)
+  void context::push_real(number::real_type value)
   {
     push(m_runtime->number(value));
   }

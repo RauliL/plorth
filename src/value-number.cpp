@@ -27,16 +27,28 @@
 
 #include "./utils.hpp"
 
+#include <cfloat>
 #include <cmath>
+#include <climits>
 
 namespace plorth
 {
+#if PLORTH_ENABLE_32BIT_INT
+  const number::int_type number::int_min = INT32_MIN;
+  const number::int_type number::int_max = INT32_MAX;
+#else
+  const number::int_type number::int_min = INT64_MIN;
+  const number::int_type number::int_max = INT64_MAX;
+#endif
+  const number::real_type number::real_min = DBL_MIN;
+  const number::real_type number::real_max = DBL_MAX;
+
   namespace
   {
     class int_number : public number
     {
     public:
-      explicit int_number(std::int64_t val)
+      explicit int_number(int_type val)
         : m_value(val) {}
 
       enum number_type number_type() const
@@ -44,24 +56,24 @@ namespace plorth
         return number_type_int;
       }
 
-      std::int64_t as_int() const
+      int_type as_int() const
       {
         return m_value;
       }
 
-      double as_real() const
+      real_type as_real() const
       {
-        return static_cast<double>(m_value);
+        return static_cast<number::real_type>(m_value);
       }
 
     private:
-      const std::int64_t m_value;
+      const int_type m_value;
     };
 
     class real_number : public number
     {
     public:
-      explicit real_number(double val)
+      explicit real_number(number::real_type val)
         : m_value(val) {}
 
       enum number_type number_type() const
@@ -69,9 +81,9 @@ namespace plorth
         return number_type_real;
       }
 
-      std::int64_t as_int() const
+      int_type as_int() const
       {
-        double value = m_value;
+        number::real_type value = m_value;
 
         if (value > 0.0)
         {
@@ -82,16 +94,16 @@ namespace plorth
           value = std::ceil(value);
         }
 
-        return static_cast<std::int64_t>(value);
+        return static_cast<int_type>(value);
       }
 
-      double as_real() const
+      real_type as_real() const
       {
         return m_value;
       }
 
     private:
-      const double m_value;
+      const real_type m_value;
     };
   }
 
@@ -127,7 +139,7 @@ namespace plorth
     return to_string();
   }
 
-  ref<class number> runtime::number(std::int64_t value)
+  ref<class number> runtime::number(number::int_type value)
   {
 #if PLORTH_ENABLE_INTEGER_CACHE
     static const int offset = 128;
@@ -150,7 +162,7 @@ namespace plorth
     return new (*m_memory_manager) int_number(value);
   }
 
-  ref<class number> runtime::number(double value)
+  ref<class number> runtime::number(number::real_type value)
   {
     return new (*m_memory_manager) real_number(value);
   }
@@ -167,15 +179,18 @@ namespace plorth
       exponent_index_upper_case == unistring::npos
     )
     {
-      std::int64_t result = to_integer(value);
+      const number::int_type result = to_integer(value);
+
       if (result == false)
       {
-        double big_result = to_real(value);
+        const number::real_type big_result = to_real(value);
+
         if (big_result != result)
         {
           return number(big_result);
         }
       }
+
       return number(result);
     } else {
       return number(to_real(value));
@@ -257,7 +272,7 @@ namespace plorth
 
     if (ctx->pop_number(num) && ctx->pop_quote(quo))
     {
-      std::int64_t count = num->as_int();
+      number::int_type count = num->as_int();
 
       if (count < 0)
       {
@@ -466,9 +481,9 @@ namespace plorth
           || b->is(number::number_type_real)
           || c->is(number::number_type_real))
       {
-        const double min = a->as_real();
-        const double max = b->as_real();
-        double number = c->as_real();
+        const number::real_type min = a->as_real();
+        const number::real_type max = b->as_real();
+        number::real_type number = c->as_real();
 
         if (number > max)
         {
@@ -480,9 +495,9 @@ namespace plorth
         }
         ctx->push_real(number);
       } else {
-        const std::int64_t min = a->as_int();
-        const std::int64_t max = b->as_int();
-        std::int64_t number = c->as_int();
+        const number::int_type min = a->as_int();
+        const number::int_type max = b->as_int();
+        number::int_type number = c->as_int();
 
         if (number > max)
         {
@@ -524,15 +539,15 @@ namespace plorth
           || b->is(number::number_type_real)
           || c->is(number::number_type_real))
       {
-        const double min = a->as_real();
-        const double max = b->as_real();
-        const double number = c->as_real();
+        const number::real_type min = a->as_real();
+        const number::real_type max = b->as_real();
+        const number::real_type number = c->as_real();
 
         ctx->push_boolean(number >= min && number <= max);
       } else {
-        const std::int64_t min = a->as_int();
-        const std::int64_t max = b->as_int();
-        const std::int64_t number = c->as_int();
+        const number::int_type min = a->as_int();
+        const number::int_type max = b->as_int();
+        const number::int_type number = c->as_int();
 
         ctx->push_boolean(number >= min && number <= max);
       }
@@ -548,7 +563,7 @@ namespace plorth
   {
     ref<number> a;
     ref<number> b;
-    double result;
+    number::real_type result;
 
     if (!ctx->pop_number(b) || !ctx->pop_number(a))
     {
@@ -559,7 +574,7 @@ namespace plorth
 
     if (a->is(number::number_type_int) &&
         b->is(number::number_type_int) &&
-        std::fabs(result) <= INT64_MAX)
+        std::fabs(result) <= number::int_max)
     {
       // Repeat the operation with full integer precision
       ctx->push_int(int_op(a->as_int(), b->as_int()));
@@ -586,7 +601,7 @@ namespace plorth
    */
   static void w_add(const ref<context>& ctx)
   {
-    number_op(ctx, std::plus<double>(), std::plus<int64_t>());
+    number_op(ctx, std::plus<number::real_type>(), std::plus<number::int_type>());
   }
 
   /**
@@ -604,7 +619,7 @@ namespace plorth
    */
   static void w_sub(const ref<context>& ctx)
   {
-    number_op(ctx, std::minus<double>(), std::minus<int64_t>());
+    number_op(ctx, std::minus<number::real_type>(), std::minus<number::int_type>());
   }
 
   /**
@@ -622,7 +637,7 @@ namespace plorth
    */
   static void w_mul(const ref<context>& ctx)
   {
-    number_op(ctx, std::multiplies<double>(), std::multiplies<int64_t>());
+    number_op(ctx, std::multiplies<number::real_type>(), std::multiplies<number::int_type>());
   }
 
   /**
@@ -667,9 +682,9 @@ namespace plorth
   {
     ref<number> a;
     ref<number> b;
-    double dividend;
-    double divider;
-    double result;
+    number::real_type dividend;
+    number::real_type divider;
+    number::real_type result;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -710,7 +725,7 @@ namespace plorth
    */
   static void w_bit_and(const ref<context>& ctx)
   {
-    number_bit_op(ctx, std::bit_and<int64_t>());
+    number_bit_op(ctx, std::bit_and<number::int_type>());
   }
 
   /**
@@ -728,7 +743,7 @@ namespace plorth
    */
   static void w_bit_or(const ref<context>& ctx)
   {
-    number_bit_op(ctx, std::bit_or<int64_t>());
+    number_bit_op(ctx, std::bit_or<number::int_type>());
   }
 
   /**
@@ -746,7 +761,7 @@ namespace plorth
    */
   static void w_bit_xor(const ref<context>& ctx)
   {
-    number_bit_op(ctx, std::bit_xor<int64_t>());
+    number_bit_op(ctx, std::bit_xor<number::int_type>());
   }
 
   /**

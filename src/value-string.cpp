@@ -389,7 +389,7 @@ namespace plorth
       output.reserve(length);
       for (string::size_type i = 0; i < length; ++i)
       {
-        output.push_back(runtime->number(static_cast<std::int64_t>(str->at(i))));
+        output.push_back(runtime->number(static_cast<number::int_type>(str->at(i))));
       }
       ctx->push(str);
       ctx->push_array(output.data(), length);
@@ -861,7 +861,7 @@ namespace plorth
     if (ctx->pop_string(str) && ctx->pop_number(num))
     {
       const auto length = str->length();
-      std::int64_t count = num->as_int();
+      number::int_type count = num->as_int();
       unistring result;
 
       if (count < 0)
@@ -908,7 +908,7 @@ namespace plorth
     if (ctx->pop_string(str) && ctx->pop_number(num))
     {
       const auto length = str->length();
-      std::int64_t index = num->as_int();
+      number::int_type index = num->as_int();
       unichar c;
 
       if (index < 0)
@@ -918,7 +918,7 @@ namespace plorth
 
       ctx->push(str);
 
-      if (!length || index < 0 || index > static_cast<std::int64_t>(length))
+      if (!length || index < 0 || index > static_cast<number::int_type>(length))
       {
         ctx->error(error::code_range, U"String index out of bounds.");
         return;

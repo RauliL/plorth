@@ -26,7 +26,7 @@
 #ifndef PLORTH_UTILS_HPP_GUARD
 #define PLORTH_UTILS_HPP_GUARD
 
-#include <plorth/unicode.hpp>
+#include <plorth/value-number.hpp>
 
 #if defined(_WIN32)
 # define PLORTH_FILE_SEPARATOR '\\'
@@ -37,11 +37,11 @@
 namespace plorth
 {
   unistring json_stringify(const unistring&);
-  std::int64_t to_integer(const unistring&);
-  double to_real(const unistring&);
+  number::int_type to_integer(const unistring&);
+  number::real_type to_real(const unistring&);
   bool is_number(const unistring&);
-  unistring to_unistring(std::int64_t);
-  unistring to_unistring(double);
+  unistring to_unistring(number::int_type);
+  unistring to_unistring(number::real_type);
   unistring dirname(const unistring&);
 }
 

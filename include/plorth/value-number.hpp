@@ -33,6 +33,18 @@ namespace plorth
   class number : public value
   {
   public:
+#if PLORTH_ENABLE_32BIT_INT
+    using int_type = std::int32_t;
+#else
+    using int_type = std::int64_t;
+#endif
+    using real_type = double;
+
+    static const int_type int_min;
+    static const int_type int_max;
+    static const real_type real_min;
+    static const real_type real_max;
+
     /**
      * Enumeration for different supported number types.
      */
@@ -58,12 +70,12 @@ namespace plorth
     /**
      * Returns value of the number as integer.
      */
-    virtual std::int64_t as_int() const = 0;
+    virtual int_type as_int() const = 0;
 
     /**
      * Returns value of the number as floating point decimal.
      */
-    virtual double as_real() const = 0;
+    virtual real_type as_real() const = 0;
 
     inline enum type type() const
     {

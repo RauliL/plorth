@@ -158,7 +158,7 @@ namespace plorth
      * \param value Value of the number.
      * \return      Reference to the created number value.
      */
-    ref<class number> number(std::int64_t value);
+    ref<class number> number(number::int_type value);
 
     /**
      * Constructs real number from given value.
@@ -166,7 +166,7 @@ namespace plorth
      * \param value Value of the number.
      * \return      Reference to the created number value.
      */
-    ref<class number> number(double value);
+    ref<class number> number(number::real_type value);
 
     /**
      * Parses given text input into number (either real or integer) and

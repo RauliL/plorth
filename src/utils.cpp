@@ -33,6 +33,12 @@
 
 namespace plorth
 {
+#if PLORTH_ENABLE_32BIT_INT
+  using uint_type = std::uint32_t;
+#else
+  using uint_type = std::uint64_t;
+#endif
+
   static const char digitmap[] = "0123456789abcdefghijklmnopqrstuvwxyz";
   static const unistring unistring_nan = {'n', 'a', 'n'};
   static const unistring unistring_inf = {'i', 'n', 'f'};
@@ -161,10 +167,10 @@ namespace plorth
     return true;
   }
 
-  unistring to_unistring(std::int64_t number)
+  unistring to_unistring(number::int_type number)
   {
     const bool negative = number < 0;
-    std::uint64_t mag = static_cast<std::uint64_t>(negative ? -number : number);
+    uint_type mag = static_cast<uint_type>(negative ? -number : number);
     unistring result;
 
     if (mag != 0)
@@ -187,7 +193,7 @@ namespace plorth
     return result;
   }
 
-  unistring to_unistring(double number)
+  unistring to_unistring(number::real_type number)
   {
     char buffer[20];
 
@@ -204,11 +210,11 @@ namespace plorth
     return utf8_decode(buffer);
   }
 
-  std::int64_t to_integer(const unistring& input)
+  number::int_type to_integer(const unistring& input)
   {
-    static const std::int64_t div = INT64_MAX / 10;
-    static const std::int64_t rem = INT64_MAX % 10;
-    std::int64_t number = 0;
+    static const number::int_type div = number::int_max / 10;
+    static const number::int_type rem = number::int_max % 10;
+    number::int_type number = 0;
     const std::size_t length = input.length();
     std::size_t offset;
     bool sign;
@@ -243,15 +249,15 @@ namespace plorth
     return sign ? number : -number;
   }
 
-  double to_real(const unistring& input)
+  number::real_type to_real(const unistring& input)
   {
     const auto length = input.length();
-    double number;
+    number::real_type number;
     unistring::size_type offset;
     bool seen_digits = false;
     bool seen_dot = false;
     bool sign;
-    std::int64_t exponent = 0;
+    number::int_type exponent = 0;
 
     if (!length)
     {
@@ -289,7 +295,7 @@ namespace plorth
       if (std::isdigit(c))
       {
         seen_digits = true;
-        if (number > DBL_MAX * 0.1)
+        if (number > number::real_max * 0.1)
         {
           ++exponent;
         } else {
@@ -324,7 +330,7 @@ namespace plorth
       return 0.0;
     }
 
-    number *= std::pow(10.0, static_cast<double>(exponent));
+    number *= std::pow(10.0, static_cast<number::real_type>(exponent));
     if (!sign)
     {
       number = -number;

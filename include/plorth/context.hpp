@@ -176,12 +176,12 @@ namespace plorth
     /**
      * Pushes integer number value into the data stack.
      */
-    void push_int(std::int64_t value);
+    void push_int(number::int_type value);
 
     /**
      * Pushes real number value into the data stack.
      */
-    void push_real(double value);
+    void push_real(number::real_type value);
 
     /**
      * Pushes either integer or real number into stack, based on the given text
