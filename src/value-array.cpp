@@ -160,6 +160,29 @@ namespace plorth
       const size_type m_offset;
       const size_type m_size;
     };
+
+    /**
+     * Array implementation which reverses already existing array.
+     */
+    class reversed_array : public array
+    {
+    public:
+      explicit reversed_array(const ref<class array>& array)
+        : m_array(array) {}
+
+      size_type size() const
+      {
+        return m_array->size();
+      }
+
+      const_reference at(size_type offset) const
+      {
+        return m_array->at(size() - offset - 1);
+      }
+
+    private:
+      const ref<array> m_array;
+    };
   }
 
   bool array::equals(const ref<value>& that) const
@@ -620,15 +643,7 @@ namespace plorth
 
     if (ctx->pop_array(ary))
     {
-      const auto size = ary->size();
-      std::vector<ref<value>> result;
-
-      result.reserve(size);
-      for (array::size_type i = ary->size(); i > 0; --i)
-      {
-        result.push_back(ary->at(i - 1));
-      }
-      ctx->push_array(result.data(), size);
+      ctx->push(ctx->runtime()->value<reversed_array>(ary));
     }
   }
 
