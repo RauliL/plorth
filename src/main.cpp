@@ -23,8 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <plorth/context.hpp>
-#include <plorth/value-quote.hpp>
+#include <plorth/plorth.hpp>
 
 #include <cstring>
 #include <fstream>

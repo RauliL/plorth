@@ -28,31 +28,17 @@
 
 #include <plorth/config.hpp>
 
-namespace plorth
-{
-  class context;
-  class runtime;
-  class token;
+#include <plorth/value.hpp>
+#include <plorth/value-array.hpp>
+#include <plorth/value-boolean.hpp>
+#include <plorth/value-error.hpp>
+#include <plorth/value-number.hpp>
+#include <plorth/value-object.hpp>
+#include <plorth/value-quote.hpp>
+#include <plorth/value-string.hpp>
+#include <plorth/value-word.hpp>
 
-  // Different types of values.
-  class array;
-  class boolean;
-  class error;
-  class number;
-  class object;
-  class quote;
-  class string;
-  class symbol;
-  class word;
-
-  namespace memory
-  {
-    struct pool;
-    struct slot;
-
-    class managed;
-    class manager;
-  }
-}
+#include <plorth/runtime.hpp>
+#include <plorth/context.hpp>
 
 #endif /* !PLORTH_PLORTH_HPP_GUARD */
