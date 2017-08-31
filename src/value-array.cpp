@@ -792,6 +792,41 @@ namespace plorth
   }
 
   /**
+   * Word: 2for-each
+   * Prototype: array
+   *
+   * Takes:
+   * - quote
+   * - array
+   * - array
+   *
+   * Runs quote taking two arguments once for each element pair in the
+   * arrays.
+   */
+  static void w_2for_each(const ref<context>& ctx)
+  {
+    ref<array> ary_a;
+    ref<array> ary_b;
+    ref<quote> quo;
+
+    if (ctx->pop_array(ary_b) && ctx->pop_array(ary_a) && ctx->pop_quote(quo))
+    {
+      const auto size_a = ary_a->size();
+      const auto size_b = ary_b->size();
+      const auto size = size_a < size_b ? size_a : size_b;
+      for (array::size_type i = 0; i < size; ++i)
+      {
+        ctx->push(ary_a->at(i));
+        ctx->push(ary_b->at(i));
+        if (!quo->call(ctx))
+        {
+          return;
+        }
+      }
+    }
+  }
+
+  /**
    * Word: map
    * Prototype: array
    *
@@ -1283,6 +1318,7 @@ namespace plorth
         { U"join", w_join },
 
         { U"for-each", w_for_each },
+        { U"2for-each", w_2for_each },
         { U"map", w_map },
         { U"2map", w_2map },
         { U"filter", w_filter },
