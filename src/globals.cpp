@@ -26,7 +26,7 @@
 #include <plorth/context.hpp>
 
 #include <cmath>
-#include <ctime>
+#include <chrono>
 
 namespace plorth
 {
@@ -1379,7 +1379,9 @@ namespace plorth
    */
   static void w_now(const ref<context>& ctx)
   {
-    ctx->push_int(std::time(nullptr));
+    const auto timestamp = std::chrono::system_clock::now().time_since_epoch();
+
+    ctx->push_int(std::chrono::duration_cast<std::chrono::seconds>(timestamp).count());
   }
 
   /**
