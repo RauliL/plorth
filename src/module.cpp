@@ -126,7 +126,7 @@ namespace plorth
     }
 
     // Then attempt to compile it.
-    if (!(compiled_module = ctx->compile(source)))
+    if (!(compiled_module = ctx->compile(source, path)))
     {
       return ref<object>();
     }

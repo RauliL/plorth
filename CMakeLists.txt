@@ -104,6 +104,7 @@ SET(
   src/globals.cpp
   src/memory.cpp
   src/module.cpp
+  src/position.cpp
   src/runtime.cpp
   src/unicode.cpp
   src/utils.cpp

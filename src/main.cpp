@@ -51,7 +51,9 @@ static void scan_arguments(const ref<runtime>&, int, char**);
 static void scan_module_path(const ref<runtime>&);
 #endif
 static inline bool is_console_interactive();
-static void compile_and_run(const ref<context>&, const std::string&);
+static void compile_and_run(const ref<context>&,
+                            const std::string&,
+                            const unistring&);
 static void console_loop(const ref<context>&);
 
 void initialize_repl_api(const ref<runtime>&);
@@ -70,6 +72,7 @@ int main(int argc, char** argv)
 
   if (script_filename)
   {
+    const unistring decoded_script_filename = utf8_decode(script_filename);
     std::ifstream is(script_filename, std::ios_base::in);
 
     if (is.good())
@@ -82,9 +85,9 @@ int main(int argc, char** argv)
       is.close();
       context->clear();
 #if PLORTH_ENABLE_MODULES
-      context->filename(utf8_decode(script_filename));
+      context->filename(decoded_script_filename);
 #endif
-      compile_and_run(context, source);
+      compile_and_run(context, source, decoded_script_filename);
     } else {
       std::cerr << argv[0]
                 << ": Unable to open file `"
@@ -103,8 +106,9 @@ int main(int argc, char** argv)
       std::string(
         std::istreambuf_iterator<char>(std::cin),
         std::istreambuf_iterator<char>()
-        )
-      );
+      ),
+      U"<stdin>"
+    );
   }
 
   return EXIT_SUCCESS;
@@ -266,10 +270,12 @@ static void handle_error(const ref<context>& ctx)
 
   if (err)
   {
-    std::cerr << "Error: "
-              << err->code()
-              << " - "
-              << err->message();
+    std::cerr << "Error: ";
+    if (err->position())
+    {
+      std::cerr << *err->position() << ':';
+    }
+    std::cerr << err->code() << " - " << err->message();
   } else {
     std::cerr << "Unknown error.";
   }
@@ -277,7 +283,9 @@ static void handle_error(const ref<context>& ctx)
   std::exit(EXIT_FAILURE);
 }
 
-static void compile_and_run(const ref<context>& ctx, const std::string& input)
+static void compile_and_run(const ref<context>& ctx,
+                            const std::string& input,
+                            const unistring& filename)
 {
   unistring source;
   ref<quote> script;
@@ -288,7 +296,7 @@ static void compile_and_run(const ref<context>& ctx, const std::string& input)
     std::exit(EXIT_FAILURE);
   }
 
-  if (!(script = ctx->compile(source)))
+  if (!(script = ctx->compile(source, filename)))
   {
     handle_error(ctx);
     return;
@@ -404,7 +412,7 @@ static void console_loop(const ref<class context>& context)
       count_open_braces(line, open_braces);
       if (open_braces.empty())
       {
-        const ref<quote> script = context->compile(source);
+        const ref<quote> script = context->compile(source, U"<repl>");
 
         source.clear();
         if (script)
@@ -413,7 +421,13 @@ static void console_loop(const ref<class context>& context)
         }
         if (context->error())
         {
-          std::cout << context->error() << std::endl;
+          const auto& error = context->error();
+
+          if (error->position())
+          {
+            std::cout << *error->position() << ':';
+          }
+          std::cout << error << std::endl;
           context->clear_error();
         }
       }
