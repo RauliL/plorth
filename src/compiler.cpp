@@ -39,7 +39,7 @@ namespace plorth
       {
         m_position.filename = filename;
         m_position.line = 1;
-        m_position.column = 0;
+        m_position.column = 1;
       }
 
       /**
@@ -71,7 +71,7 @@ namespace plorth
         if (result == '\n')
         {
           ++m_position.line;
-          m_position.column = 0;
+          m_position.column = 1;
         } else {
           ++m_position.column;
         }
@@ -236,6 +236,7 @@ namespace plorth
 
       ref<word> compile_word(context* ctx)
       {
+        struct position position;
         const auto& runtime = ctx->runtime();
         ref<class symbol> symbol;
         std::vector<ref<value>> values;
@@ -251,12 +252,14 @@ namespace plorth
           return ref<word>();
         }
 
+        position = m_position;
+
         if (!peek_read(':'))
         {
           ctx->error(
             error::code_syntax,
             U"Unexpected input; Missing word.",
-            &m_position
+            &position
           );
 
           return ref<word>();
@@ -274,7 +277,7 @@ namespace plorth
             ctx->error(
               error::code_syntax,
               U"Unterminated word; Missing `;'.",
-              &m_position
+              &position
             );
 
             return ref<word>();
@@ -301,6 +304,7 @@ namespace plorth
 
       ref<quote> compile_quote(context* ctx)
       {
+        struct position position;
         std::vector<ref<value>> values;
 
         if (skip_whitespace())
@@ -314,12 +318,14 @@ namespace plorth
           return ref<quote>();
         }
 
+        position = m_position;
+
         if (!peek_read('('))
         {
           ctx->error(
             error::code_syntax,
             U"Unexpected input; Missing quote.",
-            &m_position
+            &position
           );
 
           return ref<quote>();
@@ -332,7 +338,7 @@ namespace plorth
             ctx->error(
               error::code_syntax,
               U"Unterminated quote; Missing `)'.",
-              &m_position
+              &position
             );
 
             return ref<quote>();
@@ -356,6 +362,7 @@ namespace plorth
 
       ref<string> compile_string(context* ctx)
       {
+        struct position position;
         unichar separator;
         unistring buffer;
 
@@ -370,12 +377,14 @@ namespace plorth
           return ref<string>();
         }
 
+        position = m_position;
+
         if (!peek_read('"', separator) && !peek_read('\'', separator))
         {
           ctx->error(
             error::code_syntax,
             U"Unexpected input; Missing string.",
-            &m_position
+            &position
           );
 
           return ref<string>();
@@ -388,7 +397,7 @@ namespace plorth
             ctx->error(
               error::code_syntax,
               unistring(U"Unterminated string; Missing `") + separator + U"'",
-              &m_position
+              &position
             );
 
             return ref<string>();
@@ -413,6 +422,7 @@ namespace plorth
 
       ref<array> compile_array(context* ctx)
       {
+        struct position position;
         std::vector<ref<value>> elements;
 
         if (skip_whitespace())
@@ -426,12 +436,14 @@ namespace plorth
           return ref<array>();
         }
 
+        position = m_position;
+
         if (!peek_read('['))
         {
           ctx->error(
             error::code_syntax,
             U"Unexpected input; Missing array.",
-            &m_position
+            &position
           );
 
           return ref<array>();
@@ -444,7 +456,7 @@ namespace plorth
             ctx->error(
               error::code_syntax,
               U"Unterminated array; Missing `]'.",
-              &m_position
+              &position
             );
 
             return ref<array>();
@@ -465,7 +477,7 @@ namespace plorth
               ctx->error(
                 error::code_syntax,
                 U"Unterminated array; Missing `]'.",
-                &m_position
+                &position
               );
 
               return ref<array>();
@@ -480,6 +492,7 @@ namespace plorth
 
       ref<object> compile_object(context* ctx)
       {
+        struct position position;
         object::container_type properties;
 
         if (skip_whitespace())
@@ -493,12 +506,14 @@ namespace plorth
           return ref<object>();
         }
 
+        position = m_position;
+
         if (!peek_read('{'))
         {
           ctx->error(
             error::code_syntax,
             U"Unexpected input; Missing object.",
-            &m_position
+            &position
           );
 
           return ref<object>();
@@ -511,7 +526,7 @@ namespace plorth
             ctx->error(
               error::code_syntax,
               U"Unterminated object; Missing `}'.",
-              &m_position
+              &position
             );
 
             return ref<object>();
@@ -533,7 +548,7 @@ namespace plorth
               ctx->error(
                 error::code_syntax,
                 U"Unterminated object; Missing `}'.",
-                &m_position
+                &position
               );
 
               return ref<object>();
@@ -562,7 +577,7 @@ namespace plorth
               ctx->error(
                 error::code_syntax,
                 U"Unterminated object; Missing `}'.",
-                &m_position
+                &position
               );
 
               return ref<object>();
@@ -577,6 +592,8 @@ namespace plorth
 
       bool compile_escape_sequence(context* ctx, unistring& buffer)
       {
+        struct position position;
+
         if (eof())
         {
           ctx->error(
@@ -587,6 +604,8 @@ namespace plorth
 
           return false;
         }
+
+        position = m_position;
 
         switch (read())
         {
@@ -628,7 +647,7 @@ namespace plorth
                 ctx->error(
                   error::code_syntax,
                   U"Unterminated escape sequence.",
-                  &m_position
+                  &position
                 );
 
                 return false;
@@ -638,7 +657,7 @@ namespace plorth
                 ctx->error(
                   error::code_syntax,
                   U"Illegal Unicode hex escape sequence.",
-                  &m_position
+                  &position
                 );
 
                 return false;
@@ -661,7 +680,7 @@ namespace plorth
               ctx->error(
                 error::code_syntax,
                 U"Illegal Unicode hex escape sequence.",
-                &m_position
+                &position
               );
 
               return false;
@@ -675,7 +694,7 @@ namespace plorth
           ctx->error(
             error::code_syntax,
             U"Illegal escape sequence in string literal.",
-            &m_position
+            &position
           );
 
           return false;
