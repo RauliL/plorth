@@ -205,10 +205,14 @@ dictionary.</p>
 <p>Boolean values represent truthness. They can be placed onto the stack with
 words <code>true</code> and <code>false</code> which can be found in the global dictionary.</p>
 <h3 id="number">Number</h3>
-<p>TODO</p>
+<p>Numbers represent whole or fractional quantities. Whole numbers also support
+bitwise operations in two's complement representation.</p>
 <h3 id="string">String</h3>
 <p>String is a container for textual data, a sequence of Unicode code points.</p>
-<p>TODO</p>
+<p>Strings can be manipulated with words such as <code>capitalize</code> or converted to
+other types with words such as <code>&gt;number</code>.</p>
+<p>You can also break a string into an array of substring with <code>lines</code> or other
+similar words.</p>
 <h3 id="array">Array</h3>
 <p>Arrays are indexed sequences of other values. Arrays can be constructed with
 <em>array literals</em>, which use same syntax as is used for arrays in JSON. For
@@ -232,7 +236,18 @@ the word. If the index is out of bounds a range error will be thrown.</p>
 
 <h3 id="object">Object</h3>
 <p>Objects are associative arrays that map string keys into values.</p>
-<p>TODO: Information about object literals and how to access properties.</p>
+<p>Objects literals are constructed in the same way as in JSON.</p>
+<pre><code>{&quot;foo&quot;: 1, &quot;bar&quot;: &quot;baz&quot;}
+</code></pre>
+
+<p>Values are accessed using the <code>@</code> word.</p>
+<pre><code>&quot;foo&quot; {&quot;foo&quot;: &quot;bar&quot;} @ # -&gt; {&quot;foo&quot;: &quot;bar&quot;} &quot;bar&quot;
+</code></pre>
+
+<p>Values are assigned with the <code>!</code> word.</p>
+<pre><code>&quot;foo&quot; &quot;bar&quot; {} ! # -&gt; {&quot;bar&quot;: &quot;foo&quot;}
+</code></pre>
+
 <h3 id="quote">Quote</h3>
 <p>Quote is a piece of code that can be executed when required. Quotes can be
 constructed in many different ways, including <em>quote literals</em> which are words

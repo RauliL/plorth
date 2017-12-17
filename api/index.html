@@ -774,6 +774,26 @@ the two arrays.</p>
 
 <p>Concatenates the contents of two arrays and returns the result.</p>
 <hr />
+<h3 id="2for-each">2for-each</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>quote, array, array</dd>
+</dl>
+
+<p>Runs quote taking two arguments once for each element pair in the
+arrays.</p>
+<hr />
+<h3 id="2map">2map</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>quote, array, array</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+<p>Applies quote taking two arguments once for each element pair in the
+arrays and constructs a new array from values returned by the quote.</p>
+<hr />
 <h3 id="_7">@</h3>
 <dl>
   <dt>Takes:</dt>
@@ -1057,6 +1077,18 @@ when it's false.</p>
 
 <p>Returns error message extracted from the error, or null if the error does
 not have any error message.</p>
+<hr />
+<h3 id="position">position</h3>
+<dl>
+  <dt>Gives:</dt>
+  <dd>error, error, object|null</dd>
+</dl>
+
+<p>Takes</p>
+<p>Returns position in the source code where the error occurred, or null if
+no such information is available.</p>
+<p>Position is returned as object with <code>filename</code>, <code>line</code> and <code>column</code>
+properties.</p>
 <hr />
 <h3 id="throw">throw</h3>
 <dl>
