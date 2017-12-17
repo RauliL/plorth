@@ -172,6 +172,47 @@ namespace plorth
   }
 
   /**
+   * Word: position
+   * Prototype: error
+   *
+   * Takes
+   * - error
+   *
+   * Gives:
+   * - error
+   * - object|null
+   *
+   * Returns position in the source code where the error occurred, or null if
+   * no such information is available.
+   *
+   * Position is returned as object with `filename`, `line` and `column`
+   * properties.
+   */
+  static void w_position(const ref<context>& ctx)
+  {
+    ref<value> err;
+
+    if (ctx->pop(err, value::type_error))
+    {
+      const auto position = err.cast<error>()->position();
+
+      ctx->push(err);
+      if (position)
+      {
+        const auto& runtime = ctx->runtime();
+
+        ctx->push_object({
+          { U"filename", runtime->string(position->filename) },
+          { U"line", runtime->number(number::int_type(position->line)) },
+          { U"column", runtime->number(number::int_type(position->column)) }
+        });
+      } else {
+        ctx->push_null();
+      }
+    }
+  }
+
+  /**
    * Word: throw
    * Prototype: error
    *
@@ -198,6 +239,7 @@ namespace plorth
       {
         { U"code", w_code },
         { U"message", w_message },
+        { U"position", w_position },
         { U"throw", w_throw },
       };
     }
