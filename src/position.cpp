@@ -23,24 +23,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PLORTH_POSITION_HPP_GUARD
-#define PLORTH_POSITION_HPP_GUARD
-
-#include <plorth/unicode.hpp>
+#include <plorth/position.hpp>
 
 namespace plorth
 {
-  /**
-   * Represents position in source code.
-   */
-  struct position
+  std::ostream& operator<<(std::ostream& os, const position& pos)
   {
-    unistring filename;
-    int line;
-    int column;
-  };
+    if (pos.filename.empty())
+    {
+      os << "<unknown>";
+    } else {
+      os << pos.filename;
+    }
+    if (pos.line > 0)
+    {
+      os << ':' << pos.line << ':' << pos.column;
+    }
 
-  std::ostream& operator<<(std::ostream&, const position&);
+    return os;
+  }
 }
-
-#endif /* !PLORTH_POSITION_HPP_GUARD */

@@ -270,10 +270,12 @@ static void handle_error(const ref<context>& ctx)
 
   if (err)
   {
-    std::cerr << "Error: "
-              << err->code()
-              << " - "
-              << err->message();
+    std::cerr << "Error: ";
+    if (err->position())
+    {
+      std::cerr << *err->position() << ':';
+    }
+    std::cerr << err->code() << " - " << err->message();
   } else {
     std::cerr << "Unknown error.";
   }
@@ -419,7 +421,13 @@ static void console_loop(const ref<class context>& context)
         }
         if (context->error())
         {
-          std::cout << context->error() << std::endl;
+          const auto& error = context->error();
+
+          if (error->position())
+          {
+            std::cout << *error->position() << ':';
+          }
+          std::cout << error << std::endl;
           context->clear_error();
         }
       }
