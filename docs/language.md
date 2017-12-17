@@ -78,13 +78,18 @@ words `true` and `false` which can be found in the global dictionary.
 
 ### Number
 
-TODO
+Numbers represent whole or fractional quantities. Whole numbers also support
+bitwise operations in two's complement representation.
 
 ### String
 
 String is a container for textual data, a sequence of Unicode code points.
 
-TODO
+Strings can be manipulated with words such as `capitalize` or converted to
+other types with words such as `>number`.
+
+You can also break a string into an array of substring with `lines` or other
+similar words.
 
 ### Array
 
@@ -119,7 +124,21 @@ the word. If the index is out of bounds a range error will be thrown.
 
 Objects are associative arrays that map string keys into values.
 
-TODO: Information about object literals and how to access properties.
+Objects literals are constructed in the same way as in JSON.
+```
+{"foo": 1, "bar": "baz"}
+```
+
+Values are accessed using the `@` word.
+```
+"foo" {"foo": "bar"} @ # -> {"foo": "bar"} "bar"
+```
+
+Values are assigned with the `!` word.
+```
+"foo" "bar" {} ! # -> {"bar": "foo"}
+```
+
 
 ### Quote
 
