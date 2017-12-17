@@ -33,9 +33,14 @@ namespace plorth
     class compiler
     {
     public:
-      explicit compiler(const unistring& source)
+      explicit compiler(const unistring& source, const unistring& filename)
         : m_pos(std::begin(source))
-        , m_end(std::end(source)) {}
+        , m_end(std::end(source))
+      {
+        m_position.filename = filename;
+        m_position.line = 1;
+        m_position.column = 0;
+      }
 
       /**
        * Returns true if there are no more characters to be read from the
@@ -52,7 +57,7 @@ namespace plorth
        */
       inline void advance()
       {
-        ++m_pos;
+        read();
       }
 
       /**
@@ -61,7 +66,17 @@ namespace plorth
        */
       inline unichar read()
       {
-        return *m_pos++;
+        const unichar result = *m_pos++;
+
+        if (result == '\n')
+        {
+          ++m_position.line;
+          m_position.column = 0;
+        } else {
+          ++m_position.column;
+        }
+
+        return result;
       }
 
       /**
@@ -154,7 +169,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected end of input; Missing value."
+            U"Unexpected end of input; Missing value.",
+            &m_position
           );
 
           return ref<value>();
@@ -191,7 +207,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected end of input; Missing symbol."
+            U"Unexpected end of input; Missing symbol.",
+            &m_position
           );
 
           return ref<symbol>();
@@ -201,7 +218,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected input; Missing symbol."
+            U"Unexpected input; Missing symbol.",
+            &m_position
           );
 
           return ref<symbol>();
@@ -226,8 +244,9 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected end of input; Missing word."
-            );
+            U"Unexpected end of input; Missing word.",
+            &m_position
+          );
 
           return ref<word>();
         }
@@ -236,8 +255,9 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected input; Missing word."
-            );
+            U"Unexpected input; Missing word.",
+            &m_position
+          );
 
           return ref<word>();
         }
@@ -251,7 +271,11 @@ namespace plorth
         {
           if (skip_whitespace())
           {
-            ctx->error(error::code_syntax, U"Unterminated word; Missing `;'.");
+            ctx->error(
+              error::code_syntax,
+              U"Unterminated word; Missing `;'.",
+              &m_position
+            );
 
             return ref<word>();
           }
@@ -269,7 +293,10 @@ namespace plorth
           }
         }
 
-        return runtime->value<word>(symbol, runtime->compiled_quote(values));
+        return runtime->value<word>(
+          symbol,
+          runtime->compiled_quote(values)
+        );
       }
 
       ref<quote> compile_quote(context* ctx)
@@ -280,7 +307,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected end of input; Missing quote."
+            U"Unexpected end of input; Missing quote.",
+            &m_position
           );
 
           return ref<quote>();
@@ -290,7 +318,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected input; Missing quote."
+            U"Unexpected input; Missing quote.",
+            &m_position
           );
 
           return ref<quote>();
@@ -302,7 +331,8 @@ namespace plorth
           {
             ctx->error(
               error::code_syntax,
-              U"Unterminated quote; Missing `)'."
+              U"Unterminated quote; Missing `)'.",
+              &m_position
             );
 
             return ref<quote>();
@@ -333,7 +363,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected end of input; Missing string."
+            U"Unexpected end of input; Missing string.",
+            &m_position
           );
 
           return ref<string>();
@@ -343,7 +374,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected input; Missing string."
+            U"Unexpected input; Missing string.",
+            &m_position
           );
 
           return ref<string>();
@@ -355,7 +387,8 @@ namespace plorth
           {
             ctx->error(
               error::code_syntax,
-              unistring(U"Unterminated string; Missing `") + separator + U"'"
+              unistring(U"Unterminated string; Missing `") + separator + U"'",
+              &m_position
             );
 
             return ref<string>();
@@ -386,7 +419,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected end of input; Missing array."
+            U"Unexpected end of input; Missing array.",
+            &m_position
           );
 
           return ref<array>();
@@ -396,7 +430,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected input; Missing array."
+            U"Unexpected input; Missing array.",
+            &m_position
           );
 
           return ref<array>();
@@ -408,7 +443,8 @@ namespace plorth
           {
             ctx->error(
               error::code_syntax,
-              U"Unterminated array; Missing `]'."
+              U"Unterminated array; Missing `]'.",
+              &m_position
             );
 
             return ref<array>();
@@ -428,7 +464,8 @@ namespace plorth
             {
               ctx->error(
                 error::code_syntax,
-                U"Unterminated array; Missing `]'."
+                U"Unterminated array; Missing `]'.",
+                &m_position
               );
 
               return ref<array>();
@@ -449,7 +486,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected end of input; Missing object."
+            U"Unexpected end of input; Missing object.",
+            &m_position
           );
 
           return ref<object>();
@@ -459,7 +497,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected input; Missing object."
+            U"Unexpected input; Missing object.",
+            &m_position
           );
 
           return ref<object>();
@@ -471,7 +510,8 @@ namespace plorth
           {
             ctx->error(
               error::code_syntax,
-              U"Unterminated object; Missing `}'."
+              U"Unterminated object; Missing `}'.",
+              &m_position
             );
 
             return ref<object>();
@@ -492,7 +532,8 @@ namespace plorth
             {
               ctx->error(
                 error::code_syntax,
-                U"Unterminated object; Missing `}'."
+                U"Unterminated object; Missing `}'.",
+                &m_position
               );
 
               return ref<object>();
@@ -502,7 +543,8 @@ namespace plorth
             {
               ctx->error(
                 error::code_syntax,
-                U"Missing `:' after property key."
+                U"Missing `:' after property key.",
+                &m_position
               );
 
               return ref<object>();
@@ -519,7 +561,8 @@ namespace plorth
             {
               ctx->error(
                 error::code_syntax,
-                U"Unterminated object; Missing `}'."
+                U"Unterminated object; Missing `}'.",
+                &m_position
               );
 
               return ref<object>();
@@ -538,7 +581,8 @@ namespace plorth
         {
           ctx->error(
             error::code_syntax,
-            U"Unexpected end of input; Missing escape sequence."
+            U"Unexpected end of input; Missing escape sequence.",
+            &m_position
           );
 
           return false;
@@ -583,7 +627,8 @@ namespace plorth
               {
                 ctx->error(
                   error::code_syntax,
-                  U"Unterminated escape sequence."
+                  U"Unterminated escape sequence.",
+                  &m_position
                 );
 
                 return false;
@@ -592,7 +637,8 @@ namespace plorth
               {
                 ctx->error(
                   error::code_syntax,
-                  U"Illegal Unicode hex escape sequence."
+                  U"Illegal Unicode hex escape sequence.",
+                  &m_position
                 );
 
                 return false;
@@ -614,7 +660,8 @@ namespace plorth
             {
               ctx->error(
                 error::code_syntax,
-                U"Illegal Unicode hex escape sequence."
+                U"Illegal Unicode hex escape sequence.",
+                &m_position
               );
 
               return false;
@@ -627,7 +674,8 @@ namespace plorth
         default:
           ctx->error(
             error::code_syntax,
-            U"Illegal escape sequence in string literal."
+            U"Illegal escape sequence in string literal.",
+            &m_position
           );
 
           return false;
@@ -675,11 +723,14 @@ namespace plorth
       unistring::const_iterator m_pos;
       /** Iterator which marks end of the source code. */
       const unistring::const_iterator m_end;
+      /** Current source code location information. */
+      position m_position;
     };
   }
 
-  ref<quote> context::compile(const unistring& source)
+  ref<quote> context::compile(const unistring& source,
+                              const unistring& filename)
   {
-    return compiler(source).compile(this);
+    return compiler(source, filename).compile(this);
   }
 }

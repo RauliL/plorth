@@ -27,9 +27,20 @@
 
 namespace plorth
 {
-  error::error(enum code code, const unistring& message)
+  error::error(enum code code,
+               const unistring& message,
+               const struct position* position)
     : m_code(code)
-    , m_message(message) {}
+    , m_message(message)
+    , m_position(position ? new struct position(*position) : nullptr) {}
+
+  error::~error()
+  {
+    if (m_position)
+    {
+      delete m_position;
+    }
+  }
 
   unistring error::code_description() const
   {

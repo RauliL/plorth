@@ -26,6 +26,7 @@
 #ifndef PLORTH_VALUE_ERROR_HPP_GUARD
 #define PLORTH_VALUE_ERROR_HPP_GUARD
 
+#include <plorth/position.hpp>
 #include <plorth/value.hpp>
 
 namespace plorth
@@ -51,7 +52,19 @@ namespace plorth
       code_unknown = 100
     };
 
-    explicit error(enum code code, const unistring& message);
+    /**
+     * Constructs new error instance.
+     *
+     * \param code     Error code
+     * \param message  Textual description of the error
+     * \param position Optional position in source code where the error
+     *                 occurred.
+     */
+    explicit error(enum code code,
+                   const unistring& message,
+                   const struct position* position = nullptr);
+
+    ~error();
 
     inline enum code code() const
     {
@@ -73,6 +86,15 @@ namespace plorth
       return m_message;
     }
 
+    /**
+     * Returns position in the source code where the error occurred or null
+     * pointer if no such information is available.
+     */
+    inline const struct position* position() const
+    {
+      return m_position;
+    }
+
     inline enum type type() const
     {
       return type_error;
@@ -83,8 +105,12 @@ namespace plorth
     unistring to_source() const;
 
   private:
+    /** Error code. */
     const enum code m_code;
+    /** Textual description of the error. */
     const unistring m_message;
+    /** Optional position in source code. */
+    struct position* m_position;
   };
 
   std::ostream& operator<<(std::ostream&, enum error::code);

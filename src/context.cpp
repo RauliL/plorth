@@ -33,9 +33,15 @@ namespace plorth
   context::context(const ref<class runtime>& runtime)
     : m_runtime(runtime) {}
 
-  void context::error(enum error::code code, const unistring& message)
+  void context::error(enum error::code code,
+                      const unistring& message,
+                      const struct position* position)
   {
-    m_error = new (m_runtime->memory_manager()) class error(code, message);
+    m_error = new (m_runtime->memory_manager()) class error(
+      code,
+      message,
+      position
+    );
   }
 
   void context::push_null()

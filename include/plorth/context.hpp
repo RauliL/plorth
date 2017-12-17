@@ -81,8 +81,15 @@ namespace plorth
     /**
      * Constructs new error instance with given error code and error message
      * and replaces this execution state's currently uncaught error with it.
+     *
+     * \param code     Error code
+     * \param message  Textual description of the error
+     * \param position Optional position in the source code where the error
+     *                 occurred
      */
-    void error(enum error::code code, const unistring& message);
+    void error(enum error::code code,
+               const unistring& message,
+               const struct position* position = nullptr);
 
     /**
      * Removes currently uncaught error in the context.
@@ -111,11 +118,14 @@ namespace plorth
     /**
      * Compiles given source code into a quote.
      *
-     * \param source Source code to compile into quote.
-     * \return       Reference the quote that was compiled from given source,
-     *               or null reference if syntax error was encountered.
+     * \param source   Source code to compile into quote.
+     * \param filename Optional file name information from which the source
+     *                 code was read from.
+     * \return         Reference the quote that was compiled from given source,
+     *                 or null reference if syntax error was encountered.
      */
-    ref<quote> compile(const unistring& source);
+    ref<quote> compile(const unistring& source,
+                       const unistring& filename = U"");
 
     /**
      * Provides direct access to the data stack.
