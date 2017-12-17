@@ -1230,6 +1230,23 @@ not have any error message.
 
 ---
 
+### position
+
+<dl>
+  <dt>Gives:</dt>
+  <dd>error, error, object|null</dd>
+</dl>
+
+Takes
+
+Returns position in the source code where the error occurred, or null if
+no such information is available.
+
+Position is returned as object with `filename`, `line` and `column`
+properties.
+
+---
+
 ### throw
 
 <dl>
