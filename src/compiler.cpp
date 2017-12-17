@@ -28,583 +28,658 @@
 
 namespace plorth
 {
-  using source_iterator = unistring::const_iterator;
-
-  static bool skip_whitespace(source_iterator&, const source_iterator&);
-  static ref<value> compile_value(context*,
-                                  source_iterator&,
-                                  const source_iterator&);
-
-  ref<quote> context::compile(const unistring& source)
+  namespace
   {
-    std::vector<ref<class value>> values;
-    ref<class value> value;
-    auto it = std::begin(source);
-    const auto end = std::end(source);
-
-    while (it != end)
+    class compiler
     {
-      if (skip_whitespace(it, end))
-      {
-        break;
-      }
-      else if (!(value = compile_value(this, it, end)))
-      {
-        return ref<quote>();
-      }
-      values.push_back(value);
-    }
+    public:
+      explicit compiler(const unistring& source)
+        : m_pos(std::begin(source))
+        , m_end(std::end(source)) {}
 
-    return m_runtime->compiled_quote(values);
-  }
-
-  /**
-   * Skips whitespace and comments from source code.
-   *
-   * \return True if end of input has been reached, false otherwise.
-   */
-  static bool skip_whitespace(source_iterator& it, const source_iterator& end)
-  {
-    while (it != end)
-    {
-      // Skip line comments.
-      if (*it == '#')
+      /**
+       * Returns true if there are no more characters to be read from the
+       * source code.
+       */
+      inline bool eof() const
       {
-        while (++it != end)
+        return m_pos >= m_end;
+      }
+
+      /**
+       * Advances to the next character in source code, discarding the current
+       * one.
+       */
+      inline void advance()
+      {
+        ++m_pos;
+      }
+
+      /**
+       * Advances to the next character in source code and returns the current
+       * one.
+       */
+      inline unichar read()
+      {
+        return *m_pos++;
+      }
+
+      /**
+       * Returns next character to be read from the source code without
+       * advancing any further.
+       */
+      inline unichar peek() const
+      {
+        return *m_pos;
+      }
+
+      /**
+       * Returns true if next character to be read from the source code equals
+       * with one given as argument.
+       */
+      inline bool peek(unichar expected) const
+      {
+        return !eof() && peek() == expected;
+      }
+
+      /**
+       * Returns true if next character to be read from the source code matches
+       * with given callback function.
+       */
+      inline bool peek(bool (*callback)(unichar)) const
+      {
+        return !eof() && callback(peek());
+      }
+
+      /**
+       * Returns true and advances to next character if next character to be
+       * read from the source code equals with one given as argument.
+       */
+      inline bool peek_read(unichar expected)
+      {
+        if (peek(expected))
         {
-          if (*it == '\n' || *it == '\r')
+          advance();
+
+          return true;
+        }
+
+        return false;
+      }
+
+      /**
+       * Returns true and advances to next character if next character to be
+       * read from the source code equals with one given as argument. Current
+       * character will be stored into given slot.
+       */
+      inline bool peek_read(unichar expected, unichar& slot)
+      {
+        if (peek(expected))
+        {
+          slot = read();
+
+          return true;
+        }
+
+        return false;
+      }
+
+      /**
+       * Compiles top-level script into quote.
+       */
+      ref<quote> compile(context* ctx)
+      {
+        std::vector<ref<class value>> values;
+        ref<class value> value;
+
+        while (!eof())
+        {
+          if (skip_whitespace())
           {
             break;
           }
-        }
-      }
-      else if (!std::isspace(*it))
-      {
-        return false;
-      } else {
-        ++it;
-      }
-    }
-
-    return true;
-  }
-
-  static bool compile_escape_sequence(context* ctx,
-                                      source_iterator& it,
-                                      const source_iterator& end,
-                                      unistring& buffer)
-  {
-    if (it >= end)
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected end of input; Missing escape sequence."
-      );
-
-      return false;
-    }
-
-    switch (*it++)
-    {
-    case 'b':
-      buffer.append(1, 010);
-      break;
-
-    case 't':
-      buffer.append(1, 011);
-      break;
-
-    case 'n':
-      buffer.append(1, 012);
-      break;
-
-    case 'f':
-      buffer.append(1, 014);
-      break;
-
-    case 'r':
-      buffer.append(1, 015);
-      break;
-
-    case '"':
-    case '\'':
-    case '\\':
-    case '/':
-      buffer.append(1, *(it - 1));
-      break;
-
-    case 'u':
-      {
-        unichar result = 0;
-
-        for (int i = 0; i < 4; ++i)
-        {
-          if (it >= end)
+          else if (!(value = compile_value(ctx)))
           {
-            ctx->error(
-              error::code_syntax,
-              U"Unterminated escape sequence."
-            );
-
-            return false;
+            return ref<quote>();
           }
-          else if (!std::isxdigit(*it))
-          {
-            ctx->error(
-              error::code_syntax,
-              U"Illegal Unicode hex escape sequence."
-            );
-
-            return false;
-          }
-
-          if (*it >= 'A' && *it <= 'F')
-          {
-            result = result * 16 + (*it++ - 'A' + 10);
-          }
-          else if (*it >= 'a' && *it <= 'f')
-          {
-            result = result * 16 + (*it++ - 'a' + 10);
-          } else {
-            result = result * 16 + (*it++ - '0');
-          }
+          values.push_back(value);
         }
 
-        if (!unichar_validate(result))
+        return ctx->runtime()->compiled_quote(values);
+      }
+
+      ref<value> compile_value(context* ctx)
+      {
+        if (skip_whitespace())
         {
           ctx->error(
             error::code_syntax,
-            U"Illegal Unicode hex escape sequence."
+            U"Unexpected end of input; Missing value."
+          );
+
+          return ref<value>();
+        }
+
+        switch (peek())
+        {
+        case '"':
+        case '\'':
+          return compile_string(ctx);
+
+        case '(':
+          return compile_quote(ctx);
+
+        case '[':
+          return compile_array(ctx);
+
+        case '{':
+          return compile_object(ctx);
+
+        case ':':
+          return compile_word(ctx);
+
+        default:
+          return compile_symbol(ctx);
+        }
+      }
+
+      ref<symbol> compile_symbol(context* ctx)
+      {
+        unistring buffer;
+
+        if (skip_whitespace())
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected end of input; Missing symbol."
+          );
+
+          return ref<symbol>();
+        }
+
+        if (!unichar_isword(peek()))
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected input; Missing symbol."
+          );
+
+          return ref<symbol>();
+        }
+
+        buffer.append(1, read());
+        while (peek(unichar_isword))
+        {
+          buffer.append(1, read());
+        }
+
+        return ctx->runtime()->value<symbol>(buffer);
+      }
+
+      ref<word> compile_word(context* ctx)
+      {
+        const auto& runtime = ctx->runtime();
+        ref<class symbol> symbol;
+        std::vector<ref<value>> values;
+
+        if (skip_whitespace())
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected end of input; Missing word."
+            );
+
+          return ref<word>();
+        }
+
+        if (!peek_read(':'))
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected input; Missing word."
+            );
+
+          return ref<word>();
+        }
+
+        if (!(symbol = compile_symbol(ctx)))
+        {
+          return ref<word>();
+        }
+
+        for (;;)
+        {
+          if (skip_whitespace())
+          {
+            ctx->error(error::code_syntax, U"Unterminated word; Missing `;'.");
+
+            return ref<word>();
+          }
+          else if (peek_read(';'))
+          {
+            break;
+          } else {
+            const auto value = compile_value(ctx);
+
+            if (!value)
+            {
+              return ref<word>();
+            }
+            values.push_back(value);
+          }
+        }
+
+        return runtime->value<word>(symbol, runtime->compiled_quote(values));
+      }
+
+      ref<quote> compile_quote(context* ctx)
+      {
+        std::vector<ref<value>> values;
+
+        if (skip_whitespace())
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected end of input; Missing quote."
+          );
+
+          return ref<quote>();
+        }
+
+        if (!peek_read('('))
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected input; Missing quote."
+          );
+
+          return ref<quote>();
+        }
+
+        for (;;)
+        {
+          if (skip_whitespace())
+          {
+            ctx->error(
+              error::code_syntax,
+              U"Unterminated quote; Missing `)'."
+            );
+
+            return ref<quote>();
+          }
+          else if (peek_read(')'))
+          {
+            break;
+          } else {
+            const auto value = compile_value(ctx);
+
+            if (!value)
+            {
+              return ref<quote>();
+            }
+            values.push_back(value);
+          }
+        }
+
+        return ctx->runtime()->compiled_quote(values);
+      }
+
+      ref<string> compile_string(context* ctx)
+      {
+        unichar separator;
+        unistring buffer;
+
+        if (skip_whitespace())
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected end of input; Missing string."
+          );
+
+          return ref<string>();
+        }
+
+        if (!peek_read('"', separator) && !peek_read('\'', separator))
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected input; Missing string."
+          );
+
+          return ref<string>();
+        }
+
+        for (;;)
+        {
+          if (eof())
+          {
+            ctx->error(
+              error::code_syntax,
+              unistring(U"Unterminated string; Missing `") + separator + U"'"
+            );
+
+            return ref<string>();
+          }
+          else if (peek_read(separator))
+          {
+            break;
+          }
+          else if (peek_read('\\'))
+          {
+            if (!compile_escape_sequence(ctx, buffer))
+            {
+              return ref<string>();
+            }
+          } else {
+            buffer.append(1, read());
+          }
+        }
+
+        return ctx->runtime()->string(buffer);
+      }
+
+      ref<array> compile_array(context* ctx)
+      {
+        std::vector<ref<value>> elements;
+
+        if (skip_whitespace())
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected end of input; Missing array."
+          );
+
+          return ref<array>();
+        }
+
+        if (!peek_read('['))
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected input; Missing array."
+          );
+
+          return ref<array>();
+        }
+
+        for (;;)
+        {
+          if (skip_whitespace())
+          {
+            ctx->error(
+              error::code_syntax,
+              U"Unterminated array; Missing `]'."
+            );
+
+            return ref<array>();
+          }
+          else if (peek_read(']'))
+          {
+            break;
+          } else {
+            const auto value = compile_value(ctx);
+
+            if (!value)
+            {
+              return ref<array>();
+            }
+            elements.push_back(value);
+            if (skip_whitespace() || (!peek(',') && !peek(']')))
+            {
+              ctx->error(
+                error::code_syntax,
+                U"Unterminated array; Missing `]'."
+              );
+
+              return ref<array>();
+            } else {
+              peek_read(',');
+            }
+          }
+        }
+
+        return ctx->runtime()->array(elements.data(), elements.size());
+      }
+
+      ref<object> compile_object(context* ctx)
+      {
+        object::container_type properties;
+
+        if (skip_whitespace())
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected end of input; Missing object."
+          );
+
+          return ref<object>();
+        }
+
+        if (!peek_read('{'))
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected input; Missing object."
+          );
+
+          return ref<object>();
+        }
+
+        for (;;)
+        {
+          if (skip_whitespace())
+          {
+            ctx->error(
+              error::code_syntax,
+              U"Unterminated object; Missing `}'."
+            );
+
+            return ref<object>();
+          }
+          else if (peek_read('}'))
+          {
+            break;
+          } else {
+            ref<string> key;
+            ref<class value> value;
+
+            if (!(key = compile_string(ctx)))
+            {
+              return ref<object>();
+            }
+
+            if (skip_whitespace())
+            {
+              ctx->error(
+                error::code_syntax,
+                U"Unterminated object; Missing `}'."
+              );
+
+              return ref<object>();
+            }
+
+            if (!peek_read(':'))
+            {
+              ctx->error(
+                error::code_syntax,
+                U"Missing `:' after property key."
+              );
+
+              return ref<object>();
+            }
+
+            if (!(value = compile_value(ctx)))
+            {
+              return ref<object>();
+            }
+
+            properties[key->to_string()] = value;
+
+            if (skip_whitespace() || (!peek(',') && !peek('}')))
+            {
+              ctx->error(
+                error::code_syntax,
+                U"Unterminated object; Missing `}'."
+              );
+
+              return ref<object>();
+            } else {
+              peek_read(',');
+            }
+          }
+        }
+
+        return ctx->runtime()->value<object>(properties);
+      }
+
+      bool compile_escape_sequence(context* ctx, unistring& buffer)
+      {
+        if (eof())
+        {
+          ctx->error(
+            error::code_syntax,
+            U"Unexpected end of input; Missing escape sequence."
           );
 
           return false;
         }
 
-        buffer.append(1, result);
-      }
-      break;
-
-    default:
-      ctx->error(
-        error::code_syntax,
-        U"Illegal escape sequence in string literal."
-      );
-
-      return false;
-    }
-
-    return true;
-  }
-
-  static ref<string> compile_string(context* ctx,
-                                    source_iterator& it,
-                                    const source_iterator& end)
-  {
-    unichar separator;
-    unistring buffer;
-
-    if (skip_whitespace(it, end))
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected end of input; Missing string."
-      );
-
-      return ref<string>();
-    }
-
-    if (*it != '"' && *it != '\'')
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected input; Missing string."
-      );
-
-      return ref<string>();
-    }
-
-    separator = *it++;
-
-    for (;;)
-    {
-      if (it >= end)
-      {
-        ctx->error(
-          error::code_syntax,
-          unistring(U"Unterminated string; Missing `") + separator + U"'"
-        );
-
-        return ref<string>();
-      }
-      else if (*it == separator)
-      {
-        ++it;
-        break;
-      }
-      else if (*it != '\\')
-      {
-        buffer.append(1, *it++);
-      }
-      else if (!compile_escape_sequence(ctx, ++it, end, buffer))
-      {
-        return ref<string>();
-      }
-    }
-
-    return ctx->runtime()->string(buffer);
-  }
-
-  static ref<quote> compile_quote(context* ctx,
-                                  source_iterator& it,
-                                  const source_iterator& end)
-  {
-    std::vector<ref<value>> values;
-
-    if (skip_whitespace(it, end))
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected end of input; Missing quote."
-      );
-
-      return ref<quote>();
-    }
-
-    if (*it != '(')
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected input; Missing quote."
-      );
-
-      return ref<quote>();
-    }
-
-    ++it;
-
-    for (;;)
-    {
-      if (skip_whitespace(it, end))
-      {
-        ctx->error(error::code_syntax, U"Unterminated quote; Missing `)'.");
-
-        return ref<quote>();
-      }
-      else if (*it == ')')
-      {
-        ++it;
-        break;
-      } else {
-        const auto value = compile_value(ctx, it, end);
-
-        if (!value)
+        switch (read())
         {
-          return ref<quote>();
-        }
-        values.push_back(value);
-      }
-    }
+        case 'b':
+          buffer.append(1, 010);
+          break;
 
-    return ctx->runtime()->compiled_quote(values);
-  }
+        case 't':
+          buffer.append(1, 011);
+          break;
 
-  static ref<array> compile_array(context* ctx,
-                                  source_iterator& it,
-                                  const source_iterator& end)
-  {
-    std::vector<ref<value>> elements;
+        case 'n':
+          buffer.append(1, 012);
+          break;
 
-    if (skip_whitespace(it, end))
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected end of input; Missing array."
-      );
+        case 'f':
+          buffer.append(1, 014);
+          break;
 
-      return ref<array>();
-    }
+        case 'r':
+          buffer.append(1, 015);
+          break;
 
-    if (*it != '[')
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected input; Missing array."
-      );
+        case '"':
+        case '\'':
+        case '\\':
+        case '/':
+          buffer.append(1, *(m_pos - 1));
+          break;
 
-      return ref<array>();
-    }
+        case 'u':
+          {
+            unichar result = 0;
 
-    ++it;
+            for (int i = 0; i < 4; ++i)
+            {
+              if (eof())
+              {
+                ctx->error(
+                  error::code_syntax,
+                  U"Unterminated escape sequence."
+                );
 
-    for (;;)
-    {
-      if (skip_whitespace(it, end))
-      {
-        ctx->error(
-          error::code_syntax,
-          U"Unterminated array; Missing `]'."
-        );
+                return false;
+              }
+              else if (!std::isxdigit(peek()))
+              {
+                ctx->error(
+                  error::code_syntax,
+                  U"Illegal Unicode hex escape sequence."
+                );
 
-        return ref<array>();
-      }
-      else if (*it == ']')
-      {
-        ++it;
-        break;
-      } else {
-        const auto value = compile_value(ctx, it, end);
+                return false;
+              }
 
-        if (!value)
-        {
-          return ref<array>();
-        }
-        elements.push_back(value);
-        if (skip_whitespace(it, end) || (*it != ',' && *it != ']'))
-        {
+              if (peek() >= 'A' && peek() <= 'F')
+              {
+                result = result * 16 + (read() - 'A' + 10);
+              }
+              else if (peek() >= 'a' && peek() <= 'f')
+              {
+                result = result * 16 + (read() - 'a' + 10);
+              } else {
+                result = result * 16 + (read() - '0');
+              }
+            }
+
+            if (!unichar_validate(result))
+            {
+              ctx->error(
+                error::code_syntax,
+                U"Illegal Unicode hex escape sequence."
+              );
+
+              return false;
+            }
+
+            buffer.append(1, result);
+          }
+          break;
+
+        default:
           ctx->error(
             error::code_syntax,
-            U"Unterminated array; Missing `]'."
+            U"Illegal escape sequence in string literal."
           );
 
-          return ref<array>();
+          return false;
         }
-        else if (*it == ',')
-        {
-          ++it;
-        }
-      }
-    }
 
-    return ctx->runtime()->array(elements.data(), elements.size());
+        return true;
+      }
+
+      /**
+       * Skips whitespace and comments from source code.
+       *
+       * \return True if end of input has been reached, false otherwise.
+       */
+      bool skip_whitespace()
+      {
+        while (!eof())
+        {
+          // Skip line comments.
+          if (peek_read('#'))
+          {
+            while (!eof())
+            {
+              if (peek_read('\n') || peek_read('\r'))
+              {
+                break;
+              }
+            }
+          }
+          else if (!std::isspace(peek()))
+          {
+            return false;
+          } else {
+            advance();
+          }
+        }
+
+        return true;
+      }
+
+      compiler(const compiler&) = delete;
+      void operator=(const compiler&) = delete;
+
+    private:
+      /** Current position in source code. */
+      unistring::const_iterator m_pos;
+      /** Iterator which marks end of the source code. */
+      const unistring::const_iterator m_end;
+    };
   }
 
-  static ref<object> compile_object(context* ctx,
-                                    source_iterator& it,
-                                    const source_iterator& end)
+  ref<quote> context::compile(const unistring& source)
   {
-    object::container_type properties;
-
-    if (skip_whitespace(it, end))
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected end of input; Missing object."
-      );
-
-      return ref<object>();
-    }
-
-    if (*it != '{')
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected input; Missing object."
-      );
-
-      return ref<object>();
-    }
-
-    ++it;
-
-    for (;;)
-    {
-      if (skip_whitespace(it, end))
-      {
-        ctx->error(
-          error::code_syntax,
-          U"Unterminated object; Missing `}'."
-        );
-
-        return ref<object>();
-      }
-      else if (*it == '}')
-      {
-        ++it;
-        break;
-      } else {
-        ref<string> key;
-        ref<class value> value;
-
-        if (!(key = compile_string(ctx, it, end)))
-        {
-          return ref<object>();
-        }
-
-        if (skip_whitespace(it, end))
-        {
-          ctx->error(
-            error::code_syntax,
-            U"Unterminated object; Missing `}'."
-          );
-
-          return ref<object>();
-        }
-
-        if (*it != ':')
-        {
-          ctx->error(
-            error::code_syntax,
-            U"Missing `:' after property key."
-          );
-
-          return ref<object>();
-        }
-
-        if (!(value = compile_value(ctx, ++it, end)))
-        {
-          return ref<object>();
-        }
-
-        properties[key->to_string()] = value;
-
-        if (skip_whitespace(it, end) || (*it != ',' && *it != '}'))
-        {
-          ctx->error(
-            error::code_syntax,
-            U"Unterminated object; Missing `}'."
-          );
-
-          return ref<object>();
-        }
-        else if (*it == ',')
-        {
-          ++it;
-        }
-      }
-    }
-
-    return ctx->runtime()->value<object>(properties);
-  }
-
-  static ref<symbol> compile_symbol(context* ctx,
-                                    source_iterator& it,
-                                    const source_iterator& end)
-  {
-    unistring buffer;
-
-    if (skip_whitespace(it, end))
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected end of input; Missing symbol."
-      );
-
-      return ref<symbol>();
-    }
-
-    if (!unichar_isword(*it))
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected input; Missing symbol."
-      );
-
-      return ref<symbol>();
-    }
-
-    buffer.append(1, *it++);
-    while (it != end && unichar_isword(*it))
-    {
-      buffer.append(1, *it++);
-    }
-
-    return ctx->runtime()->value<symbol>(buffer);
-  }
-
-  static ref<word> compile_word(context* ctx,
-                                source_iterator& it,
-                                const source_iterator& end)
-  {
-    const auto& runtime = ctx->runtime();
-    ref<class symbol> symbol;
-    std::vector<ref<value>> values;
-
-    if (skip_whitespace(it, end))
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected end of input; Missing word."
-        );
-
-      return ref<word>();
-    }
-
-    if (*it != ':')
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected input; Missing word."
-        );
-
-      return ref<word>();
-    }
-
-    ++it;
-
-    if (!(symbol = compile_symbol(ctx, it, end)))
-    {
-      return ref<word>();
-    }
-
-    for (;;)
-    {
-      if (skip_whitespace(it, end))
-      {
-        ctx->error(error::code_syntax, U"Unterminated word; Missing `;'.");
-
-        return ref<word>();
-      }
-      else if (*it == ';')
-      {
-        ++it;
-        break;
-      } else {
-        const auto value = compile_value(ctx, it, end);
-
-        if (!value)
-        {
-          return ref<word>();
-        }
-        values.push_back(value);
-      }
-    }
-
-    return runtime->value<word>(symbol, runtime->compiled_quote(values));
-  }
-
-  static ref<value> compile_value(context* ctx,
-                                  source_iterator& it,
-                                  const source_iterator& end)
-  {
-    if (skip_whitespace(it, end))
-    {
-      ctx->error(
-        error::code_syntax,
-        U"Unexpected end of input; Missing value."
-      );
-
-      return ref<value>();
-    }
-    switch (*it)
-    {
-    case '"':
-    case '\'':
-      return compile_string(ctx, it, end);
-
-    case '(':
-      return compile_quote(ctx, it, end);
-
-    case '[':
-      return compile_array(ctx, it, end);
-
-    case '{':
-      return compile_object(ctx, it, end);
-
-    case ':':
-      return compile_word(ctx, it, end);
-
-    default:
-      return compile_symbol(ctx, it, end);
-    }
+    return compiler(source).compile(this);
   }
 }
