@@ -726,6 +726,8 @@ namespace plorth
               if (peek_read('\n') || peek_read('\r'))
               {
                 break;
+              } else {
+                advance();
               }
             }
           }
