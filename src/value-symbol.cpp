@@ -54,6 +54,13 @@ namespace plorth
 
   bool symbol::exec(const ref<context>& ctx)
   {
+    // Update source code position of the context, if this symbol has such
+    // information.
+    if (m_position)
+    {
+      ctx->position() = *m_position;
+    }
+
     // Look from prototype of the current item.
     {
       const auto& stack = ctx->data();
