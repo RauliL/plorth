@@ -193,6 +193,48 @@ namespace plorth
   }
 
   /**
+   * Word: position
+   * Prototype: symbol
+   *
+   * Takes:
+   * - symbol
+   *
+   * Gives:
+   * - symbol
+   * - object|null
+   *
+   * Returns position in source code where the symbols was encountered, or null
+   * if no such information is available. If symbol caching has been enabled in
+   * the interpreter, source code position is not stored in symbols.
+   *
+   * Position is returnedd as object with `filename`, `line` and `column`
+   * properties.
+   */
+  static void w_position(const ref<context>& ctx)
+  {
+    ref<value> sym;
+
+    if (ctx->pop(sym, value::type_symbol))
+    {
+      const auto position = sym.cast<symbol>()->position();
+
+      ctx->push(sym);
+      if (position)
+      {
+        const auto& runtime = ctx->runtime();
+
+        ctx->push_object({
+          { U"filename", runtime->string(position->filename) },
+          { U"line", runtime->number(number::int_type(position->line)) },
+          { U"column", runtime->number(number::int_type(position->column)) }
+        });
+      } else {
+        ctx->push_null();
+      }
+    }
+  }
+
+  /**
    * Word: call
    * Prototype: symbol
    *
@@ -220,6 +262,7 @@ namespace plorth
     {
       return
       {
+        { U"position", w_position },
         { U"call", w_call }
       };
     }

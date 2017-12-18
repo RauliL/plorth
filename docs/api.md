@@ -2113,6 +2113,24 @@ data stack, local dictionary and global dictionary and executes it. If the
 symbol does not resolve into any kind of word or value, number conversion
 is attempted on it. If that also fails, reference error will be thrown.
 
+---
+
+### position
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>symbol</dd>
+  <dt>Gives:</dt>
+  <dd>symbol, object|null</dd>
+</dl>
+
+Returns position in source code where the symbols was encountered, or null
+if no such information is available. If symbol caching has been enabled in
+the interpreter, source code position is not stored in symbols.
+
+Position is returnedd as object with `filename`, `line` and `column`
+properties.
+
 ## word
 
 ---
