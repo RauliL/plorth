@@ -37,6 +37,10 @@ namespace plorth
                       const unistring& message,
                       const struct position* position)
   {
+    if (!position && (m_position.filename.empty() || m_position.line > 0))
+    {
+      position = &m_position;
+    }
     m_error = new (m_runtime->memory_manager()) class error(
       code,
       message,

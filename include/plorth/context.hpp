@@ -121,11 +121,17 @@ namespace plorth
      * \param source   Source code to compile into quote.
      * \param filename Optional file name information from which the source
      *                 code was read from.
+     * \param line     Initial line number of the source code. This is for
+     *                 debugging purposes only.
+     * \param column   Initial column number of the source code. This is for
+     *                 debugging purposes only.
      * \return         Reference the quote that was compiled from given source,
      *                 or null reference if syntax error was encountered.
      */
     ref<quote> compile(const unistring& source,
-                       const unistring& filename = U"");
+                       const unistring& filename = U"",
+                       int line = 1,
+                       int column = 1);
 
     /**
      * Provides direct access to the data stack.
@@ -393,6 +399,24 @@ namespace plorth
     }
 #endif
 
+    /**
+     * Returns reference to a structure which has information about current
+     * position in source code.
+     */
+    inline struct position& position()
+    {
+      return m_position;
+    }
+
+    /**
+     * Returns reference to a structure which has information about current
+     * position in source code.
+     */
+    inline const struct position& position() const
+    {
+      return m_position;
+    }
+
   private:
     /** Runtime associated with this context. */
     const ref<class runtime> m_runtime;
@@ -406,6 +430,8 @@ namespace plorth
     /** Optional filename of the context, when executed as module. */
     unistring m_filename;
 #endif
+    /** Current position in source code. */
+    struct position m_position;
   };
 }
 

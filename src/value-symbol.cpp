@@ -30,8 +30,17 @@
 
 namespace plorth
 {
-  symbol::symbol(const unistring& id)
-    : m_id(id) {}
+  symbol::symbol(const unistring& id, const struct position* position)
+    : m_id(id)
+    , m_position(position ? new struct position(*position) : nullptr) {}
+
+  symbol::~symbol()
+  {
+    if (m_position)
+    {
+      delete m_position;
+    }
+  }
 
   bool symbol::equals(const ref<value>& that) const
   {
@@ -45,6 +54,13 @@ namespace plorth
 
   bool symbol::exec(const ref<context>& ctx)
   {
+    // Update source code position of the context, if this symbol has such
+    // information.
+    if (m_position)
+    {
+      ctx->position() = *m_position;
+    }
+
     // Look from prototype of the current item.
     {
       const auto& stack = ctx->data();
@@ -155,7 +171,8 @@ namespace plorth
     return m_id;
   }
 
-  ref<class symbol> runtime::symbol(const unistring& id)
+  ref<class symbol> runtime::symbol(const unistring& id,
+                                    const struct position* position)
   {
 #if PLORTH_ENABLE_SYMBOL_CACHE
     const auto entry = m_symbol_cache.find(id);
@@ -171,8 +188,50 @@ namespace plorth
 
     return entry->second;
 #else
-    return new (*m_memory_manager) class symbol(id);
+    return new (*m_memory_manager) class symbol(id, position);
 #endif
+  }
+
+  /**
+   * Word: position
+   * Prototype: symbol
+   *
+   * Takes:
+   * - symbol
+   *
+   * Gives:
+   * - symbol
+   * - object|null
+   *
+   * Returns position in source code where the symbols was encountered, or null
+   * if no such information is available. If symbol caching has been enabled in
+   * the interpreter, source code position is not stored in symbols.
+   *
+   * Position is returnedd as object with `filename`, `line` and `column`
+   * properties.
+   */
+  static void w_position(const ref<context>& ctx)
+  {
+    ref<value> sym;
+
+    if (ctx->pop(sym, value::type_symbol))
+    {
+      const auto position = sym.cast<symbol>()->position();
+
+      ctx->push(sym);
+      if (position)
+      {
+        const auto& runtime = ctx->runtime();
+
+        ctx->push_object({
+          { U"filename", runtime->string(position->filename) },
+          { U"line", runtime->number(number::int_type(position->line)) },
+          { U"column", runtime->number(number::int_type(position->column)) }
+        });
+      } else {
+        ctx->push_null();
+      }
+    }
   }
 
   /**
@@ -203,6 +262,7 @@ namespace plorth
     {
       return
       {
+        { U"position", w_position },
         { U"call", w_call }
       };
     }

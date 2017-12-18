@@ -33,13 +33,16 @@ namespace plorth
     class compiler
     {
     public:
-      explicit compiler(const unistring& source, const unistring& filename)
+      explicit compiler(const unistring& source,
+                        const unistring& filename,
+                        int line,
+                        int column)
         : m_pos(std::begin(source))
         , m_end(std::end(source))
       {
         m_position.filename = filename;
-        m_position.line = 1;
-        m_position.column = 1;
+        m_position.line = line;
+        m_position.column = column;
       }
 
       /**
@@ -201,6 +204,7 @@ namespace plorth
 
       ref<symbol> compile_symbol(context* ctx)
       {
+        struct position position;
         unistring buffer;
 
         if (skip_whitespace())
@@ -213,6 +217,8 @@ namespace plorth
 
           return ref<symbol>();
         }
+
+        position = m_position;
 
         if (!unichar_isword(peek()))
         {
@@ -231,7 +237,7 @@ namespace plorth
           buffer.append(1, read());
         }
 
-        return ctx->runtime()->value<symbol>(buffer);
+        return ctx->runtime()->symbol(buffer, &position);
       }
 
       ref<word> compile_word(context* ctx)
@@ -748,8 +754,10 @@ namespace plorth
   }
 
   ref<quote> context::compile(const unistring& source,
-                              const unistring& filename)
+                              const unistring& filename,
+                              int line,
+                              int column)
   {
-    return compiler(source, filename).compile(this);
+    return compiler(source, filename, line, column).compile(this);
   }
 }

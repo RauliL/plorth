@@ -206,10 +206,13 @@ namespace plorth
     /**
      * Constructs symbol from given identifier string.
      *
-     * \param id String which acts as identifier for the symbol.
-     * \return   Reference to the created symbol.
+     * \param id       String which acts as identifier for the symbol.
+     * \param position Optional position in source code where the symbol was
+     *                 encountered.
+     * \return         Reference to the created symbol.
      */
-    ref<class symbol> symbol(const unistring& id);
+    ref<class symbol> symbol(const unistring& id,
+                             const struct position* position = nullptr);
 
     /**
      * Constructs compiled quote from given sequence of values.

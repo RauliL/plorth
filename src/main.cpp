@@ -412,7 +412,11 @@ static void console_loop(const ref<class context>& context)
       count_open_braces(line, open_braces);
       if (open_braces.empty())
       {
-        const ref<quote> script = context->compile(source, U"<repl>");
+        const ref<quote> script = context->compile(
+          source,
+          U"<repl>",
+          line_counter
+        );
 
         source.clear();
         if (script)
