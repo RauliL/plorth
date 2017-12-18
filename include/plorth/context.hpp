@@ -393,6 +393,24 @@ namespace plorth
     }
 #endif
 
+    /**
+     * Returns reference to a structure which has information about current
+     * position in source code.
+     */
+    inline struct position& position()
+    {
+      return m_position;
+    }
+
+    /**
+     * Returns reference to a structure which has information about current
+     * position in source code.
+     */
+    inline const struct position& position() const
+    {
+      return m_position;
+    }
+
   private:
     /** Runtime associated with this context. */
     const ref<class runtime> m_runtime;
@@ -406,6 +424,8 @@ namespace plorth
     /** Optional filename of the context, when executed as module. */
     unistring m_filename;
 #endif
+    /** Current position in source code. */
+    struct position m_position;
   };
 }
 
