@@ -1759,6 +1759,20 @@ an array.</p>
 data stack, local dictionary and global dictionary and executes it. If the
 symbol does not resolve into any kind of word or value, number conversion
 is attempted on it. If that also fails, reference error will be thrown.</p>
+<hr />
+<h3 id="position_1">position</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>symbol</dd>
+  <dt>Gives:</dt>
+  <dd>symbol, object|null</dd>
+</dl>
+
+<p>Returns position in source code where the symbols was encountered, or null
+if no such information is available. If symbol caching has been enabled in
+the interpreter, source code position is not stored in symbols.</p>
+<p>Position is returnedd as object with <code>filename</code>, <code>line</code> and <code>column</code>
+properties.</p>
 <h2 id="word_2">word</h2>
 <hr />
 <h3 id="call_2">call</h3>
