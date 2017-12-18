@@ -39,9 +39,17 @@ namespace plorth
     /**
      * Constructs new symbol.
      *
-     * \param id String which acts as identifier for the symbol.
+     * \param id       String which acts as identifier for the symbol.
+     * \param position Optional position in source code where the symbol was
+     *                 encountered.
      */
-    explicit symbol(const unistring& id);
+    explicit symbol(const unistring& id,
+                    const struct position* position = nullptr);
+
+    /**
+     * Destructor.
+     */
+    ~symbol();
 
     /**
      * Returns string which acts as identifier for the symbol.
@@ -49,6 +57,15 @@ namespace plorth
     inline const unistring& id() const
     {
       return m_id;
+    }
+
+    /**
+     * Returns position of the symbol in source code, or null pointer if no
+     * such information is available.
+     */
+    inline const struct position* position() const
+    {
+      return m_position;
     }
 
     inline enum type type() const
@@ -65,6 +82,8 @@ namespace plorth
   private:
     /** Identifier of the symbol. */
     const unistring m_id;
+    /** Position of the symbol in source code. */
+    struct position* m_position;
   };
 }
 

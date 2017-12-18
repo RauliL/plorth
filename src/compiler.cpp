@@ -201,6 +201,7 @@ namespace plorth
 
       ref<symbol> compile_symbol(context* ctx)
       {
+        struct position position;
         unistring buffer;
 
         if (skip_whitespace())
@@ -213,6 +214,8 @@ namespace plorth
 
           return ref<symbol>();
         }
+
+        position = m_position;
 
         if (!unichar_isword(peek()))
         {
@@ -231,7 +234,7 @@ namespace plorth
           buffer.append(1, read());
         }
 
-        return ctx->runtime()->value<symbol>(buffer);
+        return ctx->runtime()->symbol(buffer, &position);
       }
 
       ref<word> compile_word(context* ctx)

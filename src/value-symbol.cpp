@@ -30,8 +30,17 @@
 
 namespace plorth
 {
-  symbol::symbol(const unistring& id)
-    : m_id(id) {}
+  symbol::symbol(const unistring& id, const struct position* position)
+    : m_id(id)
+    , m_position(position ? new struct position(*position) : nullptr) {}
+
+  symbol::~symbol()
+  {
+    if (m_position)
+    {
+      delete m_position;
+    }
+  }
 
   bool symbol::equals(const ref<value>& that) const
   {
@@ -155,7 +164,8 @@ namespace plorth
     return m_id;
   }
 
-  ref<class symbol> runtime::symbol(const unistring& id)
+  ref<class symbol> runtime::symbol(const unistring& id,
+                                    const struct position* position)
   {
 #if PLORTH_ENABLE_SYMBOL_CACHE
     const auto entry = m_symbol_cache.find(id);
@@ -171,7 +181,7 @@ namespace plorth
 
     return entry->second;
 #else
-    return new (*m_memory_manager) class symbol(id);
+    return new (*m_memory_manager) class symbol(id, position);
 #endif
   }
 
