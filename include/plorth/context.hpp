@@ -121,11 +121,17 @@ namespace plorth
      * \param source   Source code to compile into quote.
      * \param filename Optional file name information from which the source
      *                 code was read from.
+     * \param line     Initial line number of the source code. This is for
+     *                 debugging purposes only.
+     * \param column   Initial column number of the source code. This is for
+     *                 debugging purposes only.
      * \return         Reference the quote that was compiled from given source,
      *                 or null reference if syntax error was encountered.
      */
     ref<quote> compile(const unistring& source,
-                       const unistring& filename = U"");
+                       const unistring& filename = U"",
+                       int line = 1,
+                       int column = 1);
 
     /**
      * Provides direct access to the data stack.

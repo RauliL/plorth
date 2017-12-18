@@ -33,13 +33,16 @@ namespace plorth
     class compiler
     {
     public:
-      explicit compiler(const unistring& source, const unistring& filename)
+      explicit compiler(const unistring& source,
+                        const unistring& filename,
+                        int line,
+                        int column)
         : m_pos(std::begin(source))
         , m_end(std::end(source))
       {
         m_position.filename = filename;
-        m_position.line = 1;
-        m_position.column = 1;
+        m_position.line = line;
+        m_position.column = column;
       }
 
       /**
@@ -751,8 +754,10 @@ namespace plorth
   }
 
   ref<quote> context::compile(const unistring& source,
-                              const unistring& filename)
+                              const unistring& filename,
+                              int line,
+                              int column)
   {
-    return compiler(source, filename).compile(this);
+    return compiler(source, filename, line, column).compile(this);
   }
 }
