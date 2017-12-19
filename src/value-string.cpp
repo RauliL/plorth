@@ -925,7 +925,7 @@ namespace plorth
 
       ctx->push(str);
 
-      if (!length || index < 0 || index > static_cast<number::int_type>(length))
+      if (!length || index < 0 || index >= static_cast<number::int_type>(length))
       {
         ctx->error(error::code_range, U"String index out of bounds.");
         return;

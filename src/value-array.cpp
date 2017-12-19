@@ -1305,7 +1305,7 @@ namespace plorth
 
       ctx->push(ary);
 
-      if (!size || index < 0 || index > static_cast<number::int_type>(size))
+      if (!size || index < 0 || index >= static_cast<number::int_type>(size))
       {
         ctx->error(error::code_range, U"Array index out of bounds.");
         return;
