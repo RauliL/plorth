@@ -863,6 +863,19 @@ arrays and constructs a new array from values returned by the quote.
 
 ---
 
+### >quote
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>array</dd>
+  <dt>Gives:</dt>
+  <dd>quote</dd>
+</dl>
+
+Converts array into executable quote.
+
+---
+
 ### @
 
 <dl>
@@ -1973,8 +1986,8 @@ Converts the string into lower case.
   <dd>string, boolean</dd>
 </dl>
 
-Tests whether the string contains only lower case characters. Empty strings
-return false.
+Tests whether the string contains only lower case characters. Empty
+strings return false.
 
 ---
 
@@ -2014,8 +2027,8 @@ of numbers.
   <dd>string, boolean</dd>
 </dl>
 
-Tests whether the string contains only whitespace characters. Empty strings
-return false.
+Tests whether the string contains only whitespace characters. Empty
+strings return false.
 
 ---
 
