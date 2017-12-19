@@ -56,7 +56,7 @@ namespace plorth
         }
       }
 
-      size_type length() const
+      inline size_type length() const
       {
         return m_length;
       }
@@ -75,12 +75,13 @@ namespace plorth
     {
     public:
       explicit concat_string(const ref<string>& left, const ref<string>& right)
-        : m_left(left)
+        : m_length(left->length() + right->length())
+        , m_left(left)
         , m_right(right) {}
 
-      size_type length() const
+      inline size_type length() const
       {
-        return m_left->length() + m_right->length();
+        return m_length;
       }
 
       value_type at(size_type offset) const
@@ -96,6 +97,7 @@ namespace plorth
       }
 
     private:
+      const size_type m_length;
       const ref<string> m_left;
       const ref<string> m_right;
     };
@@ -110,7 +112,7 @@ namespace plorth
         , m_offset(offset)
         , m_length(length) {}
 
-      size_type length() const
+      inline size_type length() const
       {
         return m_length;
       }
@@ -135,7 +137,7 @@ namespace plorth
       explicit reversed_string(const ref<string>& original)
         : m_original(original) {}
 
-      size_type length() const
+      inline size_type length() const
       {
         return m_original->length();
       }
@@ -867,27 +869,25 @@ namespace plorth
 
     if (ctx->pop_string(str) && ctx->pop_number(num))
     {
-      const auto length = str->length();
       number::int_type count = num->as_int();
-      unistring result;
 
-      if (count < 0)
+      if (count > 0)
       {
-        count = -count;
-      }
+        const auto& runtime = ctx->runtime();
+        ref<string> result = str;
 
-      result.reserve(length * count);
-
-      while (count > 0)
-      {
-        --count;
-        for (string::size_type i = 0; i < length; ++i)
+        for (number::int_type i = 1; i < count; ++i)
         {
-          result.append(1, str->at(i));
+          result = runtime->value<concat_string>(result, str);
         }
+        ctx->push(result);
       }
-
-      ctx->push_string(result);
+      else if (count == 0)
+      {
+        ctx->push_string(nullptr, 0);
+      } else {
+        ctx->error(error::code_range, U"Invalid repeat count.");
+      }
     }
   }
 

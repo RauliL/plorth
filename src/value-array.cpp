@@ -54,7 +54,7 @@ namespace plorth
         }
       }
 
-      size_type size() const
+      inline size_type size() const
       {
         return m_size;
       }
@@ -76,12 +76,13 @@ namespace plorth
     {
     public:
       concat_array(const ref<array>& left, const ref<array>& right)
-        : m_left(left)
+        : m_size(left->size() + right->size())
+        , m_left(left)
         , m_right(right) {}
 
-      size_type size() const
+      inline size_type size() const
       {
-        return m_left->size() + m_right->size();
+        return m_size;
       }
 
       const_reference at(size_type offset) const
@@ -97,6 +98,7 @@ namespace plorth
       }
 
     private:
+      const size_type m_size;
       const ref<array> m_left;
       const ref<array> m_right;
     };
@@ -112,7 +114,7 @@ namespace plorth
         : m_array(array)
         , m_extra(extra) {}
 
-      size_type size() const
+      inline size_type size() const
       {
         return m_array->size() + 1;
       }
@@ -145,7 +147,7 @@ namespace plorth
         , m_offset(offset)
         , m_size(size) {}
 
-      size_type size() const
+      inline size_type size() const
       {
         return m_size;
       }
@@ -170,7 +172,7 @@ namespace plorth
       explicit reversed_array(const ref<class array>& array)
         : m_array(array) {}
 
-      size_type size() const
+      inline size_type size() const
       {
         return m_array->size();
       }
@@ -1091,24 +1093,25 @@ namespace plorth
   {
     ref<array> ary;
     ref<number> num;
+
     if (ctx->pop_array(ary) && ctx->pop_number(num))
     {
-      const auto size = ary->size();
       const number::int_type count = num->as_int();
 
-      if (count >= 0)
+      if (count > 0)
       {
-        std::vector<ref<value>> result;
+        const auto& runtime = ctx->runtime();
+        ref<array> result = ary;
 
-        result.reserve(size * count);
-        for (number::int_type i = 0; i < count; ++i)
+        for (number::int_type i = 1; i < count; ++i)
         {
-          for (array::size_type j = 0; j < size; ++j)
-          {
-            result.push_back(ary->at(j));
-          }
+          result = runtime->value<concat_array>(result, ary);
         }
-        ctx->push_array(result.data(), size * count);
+        ctx->push(result);
+      }
+      else if (count == 0)
+      {
+        ctx->push_array(nullptr, 0);
       } else {
         ctx->error(error::code_range, U"Invalid repeat count.");
       }
