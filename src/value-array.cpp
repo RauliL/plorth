@@ -810,6 +810,35 @@ namespace plorth
   }
 
   /**
+   * Word: >quote
+   * Prototype: array
+   *
+   * Takes:
+   * - array
+   *
+   * Gives:
+   * - quote
+   *
+   * Converts array into executable quote.
+   */
+  static void w_to_quote(const ref<context>& ctx)
+  {
+    ref<array> ary;
+
+    if (ctx->pop_array(ary))
+    {
+      std::vector<ref<value>> elements;
+
+      elements.reserve(ary->size());
+      for (const auto& element : ary)
+      {
+        elements.push_back(element);
+      }
+      ctx->push(ctx->runtime()->compiled_quote(elements));
+    }
+  }
+
+  /**
    * Word: for-each
    * Prototype: array
    *
@@ -1360,6 +1389,7 @@ namespace plorth
         { U"uniq", w_uniq },
         { U"extract", w_extract },
         { U"join", w_join },
+        { U">quote", w_to_quote },
 
         { U"for-each", w_for_each },
         { U"2for-each", w_2for_each },

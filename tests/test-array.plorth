@@ -126,6 +126,12 @@ test-case
 ]
 test-case
 
+">quote"
+[
+  ( [ true ] >quote call ),
+]
+test-case
+
 "+"
 [
   ( [1] [2] + [1, 2] = ),
