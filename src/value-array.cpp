@@ -1091,24 +1091,25 @@ namespace plorth
   {
     ref<array> ary;
     ref<number> num;
+
     if (ctx->pop_array(ary) && ctx->pop_number(num))
     {
-      const auto size = ary->size();
       const number::int_type count = num->as_int();
 
-      if (count >= 0)
+      if (count > 0)
       {
-        std::vector<ref<value>> result;
+        const auto& runtime = ctx->runtime();
+        ref<array> result = ary;
 
-        result.reserve(size * count);
-        for (number::int_type i = 0; i < count; ++i)
+        for (number::int_type i = 1; i < count; ++i)
         {
-          for (array::size_type j = 0; j < size; ++j)
-          {
-            result.push_back(ary->at(j));
-          }
+          result = runtime->value<concat_array>(result, ary);
         }
-        ctx->push_array(result.data(), size * count);
+        ctx->push(result);
+      }
+      else if (count == 0)
+      {
+        ctx->push_array(nullptr, 0);
       } else {
         ctx->error(error::code_range, U"Invalid repeat count.");
       }
