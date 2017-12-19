@@ -56,7 +56,7 @@ namespace plorth
         }
       }
 
-      size_type length() const
+      inline size_type length() const
       {
         return m_length;
       }
@@ -75,12 +75,13 @@ namespace plorth
     {
     public:
       explicit concat_string(const ref<string>& left, const ref<string>& right)
-        : m_left(left)
+        : m_length(left->length() + right->length())
+        , m_left(left)
         , m_right(right) {}
 
-      size_type length() const
+      inline size_type length() const
       {
-        return m_left->length() + m_right->length();
+        return m_length;
       }
 
       value_type at(size_type offset) const
@@ -96,6 +97,7 @@ namespace plorth
       }
 
     private:
+      const size_type m_length;
       const ref<string> m_left;
       const ref<string> m_right;
     };
@@ -110,7 +112,7 @@ namespace plorth
         , m_offset(offset)
         , m_length(length) {}
 
-      size_type length() const
+      inline size_type length() const
       {
         return m_length;
       }
@@ -135,7 +137,7 @@ namespace plorth
       explicit reversed_string(const ref<string>& original)
         : m_original(original) {}
 
-      size_type length() const
+      inline size_type length() const
       {
         return m_original->length();
       }

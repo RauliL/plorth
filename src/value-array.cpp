@@ -54,7 +54,7 @@ namespace plorth
         }
       }
 
-      size_type size() const
+      inline size_type size() const
       {
         return m_size;
       }
@@ -76,12 +76,13 @@ namespace plorth
     {
     public:
       concat_array(const ref<array>& left, const ref<array>& right)
-        : m_left(left)
+        : m_size(left->size() + right->size())
+        , m_left(left)
         , m_right(right) {}
 
-      size_type size() const
+      inline size_type size() const
       {
-        return m_left->size() + m_right->size();
+        return m_size;
       }
 
       const_reference at(size_type offset) const
@@ -97,6 +98,7 @@ namespace plorth
       }
 
     private:
+      const size_type m_size;
       const ref<array> m_left;
       const ref<array> m_right;
     };
@@ -112,7 +114,7 @@ namespace plorth
         : m_array(array)
         , m_extra(extra) {}
 
-      size_type size() const
+      inline size_type size() const
       {
         return m_array->size() + 1;
       }
@@ -145,7 +147,7 @@ namespace plorth
         , m_offset(offset)
         , m_size(size) {}
 
-      size_type size() const
+      inline size_type size() const
       {
         return m_size;
       }
@@ -170,7 +172,7 @@ namespace plorth
       explicit reversed_array(const ref<class array>& array)
         : m_array(array) {}
 
-      size_type size() const
+      inline size_type size() const
       {
         return m_array->size();
       }
