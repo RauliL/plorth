@@ -26,6 +26,8 @@
 #ifndef PLORTH_VALUE_ARRAY_HPP_GUARD
 #define PLORTH_VALUE_ARRAY_HPP_GUARD
 
+#include <iterator>
+
 #include <plorth/value.hpp>
 
 namespace plorth
@@ -44,8 +46,14 @@ namespace plorth
     using pointer = value_type*;
     using const_pointer = const value_type*;
 
+    /**
+     * Returns the number of elements in the array.
+     */
     virtual size_type size() const = 0;
 
+    /**
+     * Returns element of the array from given index.
+     */
     virtual const_reference at(size_type offset) const = 0;
 
     inline enum type type() const
@@ -57,7 +65,58 @@ namespace plorth
     bool eval(const ref<context>& ctx, ref<value>& slot);
     unistring to_string () const;
     unistring to_source() const;
+
+    /**
+     * Iterator implementation for Plorth array.
+     */
+    class iterator
+    {
+    public:
+      using difference_type = int;
+      using value_type = const ref<value>;
+      using pointer = value_type*;
+      using reference = value_type&;
+      using iterator_category = std::forward_iterator_tag;
+
+      iterator(const ref<array>& ary, array::size_type index = 0);
+      iterator(const iterator& that);
+      iterator& operator=(const iterator& that);
+
+      iterator& operator++();
+      iterator operator++(int);
+      reference operator*();
+      reference operator->();
+
+      bool operator==(const iterator& that) const;
+      bool operator!=(const iterator& that) const;
+
+    private:
+      /** Reference to array which is being iterated. */
+      ref<array> m_array;
+      /** Current offset in the iterated array. */
+      array::size_type m_index;
+    };
+
+    inline iterator begin()
+    {
+      return iterator(this);
+    }
+
+    inline iterator end()
+    {
+      return iterator(this, size());
+    }
   };
+
+  inline array::iterator begin(const ref<array>& ary)
+  {
+    return ary->begin();
+  }
+
+  inline array::iterator end(const ref<array>& ary)
+  {
+    return ary->end();
+  }
 }
 
 #endif /* !PLORTH_VALUE_ARRAY_HPP_GUARD */

@@ -194,6 +194,53 @@ namespace plorth
     return json_stringify(to_string());
   }
 
+  string::iterator::iterator(const ref<string>& str, string::size_type index)
+    : m_string(str)
+    , m_index(index) {}
+
+  string::iterator::iterator(const iterator& that)
+    : m_string(that.m_string)
+    , m_index(that.m_index) {}
+
+  string::iterator& string::iterator::operator=(const string::iterator& that)
+  {
+    m_string = that.m_string;
+    m_index = that.m_index;
+
+    return *this;
+  }
+
+  string::iterator& string::iterator::operator++()
+  {
+    ++m_index;
+
+    return *this;
+  }
+
+  string::iterator string::iterator::operator++(int)
+  {
+    string::iterator copy(*this);
+
+    ++m_index;
+
+    return copy;
+  }
+
+  string::iterator::value_type string::iterator::operator*()
+  {
+    return m_string->at(m_index);
+  }
+
+  bool string::iterator::operator==(const iterator& that) const
+  {
+    return m_index == that.m_index;
+  }
+
+  bool string::iterator::operator!=(const iterator& that) const
+  {
+    return m_index != that.m_index;
+  }
+
   ref<class string> runtime::string(const unistring& input)
   {
     return string(input.c_str(), input.length());
@@ -229,6 +276,31 @@ namespace plorth
     }
   }
 
+  static void str_test(const ref<context>& ctx, bool (*callback)(unichar))
+  {
+    ref<string> str;
+
+    if (!ctx->pop_string(str))
+    {
+      return;
+    }
+    ctx->push(str);
+    if (str->empty())
+    {
+      ctx->push_boolean(false);
+      return;
+    }
+    for (const auto c : str)
+    {
+      if (!callback(c))
+      {
+        ctx->push_boolean(false);
+        return;
+      }
+    }
+    ctx->push_boolean(true);
+  }
+
   /**
    * Word: space?
    * Prototype: string
@@ -240,33 +312,12 @@ namespace plorth
    * - string
    * - boolean
    *
-   * Tests whether the string contains only whitespace characters. Empty strings
-   * return false.
+   * Tests whether the string contains only whitespace characters. Empty
+   * strings return false.
    */
   static void w_is_space(const ref<context>& ctx)
   {
-    ref<string> str;
-
-    if (ctx->pop_string(str))
-    {
-      const auto length = str->length();
-
-      ctx->push(str);
-      if (!length)
-      {
-        ctx->push_boolean(false);
-        return;
-      }
-      for (string::size_type i = 0; i < length; ++i)
-      {
-        if (!unichar_isspace(str->at(i)))
-        {
-          ctx->push_boolean(false);
-          return;
-        }
-      }
-      ctx->push_boolean(true);
-    }
+    str_test(ctx, unichar_isspace);
   }
 
   /**
@@ -280,33 +331,12 @@ namespace plorth
    * - string
    * - boolean
    *
-   * Tests whether the string contains only lower case characters. Empty strings
-   * return false.
+   * Tests whether the string contains only lower case characters. Empty
+   * strings return false.
    */
   static void w_is_lower_case(const ref<context>& ctx)
   {
-    ref<string> str;
-
-    if (ctx->pop_string(str))
-    {
-      const auto length = str->length();
-
-      ctx->push(str);
-      if (!length)
-      {
-        ctx->push_boolean(false);
-        return;
-      }
-      for (string::size_type i = 0; i < length; ++i)
-      {
-        if (!unichar_islower(str->at(i)))
-        {
-          ctx->push_boolean(false);
-          return;
-        }
-      }
-      ctx->push_boolean(true);
-    }
+    str_test(ctx, unichar_islower);
   }
 
   /**
@@ -325,28 +355,7 @@ namespace plorth
    */
   static void w_is_upper_case(const ref<context>& ctx)
   {
-    ref<string> str;
-
-    if (ctx->pop_string(str))
-    {
-      const auto length = str->length();
-
-      ctx->push(str);
-      if (!length)
-      {
-        ctx->push_boolean(false);
-        return;
-      }
-      for (string::size_type i = 0; i < length; ++i)
-      {
-        if (!unichar_isupper(str->at(i)))
-        {
-          ctx->push_boolean(false);
-          return;
-        }
-      }
-      ctx->push_boolean(true);
-    }
+    str_test(ctx, unichar_isupper);
   }
 
   /**
@@ -374,10 +383,8 @@ namespace plorth
       std::vector<ref<value>> output;
 
       output.reserve(length);
-      for (string::size_type i = 0; i < length; ++i)
+      for (const auto c : str)
       {
-        const unichar c = str->at(i);
-
         output.push_back(runtime->string(&c, 1));
       }
       ctx->push(str);
@@ -410,9 +417,9 @@ namespace plorth
       std::vector<ref<value>> output;
 
       output.reserve(length);
-      for (string::size_type i = 0; i < length; ++i)
+      for (const auto c : str)
       {
-        output.push_back(runtime->number(static_cast<number::int_type>(str->at(i))));
+        output.push_back(runtime->number(static_cast<number::int_type>(c)));
       }
       ctx->push(str);
       ctx->push_array(output.data(), length);
@@ -542,6 +549,24 @@ namespace plorth
     }
   }
 
+  static void str_convert(const ref<context>& ctx,
+                          unichar (*callback)(unichar))
+  {
+    ref<string> str;
+
+    if (ctx->pop_string(str))
+    {
+      const auto length = str->length();
+      unichar result[length];
+
+      for (string::size_type i = 0; i < length; ++i)
+      {
+        result[i] = callback(str->at(i));
+      }
+      ctx->push_string(result, length);
+    }
+  }
+
   /*
    * Word: upper-case
    * Prototype: string
@@ -556,19 +581,7 @@ namespace plorth
    */
   static void w_upper_case(const ref<context>& ctx)
   {
-    ref<string> str;
-
-    if (ctx->pop_string(str))
-    {
-      const auto length = str->length();
-      unichar result[length];
-
-      for (string::size_type i = 0; i < length; ++i)
-      {
-        result[i] = unichar_toupper(str->at(i));
-      }
-      ctx->push_string(result, length);
-    }
+    str_convert(ctx, unichar_toupper);
   }
 
   /**
@@ -585,18 +598,16 @@ namespace plorth
    */
   static void w_lower_case(const ref<context>& ctx)
   {
-    ref<string> str;
+    str_convert(ctx, unichar_tolower);
+  }
 
-    if (ctx->pop_string(str))
+  static inline unichar unichar_swapcase(unichar c)
+  {
+    if (unichar_islower(c))
     {
-      const auto length = str->length();
-      unichar result[length];
-
-      for (string::size_type i = 0; i < length; ++i)
-      {
-        result[i] = unichar_tolower(str->at(i));
-      }
-      ctx->push_string(result, length);
+      return unichar_toupper(c);
+    } else {
+      return unichar_tolower(c);
     }
   }
 
@@ -614,27 +625,7 @@ namespace plorth
    */
   static void w_swap_case(const ref<context>& ctx)
   {
-    ref<string> str;
-
-    if (ctx->pop_string(str))
-    {
-      const auto length = str->length();
-      unichar output[length];
-
-      for (string::size_type i = 0; i < length; ++i)
-      {
-        unichar c = str->at(i);
-
-        if (unichar_islower(c))
-        {
-          c = unichar_toupper(c);
-        } else {
-          c = unichar_tolower(c);
-        }
-        output[i] = c;
-      }
-      ctx->push_string(output, length);
-    }
+    str_convert(ctx, unichar_swapcase);
   }
 
   /**
