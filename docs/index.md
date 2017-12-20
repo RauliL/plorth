@@ -6,8 +6,6 @@ by [Forth] and [Factor] programming languages.
 
 [You can try Plorth online here.][REPL]
 
-**This documentation is still a work in progress.**
-
 [Forth]: https://www.forth.com
 [Factor]: http://www.factorcode.org
 [REPL]: https://raulil.github.io/plorth-ide/
