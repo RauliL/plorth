@@ -6,7 +6,7 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{cpp,hpp,pl,plorth,vim}]
+[*.{cpp,hpp,md,pl,plorth,vim}]
 indent_style = space
 indent_size = 2
 max_line_length = 79
