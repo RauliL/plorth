@@ -2,12 +2,12 @@
     "docs": [
         {
             "location": "/",
-            "text": "Plorth\n\n\nPlorth a is stack based, concatenative, strongly typed functional scripting\nlanguage which is easy to embed in applications written in C++. It's inspired\nby \nForth\n and \nFactor\n programming languages.\n\n\nYou can try Plorth online here.",
+            "text": "Plorth\n\n\nPlorth a is stack based, concatenative, strongly typed functional scripting\nlanguage which is easy to embed in applications written in C++. It's inspired\nby \nForth\n and \nFactor\n programming languages.\n\n\n\n\nPlorth on GitHub\n\n\nTry Plorth in your browser\n\n\nYou can try Plorth online here.",
             "title": "Home"
         },
         {
             "location": "/#plorth",
-            "text": "Plorth a is stack based, concatenative, strongly typed functional scripting\nlanguage which is easy to embed in applications written in C++. It's inspired\nby  Forth  and  Factor  programming languages.  You can try Plorth online here.",
+            "text": "Plorth a is stack based, concatenative, strongly typed functional scripting\nlanguage which is easy to embed in applications written in C++. It's inspired\nby  Forth  and  Factor  programming languages.   Plorth on GitHub  Try Plorth in your browser  You can try Plorth online here.",
             "title": "Plorth"
         },
         {
