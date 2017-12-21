@@ -97,51 +97,8 @@ INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
-SET(
-  PLORTH_INTERPRETER_SOURCES
-  src/compiler.cpp
-  src/context.cpp
-  src/globals.cpp
-  src/memory.cpp
-  src/module.cpp
-  src/position.cpp
-  src/runtime.cpp
-  src/unicode.cpp
-  src/utils.cpp
-  src/value.cpp
-  src/value-array.cpp
-  src/value-boolean.cpp
-  src/value-error.cpp
-  src/value-number.cpp
-  src/value-object.cpp
-  src/value-quote.cpp
-  src/value-string.cpp
-  src/value-symbol.cpp
-  src/value-word.cpp
-)
-
 IF(PLORTH_ENABLE_TARGET_INTERPRETER_LIBRARY)
-  ADD_LIBRARY(
-    plorth
-    SHARED
-    ${PLORTH_INTERPRETER_SOURCES}
-  )
-  INSTALL(
-    TARGETS
-      plorth
-    LIBRARY DESTINATION
-      lib
-  )
-  INSTALL(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/include/
-    DESTINATION include
-    FILES_MATCHING PATTERN "*.hpp"
-  )
-  INSTALL(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/lib/
-    DESTINATION lib/plorth
-    FILES_MATCHING PATTERN "*.plorth"
-  )
+  ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/libplorth)
 ENDIF()
 
 
