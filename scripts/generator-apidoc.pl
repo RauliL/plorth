@@ -42,7 +42,7 @@ use utf8;
 
 my %prototypes;
 
-for my $file (glob("./src/*.cpp"))
+for my $file (glob("./libplorth/*.cpp"))
 {
   my $in_doc_comment = 0;
   my $in_takes_list = 0;
