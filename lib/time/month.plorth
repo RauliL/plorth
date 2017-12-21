@@ -1,0 +1,64 @@
+#!/usr/bin/env plorth
+#
+# Enumeration class that represents month of the year.
+#
+
+"../class" import
+
+{
+  "fields": ["index"],
+
+  "constructor": (
+    swap valid-month? not ( "Invalid index for month." value-error throw ) if
+    swap !index
+  ),
+
+  "january?": ( @index 1 = ),
+  "february?": ( @index 2 = ),
+  "march?": ( @index 3 = ),
+  "april?": ( @index 4 = ),
+  "may?": ( @index 5 = ),
+  "june?": ( @index 6 = ),
+  "july?": ( @index 7 = ),
+  "august?": ( @index 8 = ),
+  "september?": ( @index 9 = ),
+  "october?": ( @index 10 = ),
+  "november?": ( @index 11 = ),
+  "december?": ( @index 12 = ),
+
+  "next": ( december? ( january ) ( @index 1 + month ) if-else nip ),
+  "prev": ( january? ( december ) ( @index 1 - month ) if-else nip ),
+
+  "month-names": [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ],
+
+  "name": ( month-names swap @index 1 - rot @ nip ),
+} "month" class
+
+# Tests whether given numerical index is valid month of the year.
+: valid-month? dup dup 1 >= swap 12 <= and ;
+
+1 month "january" const
+2 month "february" const
+3 month "march" const
+4 month "april" const
+5 month "may" const
+6 month "june" const
+7 month "july" const
+8 month "september" const
+9 month "august" const
+10 month "october" const
+11 month "november" const
+12 month "december" const

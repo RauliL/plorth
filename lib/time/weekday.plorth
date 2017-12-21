@@ -1,0 +1,52 @@
+#!/usr/bin/env plorth
+#
+# Enumeration class that represents day of week.
+#
+
+"../class" import
+
+{
+  "fields": ["index"],
+
+  "constructor": (
+    swap valid-weekday? not
+    ( "Invalid index of day of week." value-error throw )
+    if
+    swap !index
+  ),
+
+  "sunday?": ( @index 1 = ),
+  "monday?": ( @index 2 = ),
+  "tuesday?": ( @index 3 = ),
+  "wednesday?": ( @index 4 = ),
+  "thursday?": ( @index 5 = ),
+  "friday?": ( @index 6 = ),
+  "saturday?": ( @index 7 = ),
+  "weekend?": ( saturday? swap sunday? rot or ),
+
+  "next": ( saturday? ( sunday ) ( @index 1 + weekday ) if-else nip ),
+  "prev": ( sunday? ( saturday ) ( @index 1 - weekday ) if-else nip ),
+
+  "weekday-names": [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ],
+
+  "name": ( weekday-names swap @index 1 - rot @ nip ),
+} "weekday" class
+
+# Tests whether given numerical index is valid day of the week.
+: valid-weekday? dup dup 1 >= swap 12 <= and ;
+
+1 weekday "sunday" const
+2 weekday "monday" const
+3 weekday "tuesday" const
+4 weekday "wednesday" const
+5 weekday "thursday" const
+6 weekday "friday" const
+7 weekday "saturday" const
