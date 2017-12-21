@@ -1,0 +1,22 @@
+{
+  "name": "plorth",
+  "version": "1.0.0-alpha.7",
+  "description": "WebAssembly version of Plorth programming language",
+  "main": "index.js",
+  "author": "Rauli Laine <rauli.laine@iki.fi>",
+  "license": "BSD-2-Clause",
+  "engines": {
+    "node": ">=8.4.0"
+  },
+  "homepage": "https://github.com/RauliL/plorth/tree/master/webassembly#readme",
+  "repository": "https://github.com/RauliL/plorth/tree/master/webassembly",
+  "bugs": {
+    "url": "https://github.com/RauliL/plorth/issues"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "plorth.wasm"
+  ],
+  "types": "./index.d.ts"
+}
