@@ -1,6 +1,6 @@
 #include <plorth/context.hpp>
 
-#include "../libplorth/utils.hpp"
+#include "../../libplorth/src/utils.hpp"
 
 using namespace plorth;
 

@@ -1,30 +1,56 @@
-SET(
-  PLORTH_INTERPRETER_SOURCES
-  compiler.cpp
-  context.cpp
-  globals.cpp
-  memory.cpp
-  module.cpp
-  position.cpp
-  runtime.cpp
-  unicode.cpp
-  utils.cpp
-  value.cpp
-  value-array.cpp
-  value-boolean.cpp
-  value-error.cpp
-  value-number.cpp
-  value-object.cpp
-  value-quote.cpp
-  value-string.cpp
-  value-symbol.cpp
-  value-word.cpp
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+PROJECT(libplorth C CXX)
+
+INCLUDE(CheckIncludeFile)
+INCLUDE(CheckFunctionExists)
+
+CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
+CHECK_INCLUDE_FILE(sysexits.h HAVE_SYSEXITS_H)
+CHECK_INCLUDE_FILE(sys/types.h HAVE_SYS_TYPES_H)
+CHECK_INCLUDE_FILE(sys/stat.h HAVE_SYS_STAT_H)
+
+CHECK_FUNCTION_EXISTS(fork HAVE_FORK)
+CHECK_FUNCTION_EXISTS(isatty HAVE_ISATTY)
+CHECK_FUNCTION_EXISTS(stat HAVE_STAT)
+CHECK_FUNCTION_EXISTS(realpath HAVE_REALPATH)
+
+IF(PLORTH_ENABLE_MODULES)
+  IF(NOT ${HAVE_STAT})
+    MESSAGE(FATAL_ERROR "Required function stat() is missing.")
+  ELSEIF(NOT ${HAVE_REALPATH})
+    MESSAGE(FATAL_ERROR "Required function realpath() is missing.")
+  ENDIF()
+ENDIF()
+
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp"
 )
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 ADD_LIBRARY(
   plorth
   SHARED
-  ${PLORTH_INTERPRETER_SOURCES}
+  src/compiler.cpp
+  src/context.cpp
+  src/globals.cpp
+  src/memory.cpp
+  src/module.cpp
+  src/position.cpp
+  src/runtime.cpp
+  src/unicode.cpp
+  src/utils.cpp
+  src/value.cpp
+  src/value-array.cpp
+  src/value-boolean.cpp
+  src/value-error.cpp
+  src/value-number.cpp
+  src/value-object.cpp
+  src/value-quote.cpp
+  src/value-string.cpp
+  src/value-symbol.cpp
+  src/value-word.cpp
 )
 
 IF(NOT PLORTH_ENABLE_TARGET_WEBASSEMBLY)
@@ -35,7 +61,7 @@ IF(NOT PLORTH_ENABLE_TARGET_WEBASSEMBLY)
       lib
   )
   INSTALL(
-    DIRECTORY ${CMAKE_SOURCE_DIR}/include/
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
     DESTINATION include
     FILES_MATCHING PATTERN "*.hpp"
   )

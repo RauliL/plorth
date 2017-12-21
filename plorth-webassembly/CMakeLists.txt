@@ -1,3 +1,6 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+PROJECT(plorth-webassembly C CXX)
+
 IF(NOT DEFINED ENV{EMSCRIPTEN})
   MESSAGE(FATAL_ERROR "Emscripten environment variable wasn't found.")
 ENDIF()
@@ -7,10 +10,12 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_CXX_FLAGS}")
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${EMSCRIPTEN_CXX_FLAGS}")
 SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${EMSCRIPTEN_CXX_FLAGS}")
 
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../libplorth/include)
+
 ADD_EXECUTABLE(
   plorth-webassembly
-  ../plorth-cli/repl.cpp
-  webassembly.cpp
+  ../plorth/src/repl.cpp
+  src/main.cpp
 )
 
 TARGET_LINK_LIBRARIES(
