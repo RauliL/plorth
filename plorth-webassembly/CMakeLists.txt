@@ -1,0 +1,24 @@
+IF(NOT DEFINED ENV{EMSCRIPTEN})
+  MESSAGE(FATAL_ERROR "Emscripten environment variable wasn't found.")
+ENDIF()
+
+SET(EMSCRIPTEN_CXX_FLAGS "--bind -s WASM=1 -s MODULARIZE=1 -s EXPORT_NAME=\"'Plorth'\"")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_CXX_FLAGS}")
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${EMSCRIPTEN_CXX_FLAGS}")
+SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${EMSCRIPTEN_CXX_FLAGS}")
+
+ADD_EXECUTABLE(
+  plorth-webassembly
+  ../plorth-cli/repl.cpp
+  webassembly.cpp
+)
+
+TARGET_LINK_LIBRARIES(
+  plorth-webassembly
+  plorth
+)
+
+SET_TARGET_PROPERTIES(
+  plorth-webassembly
+  PROPERTIES OUTPUT_NAME plorth
+)

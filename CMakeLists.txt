@@ -6,12 +6,6 @@ INCLUDE(CheckIncludeFile)
 INCLUDE(CheckFunctionExists)
 
 OPTION(
-  PLORTH_ENABLE_TARGET_INTERPRETER_LIBRARY
-  "Enable shared interpreter library."
-  ON
-)
-
-OPTION(
   PLORTH_ENABLE_TARGET_CLI
   "Enable CLI interpreter."
   ON
@@ -97,48 +91,12 @@ INCLUDE_DIRECTORIES(
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
-IF(PLORTH_ENABLE_TARGET_INTERPRETER_LIBRARY)
-  ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/libplorth)
-ENDIF()
-
+ADD_SUBDIRECTORY(libplorth)
 
 IF(PLORTH_ENABLE_TARGET_CLI)
-  IF(NOT PLORTH_ENABLE_TARGET_INTERPRETER_LIBRARY)
-    MESSAGE(FATAL_ERROR "Shared interpreter library must be enabled for CLI.")
-  ENDIF()
-  ADD_EXECUTABLE(
-    plorth-cli
-    src/main.cpp
-    src/repl.cpp
-  )
-  TARGET_LINK_LIBRARIES(
-    plorth-cli
-    plorth
-  )
-  SET_TARGET_PROPERTIES(
-    plorth-cli
-    PROPERTIES OUTPUT_NAME plorth
-  )
-  INSTALL(
-    TARGETS
-      plorth-cli
-    RUNTIME DESTINATION
-      bin
-  )
+  ADD_SUBDIRECTORY(plorth-cli)
 ENDIF()
 
 IF(PLORTH_ENABLE_TARGET_WEBASSEMBLY)
-  IF(NOT DEFINED ENV{EMSCRIPTEN})
-    MESSAGE(FATAL_ERROR "Emscripten environment variable wasn't found.")
-  ENDIF()
-  SET(EMSCRIPTEN_CXX_FLAGS "--bind -s WASM=1 -s MODULARIZE=1 -s EXPORT_NAME=\"'Plorth'\"")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EMSCRIPTEN_CXX_FLAGS}")
-  SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${EMSCRIPTEN_CXX_FLAGS}")
-  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${EMSCRIPTEN_CXX_FLAGS}")
-  ADD_EXECUTABLE(
-    plorth
-    ${PLORTH_INTERPRETER_SOURCES}
-    src/repl.cpp
-    src/webassembly.cpp
-  )
+  ADD_SUBDIRECTORY(plorth-webassembly)
 ENDIF()
