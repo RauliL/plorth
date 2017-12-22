@@ -4,18 +4,6 @@ PROJECT(plorth C CXX)
 INCLUDE(CheckCXXCompilerFlag)
 
 OPTION(
-  PLORTH_ENABLE_TARGET_CLI
-  "Enable CLI interpreter."
-  ON
-)
-
-OPTION(
-  PLORTH_ENABLE_TARGET_WEBASSEMBLY
-  "Enable WebAssembly interpreter."
-  OFF
-)
-
-OPTION(
   PLORTH_ENABLE_MODULES
   "Whether modules has been enabled or not."
   ON
@@ -62,12 +50,9 @@ ELSE()
   MESSAGE(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
 ENDIF()
 
-ADD_SUBDIRECTORY(libplorth)
-
-IF(PLORTH_ENABLE_TARGET_CLI)
+IF(DEFINED ENV{EMSCRIPTEN})
+  ADD_SUBDIRECTORY(plorth-webassembly)
+ELSE()
   ADD_SUBDIRECTORY(plorth)
 ENDIF()
-
-IF(PLORTH_ENABLE_TARGET_WEBASSEMBLY)
-  ADD_SUBDIRECTORY(plorth-webassembly)
-ENDIF()
+ADD_SUBDIRECTORY(libplorth)
