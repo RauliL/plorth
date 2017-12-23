@@ -28,6 +28,12 @@ OPTION(
 )
 
 OPTION(
+  PLORTH_ENABLE_MUTEXES
+  "Enable if you want to implement thread safety with mutexes."
+  ON
+)
+
+OPTION(
   PLORTH_ENABLE_32BIT_INT
   "Enable if you want to use 32-bit integers instead of 64-bit."
   OFF

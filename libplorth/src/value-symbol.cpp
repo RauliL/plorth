@@ -32,7 +32,8 @@ namespace plorth
 {
   symbol::symbol(const unistring& id, const struct position* position)
     : m_id(id)
-    , m_position(position ? new struct position(*position) : nullptr) {}
+    , m_position(position ? new struct position(*position) : nullptr)
+    , m_hash(0) {}
 
   symbol::~symbol()
   {
@@ -40,6 +41,23 @@ namespace plorth
     {
       delete m_position;
     }
+  }
+
+  std::size_t symbol::hash() const
+  {
+    std::size_t h = m_hash;
+
+    if (h == 0)
+    {
+      symbol* sym = const_cast<symbol*>(this);
+#if PLORTH_ENABLE_MUTEXES
+      std::lock_guard<std::mutex> lock(sym->m_mutex);
+#endif
+
+      h = sym->m_hash = std::hash<unistring>()(sym->m_id);
+    }
+
+    return h;
   }
 
   bool symbol::equals(const ref<value>& that) const

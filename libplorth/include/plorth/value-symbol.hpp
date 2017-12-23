@@ -28,6 +28,10 @@
 
 #include <plorth/value.hpp>
 
+#if PLORTH_ENABLE_MUTEXES
+# include <mutex>
+#endif
+
 namespace plorth
 {
   /**
@@ -68,6 +72,12 @@ namespace plorth
       return m_position;
     }
 
+    /**
+     * Calculates hash code for the symbol, based on the identifier that
+     * represents the symbol.
+     */
+    std::size_t hash() const;
+
     inline enum type type() const
     {
       return type_symbol;
@@ -84,6 +94,46 @@ namespace plorth
     const unistring m_id;
     /** Position of the symbol in source code. */
     struct position* m_position;
+    /** Cached hash code of the symbol. */
+    std::size_t m_hash;
+#if PLORTH_ENABLE_MUTEXES
+    /** Used to implement thread safety in hash calculation. */
+    std::mutex m_mutex;
+#endif
+  };
+}
+
+namespace std
+{
+  template<>
+  struct hash<plorth::ref<plorth::symbol>>
+  {
+    using argument_type = plorth::ref<plorth::symbol>;
+    using result_type = std::size_t;
+
+    inline result_type operator()(const argument_type& key) const
+    {
+      return key ? key->hash() : 0;
+    }
+  };
+
+  template<>
+  struct equal_to<plorth::ref<plorth::symbol>>
+  {
+    using first_argument_type = plorth::ref<plorth::symbol>;
+    using second_argument_type = first_argument_type;
+    using result_type = bool;
+
+    inline result_type operator()(const first_argument_type& lhs,
+                                  const second_argument_type& rhs) const
+    {
+      if (lhs && rhs)
+      {
+        return lhs->id() == rhs->id();
+      } else {
+        return !lhs && !rhs;
+      }
+    }
   };
 }
 
