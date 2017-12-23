@@ -47,9 +47,7 @@ namespace plorth
 
   bool word::exec(const ref<context>& ctx)
   {
-    auto& dictionary = ctx->dictionary();
-
-    dictionary[m_symbol->id()] = m_quote;
+    ctx->dictionary()[m_symbol] = m_quote;
 
     return true;
   }

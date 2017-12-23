@@ -45,6 +45,6 @@ void initialize_repl_api(const ref<runtime>& runtime)
 {
   auto& dictionary = runtime->dictionary();
 
-  dictionary[U".q"] = runtime->native_quote(w_quit);
-  dictionary[U".s"] = runtime->native_quote(w_stack);
+  dictionary[runtime->symbol(U".q")] = runtime->native_quote(w_quit);
+  dictionary[runtime->symbol(U".s")] = runtime->native_quote(w_stack);
 }

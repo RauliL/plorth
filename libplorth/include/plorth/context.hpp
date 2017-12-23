@@ -42,7 +42,7 @@ namespace plorth
   {
   public:
     using container_type = std::deque<ref<value>>;
-    using dictionary_type = std::unordered_map<unistring, ref<quote>>;
+    using dictionary_type = std::unordered_map<ref<symbol>, ref<quote>>;
 
     /**
      * Constructs new context.

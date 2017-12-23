@@ -104,7 +104,7 @@ namespace plorth
     // Look for a word from dictionary of current context.
     {
       const auto& local_dictionary = ctx->dictionary();
-      const auto entry = local_dictionary.find(m_id);
+      const auto entry = local_dictionary.find(this);
 
       if (entry != std::end(local_dictionary) && entry->second)
       {
@@ -119,7 +119,7 @@ namespace plorth
     // Look from global dictionary.
     {
       const auto& global_dictionary = ctx->runtime()->dictionary();
-      const auto entry = global_dictionary.find(m_id);
+      const auto entry = global_dictionary.find(this);
 
       if (entry != std::end(global_dictionary) && entry->second)
       {
