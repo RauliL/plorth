@@ -32,7 +32,8 @@ namespace plorth
 {
   symbol::symbol(const unistring& id, const struct position* position)
     : m_id(id)
-    , m_position(position ? new struct position(*position) : nullptr) {}
+    , m_position(position ? new struct position(*position) : nullptr)
+    , m_hash(0) {}
 
   symbol::~symbol()
   {
@@ -40,6 +41,23 @@ namespace plorth
     {
       delete m_position;
     }
+  }
+
+  std::size_t symbol::hash() const
+  {
+    std::size_t h = m_hash;
+
+    if (h == 0)
+    {
+      symbol* sym = const_cast<symbol*>(this);
+#if PLORTH_ENABLE_MUTEXES
+      std::lock_guard<std::mutex> lock(sym->m_mutex);
+#endif
+
+      h = sym->m_hash = std::hash<unistring>()(sym->m_id);
+    }
+
+    return h;
   }
 
   bool symbol::equals(const ref<value>& that) const
@@ -86,7 +104,7 @@ namespace plorth
     // Look for a word from dictionary of current context.
     {
       const auto& local_dictionary = ctx->dictionary();
-      const auto entry = local_dictionary.find(m_id);
+      const auto entry = local_dictionary.find(this);
 
       if (entry != std::end(local_dictionary) && entry->second)
       {
@@ -101,7 +119,7 @@ namespace plorth
     // Look from global dictionary.
     {
       const auto& global_dictionary = ctx->runtime()->dictionary();
-      const auto entry = global_dictionary.find(m_id);
+      const auto entry = global_dictionary.find(this);
 
       if (entry != std::end(global_dictionary) && entry->second)
       {

@@ -1103,7 +1103,7 @@ namespace plorth
 
     for (const auto& entry : ctx->runtime()->dictionary())
     {
-      result[entry.first] = entry.second;
+      result[entry.first->id()] = entry.second;
     }
     ctx->push_object(result);
   }
@@ -1122,7 +1122,7 @@ namespace plorth
 
     for (const auto& entry : ctx->dictionary())
     {
-      result[entry.first] = entry.second;
+      result[entry.first->id()] = entry.second;
     }
     ctx->push_object(result);
   }
@@ -1144,7 +1144,9 @@ namespace plorth
 
     if (ctx->pop_string(id) && ctx->pop(val))
     {
-      ctx->dictionary()[id->to_string()] = ctx->runtime()->compiled_quote({ val });
+      const auto& runtime = ctx->runtime();
+
+      ctx->dictionary()[runtime->symbol(id->to_string())] = runtime->compiled_quote({ val });
     }
   }
 

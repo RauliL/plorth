@@ -42,7 +42,7 @@ namespace plorth
   {
   public:
     using prototype_definition = std::vector<std::pair<const char32_t*, quote::callback>>;
-    using dictionary_type = std::unordered_map<unistring, ref<quote>>;
+    using dictionary_type = std::unordered_map<ref<class symbol>, ref<quote>>;
 
     /**
      * Constructs new runtime.

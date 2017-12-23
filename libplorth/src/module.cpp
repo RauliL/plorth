@@ -78,7 +78,8 @@ namespace plorth
     {
       if (property.second && property.second->is(value::type_quote))
       {
-        ctx->dictionary()[property.first] = property.second.cast<quote>();
+        ctx->dictionary()[ctx->runtime()->symbol(property.first)]
+          = property.second.cast<quote>();
       }
     }
 
@@ -149,7 +150,7 @@ namespace plorth
     // Finally convert the module into object.
     for (const auto& entry : module_ctx->dictionary())
     {
-      result[entry.first] = entry.second;
+      result[entry.first->id()] = entry.second;
     }
 
     return ctx->runtime()->value<object>(result);
