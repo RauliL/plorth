@@ -98,7 +98,7 @@ namespace plorth
      * \param runtime Script runtime to use for prototype retrieval.
      * \return        Prototype object of the value.
      */
-    ref<object> prototype(const ref<class runtime>& runtime) const;
+    ref<object> prototype(const std::shared_ptr<class runtime>& runtime) const;
 
     /**
      * Tests whether two values are equal.
@@ -115,7 +115,7 @@ namespace plorth
      * \return    Boolean flag telling whether the execution was successfull or
      *            whether an error was encountered.
      */
-    virtual bool exec(const ref<context>& ctx);
+    virtual bool exec(const std::shared_ptr<context>& ctx);
 
     /**
      * Evaluates value as element of an array or value of object's property.
@@ -126,7 +126,7 @@ namespace plorth
      * \return     Boolean flag telling whether the execution was successfull or
      *             whether an error was encountered.
      */
-    virtual bool eval(const ref<context>& ctx, ref<value>& slot);
+    virtual bool eval(const std::shared_ptr<context>& ctx, ref<value>& slot);
 
     /**
      * Constructs string representation of the value.

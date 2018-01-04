@@ -30,7 +30,7 @@
 
 namespace plorth
 {
-  context::context(const ref<class runtime>& runtime)
+  context::context(const std::shared_ptr<class runtime>& runtime)
     : m_runtime(runtime) {}
 
   void context::error(enum error::code code,

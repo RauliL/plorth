@@ -128,7 +128,7 @@ namespace plorth
    *
    * Returns error code extracted from the error in numeric form.
    */
-  static void w_code(const ref<context>& ctx)
+  static void w_code(const std::shared_ptr<context>& ctx)
   {
     ref<value> err;
 
@@ -153,7 +153,7 @@ namespace plorth
    * Returns error message extracted from the error, or null if the error does
    * not have any error message.
    */
-  static void w_message(const ref<context>& ctx)
+  static void w_message(const std::shared_ptr<context>& ctx)
   {
     ref<value> err;
 
@@ -188,7 +188,7 @@ namespace plorth
    * Position is returned as object with `filename`, `line` and `column`
    * properties.
    */
-  static void w_position(const ref<context>& ctx)
+  static void w_position(const std::shared_ptr<context>& ctx)
   {
     ref<value> err;
 
@@ -221,7 +221,7 @@ namespace plorth
    *
    * Sets given error as current error of the execution context.
    */
-  static void w_throw(const ref<context>& ctx)
+  static void w_throw(const std::shared_ptr<context>& ctx)
   {
     ref<value> err;
 

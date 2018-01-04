@@ -116,10 +116,20 @@ namespace plorth
     }
 
     /**
-     * Constructs new script execution context with this runtime instance as
-     * it's runtime.
+     * Returns the container which the runtime uses to cache imported modules.
      */
-    ref<context> new_context();
+    inline object::container_type& imported_modules()
+    {
+      return m_imported_modules;
+    }
+
+    /**
+     * Returns the container which the runtime uses to cache imported modules.
+     */
+    inline const object::container_type& imported_modules() const
+    {
+      return m_imported_modules;
+    }
 
     /**
      * Outputs given Unicode string into the standard output stream of the
@@ -138,19 +148,6 @@ namespace plorth
      * standard output stream of the interpreter.
      */
     void println(const unistring& str) const;
-
-    /**
-     * Imports module from file system and inserts all of it's exported words
-     * into dictionary of given execution context.
-     *
-     * \param ctx  Execution context where exported words from module will be
-     *             inserted into. If import error occurs, it will also be stored
-     *             in this execution context.
-     * \param path Module path.
-     * \return     Boolean flag telling whether the import was successfull or
-     *             whether some kind of error was occurred.
-     */
-    bool import(const ref<context>& ctx, const unistring& path);
 
     /**
      * Constructs integer number from given value.

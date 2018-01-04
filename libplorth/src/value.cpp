@@ -70,7 +70,7 @@ namespace plorth
     return U"unknown";
   }
 
-  ref<object> value::prototype(const ref<class runtime>& runtime) const
+  ref<object> value::prototype(const std::shared_ptr<class runtime>& runtime) const
   {
     switch (type())
     {
@@ -123,7 +123,7 @@ namespace plorth
     return ref<object>(); // Just to make GCC happy.
   }
 
-  bool value::exec(const ref<context>& ctx)
+  bool value::exec(const std::shared_ptr<context>& ctx)
   {
     ref<value> slot;
 
@@ -136,7 +136,7 @@ namespace plorth
     return true;
   }
 
-  bool value::eval(const ref<context>& ctx, ref<value>& slot)
+  bool value::eval(const std::shared_ptr<context>& ctx, ref<value>& slot)
   {
     slot = this;
 

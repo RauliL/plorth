@@ -63,7 +63,7 @@ namespace plorth
    *
    * Logical AND. Returns true if both values are true.
    */
-  static void w_and(const ref<context>& ctx)
+  static void w_and(const std::shared_ptr<context>& ctx)
   {
     bool a;
     bool b;
@@ -87,7 +87,7 @@ namespace plorth
    *
    * Logical OR. Returns true if either one of the values are true.
    */
-  static void w_or(const ref<context>& ctx)
+  static void w_or(const std::shared_ptr<context>& ctx)
   {
     bool a;
     bool b;
@@ -111,7 +111,7 @@ namespace plorth
    *
    * Exclusive OR.
    */
-  static void w_xor(const ref<context>& ctx)
+  static void w_xor(const std::shared_ptr<context>& ctx)
   {
     bool a;
     bool b;
@@ -134,7 +134,7 @@ namespace plorth
    *
    * Negates given boolean value.
    */
-  static void w_not(const ref<context>& ctx)
+  static void w_not(const std::shared_ptr<context>& ctx)
   {
     bool value;
 
@@ -162,7 +162,7 @@ namespace plorth
    *
    *     "greater" "less" 5 6 > ?  #=> "less"
    */
-  static void w_select(const ref<context>& ctx)
+  static void w_select(const std::shared_ptr<context>& ctx)
   {
     ref<value> true_value;
     ref<value> false_value;

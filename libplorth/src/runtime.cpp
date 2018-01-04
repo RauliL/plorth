@@ -119,11 +119,6 @@ namespace plorth
     );
   }
 
-  ref<context> runtime::new_context()
-  {
-    return new (*m_memory_manager) context(this);
-  }
-
   void runtime::print(const unistring& str) const
   {
     std::cout << str;

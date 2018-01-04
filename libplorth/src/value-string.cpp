@@ -267,7 +267,7 @@ namespace plorth
    *
    * Returns the length of the string.
    */
-  static void w_length(const ref<context>& ctx)
+  static void w_length(const std::shared_ptr<context>& ctx)
   {
     ref<string> str;
 
@@ -278,7 +278,8 @@ namespace plorth
     }
   }
 
-  static void str_test(const ref<context>& ctx, bool (*callback)(unichar))
+  static void str_test(const std::shared_ptr<context>& ctx,
+                       bool (*callback)(unichar))
   {
     ref<string> str;
 
@@ -317,7 +318,7 @@ namespace plorth
    * Tests whether the string contains only whitespace characters. Empty
    * strings return false.
    */
-  static void w_is_space(const ref<context>& ctx)
+  static void w_is_space(const std::shared_ptr<context>& ctx)
   {
     str_test(ctx, unichar_isspace);
   }
@@ -336,7 +337,7 @@ namespace plorth
    * Tests whether the string contains only lower case characters. Empty
    * strings return false.
    */
-  static void w_is_lower_case(const ref<context>& ctx)
+  static void w_is_lower_case(const std::shared_ptr<context>& ctx)
   {
     str_test(ctx, unichar_islower);
   }
@@ -355,7 +356,7 @@ namespace plorth
    * Tests whether the string contains only upper case characters. Empty strings
    * return false.
    */
-  static void w_is_upper_case(const ref<context>& ctx)
+  static void w_is_upper_case(const std::shared_ptr<context>& ctx)
   {
     str_test(ctx, unichar_isupper);
   }
@@ -374,7 +375,7 @@ namespace plorth
    * Extracts characters from the string and returns them in an array of
    * substrings.
    */
-  static void w_chars(const ref<context>& ctx)
+  static void w_chars(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
     ref<string> str;
@@ -408,7 +409,7 @@ namespace plorth
    * Extracts Unicode code points from the string and returns them in an array
    * of numbers.
    */
-  static void w_runes(const ref<context>& ctx)
+  static void w_runes(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
     ref<string> str;
@@ -442,9 +443,9 @@ namespace plorth
    * Extracts white space separated words from the string and returns them in
    * an array.
    */
-  static void w_words(const ref<context>& ctx)
+  static void w_words(const std::shared_ptr<context>& ctx)
   {
-    const ref<class runtime>& runtime = ctx->runtime();
+    const auto& runtime = ctx->runtime();
     ref<string> str;
 
     if (ctx->pop_string(str))
@@ -490,9 +491,9 @@ namespace plorth
    *
    * Extracts lines from the string and returns them in an array.
    */
-  static void w_lines(const ref<context>& ctx)
+  static void w_lines(const std::shared_ptr<context>& ctx)
   {
-    const ref<class runtime>& runtime = ctx->runtime();
+    const auto& runtime = ctx->runtime();
     ref<string> str;
 
     if (ctx->pop_string(str))
@@ -541,7 +542,7 @@ namespace plorth
    *
    * Reverses the string.
    */
-  static void w_reverse(const ref<context>& ctx)
+  static void w_reverse(const std::shared_ptr<context>& ctx)
   {
     ref<string> str;
 
@@ -551,7 +552,7 @@ namespace plorth
     }
   }
 
-  static void str_convert(const ref<context>& ctx,
+  static void str_convert(const std::shared_ptr<context>& ctx,
                           unichar (*callback)(unichar))
   {
     ref<string> str;
@@ -581,7 +582,7 @@ namespace plorth
    *
    * Converts the string into upper case.
    */
-  static void w_upper_case(const ref<context>& ctx)
+  static void w_upper_case(const std::shared_ptr<context>& ctx)
   {
     str_convert(ctx, unichar_toupper);
   }
@@ -598,7 +599,7 @@ namespace plorth
    *
    * Converts the string into lower case.
    */
-  static void w_lower_case(const ref<context>& ctx)
+  static void w_lower_case(const std::shared_ptr<context>& ctx)
   {
     str_convert(ctx, unichar_tolower);
   }
@@ -625,7 +626,7 @@ namespace plorth
    *
    * Turns lower case characters in the string into upper case and vice versa.
    */
-  static void w_swap_case(const ref<context>& ctx)
+  static void w_swap_case(const std::shared_ptr<context>& ctx)
   {
     str_convert(ctx, unichar_swapcase);
   }
@@ -643,7 +644,7 @@ namespace plorth
    * Converts the first character of the string into upper case and the
    * remaining characters into lower case.
    */
-  static void w_capitalize(const ref<context>& ctx)
+  static void w_capitalize(const std::shared_ptr<context>& ctx)
   {
     ref<string> str;
 
@@ -680,7 +681,7 @@ namespace plorth
    *
    * Strips whitespace from the begining and the end of the string.
    */
-  static void w_trim(const ref<context>& ctx)
+  static void w_trim(const std::shared_ptr<context>& ctx)
   {
     ref<string> str;
 
@@ -724,7 +725,7 @@ namespace plorth
    *
    * Strips whitespace from the begining of the string.
    */
-  static void w_trim_left(const ref<context>& ctx)
+  static void w_trim_left(const std::shared_ptr<context>& ctx)
   {
     ref<string> str;
 
@@ -761,7 +762,7 @@ namespace plorth
    *
    * Strips whitespace from the end of the string.
    */
-  static void w_trim_right(const ref<context>& ctx)
+  static void w_trim_right(const std::shared_ptr<context>& ctx)
   {
     ref<string> str;
 
@@ -799,7 +800,7 @@ namespace plorth
    * Converts string into a floating point decimal number, or throws a value
    * error if the number cannot be converted into one.
    */
-  static void w_to_number(const ref<context>& ctx)
+  static void w_to_number(const std::shared_ptr<context>& ctx)
   {
     ref<string> a;
 
@@ -829,7 +830,7 @@ namespace plorth
    *
    * Concatenates the contents of the two strings and returns the result.
    */
-  static void w_concat(const ref<context>& ctx)
+  static void w_concat(const std::shared_ptr<context>& ctx)
   {
     ref<string> a;
     ref<string> b;
@@ -862,7 +863,7 @@ namespace plorth
    *
    * Repeats the string given number of times.
    */
-  static void w_repeat(const ref<context>& ctx)
+  static void w_repeat(const std::shared_ptr<context>& ctx)
   {
     ref<string> str;
     ref<number> num;
@@ -907,7 +908,7 @@ namespace plorth
    * from the end of the string. If given index is out of bounds, a range error
    * will be thrown.
    */
-  static void w_get(const ref<context>& ctx)
+  static void w_get(const std::shared_ptr<context>& ctx)
   {
     ref<string> str;
     ref<number> num;
@@ -949,7 +950,7 @@ namespace plorth
    * Converts given string into symbol. Value error will be thrown if the string
    * is empty or contains whitespace or non-symbolic characters such as separators.
    */
-  static void w_to_symbol(const ref<context>& ctx)
+  static void w_to_symbol(const std::shared_ptr<context>& ctx)
   {
     ref<string> str;
 

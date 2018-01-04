@@ -70,7 +70,7 @@ namespace plorth
     }
   }
 
-  bool symbol::exec(const ref<context>& ctx)
+  bool symbol::exec(const std::shared_ptr<context>& ctx)
   {
     // Update source code position of the context, if this symbol has such
     // information.
@@ -141,7 +141,7 @@ namespace plorth
     return false;
   }
 
-  bool symbol::eval(const ref<context>& ctx, ref<value>& slot)
+  bool symbol::eval(const std::shared_ptr<context>& ctx, ref<value>& slot)
   {
     if (!m_id.compare(U"null"))
     {
@@ -228,7 +228,7 @@ namespace plorth
    * Position is returnedd as object with `filename`, `line` and `column`
    * properties.
    */
-  static void w_position(const ref<context>& ctx)
+  static void w_position(const std::shared_ptr<context>& ctx)
   {
     ref<value> sym;
 
@@ -264,7 +264,7 @@ namespace plorth
    * symbol does not resolve into any kind of word or value, number conversion
    * is attempted on it. If that also fails, reference error will be thrown.
    */
-  static void w_call(const ref<context>& ctx)
+  static void w_call(const std::shared_ptr<context>& ctx)
   {
     ref<symbol> sym;
 

@@ -57,7 +57,7 @@ namespace plorth
      * \return          Boolean flag which tells whether the property was found
      *                  or not.
      */
-    bool property(const ref<class runtime>& runtime,
+    bool property(const std::shared_ptr<class runtime>& runtime,
                   const unistring& name,
                   ref<value>& slot,
                   bool inherited = true) const;
@@ -68,7 +68,7 @@ namespace plorth
     }
 
     bool equals(const ref<value>& that) const;
-    bool eval(const ref<context>& ctx, ref<value>& slot);
+    bool eval(const std::shared_ptr<context>& ctx, ref<value>& slot);
     unistring to_string() const;
     unistring to_source() const;
 

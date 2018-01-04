@@ -49,12 +49,12 @@ namespace plorth
      *
      * \param runtime Runtime associated with this context.
      */
-    explicit context(const ref<class runtime>& runtime);
+    explicit context(const std::shared_ptr<class runtime>& runtime);
 
     /**
      * Returns the runtime associated with this context.
      */
-    inline const ref<class runtime>& runtime() const
+    inline const std::shared_ptr<class runtime>& runtime() const
     {
       return m_runtime;
     }
@@ -132,6 +132,16 @@ namespace plorth
                        const unistring& filename = U"",
                        int line = 1,
                        int column = 1);
+
+    /**
+     * Imports module from file system and inserts all of it's exported words
+     * into dictionary of this execution context.
+     *
+     * \param path Module path.
+     * \return     Boolean flag telling whether the import was successfull or
+     *             whether some kind of error was occurred.
+     */
+    bool import(const unistring& path);
 
     /**
      * Provides direct access to the data stack.
@@ -419,7 +429,7 @@ namespace plorth
 
   private:
     /** Runtime associated with this context. */
-    const ref<class runtime> m_runtime;
+    const std::shared_ptr<class runtime> m_runtime;
     /** Currently uncaught error in this context. */
     ref<class error> m_error;
     /** Data stack used for storing values in this context. */

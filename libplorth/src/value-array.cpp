@@ -214,7 +214,7 @@ namespace plorth
     return true;
   }
 
-  bool array::eval(const ref<context>& ctx, ref<value>& slot)
+  bool array::eval(const std::shared_ptr<context>& ctx, ref<value>& slot)
   {
     const auto s = size();
     ref<value>* elements = new ref<value>[s];
@@ -359,7 +359,7 @@ namespace plorth
    * Returns the number of elements in the array, while keeping the array on
    * the stack.
    */
-  static void w_length(const ref<context>& ctx)
+  static void w_length(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
 
@@ -386,7 +386,7 @@ namespace plorth
    *
    *     4 [1, 2, 3] push  #=> [1, 2, 3, 4]
    */
-  static void w_push(const ref<context>& ctx)
+  static void w_push(const std::shared_ptr<context>& ctx)
   {
     ref<value> val;
     ref<array> ary;
@@ -412,7 +412,7 @@ namespace plorth
    *
    *     [1, 2, 3] pop  #=> [1, 2] 3
    */
-  static void w_pop(const ref<context>& ctx)
+  static void w_pop(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
 
@@ -447,7 +447,7 @@ namespace plorth
    * Searches for given value in the array and returns true if it's included
    * and false if it's not.
    */
-  static void w_includes(const ref<context>& ctx)
+  static void w_includes(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<value> val;
@@ -482,7 +482,7 @@ namespace plorth
    * Searches for given value from the array and returns its index in the array
    * if it's included in the array and null if it's not.
    */
-  static void w_index_of(const ref<context>& ctx)
+  static void w_index_of(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<value> val;
@@ -519,7 +519,7 @@ namespace plorth
    * Returns the first element from the array that satisfies the provided
    * testing quote. Otherwise null is returned.
    */
-  static void w_find(const ref<context>& ctx)
+  static void w_find(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<quote> quo;
@@ -561,7 +561,7 @@ namespace plorth
    * Returns the index of the first element in the array that satisfies the
    * provided testing quote. Otherwise null is returned.
    */
-  static void w_find_index(const ref<context>& ctx)
+  static void w_find_index(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<quote> quo;
@@ -605,7 +605,7 @@ namespace plorth
    * Tests whether all elements in the array satisfy the provided testing
    * quote.
    */
-  static void w_every(const ref<context>& ctx)
+  static void w_every(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<quote> quo;
@@ -646,7 +646,7 @@ namespace plorth
    *
    * Tests whether any element in the array satisfies the provided quote.
    */
-  static void w_some(const ref<context>& ctx)
+  static void w_some(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<quote> quo;
@@ -686,7 +686,7 @@ namespace plorth
    * Reverses the array. The first array element becomes the last and the last
    * array element becomes first.
    */
-  static void w_reverse(const ref<context>& ctx)
+  static void w_reverse(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
 
@@ -708,7 +708,7 @@ namespace plorth
    *
    * Removes duplicate elements from the array.
    */
-  static void w_uniq(const ref<context>& ctx)
+  static void w_uniq(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
 
@@ -751,7 +751,7 @@ namespace plorth
    *
    * Extracts all values from the array and places them onto the stack.
    */
-  static void w_extract(const ref<context>& ctx)
+  static void w_extract(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
 
@@ -779,7 +779,7 @@ namespace plorth
    * Concatenates all elements from the array into single string delimited by
    * the given separator string.
    */
-  static void w_join(const ref<context>& ctx)
+  static void w_join(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<string> separator;
@@ -821,7 +821,7 @@ namespace plorth
    *
    * Converts array into executable quote.
    */
-  static void w_to_quote(const ref<context>& ctx)
+  static void w_to_quote(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
 
@@ -848,7 +848,7 @@ namespace plorth
    *
    * Runs quote once for every element in the array.
    */
-  static void w_for_each(const ref<context>& ctx)
+  static void w_for_each(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<quote> quo;
@@ -880,7 +880,7 @@ namespace plorth
    * Runs quote taking two arguments once for each element pair in the
    * arrays.
    */
-  static void w_2for_each(const ref<context>& ctx)
+  static void w_2for_each(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary_a;
     ref<array> ary_b;
@@ -918,7 +918,7 @@ namespace plorth
    * Applies quote once for each element in the array and constructs a new
    * array from values returned by the quote.
    */
-  static void w_map(const ref<context>& ctx)
+  static void w_map(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<quote> quo;
@@ -959,7 +959,7 @@ namespace plorth
    * Applies quote taking two arguments once for each element pair in the
    * arrays and constructs a new array from values returned by the quote.
    */
-  static void w_2map(const ref<context>& ctx)
+  static void w_2map(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary_a;
     ref<array> ary_b;
@@ -1003,7 +1003,7 @@ namespace plorth
    * Removes elements of the array that do not satisfy the provided testing
    * quote.
    */
-  static void w_filter(const ref<context>& ctx)
+  static void w_filter(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<quote> quo;
@@ -1046,7 +1046,7 @@ namespace plorth
    * Applies given quote against an accumulator and each element in the array
    * to reduce it into a single value.
    */
-  static void w_reduce(const ref<context>& ctx)
+  static void w_reduce(const std::shared_ptr<context>& ctx)
   {
     ref<class array> array;
     ref<class quote> quote;
@@ -1094,7 +1094,7 @@ namespace plorth
    *
    * Concatenates the contents of two arrays and returns the result.
    */
-  static void w_concat(const ref<context>& ctx)
+  static void w_concat(const std::shared_ptr<context>& ctx)
   {
     ref<array> a;
     ref<array> b;
@@ -1118,7 +1118,7 @@ namespace plorth
    *
    * Repeats the array given number of times.
    */
-  static void w_repeat(const ref<context>& ctx)
+  static void w_repeat(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<number> num;
@@ -1161,7 +1161,7 @@ namespace plorth
    * Set intersection: Returns a new array containing unique elements common to
    * the two arrays.
    */
-  static void w_intersect(const ref<context>& ctx)
+  static void w_intersect(const std::shared_ptr<context>& ctx)
   {
     ref<array> a;
     ref<array> b;
@@ -1221,7 +1221,7 @@ namespace plorth
    * Set union: Returns a new array by joining the two given arrays, excluding
    * any duplicates and preserving the order of the given arrays.
    */
-  static void w_union(const ref<context>& ctx)
+  static void w_union(const std::shared_ptr<context>& ctx)
   {
     ref<array> a;
     ref<array> b;
@@ -1288,7 +1288,7 @@ namespace plorth
    * indices count backwards from the end. If the given index is out of bounds,
    * arange error will be thrown.
    */
-  static void w_get(const ref<context>& ctx)
+  static void w_get(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<number> num;
@@ -1331,7 +1331,7 @@ namespace plorth
    * from the end. If the index is larger than the number of elements in the
    * array, the value will be appended as the last element of the array.
    */
-  static void w_set(const ref<context>& ctx)
+  static void w_set(const std::shared_ptr<context>& ctx)
   {
     ref<array> ary;
     ref<number> num;

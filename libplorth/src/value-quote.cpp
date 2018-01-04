@@ -47,7 +47,7 @@ namespace plorth
         return quote_type_compiled;
       }
 
-      bool call(const ref<context>& ctx) const
+      bool call(const std::shared_ptr<context>& ctx) const
       {
         for (const auto& value : m_values)
         {
@@ -131,7 +131,7 @@ namespace plorth
         return quote_type_native;
       }
 
-      bool call(const ref<context>& ctx) const
+      bool call(const std::shared_ptr<context>& ctx) const
       {
         m_callback(ctx);
 
@@ -179,7 +179,7 @@ namespace plorth
    *
    * Executes the quote taken from the top of the stack.
    */
-  static void w_call(const ref<context>& ctx)
+  static void w_call(const std::shared_ptr<context>& ctx)
   {
     ref<quote> q;
 
@@ -202,7 +202,7 @@ namespace plorth
    *
    * Constructs a new quote which will call the two given quotes in sequence.
    */
-  static void w_compose(const ref<context>& ctx)
+  static void w_compose(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
     ref<quote> left;
@@ -233,7 +233,7 @@ namespace plorth
    * Constructs a curried quote where given value will be pushed onto the stack
    * before calling the original quote.
    */
-  static void w_curry(const ref<context>& ctx)
+  static void w_curry(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
     ref<value> argument;
@@ -258,7 +258,7 @@ namespace plorth
    * Constructs a negated version of given quote which negates the boolean
    * result returned by the original quote.
    */
-  static void w_negate(const ref<context>& ctx)
+  static void w_negate(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
     ref<quote> quo;
@@ -288,7 +288,7 @@ namespace plorth
    * the quote has returned from it's execution, hidden value will be placed
    * back on the stack.
    */
-  static void w_dip(const ref<context>& ctx)
+  static void w_dip(const std::shared_ptr<context>& ctx)
   {
     ref<value> val;
     ref<quote> quo;
@@ -320,7 +320,7 @@ namespace plorth
    * Once the quote has returned from it's execution, hidden values will be
    * placed back on the stack.
    */
-  static void w_2dip(const ref<context>& ctx)
+  static void w_2dip(const std::shared_ptr<context>& ctx)
   {
     ref<value> val1;
     ref<value> val2;
@@ -349,7 +349,7 @@ namespace plorth
    *
    * Constructs word from given pair of symbol and quote.
    */
-  static void w_to_word(const ref<context>& ctx)
+  static void w_to_word(const std::shared_ptr<context>& ctx)
   {
     ref<symbol> sym;
     ref<quote> quo;

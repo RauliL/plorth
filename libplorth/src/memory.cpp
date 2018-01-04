@@ -23,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <plorth/runtime.hpp>
+#include <plorth/context.hpp>
 #if PLORTH_ENABLE_MEMORY_POOL
 # if !defined(PLORTH_MEMORY_POOL_SIZE)
 #  define PLORTH_MEMORY_POOL_SIZE (4096 * 32)
@@ -120,9 +120,14 @@ namespace plorth
 #endif
     }
 
-    ref<runtime> manager::new_runtime()
+    std::shared_ptr<runtime> manager::new_runtime()
     {
-      return new (*this) runtime(this);
+      return std::shared_ptr<runtime>(new (*this) runtime(this));
+    }
+
+    std::shared_ptr<context> manager::new_context(const std::shared_ptr<class runtime>& runtime)
+    {
+      return std::shared_ptr<context>(new (*this) context(runtime));
     }
 
     managed::managed()

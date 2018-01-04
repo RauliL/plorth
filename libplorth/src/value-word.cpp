@@ -45,14 +45,14 @@ namespace plorth
     return m_symbol->equals(w->m_symbol) && m_quote->equals(w->m_quote);
   }
 
-  bool word::exec(const ref<context>& ctx)
+  bool word::exec(const std::shared_ptr<context>& ctx)
   {
     ctx->dictionary()[m_symbol] = m_quote;
 
     return true;
   }
 
-  bool word::eval(const ref<context>& ctx, ref<value>&)
+  bool word::eval(const std::shared_ptr<context>& ctx, ref<value>&)
   {
     ctx->error(
       error::code_syntax,
@@ -85,7 +85,7 @@ namespace plorth
    *
    * Extracts symbol from the word and places it onto top of the stack.
    */
-  static void w_symbol(const ref<context>& ctx)
+  static void w_symbol(const std::shared_ptr<context>& ctx)
   {
     ref<word> wrd;
 
@@ -110,7 +110,7 @@ namespace plorth
    * Extracts quote which acts as the body of the word and places it onto top
    * of the stack.
    */
-  static void w_quote(const ref<context>& ctx)
+  static void w_quote(const std::shared_ptr<context>& ctx)
   {
     ref<word> wrd;
 
@@ -130,7 +130,7 @@ namespace plorth
    *
    * Executes body of the given word.
    */
-  static void w_call(const ref<context>& ctx)
+  static void w_call(const std::shared_ptr<context>& ctx)
   {
     ref<word> wrd;
 
@@ -149,7 +149,7 @@ namespace plorth
    *
    * Inserts given word into current local dictionary.
    */
-  void w_define(const ref<context>& ctx)
+  void w_define(const std::shared_ptr<context>& ctx)
   {
     ref<word> wrd;
 

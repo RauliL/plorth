@@ -30,9 +30,11 @@
 #include <plorth/ref.hpp>
 
 #include <cstddef>
+#include <memory>
 
 namespace plorth
 {
+  class context;
   class runtime;
 
   namespace memory
@@ -73,7 +75,15 @@ namespace plorth
        * Creates new scripting runtime that uses this memory manager for memory
        * allocation.
        */
-      ref<runtime> new_runtime();
+      std::shared_ptr<runtime> new_runtime();
+
+      /**
+       * Creates new scripting context that uses given scripting runtime as
+       * it's runtime.
+       */
+      std::shared_ptr<context> new_context(
+        const std::shared_ptr<class runtime>& runtime
+      );
 
       manager(const manager&) = delete;
       manager(manager&&) = delete;
