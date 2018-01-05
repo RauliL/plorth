@@ -38,7 +38,7 @@ namespace plorth
    *
    * Pushes the null value onto stack.
    */
-  static void w_null(const ref<context>& ctx)
+  static void w_null(const std::shared_ptr<context>& ctx)
   {
     ctx->push_null();
   }
@@ -51,7 +51,7 @@ namespace plorth
    *
    * Pushes the boolean value true onto stack.
    */
-  static void w_true(const ref<context>& ctx)
+  static void w_true(const std::shared_ptr<context>& ctx)
   {
     ctx->push_boolean(true);
   }
@@ -64,7 +64,7 @@ namespace plorth
    *
    * Pushes the boolean value false onto stack.
    */
-  static void w_false(const ref<context>& ctx)
+  static void w_false(const std::shared_ptr<context>& ctx)
   {
     ctx->push_boolean(false);
   }
@@ -77,7 +77,7 @@ namespace plorth
    *
    * Pushes Euler's number onto stack.
    */
-  static void w_e(const ref<context>& ctx)
+  static void w_e(const std::shared_ptr<context>& ctx)
   {
     ctx->push_real(M_E);
   }
@@ -90,7 +90,7 @@ namespace plorth
    *
    * Pushes the value of pi onto stack.
    */
-  static void w_pi(const ref<context>& ctx)
+  static void w_pi(const std::shared_ptr<context>& ctx)
   {
     ctx->push_real(M_PI);
   }
@@ -103,7 +103,7 @@ namespace plorth
    *
    * Pushes the value of positive infinity onto stack.
    */
-  static void w_inf(const ref<context>& ctx)
+  static void w_inf(const std::shared_ptr<context>& ctx)
   {
     ctx->push_real(INFINITY);
   }
@@ -116,7 +116,7 @@ namespace plorth
    *
    * Pushes the value of negative infinity onto stack.
    */
-  static void w_minus_inf(const ref<context>& ctx)
+  static void w_minus_inf(const std::shared_ptr<context>& ctx)
   {
     ctx->push_real(-INFINITY);
   }
@@ -129,7 +129,7 @@ namespace plorth
    *
    * Pushes the value of NaN (not a number) onto stack.
    */
-  static void w_nan(const ref<context>& ctx)
+  static void w_nan(const std::shared_ptr<context>& ctx)
   {
     ctx->push_real(NAN);
   }
@@ -140,14 +140,14 @@ namespace plorth
    *
    * Does nothing. Can be used to construct empty quotes.
    */
-  static void w_nop(const ref<context>&) {}
+  static void w_nop(const std::shared_ptr<context>&) {}
 
   /**
    * Word: clear
    *
    * Clears the entire stack of current context.
    */
-  static void w_clear(const ref<context>& ctx)
+  static void w_clear(const std::shared_ptr<context>& ctx)
   {
     ctx->clear();
   }
@@ -160,7 +160,7 @@ namespace plorth
    *
    * Pushes current depth of the stack onto stack.
    */
-  static void w_depth(const ref<context>& ctx)
+  static void w_depth(const std::shared_ptr<context>& ctx)
   {
     ctx->push_int(ctx->size());
   }
@@ -175,7 +175,7 @@ namespace plorth
    *
    *     1 drop #=> empty stack
    */
-  static void w_drop(const ref<context>& ctx)
+  static void w_drop(const std::shared_ptr<context>& ctx)
   {
     ctx->pop();
   }
@@ -191,7 +191,7 @@ namespace plorth
    *
    *     1 2 3 2drop #=> 1
    */
-  static void w_drop2(const ref<context>& ctx)
+  static void w_drop2(const std::shared_ptr<context>& ctx)
   {
     if (ctx->pop())
     {
@@ -213,9 +213,9 @@ namespace plorth
    *
    *     1 dup #=> 1 1
    */
-  static void w_dup(const ref<context>& ctx)
+  static void w_dup(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -241,10 +241,10 @@ namespace plorth
    *
    *     1 2 2dup #=> 1 2 1 2
    */
-  static void w_dup2(const ref<context>& ctx)
+  static void w_dup2(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {
@@ -269,9 +269,9 @@ namespace plorth
    *
    *     1 2 nip #=> 2
    */
-  static void w_nip(const ref<context>& ctx)
+  static void w_nip(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value) && ctx->pop())
     {
@@ -296,10 +296,10 @@ namespace plorth
    *
    *     1 2 over #=> 1 2 1
    */
-  static void w_over(const ref<context>& ctx)
+  static void w_over(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {
@@ -326,11 +326,11 @@ namespace plorth
    *
    *     1 2 3 rot #=> 2 3 1
    */
-  static void w_rot(const ref<context>& ctx)
+  static void w_rot(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
-    ref<value> c;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
+    std::shared_ptr<value> c;
 
     if (ctx->pop(a) && ctx->pop(b) && ctx->pop(c))
     {
@@ -355,10 +355,10 @@ namespace plorth
    *
    *     1 2 swap #=> 2 1
    */
-  static void w_swap(const ref<context>& ctx)
+  static void w_swap(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {
@@ -384,10 +384,10 @@ namespace plorth
    *
    *     1 2 tuck #=> 2 1 2
    */
-  static void w_tuck(const ref<context>& ctx)
+  static void w_tuck(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {
@@ -409,9 +409,9 @@ namespace plorth
    *
    * Returns true if the topmost value of the stack is an array.
    */
-  static void w_is_array(const ref<context>& ctx)
+  static void w_is_array(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -432,9 +432,9 @@ namespace plorth
    *
    * Returns true if the topmost value of the stack is a boolean.
    */
-  static void w_is_boolean(const ref<context>& ctx)
+  static void w_is_boolean(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -455,9 +455,9 @@ namespace plorth
    *
    * Returns true if the topmost value of the stack is an error.
    */
-  static void w_is_error(const ref<context>& ctx)
+  static void w_is_error(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -478,9 +478,9 @@ namespace plorth
    *
    * Returns true if the topmost value of the stack is a number.
    */
-  static void w_is_number(const ref<context>& ctx)
+  static void w_is_number(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -501,9 +501,9 @@ namespace plorth
    *
    * Returns true if the topmost value of the stack is null.
    */
-  static void w_is_null(const ref<context>& ctx)
+  static void w_is_null(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -524,9 +524,9 @@ namespace plorth
    *
    * Returns true if the topmost value of the stack is an object.
    */
-  static void w_is_object(const ref<context>& ctx)
+  static void w_is_object(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -547,9 +547,9 @@ namespace plorth
    *
    * Returns true if the topmost value of the stack is a quote.
    */
-  static void w_is_quote(const ref<context>& ctx)
+  static void w_is_quote(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -570,9 +570,9 @@ namespace plorth
    *
    * Returns true if the topmost value of the stack is a string.
    */
-  static void w_is_string(const ref<context>& ctx)
+  static void w_is_string(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -593,9 +593,9 @@ namespace plorth
    *
    * Returns true if the topmost value of the stack is symbol.
    */
-  static void w_is_symbol(const ref<context>& ctx)
+  static void w_is_symbol(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val;
+    std::shared_ptr<value> val;
 
     if (ctx->pop(val))
     {
@@ -616,9 +616,9 @@ namespace plorth
    *
    * Returns true if the topmost value of the stack is word.
    */
-  static void w_is_word(const ref<context>& ctx)
+  static void w_is_word(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val;
+    std::shared_ptr<value> val;
 
     if (ctx->pop(val))
     {
@@ -639,9 +639,9 @@ namespace plorth
    *
    * Returns name of the type of the topmost value as a string.
    */
-  static void w_typeof(const ref<context>& ctx)
+  static void w_typeof(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -668,16 +668,16 @@ namespace plorth
    *
    * Tests whether prototype chain of given value inherits from given object.
    */
-  static void w_is_instance_of(const ref<context>& ctx)
+  static void w_is_instance_of(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<value> val;
-    ref<object> obj;
+    std::shared_ptr<value> val;
+    std::shared_ptr<object> obj;
 
     if (ctx->pop_object(obj) && ctx->pop(val))
     {
-      ref<value> prototype1;
-      ref<value> prototype2 = val->prototype(runtime);
+      std::shared_ptr<value> prototype1;
+      std::shared_ptr<value> prototype2 = val->prototype(runtime);
 
       ctx->push(val);
 
@@ -695,7 +695,10 @@ namespace plorth
         return;
       }
 
-      while (prototype2.cast<object>()->property(runtime, U"__proto__", prototype2, false) &&
+      while (std::static_pointer_cast<object>(prototype2)->property(runtime,
+                                                                    U"__proto__",
+                                                                    prototype2,
+                                                                    false) &&
              prototype2 &&
              prototype2->is(value::type_object))
       {
@@ -723,9 +726,9 @@ namespace plorth
    * Retrieves proto of the topmost value. If the topmost value of the stack
    * is null, null will be returned instead.
    */
-  static void w_proto(const ref<context>& ctx)
+  static void w_proto(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -751,9 +754,9 @@ namespace plorth
    * Converts the topmost value of the stack into a boolean. Null and false
    * will become false while everything else will become true.
    */
-  static void w_to_boolean(const ref<context>& ctx)
+  static void w_to_boolean(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (!ctx->pop(value))
     {
@@ -779,9 +782,9 @@ namespace plorth
    * Converts the topmost value of the stack into a string. Null will become
    * an empty string.
    */
-  static void w_to_string(const ref<context>& ctx)
+  static void w_to_string(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (!ctx->pop(value))
     {
@@ -807,9 +810,9 @@ namespace plorth
    * Converts the topmost value of the stack into a string that most accurately
    * represents what the value would look like in source code.
    */
-  static void w_to_source(const ref<context>& ctx)
+  static void w_to_source(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (!ctx->pop(value))
     {
@@ -834,9 +837,9 @@ namespace plorth
    *
    * Constructs array from given value.
    */
-  static void w_1array(const ref<context>& ctx)
+  static void w_1array(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val;
+    std::shared_ptr<value> val;
 
     if (ctx->pop(val))
     {
@@ -856,14 +859,14 @@ namespace plorth
    *
    * Constructs array from given two values.
    */
-  static void w_2array(const ref<context>& ctx)
+  static void w_2array(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val1;
-    ref<value> val2;
+    std::shared_ptr<value> val1;
+    std::shared_ptr<value> val2;
 
     if (ctx->pop(val2) && ctx->pop(val1))
     {
-      ref<value> buffer[2];
+      std::shared_ptr<value> buffer[2];
 
       buffer[0] = val1;
       buffer[1] = val2;
@@ -883,14 +886,14 @@ namespace plorth
    *
    * Constructs array from given amount of values from the stack.
    */
-  static void w_narray(const ref<context>& ctx)
+  static void w_narray(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_number(num))
     {
       const number::int_type size = num->as_int();
-      ref<value>* buffer;
+      std::shared_ptr<value>* buffer;
 
       if (size < 0)
       {
@@ -898,11 +901,11 @@ namespace plorth
         return;
       }
 
-      buffer = new ref<value>[size];
+      buffer = new std::shared_ptr<value>[size];
 
       for (number::int_type i = 0; i < size; ++i)
       {
-        ref<value> val;
+        std::shared_ptr<value> val;
 
         if (!ctx->pop(val))
         {
@@ -926,10 +929,10 @@ namespace plorth
    *
    * Executes quote if the boolean value is true.
    */
-  static void w_if(const ref<context>& ctx)
+  static void w_if(const std::shared_ptr<context>& ctx)
   {
     bool condition;
-    ref<class quote> quote;
+    std::shared_ptr<class quote> quote;
 
     if (ctx->pop_quote(quote) && ctx->pop_boolean(condition) && condition)
     {
@@ -947,11 +950,11 @@ namespace plorth
    *
    * Calls first quote if boolean value is true, second quote otherwise.
    */
-  static void w_if_else(const ref<context>& ctx)
+  static void w_if_else(const std::shared_ptr<context>& ctx)
   {
     bool condition;
-    ref<quote> then_quote;
-    ref<quote> else_quote;
+    std::shared_ptr<quote> then_quote;
+    std::shared_ptr<quote> else_quote;
 
     if (!ctx->pop_quote(else_quote)
         || !ctx->pop_quote(then_quote)
@@ -977,10 +980,10 @@ namespace plorth
    *
    * Executes second quote as long as the first quote returns true.
    */
-  static void w_while(const ref<context>& ctx)
+  static void w_while(const std::shared_ptr<context>& ctx)
   {
-    ref<quote> test;
-    ref<quote> body;
+    std::shared_ptr<quote> test;
+    std::shared_ptr<quote> body;
 
     if (!ctx->pop_quote(body) || !ctx->pop_quote(test))
     {
@@ -1008,10 +1011,10 @@ namespace plorth
    * Executes first quote and if it throws an error, calls second quote with
    * the error on top of the stack.
    */
-  static void w_try(const ref<context>& ctx)
+  static void w_try(const std::shared_ptr<context>& ctx)
   {
-    ref<quote> try_quote;
-    ref<quote> catch_quote;
+    std::shared_ptr<quote> try_quote;
+    std::shared_ptr<quote> catch_quote;
 
     if (!ctx->pop_quote(catch_quote) || !ctx->pop_quote(try_quote))
     {
@@ -1038,11 +1041,11 @@ namespace plorth
    * the error on top of the stack. If no error was thrown, third quote will
    * be called instead.
    */
-  static void w_try_else(const ref<context>& ctx)
+  static void w_try_else(const std::shared_ptr<context>& ctx)
   {
-    ref<quote> try_quote;
-    ref<quote> catch_quote;
-    ref<quote> else_quote;
+    std::shared_ptr<quote> try_quote;
+    std::shared_ptr<quote> catch_quote;
+    std::shared_ptr<quote> else_quote;
 
     if (!ctx->pop_quote(else_quote)
         || !ctx->pop_quote(catch_quote)
@@ -1072,10 +1075,10 @@ namespace plorth
    *
    * Compiles given string of source code into a quote.
    */
-  static void w_compile(const ref<context>& ctx)
+  static void w_compile(const std::shared_ptr<context>& ctx)
   {
-    ref<string> source;
-    ref<class quote> quote;
+    std::shared_ptr<string> source;
+    std::shared_ptr<class quote> quote;
 
     if (!ctx->pop_string(source))
     {
@@ -1097,7 +1100,7 @@ namespace plorth
    *
    * Returns the global dictionary as an object.
    */
-  static void w_globals(const ref<context>& ctx)
+  static void w_globals(const std::shared_ptr<context>& ctx)
   {
     object::container_type result;
 
@@ -1116,7 +1119,7 @@ namespace plorth
    *
    * Returns the local dictionary of current execution context as an object.
    */
-  static void w_locals(const ref<context>& ctx)
+  static void w_locals(const std::shared_ptr<context>& ctx)
   {
     object::container_type result;
 
@@ -1137,10 +1140,10 @@ namespace plorth
    * Declares given value as constant in the current context with name
    * identified by given string.
    */
-  static void w_const(const ref<context>& ctx)
+  static void w_const(const std::shared_ptr<context>& ctx)
   {
-    ref<string> id;
-    ref<value> val;
+    std::shared_ptr<string> id;
+    std::shared_ptr<value> val;
 
     if (ctx->pop_string(id) && ctx->pop(val))
     {
@@ -1159,13 +1162,13 @@ namespace plorth
    * Imports module from given path and adds all of its exported words into
    * this execution context.
    */
-  static void w_import(const ref<context>& ctx)
+  static void w_import(const std::shared_ptr<context>& ctx)
   {
-    ref<string> path;
+    std::shared_ptr<string> path;
 
     if (ctx->pop_string(path))
     {
-      ctx->runtime()->import(ctx, path->to_string());
+      ctx->import(path->to_string());
     }
   }
 
@@ -1178,12 +1181,12 @@ namespace plorth
    * Returns command line arguments given to the interpreter as an array of
    * strings.
    */
-  static void w_args(const ref<context>& ctx)
+  static void w_args(const std::shared_ptr<context>& ctx)
   {
-    const ref<class runtime>& runtime = ctx->runtime();
+    const auto& runtime = ctx->runtime();
     const auto& arguments = runtime->arguments();
     const auto size = arguments.size();
-    std::vector<ref<value>> result;
+    std::vector<std::shared_ptr<value>> result;
 
     result.reserve(size);
     for (std::size_t i = 0; i < size; ++i)
@@ -1201,14 +1204,15 @@ namespace plorth
    *
    * Returns version of the Plorth interpreter as string.
    */
-  static void w_version(const ref<context>& ctx)
+  static void w_version(const std::shared_ptr<context>& ctx)
   {
     ctx->push_string(PLORTH_VERSION);
   }
 
-  static void make_error(const ref<context>& ctx, enum error::code code)
+  static void make_error(const std::shared_ptr<context>& ctx,
+                         enum error::code code)
   {
-    ref<value> val;
+    std::shared_ptr<value> val;
     unistring message;
 
     if (!ctx->pop(val))
@@ -1220,7 +1224,7 @@ namespace plorth
     {
       if (val->is(value::type_string))
       {
-        message = val.cast<string>()->to_string();
+        message = std::static_pointer_cast<string>(val)->to_string();
       } else {
         ctx->error(
           error::code_type,
@@ -1245,7 +1249,7 @@ namespace plorth
    * Construct an instance of type error with with given optional error
    * message and places it on the stack.
    */
-  static void w_type_error(const ref<context>& ctx)
+  static void w_type_error(const std::shared_ptr<context>& ctx)
   {
     make_error(ctx, error::code_type);
   }
@@ -1262,7 +1266,7 @@ namespace plorth
    * Constructs an instance of value error with given optional error message
    * and places it on the stack.
    */
-  static void w_value_error(const ref<context>& ctx)
+  static void w_value_error(const std::shared_ptr<context>& ctx)
   {
     make_error(ctx, error::code_value);
   }
@@ -1279,7 +1283,7 @@ namespace plorth
    * Construct an instance of range error with given optional error message
    * and places it on the stack.
    */
-  static void w_range_error(const ref<context>& ctx)
+  static void w_range_error(const std::shared_ptr<context>& ctx)
   {
     make_error(ctx, error::code_range);
   }
@@ -1296,7 +1300,7 @@ namespace plorth
    * Construct an instance of unknown error with with given optional error
    * message and places it on the stack.
    */
-  static void w_unknown_error(const ref<context>& ctx)
+  static void w_unknown_error(const std::shared_ptr<context>& ctx)
   {
     make_error(ctx, error::code_unknown);
   }
@@ -1309,9 +1313,9 @@ namespace plorth
    *
    * Prints topmost value of the stack to stdout.
    */
-  static void w_print(const ref<context>& ctx)
+  static void w_print(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val;
+    std::shared_ptr<value> val;
 
     if (ctx->pop(val) && val)
     {
@@ -1328,10 +1332,10 @@ namespace plorth
    * Prints the topmost value of the stack to stdout with a terminating new
    * line.
    */
-  static void w_println(const ref<context>& ctx)
+  static void w_println(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<value> val;
+    std::shared_ptr<value> val;
 
     if (ctx->pop(val))
     {
@@ -1353,9 +1357,9 @@ namespace plorth
    * error will be thrown if the given number is not a valid Unicode code
    * point.
    */
-  static void w_emit(const ref<context>& ctx)
+  static void w_emit(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_number(num))
     {
@@ -1379,7 +1383,7 @@ namespace plorth
    * Returns the number of seconds that have elapsed since the  Unix epoch
    * (1 January 1970 00:00:00 UTC) rounded to the nearest integer.
    */
-  static void w_now(const ref<context>& ctx)
+  static void w_now(const std::shared_ptr<context>& ctx)
   {
     const auto timestamp = std::chrono::system_clock::now().time_since_epoch();
 
@@ -1398,10 +1402,10 @@ namespace plorth
    *
    * Tests whether the two topmost values of the stack are equal.
    */
-  static void w_eq(const ref<context>& ctx)
+  static void w_eq(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {
@@ -1421,10 +1425,10 @@ namespace plorth
    *
    * Tests whether the two topmost values of the stack are not equal.
    */
-  static void w_ne(const ref<context>& ctx)
+  static void w_ne(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {

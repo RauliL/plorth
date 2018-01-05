@@ -23,51 +23,52 @@ namespace plorth
 #if PLORTH_ENABLE_MODULES
   static const char* plorth_file_extension = ".plorth";
 
-  static ref<object> module_import(const ref<context>&,
-                                   const unistring&);
-  static bool module_resolve_path(const ref<context>&,
+  static std::shared_ptr<object> module_import(context*,
+                                               const unistring&);
+  static bool module_resolve_path(context*,
                                   const unistring&,
                                   unistring&);
 #endif
 
-  bool runtime::import(const ref<context>& ctx, const unistring& path)
+  bool context::import(const unistring& path)
   {
     // Do not import empty paths.
     if (path.empty() || std::all_of(path.begin(), path.end(), unichar_isspace))
     {
-      ctx->error(error::code_import, U"Empty import path.");
+      error(error::code_import, U"Empty import path.");
 
       return false;
     }
 
 #if PLORTH_ENABLE_MODULES
     unistring resolved_path;
+    auto& imported_modules = m_runtime->imported_modules();
     object::container_type::iterator entry;
-    ref<object> module;
+    std::shared_ptr<object> module;
 
     // First attempt to resolve the module path into actual file system path.
-    if (!module_resolve_path(ctx, path, resolved_path))
+    if (!module_resolve_path(this, path, resolved_path))
     {
-      ctx->error(error::code_import, U"No such file or directory.");
+      error(error::code_import, U"No such file or directory.");
 
       return false;
     }
 
     // Then look from the module cache whether the module has already been
     // loaded.
-    entry = m_imported_modules.find(resolved_path);
+    entry = imported_modules.find(resolved_path);
 
     // If the module has already been loaded, just use the cached module.
     // Otherwise begin the process of reading source code from the file,
     // compiling that into a quote and finally executing the quote in new
     // separate execution context.
-    if (entry != std::end(m_imported_modules))
+    if (entry != std::end(imported_modules))
     {
-      module = entry->second.cast<object>();
+      module = std::static_pointer_cast<object>(entry->second);
     }
-    else if ((module = module_import(ctx, resolved_path)))
+    else if ((module = module_import(this, resolved_path)))
     {
-      m_imported_modules[resolved_path] = module;
+      imported_modules[resolved_path] = module;
     } else {
       return false;
     }
@@ -78,35 +79,35 @@ namespace plorth
     {
       if (property.second && property.second->is(value::type_quote))
       {
-        ctx->dictionary()[ctx->runtime()->symbol(property.first)]
-          = property.second.cast<quote>();
+        m_dictionary[m_runtime->symbol(property.first)]
+          = std::static_pointer_cast<quote>(property.second);
       }
     }
 
     return true;
 #else
-    ctx->error(error::code_import, U"Modules have been disabled.");
+    error(error::code_import, U"Modules have been disabled.");
 
     return false;
 #endif
   }
 
 #if PLORTH_ENABLE_MODULES
-  static ref<object> module_import(const ref<context>& ctx,
-                                   const unistring& path)
+  static std::shared_ptr<object> module_import(context* ctx,
+                                               const unistring& path)
   {
     std::ifstream is(utf8_encode(path));
     std::string raw_source;
     unistring source;
-    ref<quote> compiled_module;
-    ref<context> module_ctx;
+    std::shared_ptr<quote> compiled_module;
+    std::shared_ptr<context> module_ctx;
     object::container_type result;
 
     if (!is.good())
     {
       ctx->error(error::code_import, U"Unable to import `" + path + U"'");
 
-      return ref<object>();
+      return std::shared_ptr<object>();
     }
 
     raw_source = std::string(
@@ -123,17 +124,17 @@ namespace plorth
         U"Unable to decode source code into UTF-8."
       );
 
-      return ref<object>();
+      return std::shared_ptr<object>();
     }
 
     // Then attempt to compile it.
     if (!(compiled_module = ctx->compile(source, path)))
     {
-      return ref<object>();
+      return std::shared_ptr<object>();
     }
 
     // Run the module code inside new execution context.
-    module_ctx = ctx->runtime()->new_context();
+    module_ctx = ctx->runtime()->memory_manager().new_context(ctx->runtime());
     module_ctx->filename(path);
     if (!compiled_module->call(module_ctx))
     {
@@ -144,7 +145,7 @@ namespace plorth
         ctx->error(error::code_import, U"Module import failed.");
       }
 
-      return ref<object>();
+      return std::shared_ptr<object>();
     }
 
     // Finally convert the module into object.
@@ -247,7 +248,7 @@ namespace plorth
     return false;
   }
 
-  static bool module_resolve_path(const ref<context>& ctx,
+  static bool module_resolve_path(context* ctx,
                                   const unistring& path,
                                   unistring& resolved_path)
   {

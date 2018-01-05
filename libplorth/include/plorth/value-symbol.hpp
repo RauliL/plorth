@@ -83,9 +83,7 @@ namespace plorth
       return type_symbol;
     }
 
-    bool equals(const ref<value>& that) const;
-    bool exec(const ref<context>& ctx);
-    bool eval(const ref<context>& ctx, ref<value>& slot);
+    bool equals(const std::shared_ptr<value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
 
@@ -106,9 +104,9 @@ namespace plorth
 namespace std
 {
   template<>
-  struct hash<plorth::ref<plorth::symbol>>
+  struct hash<shared_ptr<plorth::symbol>>
   {
-    using argument_type = plorth::ref<plorth::symbol>;
+    using argument_type = shared_ptr<plorth::symbol>;
     using result_type = std::size_t;
 
     inline result_type operator()(const argument_type& key) const
@@ -118,9 +116,9 @@ namespace std
   };
 
   template<>
-  struct equal_to<plorth::ref<plorth::symbol>>
+  struct equal_to<shared_ptr<plorth::symbol>>
   {
-    using first_argument_type = plorth::ref<plorth::symbol>;
+    using first_argument_type = shared_ptr<plorth::symbol>;
     using second_argument_type = first_argument_type;
     using result_type = bool;
 

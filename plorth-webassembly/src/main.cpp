@@ -5,19 +5,19 @@
 using namespace plorth;
 
 static memory::manager* memory_manager;
-static ref<runtime> plorth_runtime;
-static ref<context> plorth_context;
+static std::shared_ptr<runtime> plorth_runtime;
+static std::shared_ptr<context> plorth_context;
 
 static void plorth_initialize();
 
-void initialize_repl_api(const ref<runtime>&);
+void initialize_repl_api(const std::shared_ptr<runtime>&);
 
 /**
  * Compiles and executes given source code.
  */
 static void plorth_execute(const std::wstring& source)
 {
-  ref<quote> script;
+  std::shared_ptr<quote> script;
 
   if (!plorth_context)
   {
@@ -99,6 +99,6 @@ static void plorth_initialize()
   }
   memory_manager = new memory::manager();
   plorth_runtime = memory_manager->new_runtime();
-  plorth_context = plorth_runtime->new_context();
+  plorth_context = memory_manager->new_context(plorth_runtime);
   initialize_repl_api(plorth_runtime);
 }

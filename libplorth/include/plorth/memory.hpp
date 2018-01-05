@@ -27,12 +27,13 @@
 #define PLORTH_MEMORY_HPP_GUARD
 
 #include <plorth/config.hpp>
-#include <plorth/ref.hpp>
 
 #include <cstddef>
+#include <memory>
 
 namespace plorth
 {
+  class context;
   class runtime;
 
   namespace memory
@@ -73,7 +74,15 @@ namespace plorth
        * Creates new scripting runtime that uses this memory manager for memory
        * allocation.
        */
-      ref<runtime> new_runtime();
+      std::shared_ptr<runtime> new_runtime();
+
+      /**
+       * Creates new scripting context that uses given scripting runtime as
+       * it's runtime.
+       */
+      std::shared_ptr<context> new_context(
+        const std::shared_ptr<class runtime>& runtime
+      );
 
       manager(const manager&) = delete;
       manager(manager&&) = delete;
@@ -110,24 +119,6 @@ namespace plorth
        */
       virtual ~managed();
 
-      /**
-       * Increases the reference counter.
-       */
-      inline void inc_ref_count()
-      {
-        ++m_ref_count;
-      }
-
-      /**
-       * Decreases the reference counter.
-       *
-       * \return True if there are no more references to the object.
-       */
-      inline bool dec_ref_count()
-      {
-        return !--m_ref_count;
-      }
-
       void* operator new(std::size_t size, class manager& manager);
       void operator delete(void* pointer);
 
@@ -135,10 +126,6 @@ namespace plorth
       managed(managed&&) = delete;
       void operator=(const managed&) = delete;
       void operator=(managed&&) = delete;
-
-    private:
-      /** Used to track references to the object. */
-      std::size_t m_ref_count;
     };
 
 #if PLORTH_ENABLE_MEMORY_POOL

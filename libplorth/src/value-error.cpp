@@ -76,16 +76,16 @@ namespace plorth
     return U"Unknown error";
   }
 
-  bool error::equals(const ref<value>& that) const
+  bool error::equals(const std::shared_ptr<value>& that) const
   {
-    const error* err;
+    std::shared_ptr<error> err;
 
     if (!that || !that->is(type_error))
     {
       return false;
     }
 
-    err = that.cast<error>();
+    err = std::static_pointer_cast<error>(that);
 
     return m_code == err->m_code && !m_message.compare(err->m_message);
   }
@@ -128,14 +128,14 @@ namespace plorth
    *
    * Returns error code extracted from the error in numeric form.
    */
-  static void w_code(const ref<context>& ctx)
+  static void w_code(const std::shared_ptr<context>& ctx)
   {
-    ref<value> err;
+    std::shared_ptr<value> err;
 
     if (ctx->pop(err, value::type_error))
     {
       ctx->push(err);
-      ctx->push_int(err.cast<error>()->code());
+      ctx->push_int(std::static_pointer_cast<error>(err)->code());
     }
   }
 
@@ -153,13 +153,13 @@ namespace plorth
    * Returns error message extracted from the error, or null if the error does
    * not have any error message.
    */
-  static void w_message(const ref<context>& ctx)
+  static void w_message(const std::shared_ptr<context>& ctx)
   {
-    ref<value> err;
+    std::shared_ptr<value> err;
 
     if (ctx->pop(err, value::type_error))
     {
-      const unistring& message = err.cast<error>()->message();
+      const unistring& message = std::static_pointer_cast<error>(err)->message();
 
       ctx->push(err);
       if (message.empty())
@@ -188,13 +188,13 @@ namespace plorth
    * Position is returned as object with `filename`, `line` and `column`
    * properties.
    */
-  static void w_position(const ref<context>& ctx)
+  static void w_position(const std::shared_ptr<context>& ctx)
   {
-    ref<value> err;
+    std::shared_ptr<value> err;
 
     if (ctx->pop(err, value::type_error))
     {
-      const auto position = err.cast<error>()->position();
+      const auto position = std::static_pointer_cast<error>(err)->position();
 
       ctx->push(err);
       if (position)
@@ -221,13 +221,13 @@ namespace plorth
    *
    * Sets given error as current error of the execution context.
    */
-  static void w_throw(const ref<context>& ctx)
+  static void w_throw(const std::shared_ptr<context>& ctx)
   {
-    ref<value> err;
+    std::shared_ptr<value> err;
 
     if (ctx->pop(err, value::type_error))
     {
-      ctx->error(err.cast<error>());
+      ctx->error(std::static_pointer_cast<error>(err));
     }
   }
 

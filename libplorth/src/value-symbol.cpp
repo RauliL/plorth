@@ -24,9 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
-#include <plorth/value-symbol.hpp>
-
-#include "./utils.hpp"
 
 namespace plorth
 {
@@ -60,123 +57,14 @@ namespace plorth
     return h;
   }
 
-  bool symbol::equals(const ref<value>& that) const
+  bool symbol::equals(const std::shared_ptr<value>& that) const
   {
     if (that && that->is(type_symbol))
     {
-      return !m_id.compare(that.cast<symbol>()->m_id);
+      return !m_id.compare(std::static_pointer_cast<symbol>(that)->m_id);
     } else {
       return false;
     }
-  }
-
-  bool symbol::exec(const ref<context>& ctx)
-  {
-    // Update source code position of the context, if this symbol has such
-    // information.
-    if (m_position)
-    {
-      ctx->position() = *m_position;
-    }
-
-    // Look from prototype of the current item.
-    {
-      const auto& stack = ctx->data();
-
-      if (!stack.empty() && stack.back())
-      {
-        const ref<object> prototype = stack.back()->prototype(ctx->runtime());
-        ref<value> val;
-
-        if (prototype && prototype->property(ctx->runtime(), m_id, val))
-        {
-          if (val && val->is(value::type_quote))
-          {
-            return val.cast<quote>()->call(ctx);
-          }
-          ctx->push(val);
-
-          return true;
-        }
-      }
-    }
-
-    // Look for a word from dictionary of current context.
-    {
-      const auto& local_dictionary = ctx->dictionary();
-      const auto entry = local_dictionary.find(this);
-
-      if (entry != std::end(local_dictionary) && entry->second)
-      {
-        return entry->second->call(ctx);
-      }
-    }
-
-    // TODO: If not found, see if it's a "fully qualified" name, e.g. a name
-    // with a namespace name, colon and a word - Such as "num:+", and then look
-    // for that from the specified namespace.
-
-    // Look from global dictionary.
-    {
-      const auto& global_dictionary = ctx->runtime()->dictionary();
-      const auto entry = global_dictionary.find(this);
-
-      if (entry != std::end(global_dictionary) && entry->second)
-      {
-        return entry->second->call(ctx);
-      }
-    }
-
-    // If the name of the word can be converted into number, then do just that.
-    if (is_number(m_id))
-    {
-      ctx->push_number(m_id);
-
-      return true;
-    }
-
-    // Otherwise it's reference error.
-    ctx->error(error::code_reference, U"Unrecognized word: `" + m_id + U"'");
-
-    return false;
-  }
-
-  bool symbol::eval(const ref<context>& ctx, ref<value>& slot)
-  {
-    if (!m_id.compare(U"null"))
-    {
-      slot.release();
-
-      return true;
-    }
-    else if (!m_id.compare(U"true"))
-    {
-      slot = ctx->runtime()->true_value();
-
-      return true;
-    }
-    else if (!m_id.compare(U"false"))
-    {
-      slot = ctx->runtime()->false_value();
-
-      return true;
-    }
-    else if (!m_id.compare(U"drop"))
-    {
-      return ctx->pop(slot);
-    }
-    else if (is_number(m_id))
-    {
-      slot = ctx->runtime()->number(m_id);
-
-      return true;
-    }
-    ctx->error(
-      error::code_syntax,
-      U"Unexpected `" + m_id + U"'; Missing value."
-    );
-
-    return false;
   }
 
   unistring symbol::to_string() const
@@ -189,7 +77,7 @@ namespace plorth
     return m_id;
   }
 
-  ref<class symbol> runtime::symbol(const unistring& id,
+  std::shared_ptr<class symbol> runtime::symbol(const unistring& id,
                                     const struct position* position)
   {
 #if PLORTH_ENABLE_SYMBOL_CACHE
@@ -197,7 +85,9 @@ namespace plorth
 
     if (entry == std::end(m_symbol_cache))
     {
-      const ref<class symbol> reference = new (*m_memory_manager) class symbol(id);
+      const auto reference = std::shared_ptr<class symbol>(
+        new (*m_memory_manager) class symbol(id)
+      );
 
       m_symbol_cache[id] = reference;
 
@@ -206,7 +96,9 @@ namespace plorth
 
     return entry->second;
 #else
-    return new (*m_memory_manager) class symbol(id, position);
+    return std::shared_ptr<class symbol>(
+      new (*m_memory_manager) class symbol(id, position)
+    );
 #endif
   }
 
@@ -228,13 +120,13 @@ namespace plorth
    * Position is returnedd as object with `filename`, `line` and `column`
    * properties.
    */
-  static void w_position(const ref<context>& ctx)
+  static void w_position(const std::shared_ptr<context>& ctx)
   {
-    ref<value> sym;
+    std::shared_ptr<value> sym;
 
     if (ctx->pop(sym, value::type_symbol))
     {
-      const auto position = sym.cast<symbol>()->position();
+      const auto position = std::static_pointer_cast<symbol>(sym)->position();
 
       ctx->push(sym);
       if (position)
@@ -264,13 +156,13 @@ namespace plorth
    * symbol does not resolve into any kind of word or value, number conversion
    * is attempted on it. If that also fails, reference error will be thrown.
    */
-  static void w_call(const ref<context>& ctx)
+  static void w_call(const std::shared_ptr<context>& ctx)
   {
-    ref<symbol> sym;
+    std::shared_ptr<symbol> sym;
 
     if (ctx->pop_symbol(sym))
     {
-      sym->exec(ctx);
+      value::exec(ctx, sym);
     }
   }
 
