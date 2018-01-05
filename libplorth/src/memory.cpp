@@ -130,8 +130,7 @@ namespace plorth
       return std::shared_ptr<context>(new (*this) context(runtime));
     }
 
-    managed::managed()
-      : m_ref_count(0) {}
+    managed::managed() {}
 
     managed::~managed() {}
 

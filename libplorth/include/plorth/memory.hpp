@@ -119,24 +119,6 @@ namespace plorth
        */
       virtual ~managed();
 
-      /**
-       * Increases the reference counter.
-       */
-      inline void inc_ref_count()
-      {
-        ++m_ref_count;
-      }
-
-      /**
-       * Decreases the reference counter.
-       *
-       * \return True if there are no more references to the object.
-       */
-      inline bool dec_ref_count()
-      {
-        return !--m_ref_count;
-      }
-
       void* operator new(std::size_t size, class manager& manager);
       void operator delete(void* pointer);
 
@@ -144,10 +126,6 @@ namespace plorth
       managed(managed&&) = delete;
       void operator=(const managed&) = delete;
       void operator=(managed&&) = delete;
-
-    private:
-      /** Used to track references to the object. */
-      std::size_t m_ref_count;
     };
 
 #if PLORTH_ENABLE_MEMORY_POOL
