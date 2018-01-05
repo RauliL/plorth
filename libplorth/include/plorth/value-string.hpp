@@ -63,59 +63,50 @@ namespace plorth
       return type_string;
     }
 
-    bool equals(const ref<class value>& that) const;
+    bool equals(const std::shared_ptr<class value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
-
-    /**
-     * Iterator implementation for Plorth string.
-     */
-    class iterator
-    {
-    public:
-      using difference_type = int;
-      using value_type = unichar;
-      using pointer = value_type*;
-      using reference = value_type&;
-      using iterator_category = std::forward_iterator_tag;
-
-      iterator(const ref<string>& str, string::size_type index = 0);
-      iterator(const iterator& that);
-      iterator& operator=(const iterator& that);
-
-      iterator& operator++();
-      iterator operator++(int);
-      value_type operator*();
-
-      bool operator==(const iterator& that) const;
-      bool operator!=(const iterator& that) const;
-
-    private:
-      /** Reference to string which is being iterated. */
-      ref<string> m_string;
-      /** Current offset in the iterated string. */
-      array::size_type m_index;
-    };
-
-    inline iterator begin()
-    {
-      return iterator(this);
-    }
-
-    inline iterator end()
-    {
-      return iterator(this, length());
-    }
   };
 
-  inline string::iterator begin(const ref<string>& str)
+  /**
+   * Iterator implementation for Plorth string.
+   */
+  class string_iterator
   {
-    return str->begin();
+  public:
+    using difference_type = int;
+    using value_type = unichar;
+    using pointer = value_type*;
+    using reference = value_type&;
+    using iterator_category = std::forward_iterator_tag;
+
+    string_iterator(const std::shared_ptr<string>& str,
+                    string::size_type index = 0);
+    string_iterator(const string_iterator& that);
+    string_iterator& operator=(const string_iterator& that);
+
+    string_iterator& operator++();
+    string_iterator operator++(int);
+    value_type operator*();
+
+    bool operator==(const string_iterator& that) const;
+    bool operator!=(const string_iterator& that) const;
+
+  private:
+    /** Reference to string which is being iterated. */
+    std::shared_ptr<string> m_string;
+    /** Current offset in the iterated string. */
+    array::size_type m_index;
+  };
+
+  inline string_iterator begin(const std::shared_ptr<string>& str)
+  {
+    return string_iterator(str);
   }
 
-  inline string::iterator end(const ref<string>& str)
+  inline string_iterator end(const std::shared_ptr<string>& str)
   {
-    return str->end();
+    return string_iterator(str, str->length());
   }
 }
 

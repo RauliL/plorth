@@ -28,38 +28,22 @@
 
 namespace plorth
 {
-  word::word(const ref<class symbol>& symbol, const ref<class quote>& quote)
+  word::word(const std::shared_ptr<class symbol>& symbol,
+             const std::shared_ptr<class quote>& quote)
     : m_symbol(symbol)
     , m_quote(quote) {}
 
-  bool word::equals(const ref<value>& that) const
+  bool word::equals(const std::shared_ptr<value>& that) const
   {
-    word* w;
+    std::shared_ptr<word> w;
 
     if (!that || !that->is(type_word))
     {
       return false;
     }
-    w = that.cast<word>();
+    w = std::static_pointer_cast<word>(that);
 
     return m_symbol->equals(w->m_symbol) && m_quote->equals(w->m_quote);
-  }
-
-  bool word::exec(const std::shared_ptr<context>& ctx)
-  {
-    ctx->dictionary()[m_symbol] = m_quote;
-
-    return true;
-  }
-
-  bool word::eval(const std::shared_ptr<context>& ctx, ref<value>&)
-  {
-    ctx->error(
-      error::code_syntax,
-      U"Unexpected word declaration; Missing value."
-    );
-
-    return false;
   }
 
   unistring word::to_string() const
@@ -87,7 +71,7 @@ namespace plorth
    */
   static void w_symbol(const std::shared_ptr<context>& ctx)
   {
-    ref<word> wrd;
+    std::shared_ptr<word> wrd;
 
     if (ctx->pop_word(wrd))
     {
@@ -112,7 +96,7 @@ namespace plorth
    */
   static void w_quote(const std::shared_ptr<context>& ctx)
   {
-    ref<word> wrd;
+    std::shared_ptr<word> wrd;
 
     if (ctx->pop_word(wrd))
     {
@@ -132,7 +116,7 @@ namespace plorth
    */
   static void w_call(const std::shared_ptr<context>& ctx)
   {
-    ref<word> wrd;
+    std::shared_ptr<word> wrd;
 
     if (ctx->pop_word(wrd))
     {
@@ -151,11 +135,11 @@ namespace plorth
    */
   void w_define(const std::shared_ptr<context>& ctx)
   {
-    ref<word> wrd;
+    std::shared_ptr<word> wrd;
 
     if (ctx->pop_word(wrd))
     {
-      wrd->exec(ctx);
+      value::exec(ctx, wrd);
     }
   }
 

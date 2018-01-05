@@ -41,16 +41,12 @@ namespace plorth
     {
       position = &m_position;
     }
-    m_error = new (m_runtime->memory_manager()) class error(
-      code,
-      message,
-      position
-    );
+    m_error = m_runtime->value<class error>(code, message, position);
   }
 
   void context::push_null()
   {
-    push(ref<value>());
+    push(std::shared_ptr<value>());
   }
 
   void context::push_boolean(bool value)
@@ -98,13 +94,13 @@ namespace plorth
     push(m_runtime->symbol(id));
   }
 
-  void context::push_quote(const std::vector<ref<value>>& values)
+  void context::push_quote(const std::vector<std::shared_ptr<value>>& values)
   {
     push(m_runtime->compiled_quote(values));
   }
 
-  void context::push_word(const ref<class symbol>& symbol,
-                          const ref<class quote>& quote)
+  void context::push_word(const std::shared_ptr<class symbol>& symbol,
+                          const std::shared_ptr<class quote>& quote)
   {
     push(m_runtime->value<word>(symbol, quote));
   }
@@ -126,7 +122,7 @@ namespace plorth
   {
     if (!m_data.empty())
     {
-      const ref<class value>& value = m_data.back();
+      const auto& value = m_data.back();
 
       if ((!value && type != value::type_null) || (value && !value->is(type)))
       {
@@ -148,7 +144,7 @@ namespace plorth
     return false;
   }
 
-  bool context::pop(ref<value>& slot)
+  bool context::pop(std::shared_ptr<value>& slot)
   {
     if (!m_data.empty())
     {
@@ -162,7 +158,7 @@ namespace plorth
     return false;
   }
 
-  bool context::pop(ref<value>& slot, enum value::type type)
+  bool context::pop(std::shared_ptr<value>& slot, enum value::type type)
   {
     if (!m_data.empty())
     {
@@ -189,105 +185,65 @@ namespace plorth
 
   bool context::pop_boolean(bool& slot)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (!pop(value, value::type_boolean))
     {
       return false;
     }
-    slot = value.cast<boolean>()->value();
+    slot = std::static_pointer_cast<boolean>(value)->value();
 
     return true;
   }
 
-  bool context::pop_number(ref<number>& slot)
+  template< typename T >
+  inline bool typed_context_pop(context* ctx,
+                                std::shared_ptr<T>& slot,
+                                enum value::type type)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
-    if (!pop(value, value::type_number))
+    if (!ctx->pop(value, type))
     {
       return false;
     }
-    slot = value.cast<number>();
+    slot = std::static_pointer_cast<T>(value);
 
     return true;
   }
 
-  bool context::pop_string(ref<string>& slot)
+  bool context::pop_number(std::shared_ptr<number>& slot)
   {
-    ref<class value> value;
-
-    if (!pop(value, value::type_string))
-    {
-      return false;
-    }
-    slot = value.cast<string>();
-
-    return true;
+    return typed_context_pop<number>(this, slot, value::type_number);
   }
 
-  bool context::pop_array(ref<array>& slot)
+  bool context::pop_string(std::shared_ptr<string>& slot)
   {
-    ref<class value> value;
-
-    if (!pop(value, value::type_array))
-    {
-      return false;
-    }
-    slot = value.cast<array>();
-
-    return true;
+    return typed_context_pop<string>(this, slot, value::type_string);
   }
 
-  bool context::pop_object(ref<object>& slot)
+  bool context::pop_array(std::shared_ptr<array>& slot)
   {
-    ref<class value> value;
-
-    if (!pop(value, value::type_object))
-    {
-      return false;
-    }
-    slot = value.cast<object>();
-
-    return true;
+    return typed_context_pop<array>(this, slot, value::type_array);
   }
 
-  bool context::pop_quote(ref<quote>& slot)
+  bool context::pop_object(std::shared_ptr<object>& slot)
   {
-    ref<class value> value;
-
-    if (!pop(value, value::type_quote))
-    {
-      return false;
-    }
-    slot = value.cast<quote>();
-
-    return true;
+    return typed_context_pop<object>(this, slot, value::type_object);
   }
 
-  bool context::pop_symbol(ref<symbol>& slot)
+  bool context::pop_quote(std::shared_ptr<quote>& slot)
   {
-    ref<class value> value;
-
-    if (!pop(value, value::type_symbol))
-    {
-      return false;
-    }
-    slot = value.cast<symbol>();
-
-    return true;
+    return typed_context_pop<quote>(this, slot, value::type_quote);
   }
 
-  bool context::pop_word(ref<word>& slot)
+  bool context::pop_symbol(std::shared_ptr<symbol>& slot)
   {
-    ref<class value> value;
+    return typed_context_pop<symbol>(this, slot, value::type_symbol);
+  }
 
-    if (!pop(value, value::type_word))
-    {
-      return false;
-    }
-    slot = value.cast<word>();
-
-    return true;
+  bool context::pop_word(std::shared_ptr<word>& slot)
+  {
+    return typed_context_pop<word>(this, slot, value::type_word);
   }
 }

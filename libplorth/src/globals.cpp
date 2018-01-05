@@ -215,7 +215,7 @@ namespace plorth
    */
   static void w_dup(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -243,8 +243,8 @@ namespace plorth
    */
   static void w_dup2(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {
@@ -271,7 +271,7 @@ namespace plorth
    */
   static void w_nip(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value) && ctx->pop())
     {
@@ -298,8 +298,8 @@ namespace plorth
    */
   static void w_over(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {
@@ -328,9 +328,9 @@ namespace plorth
    */
   static void w_rot(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
-    ref<value> c;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
+    std::shared_ptr<value> c;
 
     if (ctx->pop(a) && ctx->pop(b) && ctx->pop(c))
     {
@@ -357,8 +357,8 @@ namespace plorth
    */
   static void w_swap(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {
@@ -386,8 +386,8 @@ namespace plorth
    */
   static void w_tuck(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {
@@ -411,7 +411,7 @@ namespace plorth
    */
   static void w_is_array(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -434,7 +434,7 @@ namespace plorth
    */
   static void w_is_boolean(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -457,7 +457,7 @@ namespace plorth
    */
   static void w_is_error(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -480,7 +480,7 @@ namespace plorth
    */
   static void w_is_number(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -503,7 +503,7 @@ namespace plorth
    */
   static void w_is_null(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -526,7 +526,7 @@ namespace plorth
    */
   static void w_is_object(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -549,7 +549,7 @@ namespace plorth
    */
   static void w_is_quote(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -572,7 +572,7 @@ namespace plorth
    */
   static void w_is_string(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -595,7 +595,7 @@ namespace plorth
    */
   static void w_is_symbol(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val;
+    std::shared_ptr<value> val;
 
     if (ctx->pop(val))
     {
@@ -618,7 +618,7 @@ namespace plorth
    */
   static void w_is_word(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val;
+    std::shared_ptr<value> val;
 
     if (ctx->pop(val))
     {
@@ -641,7 +641,7 @@ namespace plorth
    */
   static void w_typeof(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -671,13 +671,13 @@ namespace plorth
   static void w_is_instance_of(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<value> val;
-    ref<object> obj;
+    std::shared_ptr<value> val;
+    std::shared_ptr<object> obj;
 
     if (ctx->pop_object(obj) && ctx->pop(val))
     {
-      ref<value> prototype1;
-      ref<value> prototype2 = val->prototype(runtime);
+      std::shared_ptr<value> prototype1;
+      std::shared_ptr<value> prototype2 = val->prototype(runtime);
 
       ctx->push(val);
 
@@ -695,7 +695,10 @@ namespace plorth
         return;
       }
 
-      while (prototype2.cast<object>()->property(runtime, U"__proto__", prototype2, false) &&
+      while (std::static_pointer_cast<object>(prototype2)->property(runtime,
+                                                                    U"__proto__",
+                                                                    prototype2,
+                                                                    false) &&
              prototype2 &&
              prototype2->is(value::type_object))
       {
@@ -725,7 +728,7 @@ namespace plorth
    */
   static void w_proto(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (ctx->pop(value))
     {
@@ -753,7 +756,7 @@ namespace plorth
    */
   static void w_to_boolean(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (!ctx->pop(value))
     {
@@ -781,7 +784,7 @@ namespace plorth
    */
   static void w_to_string(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (!ctx->pop(value))
     {
@@ -809,7 +812,7 @@ namespace plorth
    */
   static void w_to_source(const std::shared_ptr<context>& ctx)
   {
-    ref<class value> value;
+    std::shared_ptr<class value> value;
 
     if (!ctx->pop(value))
     {
@@ -836,7 +839,7 @@ namespace plorth
    */
   static void w_1array(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val;
+    std::shared_ptr<value> val;
 
     if (ctx->pop(val))
     {
@@ -858,12 +861,12 @@ namespace plorth
    */
   static void w_2array(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val1;
-    ref<value> val2;
+    std::shared_ptr<value> val1;
+    std::shared_ptr<value> val2;
 
     if (ctx->pop(val2) && ctx->pop(val1))
     {
-      ref<value> buffer[2];
+      std::shared_ptr<value> buffer[2];
 
       buffer[0] = val1;
       buffer[1] = val2;
@@ -885,12 +888,12 @@ namespace plorth
    */
   static void w_narray(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_number(num))
     {
       const number::int_type size = num->as_int();
-      ref<value>* buffer;
+      std::shared_ptr<value>* buffer;
 
       if (size < 0)
       {
@@ -898,11 +901,11 @@ namespace plorth
         return;
       }
 
-      buffer = new ref<value>[size];
+      buffer = new std::shared_ptr<value>[size];
 
       for (number::int_type i = 0; i < size; ++i)
       {
-        ref<value> val;
+        std::shared_ptr<value> val;
 
         if (!ctx->pop(val))
         {
@@ -929,7 +932,7 @@ namespace plorth
   static void w_if(const std::shared_ptr<context>& ctx)
   {
     bool condition;
-    ref<class quote> quote;
+    std::shared_ptr<class quote> quote;
 
     if (ctx->pop_quote(quote) && ctx->pop_boolean(condition) && condition)
     {
@@ -950,8 +953,8 @@ namespace plorth
   static void w_if_else(const std::shared_ptr<context>& ctx)
   {
     bool condition;
-    ref<quote> then_quote;
-    ref<quote> else_quote;
+    std::shared_ptr<quote> then_quote;
+    std::shared_ptr<quote> else_quote;
 
     if (!ctx->pop_quote(else_quote)
         || !ctx->pop_quote(then_quote)
@@ -979,8 +982,8 @@ namespace plorth
    */
   static void w_while(const std::shared_ptr<context>& ctx)
   {
-    ref<quote> test;
-    ref<quote> body;
+    std::shared_ptr<quote> test;
+    std::shared_ptr<quote> body;
 
     if (!ctx->pop_quote(body) || !ctx->pop_quote(test))
     {
@@ -1010,8 +1013,8 @@ namespace plorth
    */
   static void w_try(const std::shared_ptr<context>& ctx)
   {
-    ref<quote> try_quote;
-    ref<quote> catch_quote;
+    std::shared_ptr<quote> try_quote;
+    std::shared_ptr<quote> catch_quote;
 
     if (!ctx->pop_quote(catch_quote) || !ctx->pop_quote(try_quote))
     {
@@ -1040,9 +1043,9 @@ namespace plorth
    */
   static void w_try_else(const std::shared_ptr<context>& ctx)
   {
-    ref<quote> try_quote;
-    ref<quote> catch_quote;
-    ref<quote> else_quote;
+    std::shared_ptr<quote> try_quote;
+    std::shared_ptr<quote> catch_quote;
+    std::shared_ptr<quote> else_quote;
 
     if (!ctx->pop_quote(else_quote)
         || !ctx->pop_quote(catch_quote)
@@ -1074,8 +1077,8 @@ namespace plorth
    */
   static void w_compile(const std::shared_ptr<context>& ctx)
   {
-    ref<string> source;
-    ref<class quote> quote;
+    std::shared_ptr<string> source;
+    std::shared_ptr<class quote> quote;
 
     if (!ctx->pop_string(source))
     {
@@ -1139,8 +1142,8 @@ namespace plorth
    */
   static void w_const(const std::shared_ptr<context>& ctx)
   {
-    ref<string> id;
-    ref<value> val;
+    std::shared_ptr<string> id;
+    std::shared_ptr<value> val;
 
     if (ctx->pop_string(id) && ctx->pop(val))
     {
@@ -1161,7 +1164,7 @@ namespace plorth
    */
   static void w_import(const std::shared_ptr<context>& ctx)
   {
-    ref<string> path;
+    std::shared_ptr<string> path;
 
     if (ctx->pop_string(path))
     {
@@ -1183,7 +1186,7 @@ namespace plorth
     const auto& runtime = ctx->runtime();
     const auto& arguments = runtime->arguments();
     const auto size = arguments.size();
-    std::vector<ref<value>> result;
+    std::vector<std::shared_ptr<value>> result;
 
     result.reserve(size);
     for (std::size_t i = 0; i < size; ++i)
@@ -1209,7 +1212,7 @@ namespace plorth
   static void make_error(const std::shared_ptr<context>& ctx,
                          enum error::code code)
   {
-    ref<value> val;
+    std::shared_ptr<value> val;
     unistring message;
 
     if (!ctx->pop(val))
@@ -1221,7 +1224,7 @@ namespace plorth
     {
       if (val->is(value::type_string))
       {
-        message = val.cast<string>()->to_string();
+        message = std::static_pointer_cast<string>(val)->to_string();
       } else {
         ctx->error(
           error::code_type,
@@ -1312,7 +1315,7 @@ namespace plorth
    */
   static void w_print(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val;
+    std::shared_ptr<value> val;
 
     if (ctx->pop(val) && val)
     {
@@ -1332,7 +1335,7 @@ namespace plorth
   static void w_println(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<value> val;
+    std::shared_ptr<value> val;
 
     if (ctx->pop(val))
     {
@@ -1356,7 +1359,7 @@ namespace plorth
    */
   static void w_emit(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_number(num))
     {
@@ -1401,8 +1404,8 @@ namespace plorth
    */
   static void w_eq(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {
@@ -1424,8 +1427,8 @@ namespace plorth
    */
   static void w_ne(const std::shared_ptr<context>& ctx)
   {
-    ref<value> a;
-    ref<value> b;
+    std::shared_ptr<value> a;
+    std::shared_ptr<value> b;
 
     if (ctx->pop(a) && ctx->pop(b))
     {

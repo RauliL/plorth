@@ -98,35 +98,42 @@ namespace plorth
      * \param runtime Script runtime to use for prototype retrieval.
      * \return        Prototype object of the value.
      */
-    ref<object> prototype(const std::shared_ptr<class runtime>& runtime) const;
+    std::shared_ptr<object> prototype(
+      const std::shared_ptr<class runtime>& runtime
+    ) const;
 
     /**
      * Tests whether two values are equal.
      *
      * \param that Other value to test this one against.
      */
-    virtual bool equals(const ref<value>& that) const = 0;
+    virtual bool equals(const std::shared_ptr<value>& that) const = 0;
 
     /**
      * Executes value as part of compiled quote. Default implementation
      * evaluates the value and pushes result into the context.
      *
      * \param ctx Execution context to execute the value in.
+     * \param val Value to execute.
      * \return    Boolean flag telling whether the execution was successfull or
      *            whether an error was encountered.
      */
-    virtual bool exec(const std::shared_ptr<context>& ctx);
+    static bool exec(const std::shared_ptr<context>& ctx,
+                     const std::shared_ptr<value>& val);
 
     /**
      * Evaluates value as element of an array or value of object's property.
      * Default implementation just returns the value itself.
      *
      * \param ctx  Execution context to evaluate the value in.
+     * \param val  Value to evaluate.
      * \param slot Where result of the evaluation will be placed into.
-     * \return     Boolean flag telling whether the execution was successfull or
+     * \return     Boolean flag telling whether the execution was successful or
      *             whether an error was encountered.
      */
-    virtual bool eval(const std::shared_ptr<context>& ctx, ref<value>& slot);
+    static bool eval(const std::shared_ptr<context>& ctx,
+                     const std::shared_ptr<value>& val,
+                     std::shared_ptr<value>& slot);
 
     /**
      * Constructs string representation of the value.
@@ -140,11 +147,11 @@ namespace plorth
     virtual unistring to_source() const = 0;
   };
 
-  bool operator==(const ref<value>&, const ref<value>&);
-  bool operator!=(const ref<value>&, const ref<value>&);
+  bool operator==(const std::shared_ptr<value>&, const std::shared_ptr<value>&);
+  bool operator!=(const std::shared_ptr<value>&, const std::shared_ptr<value>&);
 
   std::ostream& operator<<(std::ostream&, enum value::type);
-  std::ostream& operator<<(std::ostream&, const ref<value>&);
+  std::ostream& operator<<(std::ostream&, const std::shared_ptr<value>&);
 }
 
 #endif /* !PLORTH_VALUE_HPP_GUARD */

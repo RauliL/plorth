@@ -17,7 +17,7 @@ void initialize_repl_api(const std::shared_ptr<runtime>&);
  */
 static void plorth_execute(const std::wstring& source)
 {
-  ref<quote> script;
+  std::shared_ptr<quote> script;
 
   if (!plorth_context)
   {

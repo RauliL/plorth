@@ -27,7 +27,6 @@
 #define PLORTH_MEMORY_HPP_GUARD
 
 #include <plorth/config.hpp>
-#include <plorth/ref.hpp>
 
 #include <cstddef>
 #include <memory>

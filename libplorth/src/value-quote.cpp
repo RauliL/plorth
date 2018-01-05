@@ -39,7 +39,7 @@ namespace plorth
     class compiled_quote : public quote
     {
     public:
-      explicit compiled_quote(const std::vector<ref<value>>& values)
+      explicit compiled_quote(const std::vector<std::shared_ptr<value>>& values)
         : m_values(values) {}
 
       inline enum quote_type quote_type() const
@@ -51,11 +51,7 @@ namespace plorth
       {
         for (const auto& value : m_values)
         {
-          if (!value)
-          {
-            ctx->push_null();
-          }
-          else if (!value->exec(ctx))
+          if (!value::exec(ctx, value))
           {
             return false;
           }
@@ -88,15 +84,16 @@ namespace plorth
         return result;
       }
 
-      bool equals(const ref<value>& that) const
+      bool equals(const std::shared_ptr<value>& that) const
       {
-        const compiled_quote* q;
+        std::shared_ptr<compiled_quote> q;
 
-        if (!that->is(type_quote) || that.cast<quote>()->is(quote_type_compiled))
+        if (!that->is(type_quote)
+            || std::static_pointer_cast<quote>(that)->is(quote_type_compiled))
         {
           return false;
         }
-        q = that.cast<compiled_quote>();
+        q = std::static_pointer_cast<compiled_quote>(that);
         if (m_values.size() != q->m_values.size())
         {
           return false;
@@ -113,7 +110,7 @@ namespace plorth
       }
 
     private:
-      const std::vector<ref<value>> m_values;
+      const std::vector<std::shared_ptr<value>> m_values;
     };
 
     /**
@@ -143,7 +140,7 @@ namespace plorth
         return U"\"native quote\"";
       }
 
-      bool equals(const ref<value>& that) const
+      bool equals(const std::shared_ptr<value>& that) const
       {
         // Currently there is no way to compare two std::function instances
         // against each other, even when they are the same type.
@@ -155,14 +152,18 @@ namespace plorth
     };
   }
 
-  ref<quote> runtime::compiled_quote(const std::vector<ref<class value>>& values)
+  std::shared_ptr<quote> runtime::compiled_quote(const std::vector<std::shared_ptr<class value>>& values)
   {
-    return new (*m_memory_manager) class compiled_quote(values);
+    return std::shared_ptr<quote>(
+      new (*m_memory_manager) class compiled_quote(values)
+    );
   }
 
-  ref<quote> runtime::native_quote(quote::callback callback)
+  std::shared_ptr<quote> runtime::native_quote(quote::callback callback)
   {
-    return new (*m_memory_manager) class native_quote(callback);
+    return std::shared_ptr<quote>(
+      new (*m_memory_manager) class native_quote(callback)
+    );
   }
 
   unistring quote::to_source() const
@@ -181,7 +182,7 @@ namespace plorth
    */
   static void w_call(const std::shared_ptr<context>& ctx)
   {
-    ref<quote> q;
+    std::shared_ptr<quote> q;
 
     if (ctx->pop_quote(q))
     {
@@ -205,8 +206,8 @@ namespace plorth
   static void w_compose(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<quote> left;
-    ref<quote> right;
+    std::shared_ptr<quote> left;
+    std::shared_ptr<quote> right;
 
     if (ctx->pop_quote(right) && ctx->pop_quote(left))
     {
@@ -236,8 +237,8 @@ namespace plorth
   static void w_curry(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<value> argument;
-    ref<quote> quo;
+    std::shared_ptr<value> argument;
+    std::shared_ptr<quote> quo;
 
     if (ctx->pop_quote(quo) && ctx->pop(argument))
     {
@@ -261,7 +262,7 @@ namespace plorth
   static void w_negate(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<quote> quo;
+    std::shared_ptr<quote> quo;
 
     if (ctx->pop_quote(quo))
     {
@@ -290,8 +291,8 @@ namespace plorth
    */
   static void w_dip(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val;
-    ref<quote> quo;
+    std::shared_ptr<value> val;
+    std::shared_ptr<quote> quo;
 
     if (!ctx->pop_quote(quo) || !ctx->pop(val))
     {
@@ -322,9 +323,9 @@ namespace plorth
    */
   static void w_2dip(const std::shared_ptr<context>& ctx)
   {
-    ref<value> val1;
-    ref<value> val2;
-    ref<quote> quo;
+    std::shared_ptr<value> val1;
+    std::shared_ptr<value> val2;
+    std::shared_ptr<quote> quo;
 
     if (!ctx->pop_quote(quo) || !ctx->pop(val2) || !ctx->pop(val1))
     {
@@ -351,8 +352,8 @@ namespace plorth
    */
   static void w_to_word(const std::shared_ptr<context>& ctx)
   {
-    ref<symbol> sym;
-    ref<quote> quo;
+    std::shared_ptr<symbol> sym;
+    std::shared_ptr<quote> quo;
 
     if (ctx->pop_quote(quo) && ctx->pop_symbol(sym))
     {

@@ -107,15 +107,15 @@ namespace plorth
     };
   }
 
-  bool number::equals(const ref<class value>& that) const
+  bool number::equals(const std::shared_ptr<class value>& that) const
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (!that || !that->is(type_number))
     {
       return false;
     }
-    num = that.cast<number>();
+    num = std::static_pointer_cast<number>(that);
     if (is(number_type_real) || num->is(number_type_real))
     {
       return as_real() == num->as_real();
@@ -139,7 +139,7 @@ namespace plorth
     return to_string();
   }
 
-  ref<class number> runtime::number(number::int_type value)
+  std::shared_ptr<number> runtime::number(number::int_type value)
   {
 #if PLORTH_ENABLE_INTEGER_CACHE
     static const int offset = 128;
@@ -151,7 +151,9 @@ namespace plorth
 
       if (!reference)
       {
-        reference = new (*m_memory_manager) int_number(value);
+        reference = std::shared_ptr<class number>(
+          new (*m_memory_manager) int_number(value)
+        );
         m_integer_cache[index] = reference;
       }
 
@@ -159,15 +161,19 @@ namespace plorth
     }
 #endif
 
-    return new (*m_memory_manager) int_number(value);
+    return std::shared_ptr<class number>(
+      new (*m_memory_manager) int_number(value)
+    );
   }
 
-  ref<class number> runtime::number(number::real_type value)
+  std::shared_ptr<number> runtime::number(number::real_type value)
   {
-    return new (*m_memory_manager) real_number(value);
+    return std::shared_ptr<class number>(
+      new (*m_memory_manager) real_number(value)
+    );
   }
 
-  ref<class number> runtime::number(const unistring& value)
+  std::shared_ptr<class number> runtime::number(const unistring& value)
   {
     const auto dot_index = value.find('.');
     const auto exponent_index_lower_case = value.find('e');
@@ -212,7 +218,7 @@ namespace plorth
    */
   static void w_is_nan(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_number(num))
     {
@@ -241,7 +247,7 @@ namespace plorth
    */
   static void w_is_finite(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_number(num))
     {
@@ -267,8 +273,8 @@ namespace plorth
    */
   static void w_times(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
-    ref<quote> quo;
+    std::shared_ptr<number> num;
+    std::shared_ptr<quote> quo;
 
     if (ctx->pop_number(num) && ctx->pop_quote(quo))
     {
@@ -303,7 +309,7 @@ namespace plorth
    */
   static void w_abs(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_number(num))
     {
@@ -330,7 +336,7 @@ namespace plorth
    */
   static void w_round(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_number(num))
     {
@@ -357,7 +363,7 @@ namespace plorth
    */
   static void w_ceil(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_number(num))
     {
@@ -384,7 +390,7 @@ namespace plorth
    */
   static void w_floor(const std::shared_ptr<context>& ctx)
   {
-    ref<number> num;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_number(num))
     {
@@ -412,8 +418,8 @@ namespace plorth
    */
   static void w_max(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -441,8 +447,8 @@ namespace plorth
    */
   static void w_min(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -471,9 +477,9 @@ namespace plorth
    */
   static void w_clamp(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
-    ref<number> c;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
+    std::shared_ptr<number> c;
 
     if (ctx->pop_number(c) && ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -529,9 +535,9 @@ namespace plorth
    */
   static void w_is_in_range(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
-    ref<number> c;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
+    std::shared_ptr<number> c;
 
     if (ctx->pop_number(c) && ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -561,8 +567,8 @@ namespace plorth
     const IntOperation& int_op
   )
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
     number::real_type result;
 
     if (!ctx->pop_number(b) || !ctx->pop_number(a))
@@ -655,8 +661,8 @@ namespace plorth
    */
   static void w_div(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -680,8 +686,8 @@ namespace plorth
    */
   static void w_mod(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
     number::real_type dividend;
     number::real_type divider;
     number::real_type result;
@@ -702,8 +708,8 @@ namespace plorth
   static void number_bit_op(const std::shared_ptr<context>& ctx,
                             const Operation& op)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -780,8 +786,8 @@ namespace plorth
    */
   static void w_shift_right(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -804,8 +810,8 @@ namespace plorth
    */
   static void w_shift_left(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -827,7 +833,7 @@ namespace plorth
    */
   static void w_bit_not(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
+    std::shared_ptr<number> a;
 
     if (ctx->pop_number(a))
     {
@@ -850,8 +856,8 @@ namespace plorth
    */
   static void w_lt(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -879,8 +885,8 @@ namespace plorth
    */
   static void w_gt(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -908,8 +914,8 @@ namespace plorth
    */
   static void w_lte(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
@@ -938,8 +944,8 @@ namespace plorth
    */
   static void w_gte(const std::shared_ptr<context>& ctx)
   {
-    ref<number> a;
-    ref<number> b;
+    std::shared_ptr<number> a;
+    std::shared_ptr<number> b;
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {

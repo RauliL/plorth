@@ -74,7 +74,8 @@ namespace plorth
     class concat_string : public string
     {
     public:
-      explicit concat_string(const ref<string>& left, const ref<string>& right)
+      explicit concat_string(const std::shared_ptr<string>& left,
+                             const std::shared_ptr<string>& right)
         : m_length(left->length() + right->length())
         , m_left(left)
         , m_right(right) {}
@@ -98,14 +99,14 @@ namespace plorth
 
     private:
       const size_type m_length;
-      const ref<string> m_left;
-      const ref<string> m_right;
+      const std::shared_ptr<string> m_left;
+      const std::shared_ptr<string> m_right;
     };
 
     class substring : public string
     {
     public:
-      explicit substring(const ref<string>& original,
+      explicit substring(const std::shared_ptr<string>& original,
                          size_type offset,
                          size_type length)
         : m_original(original)
@@ -123,7 +124,7 @@ namespace plorth
       }
 
     private:
-      const ref<string> m_original;
+      const std::shared_ptr<string> m_original;
       const size_type m_offset;
       const size_type m_length;
     };
@@ -134,7 +135,7 @@ namespace plorth
     class reversed_string : public string
     {
     public:
-      explicit reversed_string(const ref<string>& original)
+      explicit reversed_string(const std::shared_ptr<string>& original)
         : m_original(original) {}
 
       inline size_type length() const
@@ -148,20 +149,20 @@ namespace plorth
       }
 
     private:
-      const ref<string> m_original;
+      const std::shared_ptr<string> m_original;
     };
   }
 
-  bool string::equals(const ref<class value>& that) const
+  bool string::equals(const std::shared_ptr<class value>& that) const
   {
     const size_type len = length();
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (!that || !that->is(type_string))
     {
       return false;
     }
-    str = that.cast<string>();
+    str = std::static_pointer_cast<string>(that);
     if (len != str->length())
     {
       return false;
@@ -196,15 +197,16 @@ namespace plorth
     return json_stringify(to_string());
   }
 
-  string::iterator::iterator(const ref<string>& str, string::size_type index)
+  string_iterator::string_iterator(const std::shared_ptr<string>& str,
+                                   string::size_type index)
     : m_string(str)
     , m_index(index) {}
 
-  string::iterator::iterator(const iterator& that)
+  string_iterator::string_iterator(const string_iterator& that)
     : m_string(that.m_string)
     , m_index(that.m_index) {}
 
-  string::iterator& string::iterator::operator=(const string::iterator& that)
+  string_iterator& string_iterator::operator=(const string_iterator& that)
   {
     m_string = that.m_string;
     m_index = that.m_index;
@@ -212,46 +214,48 @@ namespace plorth
     return *this;
   }
 
-  string::iterator& string::iterator::operator++()
+  string_iterator& string_iterator::operator++()
   {
     ++m_index;
 
     return *this;
   }
 
-  string::iterator string::iterator::operator++(int)
+  string_iterator string_iterator::operator++(int)
   {
-    string::iterator copy(*this);
+    string_iterator copy(*this);
 
     ++m_index;
 
     return copy;
   }
 
-  string::iterator::value_type string::iterator::operator*()
+  string_iterator::value_type string_iterator::operator*()
   {
     return m_string->at(m_index);
   }
 
-  bool string::iterator::operator==(const iterator& that) const
+  bool string_iterator::operator==(const string_iterator& that) const
   {
     return m_index == that.m_index;
   }
 
-  bool string::iterator::operator!=(const iterator& that) const
+  bool string_iterator::operator!=(const string_iterator& that) const
   {
     return m_index != that.m_index;
   }
 
-  ref<class string> runtime::string(const unistring& input)
+  std::shared_ptr<string> runtime::string(const unistring& input)
   {
     return string(input.c_str(), input.length());
   }
 
-  ref<class string> runtime::string(string::const_pointer chars,
-                                    string::size_type length)
+  std::shared_ptr<string> runtime::string(string::const_pointer chars,
+                                          string::size_type length)
   {
-    return new (*m_memory_manager) simple_string(chars, length);
+    return std::shared_ptr<class string>(
+      new (*m_memory_manager) simple_string(chars, length)
+    );
   }
 
   /**
@@ -269,7 +273,7 @@ namespace plorth
    */
   static void w_length(const std::shared_ptr<context>& ctx)
   {
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -281,7 +285,7 @@ namespace plorth
   static void str_test(const std::shared_ptr<context>& ctx,
                        bool (*callback)(unichar))
   {
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (!ctx->pop_string(str))
     {
@@ -378,12 +382,12 @@ namespace plorth
   static void w_chars(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
-      std::vector<ref<value>> output;
+      std::vector<std::shared_ptr<value>> output;
 
       output.reserve(length);
       for (const auto c : str)
@@ -412,12 +416,12 @@ namespace plorth
   static void w_runes(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
-      std::vector<ref<value>> output;
+      std::vector<std::shared_ptr<value>> output;
 
       output.reserve(length);
       for (const auto c : str)
@@ -446,14 +450,14 @@ namespace plorth
   static void w_words(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
       string::size_type begin = 0;
       string::size_type end = 0;
-      std::vector<ref<value>> result;
+      std::vector<std::shared_ptr<value>> result;
 
       for (string::size_type i = 0; i < length; ++i)
       {
@@ -494,14 +498,14 @@ namespace plorth
   static void w_lines(const std::shared_ptr<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
       string::size_type begin = 0;
       string::size_type end = 0;
-      std::vector<ref<value>> result;
+      std::vector<std::shared_ptr<value>> result;
 
       for (string::size_type i = 0; i < length; ++i)
       {
@@ -544,7 +548,7 @@ namespace plorth
    */
   static void w_reverse(const std::shared_ptr<context>& ctx)
   {
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -555,7 +559,7 @@ namespace plorth
   static void str_convert(const std::shared_ptr<context>& ctx,
                           unichar (*callback)(unichar))
   {
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -646,7 +650,7 @@ namespace plorth
    */
   static void w_capitalize(const std::shared_ptr<context>& ctx)
   {
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -683,7 +687,7 @@ namespace plorth
    */
   static void w_trim(const std::shared_ptr<context>& ctx)
   {
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -727,7 +731,7 @@ namespace plorth
    */
   static void w_trim_left(const std::shared_ptr<context>& ctx)
   {
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -764,7 +768,7 @@ namespace plorth
    */
   static void w_trim_right(const std::shared_ptr<context>& ctx)
   {
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -802,7 +806,7 @@ namespace plorth
    */
   static void w_to_number(const std::shared_ptr<context>& ctx)
   {
-    ref<string> a;
+    std::shared_ptr<string> a;
 
     if (ctx->pop_string(a))
     {
@@ -832,8 +836,8 @@ namespace plorth
    */
   static void w_concat(const std::shared_ptr<context>& ctx)
   {
-    ref<string> a;
-    ref<string> b;
+    std::shared_ptr<string> a;
+    std::shared_ptr<string> b;
 
     if (ctx->pop_string(a) && ctx->pop_string(b))
     {
@@ -865,8 +869,8 @@ namespace plorth
    */
   static void w_repeat(const std::shared_ptr<context>& ctx)
   {
-    ref<string> str;
-    ref<number> num;
+    std::shared_ptr<string> str;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_string(str) && ctx->pop_number(num))
     {
@@ -875,7 +879,7 @@ namespace plorth
       if (count > 0)
       {
         const auto& runtime = ctx->runtime();
-        ref<string> result = str;
+        std::shared_ptr<string> result = str;
 
         for (number::int_type i = 1; i < count; ++i)
         {
@@ -910,8 +914,8 @@ namespace plorth
    */
   static void w_get(const std::shared_ptr<context>& ctx)
   {
-    ref<string> str;
-    ref<number> num;
+    std::shared_ptr<string> str;
+    std::shared_ptr<number> num;
 
     if (ctx->pop_string(str) && ctx->pop_number(num))
     {
@@ -952,7 +956,7 @@ namespace plorth
    */
   static void w_to_symbol(const std::shared_ptr<context>& ctx)
   {
-    ref<string> str;
+    std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {

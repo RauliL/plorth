@@ -30,14 +30,14 @@ namespace plorth
   boolean::boolean(bool value)
     : m_value(value) {}
 
-  bool boolean::equals(const ref<class value>& that) const
+  bool boolean::equals(const std::shared_ptr<class value>& that) const
   {
     if (!that || !that->is(type_boolean))
     {
       return false;
     }
 
-    return m_value == that.cast<boolean>()->m_value;
+    return m_value == std::static_pointer_cast<boolean>(that)->m_value;
   }
 
   unistring boolean::to_string() const
@@ -164,8 +164,8 @@ namespace plorth
    */
   static void w_select(const std::shared_ptr<context>& ctx)
   {
-    ref<value> true_value;
-    ref<value> false_value;
+    std::shared_ptr<value> true_value;
+    std::shared_ptr<value> false_value;
     bool condition;
 
     if (ctx->pop_boolean(condition) &&

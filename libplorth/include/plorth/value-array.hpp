@@ -40,7 +40,7 @@ namespace plorth
   {
   public:
     using size_type = std::size_t;
-    using value_type = ref<value>;
+    using value_type = std::shared_ptr<value>;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -61,61 +61,51 @@ namespace plorth
       return type_array;
     }
 
-    bool equals(const ref<value>& that) const;
-    bool eval(const std::shared_ptr<context>& ctx, ref<value>& slot);
-    unistring to_string () const;
+    bool equals(const std::shared_ptr<value>& that) const;
+    unistring to_string() const;
     unistring to_source() const;
-
-    /**
-     * Iterator implementation for Plorth array.
-     */
-    class iterator
-    {
-    public:
-      using difference_type = int;
-      using value_type = const ref<value>;
-      using pointer = value_type*;
-      using reference = value_type&;
-      using iterator_category = std::forward_iterator_tag;
-
-      iterator(const ref<array>& ary, array::size_type index = 0);
-      iterator(const iterator& that);
-      iterator& operator=(const iterator& that);
-
-      iterator& operator++();
-      iterator operator++(int);
-      reference operator*();
-      reference operator->();
-
-      bool operator==(const iterator& that) const;
-      bool operator!=(const iterator& that) const;
-
-    private:
-      /** Reference to array which is being iterated. */
-      ref<array> m_array;
-      /** Current offset in the iterated array. */
-      array::size_type m_index;
-    };
-
-    inline iterator begin()
-    {
-      return iterator(this);
-    }
-
-    inline iterator end()
-    {
-      return iterator(this, size());
-    }
   };
 
-  inline array::iterator begin(const ref<array>& ary)
+  /**
+   * Iterator implementation for Plorth array.
+   */
+  class array_iterator
   {
-    return ary->begin();
+  public:
+    using difference_type = int;
+    using value_type = const std::shared_ptr<value>;
+    using pointer = value_type*;
+    using reference = value_type&;
+    using iterator_category = std::forward_iterator_tag;
+
+    array_iterator(const std::shared_ptr<array>& ary,
+                   array::size_type index = 0);
+    array_iterator(const array_iterator& that);
+    array_iterator& operator=(const array_iterator& that);
+
+    array_iterator& operator++();
+    array_iterator operator++(int);
+    reference operator*();
+    reference operator->();
+
+    bool operator==(const array_iterator& that) const;
+    bool operator!=(const array_iterator& that) const;
+
+  private:
+    /** Reference to array which is being iterated. */
+    std::shared_ptr<array> m_array;
+    /** Current offset in the iterated array. */
+    array::size_type m_index;
+  };
+
+  inline array_iterator begin(const std::shared_ptr<array>& ary)
+  {
+    return array_iterator(ary);
   }
 
-  inline array::iterator end(const ref<array>& ary)
+  inline array_iterator end(const std::shared_ptr<array>& ary)
   {
-    return ary->end();
+    return array_iterator(ary, ary->size());
   }
 }
 

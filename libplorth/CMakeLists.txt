@@ -34,6 +34,8 @@ ADD_LIBRARY(
   SHARED
   src/compiler.cpp
   src/context.cpp
+  src/exec.cpp
+  src/eval.cpp
   src/globals.cpp
   src/memory.cpp
   src/module.cpp

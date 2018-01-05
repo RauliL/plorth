@@ -266,7 +266,7 @@ static inline bool is_console_interactive()
 
 static void handle_error(const std::shared_ptr<context>& ctx)
 {
-  const ref<error>& err = ctx->error();
+  const std::shared_ptr<error>& err = ctx->error();
 
   if (err)
   {
@@ -288,7 +288,7 @@ static void compile_and_run(const std::shared_ptr<context>& ctx,
                             const unistring& filename)
 {
   unistring source;
-  ref<quote> script;
+  std::shared_ptr<quote> script;
 
   if (!utf8_decode_test(input, source))
   {
@@ -412,11 +412,7 @@ static void console_loop(const std::shared_ptr<class context>& context)
       count_open_braces(line, open_braces);
       if (open_braces.empty())
       {
-        const ref<quote> script = context->compile(
-          source,
-          U"<repl>",
-          line_counter
-        );
+        const auto script = context->compile(source, U"<repl>", line_counter);
 
         source.clear();
         if (script)

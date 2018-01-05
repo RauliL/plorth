@@ -23,8 +23,8 @@ namespace plorth
 #if PLORTH_ENABLE_MODULES
   static const char* plorth_file_extension = ".plorth";
 
-  static ref<object> module_import(context*,
-                                   const unistring&);
+  static std::shared_ptr<object> module_import(context*,
+                                               const unistring&);
   static bool module_resolve_path(context*,
                                   const unistring&,
                                   unistring&);
@@ -44,7 +44,7 @@ namespace plorth
     unistring resolved_path;
     auto& imported_modules = m_runtime->imported_modules();
     object::container_type::iterator entry;
-    ref<object> module;
+    std::shared_ptr<object> module;
 
     // First attempt to resolve the module path into actual file system path.
     if (!module_resolve_path(this, path, resolved_path))
@@ -64,7 +64,7 @@ namespace plorth
     // separate execution context.
     if (entry != std::end(imported_modules))
     {
-      module = entry->second.cast<object>();
+      module = std::static_pointer_cast<object>(entry->second);
     }
     else if ((module = module_import(this, resolved_path)))
     {
@@ -80,7 +80,7 @@ namespace plorth
       if (property.second && property.second->is(value::type_quote))
       {
         m_dictionary[m_runtime->symbol(property.first)]
-          = property.second.cast<quote>();
+          = std::static_pointer_cast<quote>(property.second);
       }
     }
 
@@ -93,12 +93,13 @@ namespace plorth
   }
 
 #if PLORTH_ENABLE_MODULES
-  static ref<object> module_import(context* ctx, const unistring& path)
+  static std::shared_ptr<object> module_import(context* ctx,
+                                               const unistring& path)
   {
     std::ifstream is(utf8_encode(path));
     std::string raw_source;
     unistring source;
-    ref<quote> compiled_module;
+    std::shared_ptr<quote> compiled_module;
     std::shared_ptr<context> module_ctx;
     object::container_type result;
 
@@ -106,7 +107,7 @@ namespace plorth
     {
       ctx->error(error::code_import, U"Unable to import `" + path + U"'");
 
-      return ref<object>();
+      return std::shared_ptr<object>();
     }
 
     raw_source = std::string(
@@ -123,13 +124,13 @@ namespace plorth
         U"Unable to decode source code into UTF-8."
       );
 
-      return ref<object>();
+      return std::shared_ptr<object>();
     }
 
     // Then attempt to compile it.
     if (!(compiled_module = ctx->compile(source, path)))
     {
-      return ref<object>();
+      return std::shared_ptr<object>();
     }
 
     // Run the module code inside new execution context.
@@ -144,7 +145,7 @@ namespace plorth
         ctx->error(error::code_import, U"Module import failed.");
       }
 
-      return ref<object>();
+      return std::shared_ptr<object>();
     }
 
     // Finally convert the module into object.
