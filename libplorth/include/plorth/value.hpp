@@ -151,7 +151,7 @@ namespace plorth
   bool operator!=(const std::shared_ptr<value>&, const std::shared_ptr<value>&);
 
   std::ostream& operator<<(std::ostream&, enum value::type);
-  std::ostream& operator<<(std::ostream&, const std::shared_ptr<value>&);
+  std::ostream& operator<<(std::ostream&, const value*);
 }
 
 #endif /* !PLORTH_VALUE_HPP_GUARD */
