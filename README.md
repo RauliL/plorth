@@ -16,8 +16,8 @@ Features:
 
 ## Compilation
 
-Plorth has no dependencies. Only C++11 capable compiler and [CMake] are required to
-compile Plorth interpreter.
+Plorth has no dependencies. Only C++11 capable compiler and [CMake] are
+required to compile Plorth interpreter.
 
 ```bash
 mkdir build
@@ -26,7 +26,7 @@ cmake ..
 make
 ```
 
-After the interpreter has been successfully compiled, you can run the `plorth-cli`
+After the interpreter has been successfully compiled, you can run the `plorth`
 binary to start Plorth REPL.
 
 [Forth]: https://www.forth.com

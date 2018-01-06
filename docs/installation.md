@@ -30,15 +30,15 @@ $ make
 
 This will begin compilation of the interpreter. The interpreter consists of
 two parts: Plorth interpreter library and it's command line user interface
-known as `plorth-cli` which uses the interpreter library. By tweaking the CMake
-options, it's also possible to compile only the library without `plorth-cli`
+known as `plorth` which uses the interpreter library. By tweaking the CMake
+options, it's also possible to compile only the library without `plorth`
 executable, if you plan to embed the interpreter to your own C++ application.
 
 ## Installation
 
-After the interpreter has been compiled, you can run the `plorth-cli` executable
-located in `build` directory. Alternatively, you can also install Plorth into
-your system by running the following command:
+After the interpreter has been compiled, you can run the `plorth` executable
+located in `build/plorth` directory. Alternatively, you can also install Plorth
+into your system by running the following command:
 
 ```bash
 sudo make install
