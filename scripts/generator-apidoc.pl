@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# Copyright (c) 2017, Rauli Laine
+# Copyright (c) 2017-2018, Rauli Laine
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
