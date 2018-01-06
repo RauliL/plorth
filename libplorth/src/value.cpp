@@ -142,8 +142,7 @@ namespace plorth
     return out;
   }
 
-  std::ostream& operator<<(std::ostream& os,
-                           const std::shared_ptr<class value>& value)
+  std::ostream& operator<<(std::ostream& os, const class value* value)
   {
     if (value)
     {
