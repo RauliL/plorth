@@ -1,0 +1,63 @@
+#!/usr/bin/env plorth
+#
+# Set implementation which is a wrapper for array where each value can occur
+# only once.
+#
+
+"../class" import
+
+{
+  "fields": ["entries"],
+
+  # Constructs new empty set.
+  "constructor": (
+    [] swap !entries
+  ),
+
+  # Returns the number of entries in the set.
+  "length": (
+    @entries length nip
+  ),
+
+  # Tests whether set has given value.
+  "has?": (
+    @entries rot swap includes? nip
+  ),
+
+  # Inserts an entry into the set, unless it's already there.
+  "add": (
+    # Does entries already contain the value?
+    over swap has?
+      # If so, ignore it.
+      ( nip )
+      # Otherwise add it to the entries.
+      ( @entries rot swap push swap !entries )
+    if-else
+  ),
+
+  # Removes given value from the set, if it exists in the set. A boolean value
+  # will be returned which tells you whether the value existed in the set.
+  "delete": (
+    # Convert the value into a quote, alongside with "!=" operator, and use
+    # that resulting quote with "filter" word into the entries. This way we
+    # will receive a new array where the value will be removed from.
+    @entries rot "!=" >symbol 2array >quote swap filter
+    # Has number of entries changed?
+    swap @entries length nip rot length rot <
+      # If so, replace entries with the filtered ones.
+      ( swap !entries true )
+      # Otherwise keep the current entries.
+      ( drop false )
+    if-else
+  ),
+
+  # Executes given quote once for every entry in the set.
+  "for-each": (
+    @entries nip for-each
+  ),
+
+  # Converts the set back into ordinary array.
+  ">array": (
+    @entries nip
+  ),
+} "set" class
