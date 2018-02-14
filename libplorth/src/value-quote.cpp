@@ -89,7 +89,7 @@ namespace plorth
         std::shared_ptr<compiled_quote> q;
 
         if (!that->is(type_quote)
-            || std::static_pointer_cast<quote>(that)->is(quote_type_compiled))
+            || !std::static_pointer_cast<quote>(that)->is(quote_type_compiled))
         {
           return false;
         }
