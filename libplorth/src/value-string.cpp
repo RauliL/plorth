@@ -309,6 +309,75 @@ namespace plorth
   }
 
   /**
+   * Word: includes?
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   * - string
+   *
+   * Gives:
+   * - string
+   * - boolean
+   *
+   * Tests whether the topmost string contains contents of the second string,
+   * returning true or false as appropriate.
+   */
+  static void w_includes(const std::shared_ptr<context>& ctx)
+  {
+    std::shared_ptr<string> str;
+    std::shared_ptr<string> substr;
+
+    if (!ctx->pop_string(str) || !ctx->pop_string(substr))
+    {
+      return;
+    }
+
+    const auto str_length = str->length();
+    const auto substr_length = substr->length();
+
+    if (substr_length > str_length)
+    {
+      ctx->push(str);
+      ctx->push_boolean(false);
+      return;
+    }
+    else if (!substr_length)
+    {
+      ctx->push(str);
+      ctx->push_boolean(true);
+      return;
+    }
+
+    for (string::size_type i = 0; i < str_length; ++i)
+    {
+      bool found = true;
+
+      if (i + substr_length > str_length)
+      {
+        break;
+      }
+      for (string::size_type j = 0; j < substr_length; ++j)
+      {
+        if (str->at(i + j) != substr->at(j))
+        {
+          found = false;
+          break;
+        }
+      }
+      if (found)
+      {
+        ctx->push(str);
+        ctx->push_boolean(true);
+        return;
+      }
+    }
+
+    ctx->push(str);
+    ctx->push_boolean(false);
+  }
+
+  /**
    * Word: space?
    * Prototype: string
    *
@@ -995,7 +1064,7 @@ namespace plorth
         { U"lines", w_lines },
 
         // Tests.
-        // TODO: includes?
+        { U"includes?", w_includes },
         // TODO: index-of
         // TODO: starts-with?
         // TODO: ends-with?

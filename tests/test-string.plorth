@@ -39,6 +39,16 @@ test-case
 ]
 test-case
 
+"includes?"
+[
+  ( "foo" "foobar" includes? nip ),
+  ( "bar" "foobar" includes? nip ),
+  ( "baz" "foobar" includes? not nip ),
+  ( "" "foobar" includes? nip ),
+  ( "foobar" "foo" includes? not nip ),
+]
+test-case
+
 "space?"
 [
   ( "" space? not nip ),
