@@ -69,6 +69,9 @@ namespace plorth
     case error::code_import:
       return U"Import error";
 
+    case error::code_io:
+      return U"I/O error";
+
     case error::code_unknown:
       return U"Unknown error";
     }

@@ -1306,6 +1306,85 @@ namespace plorth
   }
 
   /**
+   * Word: read
+   *
+   * Gives:
+   * - string|null
+   *
+   * Reads all available input from standard input stream, decodes it as UTF-8
+   * encoded text and returns result. If end of input has been reached, null
+   * will be returned instead.
+   */
+  static void w_read(const std::shared_ptr<context>& ctx)
+  {
+    unistring output;
+    std::size_t read;
+    read_result result = ctx->runtime()->read(output, 0, read);
+
+    if (result == read_result_failure)
+    {
+      ctx->error(error::code_io, U"Unable to decode input as UTF-8.");
+    }
+    else if (result == read_result_eof && output.empty())
+    {
+      ctx->push_null();
+    } else {
+      ctx->push_string(output);
+    }
+  }
+
+  /**
+   * Word: nread
+   *
+   * Takes:
+   * - number
+   *
+   * Gives:
+   * - string|null
+   *
+   * Reads given number of Unicode characters from standard input stream and
+   * returns them in a string. If there is no more input to be read, null will
+   * be returned instead. The resulting string might have less than given
+   * number of characters if there isn't that much characters available from
+   * the standard input stream.
+   */
+  static void w_nread(const std::shared_ptr<context>& ctx)
+  {
+    std::shared_ptr<number> num;
+
+    if (ctx->pop_number(num))
+    {
+      const number::int_type amount = num->as_int();
+      unistring output;
+      std::size_t read;
+      read_result result;
+
+      if (amount < 0)
+      {
+        ctx->error(error::code_range, U"Negative size to be read.");
+        return;
+      }
+      else if (amount == 0)
+      {
+        ctx->error(error::code_range, U"Zero size to be read.");
+        return;
+      }
+      result = ctx->runtime()->read(output, amount, read);
+      if (result == read_result_failure)
+      {
+        ctx->error(error::code_io, U"Unable to decode input as UTF-8.");
+        return;
+      }
+      else if (result == read_result_eof && output.empty())
+      {
+        ctx->push_null();
+      } else {
+        ctx->push_string(output);
+      }
+    }
+  }
+
+  /**
    * Word: print
    *
    * Takes:
@@ -1514,6 +1593,8 @@ namespace plorth
         { U"unknown-error", w_unknown_error },
 
         // I/O related.
+        { U"read", w_read },
+        { U"nread", w_nread },
         { U"print", w_print },
         { U"println", w_println },
         { U"emit", w_emit },

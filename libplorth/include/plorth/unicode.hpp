@@ -124,6 +124,14 @@ namespace plorth
    * Converts given Unicode character into lower case.
    */
   unichar unichar_tolower(unichar);
+
+  /**
+   * Attempts to determine length (in bytes) of UTF-8 sequence which begins
+   * with the given byte. If the length cannot be determined (i.e. beginning of
+   * sequence is invalid according to UTF-8 specification), 0 will be returned
+   * instead.
+   */
+  std::size_t utf8_sequence_length(unsigned char);
 }
 
 #endif /* !PLORTH_UNICODE_HPP_GUARD */

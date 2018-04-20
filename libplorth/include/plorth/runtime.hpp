@@ -38,6 +38,19 @@
 
 namespace plorth
 {
+  /**
+   * Represents results of read operation.
+   */
+  enum read_result
+  {
+    /** Reading from standard input stream was successful. */
+    read_result_ok,
+    /** End of input was encountered. */
+    read_result_eof,
+    /** UTF-8 decoding error was encountered. */
+    read_result_failure
+  };
+
   class runtime : public memory::managed
   {
   public:
@@ -136,6 +149,12 @@ namespace plorth
     {
       return m_imported_modules;
     }
+
+    /**
+     * Reads Unicode code points from standard input stream and places them in
+     * the string given as argument.
+     */
+    read_result read(unistring& output, std::size_t size, std::size_t& read);
 
     /**
      * Outputs given Unicode string into the standard output stream of the

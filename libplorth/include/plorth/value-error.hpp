@@ -48,6 +48,8 @@ namespace plorth
       code_range = 5,
       /** Import error. */
       code_import = 6,
+      /** I/O error. */
+      code_io = 7,
       /** Unknown error. */
       code_unknown = 100
     };
