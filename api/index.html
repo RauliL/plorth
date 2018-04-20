@@ -471,6 +471,20 @@ this execution context.</p>
 <p>Returns the number of seconds that have elapsed since the  Unix epoch
 (1 January 1970 00:00:00 UTC) rounded to the nearest integer.</p>
 <hr />
+<h3 id="nread">nread</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>number</dd>
+  <dt>Gives:</dt>
+  <dd>string|null</dd>
+</dl>
+
+<p>Reads given number of Unicode characters from standard input stream and
+returns them in a string. If there is no more input to be read, null will
+be returned instead. The resulting string might have less than given
+number of characters if there isn't that much characters available from
+the standard input stream.</p>
+<hr />
 <h3 id="null">null</h3>
 <dl>
   <dt>Gives:</dt>
@@ -578,6 +592,16 @@ is null, null will be returned instead.</p>
 
 <p>Construct an instance of range error with given optional error message
 and places it on the stack.</p>
+<hr />
+<h3 id="read">read</h3>
+<dl>
+  <dt>Gives:</dt>
+  <dd>string|null</dd>
+</dl>
+
+<p>Reads all available input from standard input stream, decodes it as UTF-8
+encoded text and returns result. If end of input has been reached, null
+will be returned instead.</p>
 <hr />
 <h3 id="rot">rot</h3>
 <dl>
