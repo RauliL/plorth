@@ -119,6 +119,52 @@ namespace plorth
     );
   }
 
+  read_result runtime::read(unistring& output,
+                            std::size_t size,
+                            std::size_t& read)
+  {
+    const bool infinite = !size;
+    const auto eof = std::char_traits<char>::eof();
+    std::string buffer;
+
+    buffer.reserve(6);
+    while (infinite || size > 0)
+    {
+      auto c = std::cin.get();
+      std::size_t unichar_size;
+
+      if (c == eof)
+      {
+        return read_result_eof;
+      }
+      else if (!(unichar_size = utf8_sequence_length(c)))
+      {
+        return read_result_failure;
+      }
+      buffer.clear();
+      buffer.append(1, c);
+      for (std::size_t i = 1; i < unichar_size; ++i)
+      {
+        if ((c = std::cin.get()) == eof)
+        {
+          return read_result_failure;
+        }
+        buffer.append(1, c);
+      }
+      if (!utf8_decode_test(buffer, output))
+      {
+        return read_result_failure;
+      }
+      if (!infinite)
+      {
+        --size;
+      }
+      ++read;
+    }
+
+    return read_result_ok;
+  }
+
   void runtime::print(const unistring& str) const
   {
     std::cout << str;

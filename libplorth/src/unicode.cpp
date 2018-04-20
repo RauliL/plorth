@@ -27,7 +27,6 @@
 
 namespace plorth
 {
-  static inline std::size_t utf8_sequence_length(unsigned char);
   static bool utf8_advance(std::string::const_iterator&,
                            const std::string::const_iterator&,
                            unichar&);
@@ -273,7 +272,7 @@ namespace plorth
     return true;
   }
 
-  static inline std::size_t utf8_sequence_length(unsigned char input)
+  std::size_t utf8_sequence_length(unsigned char input)
   {
     if ((input & 0x80) == 0x00)
     {
