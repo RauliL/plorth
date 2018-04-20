@@ -440,6 +440,23 @@ Returns the number of seconds that have elapsed since the  Unix epoch
 
 ---
 
+### nread
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>number</dd>
+  <dt>Gives:</dt>
+  <dd>string|null</dd>
+</dl>
+
+Reads given number of Unicode characters from standard input stream and
+returns them in a string. If there is no more input to be read, null will
+be returned instead. The resulting string might have less than given
+number of characters if there isn't that much characters available from
+the standard input stream.
+
+---
+
 ### null
 
 <dl>
@@ -579,6 +596,19 @@ Returns true if the topmost value of the stack is a quote.
 
 Construct an instance of range error with given optional error message
 and places it on the stack.
+
+---
+
+### read
+
+<dl>
+  <dt>Gives:</dt>
+  <dd>string|null</dd>
+</dl>
+
+Reads all available input from standard input stream, decodes it as UTF-8
+encoded text and returns result. If end of input has been reached, null
+will be returned instead.
 
 ---
 
