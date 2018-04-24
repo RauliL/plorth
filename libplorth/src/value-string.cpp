@@ -378,6 +378,248 @@ namespace plorth
   }
 
   /**
+   * Word: index-of
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   * - string
+   *
+   * Gives:
+   * - string
+   * - number|null
+   *
+   * Searches for the first occurrence of a substring given as second topmost
+   * value of the stack from string given as topmost value of the stack. If the
+   * substring does not exist in the string, null will be returned. Otherwise,
+   * first numerical index of the occurrence is returned.
+   */
+  static void w_index_of(const std::shared_ptr<context>& ctx)
+  {
+    std::shared_ptr<string> str;
+    std::shared_ptr<string> substr;
+
+    if (!ctx->pop_string(str) || !ctx->pop_string(substr))
+    {
+      return;
+    }
+
+    const auto str_length = str->length();
+    const auto substr_length = substr->length();
+
+    ctx->push(str);
+
+    if (substr_length > str_length)
+    {
+      ctx->push_null();
+      return;
+    }
+    else if (!substr_length)
+    {
+      ctx->push_int(0);
+      return;
+    }
+
+    for (string::size_type i = 0; i < str_length; ++i)
+    {
+      bool found = true;
+
+      if (i + substr_length > str_length)
+      {
+        break;
+      }
+      for (string::size_type j = 0; j < substr_length; ++j)
+      {
+        if (str->at(i + j) != substr->at(j))
+        {
+          found = false;
+          break;
+        }
+      }
+      if (found)
+      {
+        ctx->push_int(i);
+        return;
+      }
+    }
+
+    ctx->push_null();
+  }
+
+  /**
+   * Word: last-index-of
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   * - string
+   *
+   * Gives:
+   * - string
+   * - number|null
+   *
+   * Searches for the last occurrence of a substring given as second topmost
+   * value of the stack from string given as topmost value of the stack. If the
+   * substring does not exist in the string, null will be returned. Otherwise,
+   * last numerical index of the occurrence is returned.
+   */
+  static void w_last_index_of(const std::shared_ptr<context>& ctx)
+  {
+    std::shared_ptr<string> str;
+    std::shared_ptr<string> substr;
+
+    if (!ctx->pop_string(str) || !ctx->pop_string(substr))
+    {
+      return;
+    }
+
+    const auto str_length = str->length();
+    const auto substr_length = substr->length();
+
+    ctx->push(str);
+
+    if (substr_length > str_length)
+    {
+      ctx->push_null();
+      return;
+    }
+    else if (!substr_length)
+    {
+      ctx->push_int(str_length);
+      return;
+    }
+
+    for (auto i = str_length; i > 0; --i)
+    {
+      bool found = true;
+
+      if (str_length - i + 1 < substr_length)
+      {
+        continue;
+      }
+      for (string::size_type j = 0; j < substr_length; ++j)
+      {
+        if (str->at(i + j - 1) != substr->at(j))
+        {
+          found = false;
+          break;
+        }
+      }
+      if (found)
+      {
+        ctx->push_int(i - 1);
+        return;
+      }
+    }
+
+    ctx->push_null();
+  }
+
+  /**
+   * Word: starts-with?
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   * - string
+   *
+   * Gives:
+   * - string
+   * - boolean
+   */
+  static void w_starts_with(const std::shared_ptr<context>& ctx)
+  {
+    std::shared_ptr<string> str;
+    std::shared_ptr<string> substr;
+
+    if (!ctx->pop_string(str) || !ctx->pop_string(substr))
+    {
+      return;
+    }
+
+    const auto str_length = str->length();
+    const auto substr_length = substr->length();
+
+    if (substr_length > str_length)
+    {
+      ctx->push(str);
+      ctx->push_boolean(false);
+      return;
+    }
+    else if (!substr_length)
+    {
+      ctx->push(str);
+      ctx->push_boolean(true);
+      return;
+    }
+
+    for (string::size_type i = 0; i < substr_length; ++i)
+    {
+      if (str->at(i) != substr->at(i))
+      {
+        ctx->push(str);
+        ctx->push_boolean(false);
+        return;
+      }
+    }
+
+    ctx->push(str);
+    ctx->push_boolean(true);
+  }
+
+  /**
+   * Word: ends-with?
+   * Prototype: string
+   *
+   * Takes:
+   * - string
+   * - string
+   *
+   * Gives:
+   * - string
+   * - boolean
+   */
+  static void w_ends_with(const std::shared_ptr<context>& ctx)
+  {
+    std::shared_ptr<string> str;
+    std::shared_ptr<string> substr;
+
+    if (!ctx->pop_string(str) || !ctx->pop_string(substr))
+    {
+      return;
+    }
+
+    const auto str_length = str->length();
+    const auto substr_length = substr->length();
+
+    if (substr_length > str_length)
+    {
+      ctx->push(str);
+      ctx->push_boolean(false);
+      return;
+    }
+    else if (!substr_length)
+    {
+      ctx->push(str);
+      ctx->push_boolean(true);
+      return;
+    }
+
+    for (string::size_type i = 0; i < substr_length; ++i)
+    {
+      if (str->at(str_length - substr_length + i) != substr->at(i))
+      {
+        ctx->push(str);
+        ctx->push_boolean(false);
+        return;
+      }
+    }
+
+    ctx->push(str);
+    ctx->push_boolean(true);
+  }
+
+  /**
    * Word: space?
    * Prototype: string
    *
@@ -1065,9 +1307,10 @@ namespace plorth
 
         // Tests.
         { U"includes?", w_includes },
-        // TODO: index-of
-        // TODO: starts-with?
-        // TODO: ends-with?
+        { U"index-of", w_index_of },
+        { U"last-index-of", w_last_index_of },
+        { U"starts-with?", w_starts_with },
+        { U"ends-with?", w_ends_with },
         { U"space?", w_is_space },
         { U"lower-case?", w_is_lower_case },
         { U"upper-case?", w_is_upper_case },

@@ -49,6 +49,44 @@ test-case
 ]
 test-case
 
+"index-of"
+[
+  ( "foo" "foobar" index-of nip 0 = ),
+  ( "bar" "foobar" index-of nip 3 = ),
+  ( "baz" "foobar" index-of nip null? nip ),
+  ( "" "foobar" index-of nip 0 = ),
+  ( "foobar" "foo" index-of nip null? nip ),
+]
+test-case
+
+"last-index-of"
+[
+  ( "foo" "foofoobar" last-index-of nip 3 = ),
+  ( "bar" "foobar" last-index-of nip 3 = ),
+  ( "baz" "foobar" last-index-of nip null? nip ),
+  ( "" "foobar" last-index-of nip 6 = ),
+  ( "foobar" "foo" last-index-of nip null? nip ),
+]
+test-case
+
+"starts-with?"
+[
+  ( "foo" "foobar" starts-with? nip ),
+  ( "bar" "foobar" starts-with? nip not ),
+  ( "" "foobar" starts-with? nip ),
+  ( "foobar" "foo" starts-with? nip not ),
+]
+test-case
+
+"ends-with?"
+[
+  ( "bar" "foobar" ends-with? nip ),
+  ( "foo" "foobar" ends-with? nip not ),
+  ( "" "foobar" ends-with? nip ),
+  ( "foobar" "foo" ends-with? nip not ),
+]
+test-case
+
 "space?"
 [
   ( "" space? not nip ),
