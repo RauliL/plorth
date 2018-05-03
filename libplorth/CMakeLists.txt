@@ -22,6 +22,48 @@ IF(PLORTH_ENABLE_MODULES)
   ENDIF()
 ENDIF()
 
+OPTION(
+  PLORTH_ENABLE_MODULES
+  "Whether modules has been enabled or not."
+  ON
+)
+
+OPTION(
+  PLORTH_ENABLE_SYMBOL_CACHE
+  "Whether symbols should be cached or not."
+  OFF
+)
+
+OPTION(
+  PLORTH_ENABLE_INTEGER_CACHE
+  "Whether commonly used integer numbers should be cached or not."
+  ON
+)
+
+OPTION(
+  PLORTH_ENABLE_MEMORY_POOL
+  "Enable if you want the interpreter to use memory pools."
+  ON
+)
+
+OPTION(
+  PLORTH_ENABLE_MUTEXES
+  "Enable if you want to implement thread safety with mutexes."
+  ON
+)
+
+OPTION(
+  PLORTH_ENABLE_32BIT_INT
+  "Enable if you want to use 32-bit integers instead of 64-bit."
+  OFF
+)
+
+OPTION(
+  PLORTH_ENABLE_GC_DEBUG
+  "Display debug messages from garbage collector."
+  OFF
+)
+
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp.in"
   "${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp"
