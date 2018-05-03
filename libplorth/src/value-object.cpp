@@ -213,6 +213,45 @@ namespace plorth
   }
 
   /**
+   * Word: entries
+   * Prototype: object
+   *
+   * Takes:
+   * - object
+   *
+   * Gives:
+   * - object
+   * - array
+   *
+   * Constructs an array of arrays where each non-inherited property in the
+   * object is represented as an pair (i.e. array containing two elements, one
+   * for the key and one for the value).
+   */
+  static void w_entries(const std::shared_ptr<context>& ctx)
+  {
+    const auto& runtime = ctx->runtime();
+    std::shared_ptr<object> obj;
+    std::vector<std::shared_ptr<value>> result;
+
+    if (!ctx->pop_object(obj))
+    {
+      return;
+    }
+
+    for (const auto& property : obj->properties())
+    {
+      std::shared_ptr<value> pair[2];
+
+      pair[0] = runtime->string(property.first);
+      pair[1] = property.second;
+      result.push_back(runtime->array(pair, 2));
+    }
+
+    ctx->push(obj);
+    ctx->push_array(result.data(), result.size());
+  }
+
+  /**
    * Word: has?
    * Prototype: object
    *
@@ -457,6 +496,7 @@ namespace plorth
       {
         { U"keys", w_keys },
         { U"values", w_values },
+        { U"entries", w_entries },
         { U"has?", w_has },
         { U"has-own?", w_has_own },
         { U"new", w_new },

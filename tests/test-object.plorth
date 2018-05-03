@@ -21,6 +21,13 @@ test-case
 ]
 test-case
 
+"entries"
+[
+  ( {} entries [] = nip ),
+  ( { "a": 1 } entries [["a", 1]] = nip ),
+]
+test-case
+
 "has?"
 [
   ( "a" {} has? not nip ),
