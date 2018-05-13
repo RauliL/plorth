@@ -119,6 +119,30 @@ namespace plorth
        */
       virtual ~managed();
 
+      /**
+       * Returns the number of references which this object currently has.
+       */
+      inline long use_count() const
+      {
+        return m_use_count;
+      }
+
+      /**
+       * Increases the reference counter of the object.
+       */
+      inline void inc_use_count()
+      {
+        ++m_use_count;
+      }
+
+      /**
+       * Decreases the reference counter of the object.
+       */
+      inline void dec_use_count()
+      {
+        --m_use_count;
+      }
+
       void* operator new(std::size_t size, class manager& manager);
       void operator delete(void* pointer);
 
@@ -126,6 +150,10 @@ namespace plorth
       managed(managed&&) = delete;
       void operator=(const managed&) = delete;
       void operator=(managed&&) = delete;
+
+    private:
+      /** Number of references the object currently has. */
+      long m_use_count;
     };
 
 #if PLORTH_ENABLE_MEMORY_POOL
