@@ -35,7 +35,7 @@ namespace plorth
   class object : public value
   {
   public:
-    using container_type = std::unordered_map<unistring, std::shared_ptr<value>>;
+    using container_type = std::unordered_map<unistring, ref<value>>;
 
     explicit object(const container_type& properties);
 
@@ -57,9 +57,9 @@ namespace plorth
      * \return          Boolean flag which tells whether the property was found
      *                  or not.
      */
-    bool property(const std::shared_ptr<class runtime>& runtime,
+    bool property(const ref<class runtime>& runtime,
                   const unistring& name,
-                  std::shared_ptr<value>& slot,
+                  ref<value>& slot,
                   bool inherited = true) const;
 
     inline enum type type() const
@@ -67,7 +67,7 @@ namespace plorth
       return type_object;
     }
 
-    bool equals(const std::shared_ptr<value>& that) const;
+    bool equals(const ref<value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
 

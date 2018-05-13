@@ -54,8 +54,7 @@ namespace plorth
     using prototype_definition = std::vector<std::pair<const char32_t*,
                                                        quote::callback>>;
 #if PLORTH_ENABLE_SYMBOL_CACHE
-    using symbol_cache = std::unordered_map<unistring,
-                                           std::shared_ptr<class symbol>>;
+    using symbol_cache = std::unordered_map<unistring, ref<class symbol>>;
 #endif
 
     /**
@@ -175,7 +174,7 @@ namespace plorth
      * \param value Value of the number.
      * \return      Reference to the created number value.
      */
-    std::shared_ptr<class number> number(number::int_type value);
+    ref<class number> number(number::int_type value);
 
     /**
      * Constructs real number from given value.
@@ -183,7 +182,7 @@ namespace plorth
      * \param value Value of the number.
      * \return      Reference to the created number value.
      */
-    std::shared_ptr<class number> number(number::real_type value);
+    ref<class number> number(number::real_type value);
 
     /**
      * Parses given text input into number (either real or integer) and
@@ -192,7 +191,7 @@ namespace plorth
      * \param value Value of the number as text.
      * \return      Reference to the created number value.
      */
-    std::shared_ptr<class number> number(const unistring& value);
+    ref<class number> number(const unistring& value);
 
     /**
      * Constructs array value from given elements.
@@ -201,8 +200,8 @@ namespace plorth
      * \param size     Number of elements in the array.
      * \return         Reference to the created array value.
      */
-    std::shared_ptr<class array> array(array::const_pointer elements,
-                                       array::size_type size);
+    ref<class array> array(array::const_pointer elements,
+                           array::size_type size);
 
     /**
      * Constructs string value from given Unicode string.
@@ -210,7 +209,7 @@ namespace plorth
      * \param input Unicode string to construct string value from.
      * \return      Reference to the created string value.
      */
-    std::shared_ptr<class string> string(const unistring& input);
+    ref<class string> string(const unistring& input);
 
     /**
      * Constructs string value from given pointer of Unicode code points.
@@ -219,8 +218,8 @@ namespace plorth
      * \param length Number of characters in the string.
      * \return       Reference to the created string value.
      */
-    std::shared_ptr<class string> string(string::const_pointer chars,
-                                         string::size_type length);
+    ref<class string> string(string::const_pointer chars,
+                             string::size_type length);
 
     /**
      * Constructs symbol from given identifier string.
@@ -230,7 +229,7 @@ namespace plorth
      *                 encountered.
      * \return         Reference to the created symbol.
      */
-    std::shared_ptr<class symbol> symbol(
+    ref<class symbol> symbol(
       const unistring& id,
       const struct position* position = nullptr
     );
@@ -238,45 +237,40 @@ namespace plorth
     /**
      * Constructs compiled quote from given sequence of values.
      */
-    std::shared_ptr<quote> compiled_quote(
-      const std::vector<std::shared_ptr<value>>& values
+    ref<quote> compiled_quote(
+      const std::vector<ref<value>>& values
     );
 
     /**
      * Constructs native quote from given C++ callback.
      */
-    std::shared_ptr<quote> native_quote(quote::callback callback);
+    ref<quote> native_quote(quote::callback callback);
 
     /**
      * Constructs word from given string and quote.
      */
-    std::shared_ptr<class word> word(
-      const unistring& id,
-      const std::shared_ptr<class quote>& quote
-    );
+    ref<class word> word(const unistring& id, const ref<class quote>& quote);
 
     /**
      * Constructs word from given symbol and quote.
      */
-    std::shared_ptr<class word> word(
-      const std::shared_ptr<class symbol>& symbol,
-      const std::shared_ptr<class quote>& quote
-    );
+    ref<class word> word(const ref<class symbol>& symbol,
+                         const ref<class quote>& quote);
 
     /**
      * Helper method for constructing managed objects (such as values) using
      * the memory manager associated with this runtime instance.
      */
     template< typename T, typename... Args >
-    inline std::shared_ptr<T> value(Args... args)
+    inline ref<T> value(Args... args)
     {
-      return std::shared_ptr<T>(new (*m_memory_manager) T(args...));
+      return ref<T>(new (*m_memory_manager) T(args...));
     }
 
     /**
      * Returns shared instance of true boolean value.
      */
-    inline const std::shared_ptr<class boolean>& true_value() const
+    inline const ref<class boolean>& true_value() const
     {
       return m_true_value;
     }
@@ -284,7 +278,7 @@ namespace plorth
     /**
      * Returns shared instance of false boolean value.
      */
-    inline const std::shared_ptr<class boolean>& false_value() const
+    inline const ref<class boolean>& false_value() const
     {
       return m_false_value;
     }
@@ -293,7 +287,7 @@ namespace plorth
      * Helper method for converting C++ boolean value into Plorth boolean
      * value.
      */
-    inline const std::shared_ptr<class boolean>& boolean(bool b) const
+    inline const ref<class boolean>& boolean(bool b) const
     {
       return b ? m_true_value : m_false_value;
     }
@@ -301,7 +295,7 @@ namespace plorth
     /**
      * Returns prototype for array values.
      */
-    inline const std::shared_ptr<object>& array_prototype() const
+    inline const ref<object>& array_prototype() const
     {
       return m_array_prototype;
     }
@@ -309,7 +303,7 @@ namespace plorth
     /**
      * Returns prototype for boolean values.
      */
-    inline const std::shared_ptr<object>& boolean_prototype() const
+    inline const ref<object>& boolean_prototype() const
     {
       return m_boolean_prototype;
     }
@@ -317,7 +311,7 @@ namespace plorth
     /**
      * Returns prototype for error values.
      */
-    inline const std::shared_ptr<object>& error_prototype() const
+    inline const ref<object>& error_prototype() const
     {
       return m_error_prototype;
     }
@@ -325,7 +319,7 @@ namespace plorth
     /**
      * Returns prototype for number values.
      */
-    inline const std::shared_ptr<object>& number_prototype() const
+    inline const ref<object>& number_prototype() const
     {
       return m_number_prototype;
     }
@@ -333,7 +327,7 @@ namespace plorth
     /**
      * Returns prototype for objects.
      */
-    inline const std::shared_ptr<object>& object_prototype() const
+    inline const ref<object>& object_prototype() const
     {
       return m_object_prototype;
     }
@@ -341,7 +335,7 @@ namespace plorth
     /**
      * Returns prototype for quotes.
      */
-    inline const std::shared_ptr<object>& quote_prototype() const
+    inline const ref<object>& quote_prototype() const
     {
       return m_quote_prototype;
     }
@@ -349,7 +343,7 @@ namespace plorth
     /**
      * Returns prototype for string values.
      */
-    inline const std::shared_ptr<object>& string_prototype() const
+    inline const ref<object>& string_prototype() const
     {
       return m_string_prototype;
     }
@@ -357,7 +351,7 @@ namespace plorth
     /**
      * Returns prototype for symbols.
      */
-    inline const std::shared_ptr<object>& symbol_prototype() const
+    inline const ref<object>& symbol_prototype() const
     {
       return m_symbol_prototype;
     }
@@ -365,7 +359,7 @@ namespace plorth
     /**
      * Returns prototype for words.
      */
-    inline const std::shared_ptr<object>& word_prototype() const
+    inline const ref<object>& word_prototype() const
     {
       return m_word_prototype;
     }
@@ -376,27 +370,27 @@ namespace plorth
     /** Global dictionary available to all contexts. */
     class dictionary m_dictionary;
     /** Shared instance of true boolean value. */
-    std::shared_ptr<class boolean> m_true_value;
+    ref<class boolean> m_true_value;
     /** Shared instance of false boolean value. */
-    std::shared_ptr<class boolean> m_false_value;
+    ref<class boolean> m_false_value;
     /** Prototype for array values. */
-    std::shared_ptr<object> m_array_prototype;
+    ref<object> m_array_prototype;
     /** Prototype for boolean values. */
-    std::shared_ptr<object> m_boolean_prototype;
+    ref<object> m_boolean_prototype;
     /** Prototype for error values. */
-    std::shared_ptr<object> m_error_prototype;
+    ref<object> m_error_prototype;
     /** Prototype for number values. */
-    std::shared_ptr<object> m_number_prototype;
+    ref<object> m_number_prototype;
     /** Prototype for objects. */
-    std::shared_ptr<object> m_object_prototype;
+    ref<object> m_object_prototype;
     /** Prototype for quotes. */
-    std::shared_ptr<object> m_quote_prototype;
+    ref<object> m_quote_prototype;
     /** Prototype for string values. */
-    std::shared_ptr<object> m_string_prototype;
+    ref<object> m_string_prototype;
     /** Prototype for symbol values. */
-    std::shared_ptr<object> m_symbol_prototype;
+    ref<object> m_symbol_prototype;
     /** Prototype for words. */
-    std::shared_ptr<object> m_word_prototype;
+    ref<object> m_word_prototype;
     /** List of command line arguments given for the interpreter. */
     std::vector<unistring> m_arguments;
     /** List of file system paths where to look modules from. */
@@ -409,7 +403,7 @@ namespace plorth
 #endif
 #if PLORTH_ENABLE_INTEGER_CACHE
     /** Cache for commonly used integer numbers. */
-    std::shared_ptr<class number> m_integer_cache[256];
+    ref<class number> m_integer_cache[256];
 #endif
   };
 }

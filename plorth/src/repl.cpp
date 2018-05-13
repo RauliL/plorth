@@ -9,7 +9,7 @@ using namespace plorth;
  *
  * Exits the interpreter.
  */
-static void w_quit(const std::shared_ptr<context>&)
+static void w_quit(const ref<context>&)
 {
   std::exit(EXIT_SUCCESS);
 }
@@ -19,7 +19,7 @@ static void w_quit(const std::shared_ptr<context>&)
  *
  * Displays ten of the top-most values from the data stack.
  */
-static void w_stack(const std::shared_ptr<context>& ctx)
+static void w_stack(const ref<context>& ctx)
 {
   const auto& runtime = ctx->runtime();
   const auto& stack = ctx->data();
@@ -41,7 +41,7 @@ static void w_stack(const std::shared_ptr<context>& ctx)
   }
 }
 
-void initialize_repl_api(const std::shared_ptr<runtime>& runtime)
+void initialize_repl_api(const ref<runtime>& runtime)
 {
   auto& dictionary = runtime->dictionary();
 

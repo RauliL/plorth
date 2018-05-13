@@ -43,13 +43,13 @@ namespace plorth
      * \param symbol Identifier of the word.
      * \param quote  Executable portion of the word.
      */
-    explicit word(const std::shared_ptr<class symbol>& symbol,
-                  const std::shared_ptr<class quote>& quote);
+    explicit word(const ref<class symbol>& symbol,
+                  const ref<class quote>& quote);
 
     /**
      * Returns identifier of the word.
      */
-    inline const std::shared_ptr<class symbol>& symbol() const
+    inline const ref<class symbol>& symbol() const
     {
       return m_symbol;
     }
@@ -57,7 +57,7 @@ namespace plorth
     /**
      * Returns executable portion of the word.
      */
-    inline const std::shared_ptr<class quote>& quote() const
+    inline const ref<class quote>& quote() const
     {
       return m_quote;
     }
@@ -67,15 +67,15 @@ namespace plorth
       return type_word;
     }
 
-    bool equals(const std::shared_ptr<value>& that) const;
+    bool equals(const ref<value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
 
   private:
     /** Identifier of the word. */
-    const std::shared_ptr<class symbol> m_symbol;
+    const ref<class symbol> m_symbol;
     /** Executable portion of the word. */
-    const std::shared_ptr<class quote> m_quote;
+    const ref<class quote> m_quote;
   };
 }
 

@@ -102,7 +102,7 @@ namespace plorth
       return type_error;
     }
 
-    bool equals(const std::shared_ptr<value>& that) const;
+    bool equals(const ref<value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
 

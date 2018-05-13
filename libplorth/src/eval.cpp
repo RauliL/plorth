@@ -20,7 +20,8 @@
  * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE* POSSIBILITY OF SUCH DAMAGE.
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
 #include <plorth/value-word.hpp>
@@ -28,25 +29,15 @@
 
 namespace plorth
 {
-  static bool eval_val(const std::shared_ptr<context>&,
-                       const std::shared_ptr<value>&,
-                       std::shared_ptr<value>&);
-  static bool eval_ary(const std::shared_ptr<context>&,
-                       const std::shared_ptr<array>&,
-                       std::shared_ptr<value>&);
-  static bool eval_obj(const std::shared_ptr<context>&,
-                       const std::shared_ptr<object>&,
-                       std::shared_ptr<value>&);
-  static bool eval_sym(const std::shared_ptr<context>&,
-                       const std::shared_ptr<symbol>&,
-                       std::shared_ptr<value>&);
-  static bool eval_wrd(const std::shared_ptr<context>&,
-                       const std::shared_ptr<word>&,
-                       std::shared_ptr<value>&);
+  static bool eval_val(const ref<context>&, const ref<value>&, ref<value>&);
+  static bool eval_ary(const ref<context>&, const ref<array>&, ref<value>&);
+  static bool eval_obj(const ref<context>&, const ref<object>&, ref<value>&);
+  static bool eval_sym(const ref<context>&, const ref<symbol>&, ref<value>&);
+  static bool eval_wrd(const ref<context>&, const ref<word>&, ref<value>&);
 
-  bool value::eval(const std::shared_ptr<context>& ctx,
-                   const std::shared_ptr<value>& val,
-                   std::shared_ptr<value>& slot)
+  bool value::eval(const ref<context>& ctx,
+                   const ref<value>& val,
+                   ref<value>& slot)
   {
     if (!val)
     {
@@ -57,42 +48,42 @@ namespace plorth
     switch (val->type())
     {
       case value::type_array:
-        return eval_ary(ctx, std::static_pointer_cast<array>(val), slot);
+        return eval_ary(ctx, val.cast<array>(), slot);
 
       case value::type_object:
-        return eval_obj(ctx, std::static_pointer_cast<object>(val), slot);
+        return eval_obj(ctx, val.cast<object>(), slot);
 
       case value::type_symbol:
-        return eval_sym(ctx, std::static_pointer_cast<symbol>(val), slot);
+        return eval_sym(ctx, val.cast<symbol>(), slot);
 
       case value::type_word:
-        return eval_wrd(ctx, std::static_pointer_cast<word>(val), slot);
+        return eval_wrd(ctx, val.cast<word>(), slot);
 
       default:
         return eval_val(ctx, val, slot);
     }
   }
 
-  static bool eval_val(const std::shared_ptr<context>& ctx,
-                       const std::shared_ptr<value>& val,
-                       std::shared_ptr<value>& slot)
+  static bool eval_val(const ref<context>& ctx,
+                       const ref<value>& val,
+                       ref<value>& slot)
   {
     slot = val;
 
     return true;
   }
 
-  static bool eval_ary(const std::shared_ptr<context>& ctx,
-                       const std::shared_ptr<array>& ary,
-                       std::shared_ptr<value>& slot)
+  static bool eval_ary(const ref<context>& ctx,
+                       const ref<array>& ary,
+                       ref<value>& slot)
   {
     const auto size = ary->size();
-    std::shared_ptr<value> elements[size];
+    ref<value> elements[size];
 
     for (array::size_type i = 0; i < size; ++i)
     {
       const auto& element = ary->at(i);
-      std::shared_ptr<value> element_slot;
+      ref<value> element_slot;
 
       if (element && !value::eval(ctx, element, element_slot))
       {
@@ -105,15 +96,15 @@ namespace plorth
     return true;
   }
 
-  static bool eval_obj(const std::shared_ptr<context>& ctx,
-                       const std::shared_ptr<object>& obj,
-                       std::shared_ptr<value>& slot)
+  static bool eval_obj(const ref<context>& ctx,
+                       const ref<object>& obj,
+                       ref<value>& slot)
   {
     object::container_type properties;
 
     for (const auto& property : obj->properties())
     {
-      std::shared_ptr<value> value_slot;
+      ref<value> value_slot;
 
       if (property.second && !value::eval(ctx, property.second, value_slot))
       {
@@ -126,9 +117,9 @@ namespace plorth
     return true;
   }
 
-  static bool eval_sym(const std::shared_ptr<context>& ctx,
-                       const std::shared_ptr<symbol>& sym,
-                       std::shared_ptr<value>& slot)
+  static bool eval_sym(const ref<context>& ctx,
+                       const ref<symbol>& sym,
+                       ref<value>& slot)
   {
     const auto id = sym->id();
 
@@ -163,9 +154,9 @@ namespace plorth
     return true;
   }
 
-  static bool eval_wrd(const std::shared_ptr<context>& ctx,
-                       const std::shared_ptr<word>& wrd,
-                       std::shared_ptr<value>& slot)
+  static bool eval_wrd(const ref<context>& ctx,
+                       const ref<word>& wrd,
+                       ref<value>& slot)
   {
     ctx->error(
       error::code_syntax,

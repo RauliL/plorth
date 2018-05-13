@@ -39,9 +39,7 @@ namespace plorth
     return *this;
   }
 
-  dictionary::value_type dictionary::find(
-    const std::shared_ptr<symbol>& id
-  ) const
+  dictionary::value_type dictionary::find(const ref<symbol>& id) const
   {
     return find(id->id());
   }
@@ -71,7 +69,7 @@ namespace plorth
     }
   }
 
-  void dictionary::insert(const value_type& word)
+  void dictionary::insert(const_reference word)
   {
     m_words[word->symbol()->id()] = word;
   }

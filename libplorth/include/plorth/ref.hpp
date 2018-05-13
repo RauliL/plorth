@@ -60,6 +60,19 @@ namespace plorth
     }
 
     /**
+     * Constructs copy of existing reference.
+     */
+    template<class U>
+    ref(const ref<U>& that)
+      : m_object(that.get())
+    {
+      if (m_object)
+      {
+        m_object->inc_use_count();
+      }
+    }
+
+    /**
      * Moves wrapped object from another reference into this one.
      */
     ref(ref<T>&& that)

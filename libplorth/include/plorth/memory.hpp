@@ -27,6 +27,7 @@
 #define PLORTH_MEMORY_HPP_GUARD
 
 #include <plorth/config.hpp>
+#include <plorth/ref.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -74,15 +75,13 @@ namespace plorth
        * Creates new scripting runtime that uses this memory manager for memory
        * allocation.
        */
-      std::shared_ptr<runtime> new_runtime();
+      ref<runtime> new_runtime();
 
       /**
        * Creates new scripting context that uses given scripting runtime as
        * it's runtime.
        */
-      std::shared_ptr<context> new_context(
-        const std::shared_ptr<class runtime>& runtime
-      );
+      ref<context> new_context(const ref<class runtime>& runtime);
 
       manager(const manager&) = delete;
       manager(manager&&) = delete;
@@ -140,7 +139,10 @@ namespace plorth
        */
       inline void dec_use_count()
       {
-        --m_use_count;
+        if (--m_use_count <= 0)
+        {
+          delete this;
+        }
       }
 
       void* operator new(std::size_t size, class manager& manager);

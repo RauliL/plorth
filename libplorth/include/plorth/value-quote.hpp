@@ -40,7 +40,7 @@ namespace plorth
   {
   public:
     /** Signature of C++ function that can be used as quote. */
-    using callback = std::function<void(const std::shared_ptr<context>&)>;
+    using callback = std::function<void(const ref<context>&)>;
 
     /**
      * Enumeration for different supported quote types.
@@ -58,7 +58,7 @@ namespace plorth
      * \return    Boolean flag which tells whether execution of the quote was
      *            performed successfully without errors.
      */
-    virtual bool call(const std::shared_ptr<context>& ctx) const = 0;
+    virtual bool call(const ref<context>& ctx) const = 0;
 
     /**
      * Returns type of the quote.

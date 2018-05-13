@@ -70,7 +70,7 @@ namespace plorth
     return U"unknown";
   }
 
-  std::shared_ptr<object> value::prototype(const std::shared_ptr<class runtime>& runtime) const
+  ref<object> value::prototype(const ref<class runtime>& runtime) const
   {
     switch (type())
     {
@@ -112,25 +112,23 @@ namespace plorth
           }
           else if (property->second && property->second->is(type_object))
           {
-            return std::static_pointer_cast<object>(property->second);
+            return property->second.cast<object>();
           } else {
-            return std::shared_ptr<object>();
+            return ref<object>();
           }
         }
         break;
     }
 
-    return std::shared_ptr<object>(); // Just to make GCC happy.
+    return ref<object>(); // Just to make GCC happy.
   }
 
-  bool operator==(const std::shared_ptr<value>& a,
-                  const std::shared_ptr<value>& b)
+  bool operator==(const ref<value>& a, const ref<value>& b)
   {
     return a ? b && a->equals(b) : !b;
   }
 
-  bool operator!=(const std::shared_ptr<value>& a,
-                  const std::shared_ptr<value>& b)
+  bool operator!=(const ref<value>& a, const ref<value>& b)
   {
     return a ? !b || !a->equals(b) : !!b;
   }
@@ -140,6 +138,11 @@ namespace plorth
     out << value::type_description(type);
 
     return out;
+  }
+
+  std::ostream& operator<<(std::ostream& os, const ref<class value>& value)
+  {
+    return os << value.get();
   }
 
   std::ostream& operator<<(std::ostream& os, const class value* value)

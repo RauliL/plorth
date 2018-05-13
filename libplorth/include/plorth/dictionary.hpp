@@ -40,7 +40,9 @@ namespace plorth
   class dictionary
   {
   public:
-    using value_type = std::shared_ptr<word>;
+    using value_type = ref<word>;
+    using reference = value_type&;
+    using const_reference = const value_type&;
     /** Underlying container type. */
     using container_type = std::unordered_map<unistring, value_type>;
 
@@ -69,7 +71,7 @@ namespace plorth
      * symbol. If no such word is found from the dictionary, null reference
      * will be returned instead.
      */
-    value_type find(const std::shared_ptr<symbol>& id) const;
+    value_type find(const ref<symbol>& id) const;
 
     /**
      * Searches for a word from the dictionary which symbol matches with given
@@ -82,7 +84,7 @@ namespace plorth
      * Inserts given word into the dictionary. Existing words with identical
      * symbol will be overridden.
      */
-    void insert(const value_type& word);
+    void insert(const_reference word);
 
   private:
     /** Container for the words in the dictionary. */

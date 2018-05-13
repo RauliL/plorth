@@ -46,23 +46,23 @@ static const char* script_filename = nullptr;
 static bool flag_test_syntax = false;
 static bool flag_fork = false;
 
-static void scan_arguments(const std::shared_ptr<runtime>&, int, char**);
+static void scan_arguments(const ref<runtime>&, int, char**);
 #if PLORTH_ENABLE_MODULES
-static void scan_module_path(const std::shared_ptr<runtime>&);
+static void scan_module_path(const ref<runtime>&);
 #endif
 static inline bool is_console_interactive();
-static void compile_and_run(const std::shared_ptr<context>&,
+static void compile_and_run(const ref<context>&,
                             const std::string&,
                             const unistring&);
-static void console_loop(const std::shared_ptr<context>&);
+static void console_loop(const ref<context>&);
 
-void initialize_repl_api(const std::shared_ptr<runtime>&);
+void initialize_repl_api(const ref<runtime>&);
 
 int main(int argc, char** argv)
 {
   memory::manager memory_manager;
-  std::shared_ptr<runtime> runtime = memory_manager.new_runtime();
-  std::shared_ptr<context> context = memory_manager.new_context(runtime);
+  ref<runtime> runtime = memory_manager.new_runtime();
+  ref<context> context = memory_manager.new_context(runtime);
 
 #if PLORTH_ENABLE_MODULES
   scan_module_path(runtime);
@@ -130,7 +130,7 @@ static void print_usage(std::ostream& out, const char* executable)
   out << std::endl;
 }
 
-static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
+static void scan_arguments(const ref<class runtime>& runtime,
                            int argc,
                            char** argv)
 {
@@ -213,7 +213,7 @@ static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
 }
 
 #if PLORTH_ENABLE_MODULES
-static void scan_module_path(const std::shared_ptr<class runtime>& runtime)
+static void scan_module_path(const ref<class runtime>& runtime)
 {
 #if defined(_WIN32)
   static const unichar path_separator = ';';
@@ -264,9 +264,9 @@ static inline bool is_console_interactive()
 #endif
 }
 
-static void handle_error(const std::shared_ptr<context>& ctx)
+static void handle_error(const ref<context>& ctx)
 {
-  const std::shared_ptr<error>& err = ctx->error();
+  const auto& err = ctx->error();
 
   if (err)
   {
@@ -283,12 +283,12 @@ static void handle_error(const std::shared_ptr<context>& ctx)
   std::exit(EXIT_FAILURE);
 }
 
-static void compile_and_run(const std::shared_ptr<context>& ctx,
+static void compile_and_run(const ref<context>& ctx,
                             const std::string& input,
                             const unistring& filename)
 {
   unistring source;
-  std::shared_ptr<quote> script;
+  ref<quote> script;
 
   if (!utf8_decode_test(input, source))
   {
@@ -377,7 +377,7 @@ static void count_open_braces(const std::string& input, std::stack<char>& open_b
   }
 }
 
-static void console_loop(const std::shared_ptr<class context>& context)
+static void console_loop(const ref<class context>& context)
 {
   int line_counter = 0;
   unistring source;

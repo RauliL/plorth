@@ -45,10 +45,12 @@ namespace plorth
     runtime::prototype_definition word_prototype();
   }
 
-  static inline std::shared_ptr<object> make_prototype(runtime*,
-                                                       const char32_t*,
-                                                       const std::shared_ptr<object>&,
-                                                       const runtime::prototype_definition&);
+  static inline ref<object> make_prototype(
+    runtime*,
+    const char32_t*,
+    const ref<object>&,
+    const runtime::prototype_definition&
+  );
 
   runtime::runtime(memory::manager* memory_manager)
     : m_memory_manager(memory_manager)
@@ -69,55 +71,55 @@ namespace plorth
     m_object_prototype = make_prototype(
       this,
       U"object",
-      std::shared_ptr<object>(),
+      ref<object>(),
       api::object_prototype()
     );
     m_array_prototype = make_prototype(
       this,
       U"array",
-      std::shared_ptr<object>(),
+      ref<object>(),
       api::array_prototype()
     );
     m_boolean_prototype = make_prototype(
       this,
       U"boolean",
-      std::shared_ptr<object>(),
+      ref<object>(),
       api::boolean_prototype()
     );
     m_error_prototype = make_prototype(
       this,
       U"error",
-      std::shared_ptr<object>(),
+      ref<object>(),
       api::error_prototype()
     );
     m_number_prototype = make_prototype(
       this,
       U"number",
-      std::shared_ptr<object>(),
+      ref<object>(),
       api::number_prototype()
     );
     m_quote_prototype = make_prototype(
       this,
       U"quote",
-      std::shared_ptr<object>(),
+      ref<object>(),
       api::quote_prototype()
     );
     m_string_prototype = make_prototype(
       this,
       U"string",
-      std::shared_ptr<object>(),
+      ref<object>(),
       api::string_prototype()
     );
     m_symbol_prototype = make_prototype(
       this,
       U"symbol",
-      std::shared_ptr<object>(),
+      ref<object>(),
       api::symbol_prototype()
     );
     m_word_prototype = make_prototype(
       this,
       U"word",
-      std::shared_ptr<object>(),
+      ref<object>(),
       api::word_prototype()
     );
   }
@@ -190,13 +192,15 @@ namespace plorth
     println();
   }
 
-  static inline std::shared_ptr<object> make_prototype(class runtime* runtime,
-                                                       const char32_t* name,
-                                                       const std::shared_ptr<object>& parent_prototype,
-                                                       const runtime::prototype_definition& definition)
+  static inline ref<object> make_prototype(
+    class runtime* runtime,
+    const char32_t* name,
+    const ref<object>& parent_prototype,
+    const runtime::prototype_definition& definition
+  )
   {
     object::container_type properties;
-    std::shared_ptr<object> prototype;
+    ref<object> prototype;
 
     for (auto& entry : definition)
     {
