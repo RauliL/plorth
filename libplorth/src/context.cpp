@@ -102,7 +102,7 @@ namespace plorth
   void context::push_word(const std::shared_ptr<class symbol>& symbol,
                           const std::shared_ptr<class quote>& quote)
   {
-    push(m_runtime->value<word>(symbol, quote));
+    push(m_runtime->word(symbol, quote));
   }
 
   bool context::pop()

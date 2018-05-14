@@ -24,7 +24,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
-#include <plorth/value-word.hpp>
 
 namespace plorth
 {
@@ -302,10 +301,7 @@ namespace plorth
           }
         }
 
-        return runtime->value<word>(
-          symbol,
-          runtime->compiled_quote(values)
-        );
+        return runtime->word(symbol, runtime->compiled_quote(values));
       }
 
       std::shared_ptr<quote> compile_quote(context* ctx)

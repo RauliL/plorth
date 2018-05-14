@@ -60,7 +60,10 @@ namespace plorth
 
     for (auto& entry : api::global_dictionary())
     {
-      m_dictionary[symbol(entry.first)] = native_quote(entry.second);
+      m_dictionary.insert(word(
+        symbol(entry.first),
+        native_quote(entry.second)
+      ));
     }
 
     m_object_prototype = make_prototype(
@@ -206,12 +209,15 @@ namespace plorth
     // given.
     if (name)
     {
-      runtime->dictionary()[runtime->symbol(name)] = runtime->compiled_quote({
-        runtime->value<object>(object::container_type({
-          { U"__proto__", runtime->object_prototype() },
-          { U"prototype", prototype }
-        }))
-      });
+      runtime->dictionary().insert(runtime->word(
+        runtime->symbol(name),
+        runtime->compiled_quote({
+          runtime->value<object>(object::container_type({
+            { U"__proto__", runtime->object_prototype() },
+            { U"prototype", prototype }
+          }))
+        })
+      ));
     }
 
     return prototype;

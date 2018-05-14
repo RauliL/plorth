@@ -79,8 +79,10 @@ namespace plorth
     {
       if (property.second && property.second->is(value::type_quote))
       {
-        m_dictionary[m_runtime->symbol(property.first)]
-          = std::static_pointer_cast<quote>(property.second);
+        m_dictionary.insert(m_runtime->word(
+          m_runtime->symbol(property.first),
+          std::static_pointer_cast<quote>(property.second)
+        ));
       }
     }
 
@@ -149,9 +151,9 @@ namespace plorth
     }
 
     // Finally convert the module into object.
-    for (const auto& entry : module_ctx->dictionary())
+    for (const auto& word : module_ctx->dictionary().words())
     {
-      result[entry.first->id()] = entry.second;
+      result[word->symbol()->id()] = word->quote();
     }
 
     return ctx->runtime()->value<object>(result);

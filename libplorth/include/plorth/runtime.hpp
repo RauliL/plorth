@@ -26,15 +26,12 @@
 #ifndef PLORTH_RUNTIME_HPP_GUARD
 #define PLORTH_RUNTIME_HPP_GUARD
 
+#include <plorth/dictionary.hpp>
 #include <plorth/value-array.hpp>
 #include <plorth/value-boolean.hpp>
 #include <plorth/value-number.hpp>
 #include <plorth/value-object.hpp>
-#include <plorth/value-quote.hpp>
 #include <plorth/value-string.hpp>
-#include <plorth/value-symbol.hpp>
-
-#include <vector>
 
 namespace plorth
 {
@@ -56,8 +53,6 @@ namespace plorth
   public:
     using prototype_definition = std::vector<std::pair<const char32_t*,
                                                        quote::callback>>;
-    using dictionary_type = std::unordered_map<std::shared_ptr<class symbol>,
-                                               std::shared_ptr<quote>>;
 #if PLORTH_ENABLE_SYMBOL_CACHE
     using symbol_cache = std::unordered_map<unistring,
                                            std::shared_ptr<class symbol>>;
@@ -86,7 +81,7 @@ namespace plorth
      * This non-constant version of the method can be used to define new words
      * into the global dictionary, or remove existing ones.
      */
-    inline dictionary_type& dictionary()
+    inline class dictionary& dictionary()
     {
       return m_dictionary;
     }
@@ -95,7 +90,7 @@ namespace plorth
      * Returns the global dictionary that contains core word set available to
      * all contexts.
      */
-    inline const dictionary_type& dictionary() const
+    inline const class dictionary& dictionary() const
     {
       return m_dictionary;
     }
@@ -253,6 +248,22 @@ namespace plorth
     std::shared_ptr<quote> native_quote(quote::callback callback);
 
     /**
+     * Constructs word from given string and quote.
+     */
+    std::shared_ptr<class word> word(
+      const unistring& id,
+      const std::shared_ptr<class quote>& quote
+    );
+
+    /**
+     * Constructs word from given symbol and quote.
+     */
+    std::shared_ptr<class word> word(
+      const std::shared_ptr<class symbol>& symbol,
+      const std::shared_ptr<class quote>& quote
+    );
+
+    /**
      * Helper method for constructing managed objects (such as values) using
      * the memory manager associated with this runtime instance.
      */
@@ -363,7 +374,7 @@ namespace plorth
     /** Memory manager associated with this runtime. */
     memory::manager* m_memory_manager;
     /** Global dictionary available to all contexts. */
-    dictionary_type m_dictionary;
+    class dictionary m_dictionary;
     /** Shared instance of true boolean value. */
     std::shared_ptr<class boolean> m_true_value;
     /** Shared instance of false boolean value. */
