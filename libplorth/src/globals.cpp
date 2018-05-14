@@ -1104,9 +1104,9 @@ namespace plorth
   {
     object::container_type result;
 
-    for (const auto& entry : ctx->runtime()->dictionary())
+    for (const auto& word : ctx->runtime()->dictionary().words())
     {
-      result[entry.first->id()] = entry.second;
+      result[word->symbol()->id()] = word->quote();
     }
     ctx->push_object(result);
   }
@@ -1123,9 +1123,9 @@ namespace plorth
   {
     object::container_type result;
 
-    for (const auto& entry : ctx->dictionary())
+    for (const auto& word : ctx->dictionary().words())
     {
-      result[entry.first->id()] = entry.second;
+      result[word->symbol()->id()] = word->quote();
     }
     ctx->push_object(result);
   }
@@ -1149,7 +1149,10 @@ namespace plorth
     {
       const auto& runtime = ctx->runtime();
 
-      ctx->dictionary()[runtime->symbol(id->to_string())] = runtime->compiled_quote({ val });
+      ctx->dictionary().insert(runtime->word(
+        runtime->symbol(id->to_string()),
+        runtime->compiled_quote({ val })
+      ));
     }
   }
 

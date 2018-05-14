@@ -45,6 +45,12 @@ void initialize_repl_api(const std::shared_ptr<runtime>& runtime)
 {
   auto& dictionary = runtime->dictionary();
 
-  dictionary[runtime->symbol(U".q")] = runtime->native_quote(w_quit);
-  dictionary[runtime->symbol(U".s")] = runtime->native_quote(w_stack);
+  dictionary.insert(runtime->word(
+    runtime->symbol(U".q"),
+    runtime->native_quote(w_quit)
+  ));
+  dictionary.insert(runtime->word(
+    runtime->symbol(U".s"),
+    runtime->native_quote(w_stack)
+  ));
 }

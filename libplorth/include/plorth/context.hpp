@@ -42,8 +42,6 @@ namespace plorth
   {
   public:
     using container_type = std::deque<std::shared_ptr<value>>;
-    using dictionary_type = std::unordered_map<std::shared_ptr<symbol>,
-                                               std::shared_ptr<quote>>;
 
     /**
      * Constructs new context.
@@ -103,7 +101,7 @@ namespace plorth
     /**
      * Returns the dictionary used by this context to store words.
      */
-    inline dictionary_type& dictionary()
+    inline class dictionary& dictionary()
     {
       return m_dictionary;
     }
@@ -111,7 +109,7 @@ namespace plorth
     /**
      * Returns the dictionary used by this context to store words.
      */
-    inline const dictionary_type& dictionary() const
+    inline const class dictionary& dictionary() const
     {
       return m_dictionary;
     }
@@ -436,7 +434,7 @@ namespace plorth
     /** Data stack used for storing values in this context. */
     container_type m_data;
     /** Container for words associated with this context. */
-    dictionary_type m_dictionary;
+    class dictionary m_dictionary;
 #if PLORTH_ENABLE_MODULES
     /** Optional filename of the context, when executed as module. */
     unistring m_filename;

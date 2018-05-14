@@ -108,14 +108,9 @@ namespace plorth
     }
 
     // Look for a word from dictionary of current context.
+    if (auto word = ctx->dictionary().find(sym))
     {
-      const auto& local_dictionary = ctx->dictionary();
-      const auto entry = local_dictionary.find(sym);
-
-      if (entry != std::end(local_dictionary) && entry->second)
-      {
-        return entry->second->call(ctx);
-      }
+      return word->quote()->call(ctx);
     }
 
     // TODO: If not found, see if it's a "fully qualified" name, e.g. a name
@@ -123,14 +118,9 @@ namespace plorth
     // for that from the specified namespace.
 
     // Look from global dictionary.
+    if (auto word = ctx->runtime()->dictionary().find(sym))
     {
-      const auto& global_dictionary = ctx->runtime()->dictionary();
-      const auto entry = global_dictionary.find(sym);
-
-      if (entry != std::end(global_dictionary) && entry->second)
-      {
-        return entry->second->call(ctx);
-      }
+      return word->quote()->call(ctx);
     }
 
     // If the name of the word can be converted into number, then do just that.
@@ -150,7 +140,7 @@ namespace plorth
   static bool exec_wrd(const std::shared_ptr<context>& ctx,
                        const std::shared_ptr<word>& wrd)
   {
-    ctx->dictionary()[wrd->symbol()] = wrd->quote();
+    ctx->dictionary().insert(wrd);
 
     return true;
   }

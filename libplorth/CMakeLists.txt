@@ -76,6 +76,7 @@ ADD_LIBRARY(
   SHARED
   src/compiler.cpp
   src/context.cpp
+  src/dictionary.cpp
   src/exec.cpp
   src/eval.cpp
   src/globals.cpp

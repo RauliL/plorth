@@ -56,6 +56,22 @@ namespace plorth
     return U": " + m_symbol->id() + U" " + m_quote->to_string() + U" ;";
   }
 
+  std::shared_ptr<word> runtime::word(
+    const unistring& id,
+    const std::shared_ptr<class quote>& quote
+  )
+  {
+    return word(symbol(id), quote);
+  }
+
+  std::shared_ptr<word> runtime::word(
+    const std::shared_ptr<class symbol>& symbol,
+    const std::shared_ptr<class quote>& quote
+  )
+  {
+    return value<class word>(symbol, quote);
+  }
+
   /**
    * Word: symbol
    * Prototype: word
