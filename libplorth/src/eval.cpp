@@ -100,9 +100,9 @@ namespace plorth
                        const ref<object>& obj,
                        ref<value>& slot)
   {
-    object::container_type properties;
+    std::vector<object::value_type> properties;
 
-    for (const auto& property : obj->properties())
+    for (const auto& property : obj->entries())
     {
       ref<value> value_slot;
 
@@ -110,7 +110,7 @@ namespace plorth
       {
         return false;
       }
-      properties[property.first] = value_slot;
+      properties.push_back(std::make_pair(property.first, value_slot));
     }
     slot = ctx->runtime()->value<object>(properties);
 

@@ -49,9 +49,9 @@ namespace plorth
     std::vector<value_type> result;
 
     result.reserve(m_words.size());
-    for (const auto& entry : m_words)
+    for (auto& entry : m_words)
     {
-      result.push_back(entry.second);
+      result.push_back(value_type(entry.second));
     }
 
     return result;
@@ -65,13 +65,13 @@ namespace plorth
     {
       return value_type();
     } else {
-      return entry->second;
+      return value_type(entry->second);
     }
   }
 
   void dictionary::insert(const_reference word)
   {
-    m_words[word->symbol()->id()] = word;
+    m_words[word->symbol()->id()] = word.get();
   }
 
   void dictionary::mark()

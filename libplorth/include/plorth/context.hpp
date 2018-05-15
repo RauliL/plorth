@@ -41,30 +41,30 @@ namespace plorth
   class context : public memory::managed
   {
   public:
-    using container_type = std::deque<ref<value>>;
+    using value_type = ref<value>;
+    using size_type = std::deque<value_type>::size_type;
 
     /**
-     * Constructs new context.
-     *
-     * \param runtime Runtime associated with this context.
+     * Constructs new execution context which uses given scripting runtime as
+     * it's runtime.
      */
-    explicit context(const ref<class runtime>& runtime);
+    static ref<context> make(const ref<class runtime>& runtime);
 
     /**
      * Returns the runtime associated with this context.
      */
-    inline const ref<class runtime>& runtime() const
+    inline ref<class runtime> runtime() const
     {
-      return m_runtime;
+      return ref<class runtime>(m_runtime);
     }
 
     /**
      * Returns the currently uncaught error in this context or null reference
      * if this context has no error.
      */
-    inline const ref<class error>& error() const
+    inline ref<class error> error() const
     {
-      return m_error;
+      return ref<class error>(m_error);
     }
 
     /**
@@ -74,7 +74,7 @@ namespace plorth
      */
     inline void error(const ref<class error>& error)
     {
-      m_error = error;
+      m_error = error.get();
     }
 
     /**
@@ -95,7 +95,7 @@ namespace plorth
      */
     inline void clear_error()
     {
-      m_error.reset();
+      m_error = nullptr;
     }
 
     /**
@@ -143,22 +143,6 @@ namespace plorth
     bool import(const unistring& path);
 
     /**
-     * Provides direct access to the data stack.
-     */
-    inline container_type& data()
-    {
-      return m_data;
-    }
-
-    /**
-     * Provides direct access to the data stack.
-     */
-    inline const container_type& data() const
-    {
-      return m_data;
-    }
-
-    /**
      * Returns true if the data stack is empty.
      */
     inline bool empty() const
@@ -169,9 +153,21 @@ namespace plorth
     /**
      * Returns the number of values currently in the data stack.
      */
-    inline std::size_t size() const
+    inline size_type size() const
     {
       return m_data.size();
+    }
+
+    /**
+     * Accesses specific element from the data stack, with top-most value being
+     * at index 0.
+     *
+     * Note: No boundary testing is performed by this method, so accessing an
+     * element that is out of index will result in undefined behavior.
+     */
+    inline value_type at(size_type index) const
+    {
+      return value_type(m_data[m_data.size() - index - 1]);
     }
 
     /**
@@ -187,7 +183,7 @@ namespace plorth
      */
     inline void push(const ref<class value>& value)
     {
-      m_data.push_back(value);
+      m_data.push_back(value.get());
     }
 
     /**
@@ -237,7 +233,7 @@ namespace plorth
      * Constructs object from given properties and pushes it into the data
      * stack.
      */
-    void push_object(const object::container_type& properties);
+    void push_object(const std::vector<object::value_type>& properties);
 
     /**
      * Constructs symbol from given identifier and pushes it onto the data
@@ -257,6 +253,17 @@ namespace plorth
      */
     void push_word(const ref<class symbol>& symbol,
                    const ref<class quote>& quote);
+
+    /**
+     * Retrieves the top-most value from the data stack and places it into slot
+     * given as argument. If the data stack is empty, nothing will be done and
+     * the method will return false.
+     *
+     * \param slot Where the top-most value of the data stack will be placed
+     *             into.
+     * \return     True if the data stack is not empty, false otherwise.
+     */
+    bool peek(ref<value>& slot);
 
     /**
      * Pops value from the data stack and discards it. If the stack is empty,
@@ -429,12 +436,20 @@ namespace plorth
     void mark();
 
   private:
+    /**
+     * Constructs new context.
+     *
+     * \param runtime Runtime associated with this context.
+     */
+    explicit context(const ref<class runtime>& runtime);
+
+  private:
     /** Runtime associated with this context. */
-    const ref<class runtime> m_runtime;
+    class runtime* m_runtime;
     /** Currently uncaught error in this context. */
-    ref<class error> m_error;
+    class error* m_error;
     /** Data stack used for storing values in this context. */
-    container_type m_data;
+    std::deque<value*> m_data;
     /** Container for words associated with this context. */
     class dictionary m_dictionary;
 #if PLORTH_ENABLE_MODULES

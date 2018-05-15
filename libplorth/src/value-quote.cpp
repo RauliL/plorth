@@ -39,8 +39,25 @@ namespace plorth
     class compiled_quote : public quote
     {
     public:
+      using size_type = std::size_t;
+
       explicit compiled_quote(const std::vector<ref<value>>& values)
-        : m_values(values) {}
+        : m_size(values.size())
+        , m_values(m_size > 0 ? new value*[m_size] : nullptr)
+      {
+        for (size_type i = 0; i < m_size; ++i)
+        {
+          m_values[i] = values[i].get();
+        }
+      }
+
+      ~compiled_quote()
+      {
+        if (m_size > 0)
+        {
+          delete[] m_values;
+        }
+      }
 
       inline enum quote_type quote_type() const
       {
@@ -49,9 +66,11 @@ namespace plorth
 
       bool call(const ref<context>& ctx) const
       {
-        for (const auto& value : m_values)
+        for (size_type i = 0; i < m_size; ++i)
         {
-          if (!value::exec(ctx, value))
+          const auto& value = m_values[i];
+
+          if (!value::exec(ctx, ref<class value>(value)))
           {
             return false;
           }
@@ -63,14 +82,13 @@ namespace plorth
       unistring to_string() const
       {
         unistring result;
-        bool first = true;
 
-        for (const auto& value : m_values)
+        for (size_type i = 0; i < m_size; ++i)
         {
-          if (first)
+          const auto& value = m_values[i];
+
+          if (i > 0)
           {
-            first = false;
-          } else {
             result += ' ';
           }
           if (value)
@@ -94,13 +112,16 @@ namespace plorth
           return false;
         }
         q = that.cast<compiled_quote>();
-        if (m_values.size() != q->m_values.size())
+        if (m_size != q->m_size)
         {
           return false;
         }
-        for (std::size_t i = 0; i < m_values.size(); ++i)
+        for (size_type i = 0; i < m_size; ++i)
         {
-          if (m_values[i] != q->m_values[i])
+          const auto ref1 = ref<value>(m_values[i]);
+          const auto ref2 = ref<value>(q->m_values[i]);
+
+          if (ref1 != ref2)
           {
             return false;
           }
@@ -112,8 +133,10 @@ namespace plorth
       void mark()
       {
         quote::mark();
-        for (auto& value : m_values)
+        for (size_type i = 0; i < m_size; ++i)
         {
+          auto& value = m_values[i];
+
           if (value && !value->marked())
           {
             value->mark();
@@ -122,7 +145,8 @@ namespace plorth
       }
 
     private:
-      const std::vector<ref<value>> m_values;
+      const size_type m_size;
+      value** m_values;
     };
 
     /**
@@ -217,7 +241,7 @@ namespace plorth
    */
   static void w_compose(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<quote> left;
     ref<quote> right;
 
@@ -248,7 +272,7 @@ namespace plorth
    */
   static void w_curry(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<value> argument;
     ref<quote> quo;
 
@@ -273,7 +297,7 @@ namespace plorth
    */
   static void w_negate(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<quote> quo;
 
     if (ctx->pop_quote(quo))

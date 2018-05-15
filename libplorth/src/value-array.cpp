@@ -38,11 +38,11 @@ namespace plorth
     public:
       simple_array(size_type size, const_pointer elements)
         : m_size(size)
-        , m_elements(size > 0 ? new value_type[size] : nullptr)
+        , m_elements(size > 0 ? new value*[size] : nullptr)
       {
         for (size_type i = 0; i < m_size; ++i)
         {
-          m_elements[i] = elements[i];
+          m_elements[i] = elements[i].get();
         }
       }
 
@@ -59,9 +59,9 @@ namespace plorth
         return m_size;
       }
 
-      const_reference at(size_type i) const
+      value_type at(size_type i) const
       {
-        return m_elements[i];
+        return value_type(m_elements[i]);
       }
 
       void mark()
@@ -80,7 +80,7 @@ namespace plorth
 
     private:
       const size_type m_size;
-      pointer m_elements;
+      value** m_elements;
     };
 
     /**
@@ -92,15 +92,15 @@ namespace plorth
       concat_array(const ref<array>& left,
                    const ref<array>& right)
         : m_size(left->size() + right->size())
-        , m_left(left)
-        , m_right(right) {}
+        , m_left(left.get())
+        , m_right(right.get()) {}
 
       inline size_type size() const
       {
         return m_size;
       }
 
-      const_reference at(size_type offset) const
+      value_type at(size_type offset) const
       {
         const size_type left_size = m_left->size();
 
@@ -127,8 +127,8 @@ namespace plorth
 
     private:
       const size_type m_size;
-      const ref<array> m_left;
-      const ref<array> m_right;
+      array* m_left;
+      array* m_right;
     };
 
     /**
@@ -140,19 +140,19 @@ namespace plorth
     public:
       explicit push_array(const ref<class array>& array,
                           const ref<value>& extra)
-        : m_array(array)
-        , m_extra(extra) {}
+        : m_array(array.get())
+        , m_extra(extra.get()) {}
 
       inline size_type size() const
       {
         return m_array->size() + 1;
       }
 
-      const_reference at(size_type offset) const
+      value_type at(size_type offset) const
       {
         if (offset == m_array->size())
         {
-          return m_extra;
+          return value_type(m_extra);
         } else {
           return m_array->at(offset);
         }
@@ -172,8 +172,8 @@ namespace plorth
       }
 
     private:
-      const ref<array> m_array;
-      const ref<value> m_extra;
+      array* m_array;
+      value* m_extra;
     };
 
     /**
@@ -185,7 +185,7 @@ namespace plorth
       explicit subarray(const ref<class array>& array,
                         size_type offset,
                         size_type size)
-        : m_array(array)
+        : m_array(array.get())
         , m_offset(offset)
         , m_size(size) {}
 
@@ -194,7 +194,7 @@ namespace plorth
         return m_size;
       }
 
-      const_reference at(size_type offset) const
+      value_type at(size_type offset) const
       {
         return m_array->at(m_offset + offset);
       }
@@ -209,7 +209,7 @@ namespace plorth
       }
 
     private:
-      const ref<array> m_array;
+      array* m_array;
       const size_type m_offset;
       const size_type m_size;
     };
@@ -221,14 +221,14 @@ namespace plorth
     {
     public:
       explicit reversed_array(const ref<class array>& array)
-        : m_array(array) {}
+        : m_array(array.get()) {}
 
       inline size_type size() const
       {
         return m_array->size();
       }
 
-      const_reference at(size_type offset) const
+      value_type at(size_type offset) const
       {
         return m_array->at(size() - offset - 1);
       }
@@ -243,7 +243,7 @@ namespace plorth
       }
 
     private:
-      const ref<array> m_array;
+      array* m_array;
     };
   }
 
@@ -281,7 +281,7 @@ namespace plorth
 
     for (size_type i = 0; i < s; ++i)
     {
-      const_reference element = at(i);
+      value_type element = at(i);
 
       if (i > 0)
       {
@@ -305,7 +305,7 @@ namespace plorth
     result += '[';
     for (size_type i = 0; i < s; ++i)
     {
-      const_reference element = at(i);
+      value_type element = at(i);
 
       if (i > 0)
       {
@@ -356,12 +356,12 @@ namespace plorth
     return copy;
   }
 
-  array::iterator::reference array::iterator::operator*()
+  array::iterator::value_type array::iterator::operator*()
   {
     return m_array->at(m_index);
   }
 
-  array::iterator::reference array::iterator::operator->()
+  array::iterator::value_type array::iterator::operator->()
   {
     return m_array->at(m_index);
   }
@@ -1168,7 +1168,7 @@ namespace plorth
 
       if (count > 0)
       {
-        const auto& runtime = ctx->runtime();
+        const auto runtime = ctx->runtime();
         ref<array> result = ary;
 
         for (number::int_type i = 1; i < count; ++i)

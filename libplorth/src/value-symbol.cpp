@@ -131,7 +131,7 @@ namespace plorth
       ctx->push(sym);
       if (position)
       {
-        const auto& runtime = ctx->runtime();
+        const auto runtime = ctx->runtime();
 
         ctx->push_object({
           { U"filename", runtime->string(position->filename) },

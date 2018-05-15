@@ -29,8 +29,8 @@
 namespace plorth
 {
   word::word(const ref<class symbol>& symbol, const ref<class quote>& quote)
-    : m_symbol(symbol)
-    , m_quote(quote) {}
+    : m_symbol(symbol.get())
+    , m_quote(quote.get()) {}
 
   bool word::equals(const ref<value>& that) const
   {
@@ -42,7 +42,8 @@ namespace plorth
     }
     w = that.cast<word>();
 
-    return m_symbol->equals(w->m_symbol) && m_quote->equals(w->m_quote);
+    return m_symbol->equals(ref<class symbol>(w->m_symbol))
+      && m_quote->equals(ref<class quote>(w->m_quote));
   }
 
   unistring word::to_string() const

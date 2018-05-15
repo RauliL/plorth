@@ -45,20 +45,35 @@ namespace plorth
     runtime::prototype_definition word_prototype();
   }
 
-  static inline ref<object> make_prototype(
+  static inline object* make_prototype(
     runtime*,
     const char32_t*,
-    const ref<object>&,
     const runtime::prototype_definition&
   );
 
+  ref<runtime> runtime::make(memory::manager& memory_manager)
+  {
+    return ref<runtime>(new (memory_manager) runtime(&memory_manager));
+  }
+
   runtime::runtime(memory::manager* memory_manager)
     : m_memory_manager(memory_manager)
+    , m_true_value(nullptr)
+    , m_false_value(nullptr)
+    , m_array_prototype(nullptr)
+    , m_boolean_prototype(nullptr)
+    , m_error_prototype(nullptr)
+    , m_number_prototype(nullptr)
+    , m_object_prototype(nullptr)
+    , m_quote_prototype(nullptr)
+    , m_string_prototype(nullptr)
+    , m_symbol_prototype(nullptr)
+    , m_word_prototype(nullptr)
   {
     assert(memory_manager);
 
-    m_true_value = value<class boolean>(true);
-    m_false_value = value<class boolean>(false);
+    m_true_value = new (*memory_manager) class boolean(true);
+    m_false_value = new (*memory_manager) class boolean(false);
 
     for (auto& entry : api::global_dictionary())
     {
@@ -71,55 +86,46 @@ namespace plorth
     m_object_prototype = make_prototype(
       this,
       U"object",
-      ref<object>(),
       api::object_prototype()
     );
     m_array_prototype = make_prototype(
       this,
       U"array",
-      ref<object>(),
       api::array_prototype()
     );
     m_boolean_prototype = make_prototype(
       this,
       U"boolean",
-      ref<object>(),
       api::boolean_prototype()
     );
     m_error_prototype = make_prototype(
       this,
       U"error",
-      ref<object>(),
       api::error_prototype()
     );
     m_number_prototype = make_prototype(
       this,
       U"number",
-      ref<object>(),
       api::number_prototype()
     );
     m_quote_prototype = make_prototype(
       this,
       U"quote",
-      ref<object>(),
       api::quote_prototype()
     );
     m_string_prototype = make_prototype(
       this,
       U"string",
-      ref<object>(),
       api::string_prototype()
     );
     m_symbol_prototype = make_prototype(
       this,
       U"symbol",
-      ref<object>(),
       api::symbol_prototype()
     );
     m_word_prototype = make_prototype(
       this,
       U"word",
-      ref<object>(),
       api::word_prototype()
     );
   }
@@ -267,21 +273,23 @@ namespace plorth
 #endif
   }
 
-  static inline ref<object> make_prototype(
+  static inline object* make_prototype(
     class runtime* runtime,
     const char32_t* name,
-    const ref<object>& parent_prototype,
     const runtime::prototype_definition& definition
   )
   {
-    object::container_type properties;
+    std::vector<object::value_type> properties;
     ref<object> prototype;
 
     for (auto& entry : definition)
     {
-      properties[entry.first] = runtime->native_quote(entry.second);
+      properties.push_back(std::make_pair(
+        entry.first,
+        runtime->native_quote(entry.second)
+      ));
     }
-    properties[U"__proto__"] = parent_prototype;
+    properties.push_back(std::make_pair(U"__proto__", ref<value>()));
     prototype = runtime->value<object>(properties);
 
     // Define prototype into global dictionary as constant if name has been
@@ -291,14 +299,14 @@ namespace plorth
       runtime->dictionary().insert(runtime->word(
         runtime->symbol(name),
         runtime->compiled_quote({
-          runtime->value<object>(object::container_type({
+          runtime->object({
             { U"__proto__", runtime->object_prototype() },
             { U"prototype", prototype }
-          }))
+          })
         })
       ));
     }
 
-    return prototype;
+    return prototype.get();
   }
 }

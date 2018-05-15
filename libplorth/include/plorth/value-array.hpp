@@ -41,8 +41,6 @@ namespace plorth
   public:
     using size_type = std::size_t;
     using value_type = ref<value>;
-    using reference = value_type&;
-    using const_reference = const value_type&;
     using pointer = value_type*;
     using const_pointer = const value_type*;
     class iterator;
@@ -55,7 +53,7 @@ namespace plorth
     /**
      * Returns element of the array from given index.
      */
-    virtual const_reference at(size_type offset) const = 0;
+    virtual value_type at(size_type offset) const = 0;
 
     inline enum type type() const
     {
@@ -74,9 +72,7 @@ namespace plorth
   {
   public:
     using difference_type = int;
-    using value_type = const ref<value>;
-    using pointer = value_type*;
-    using reference = value_type&;
+    using value_type = ref<value>;
     using iterator_category = std::forward_iterator_tag;
 
     iterator(const ref<array>& ary, array::size_type index = 0);
@@ -85,8 +81,8 @@ namespace plorth
 
     iterator& operator++();
     iterator operator++(int);
-    reference operator*();
-    reference operator->();
+    value_type operator*();
+    value_type operator->();
 
     bool operator==(const iterator& that) const;
     bool operator!=(const iterator& that) const;

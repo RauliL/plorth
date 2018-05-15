@@ -42,7 +42,7 @@ namespace plorth
 #if PLORTH_ENABLE_MODULES
     unistring resolved_path;
     auto& imported_modules = m_runtime->imported_modules();
-    object::container_type::iterator entry;
+    runtime::module_container::iterator entry;
     ref<object> module;
 
     // First attempt to resolve the module path into actual file system path.
@@ -74,7 +74,7 @@ namespace plorth
 
     // Transfer all exported words from the module into the calling execution
     // context.
-    for (const auto& property : module->properties())
+    for (const auto& property : module->entries())
     {
       if (property.second && property.second->is(value::type_quote))
       {
@@ -101,7 +101,7 @@ namespace plorth
     unistring source;
     ref<quote> compiled_module;
     ref<context> module_ctx;
-    object::container_type result;
+    std::vector<object::value_type> result;
 
     if (!is.good())
     {
@@ -134,7 +134,7 @@ namespace plorth
     }
 
     // Run the module code inside new execution context.
-    module_ctx = ctx->runtime()->memory_manager().new_context(ctx->runtime());
+    module_ctx = context::make(ctx->runtime());
     module_ctx->filename(path);
     if (!compiled_module->call(module_ctx))
     {
@@ -151,7 +151,7 @@ namespace plorth
     // Finally convert the module into object.
     for (const auto& word : module_ctx->dictionary().words())
     {
-      result[word->symbol()->id()] = word->quote();
+      result.push_back(std::make_pair(word->symbol()->id(), word->quote()));
     }
 
     return ctx->runtime()->value<object>(result);

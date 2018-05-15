@@ -30,8 +30,57 @@
 
 namespace plorth
 {
-  object::object(const container_type& properties)
-    : m_properties(properties) {}
+  object::object() {}
+
+  object::object(const std::vector<value_type>& properties)
+  {
+    for (const auto& property : properties)
+    {
+      m_properties[property.first] = property.second.get();
+    }
+  }
+
+  std::vector<object::key_type> object::keys() const
+  {
+    std::vector<key_type> result;
+
+    result.reserve(m_properties.size());
+    for (const auto& property : m_properties)
+    {
+      result.push_back(property.first);
+    }
+
+    return result;
+  }
+
+  std::vector<object::mapped_type> object::values() const
+  {
+    std::vector<mapped_type> result;
+
+    result.reserve(m_properties.size());
+    for (const auto& property : m_properties)
+    {
+      result.push_back(mapped_type(property.second));
+    }
+
+    return result;
+  }
+
+  std::vector<object::value_type> object::entries() const
+  {
+    std::vector<value_type> result;
+
+    result.reserve(m_properties.size());
+    for (const auto& property : m_properties)
+    {
+      result.push_back(value_type(
+        property.first,
+        mapped_type(property.second)
+      ));
+    }
+
+    return result;
+  }
 
   bool object::property(const ref<class runtime>& runtime,
                         const unistring& name,
@@ -42,7 +91,7 @@ namespace plorth
 
     if (property != std::end(m_properties))
     {
-      slot = property->second;
+      slot = mapped_type(property->second);
 
       return true;
     }
@@ -57,6 +106,19 @@ namespace plorth
     }
 
     return false;
+  }
+
+  bool object::own_property(const unistring& name, ref<value>& slot) const
+  {
+    const auto property = m_properties.find(name);
+
+    if (property == std::end(m_properties))
+    {
+      return false;
+    }
+    slot = mapped_type(property->second);
+
+    return true;
   }
 
   bool object::equals(const ref<value>& that) const
@@ -81,8 +143,16 @@ namespace plorth
     {
       const auto entry2 = obj->m_properties.find(entry1.first);
 
-      if (entry2 == std::end(obj->m_properties) || entry1.second != entry2->second)
+      if (entry2 != std::end(obj->m_properties))
       {
+        const auto ref1 = mapped_type(entry1.second);
+        const auto ref2 = mapped_type(entry2->second);
+
+        if (ref1 != ref2)
+        {
+          return false;
+        }
+      } else {
         return false;
       }
     }
@@ -157,6 +227,13 @@ namespace plorth
     }
   }
 
+  ref<object> runtime::object(
+    const std::vector<object::value_type>& properties
+  )
+  {
+    return ref<class object>(new (*m_memory_manager) class object(properties));
+  }
+
   /**
    * Word: keys
    * Prototype: object
@@ -173,7 +250,7 @@ namespace plorth
    */
   static void w_keys(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<object> obj;
     std::vector<ref<value>> result;
 
@@ -182,9 +259,9 @@ namespace plorth
       return;
     }
 
-    for (const auto& property : obj->properties())
+    for (const auto& key : obj->keys())
     {
-      result.push_back(runtime->string(property.first));
+      result.push_back(runtime->string(key));
     }
 
     ctx->push(obj);
@@ -208,20 +285,14 @@ namespace plorth
   static void w_values(const ref<context>& ctx)
   {
     ref<object> obj;
-    std::vector<ref<value>> result;
 
-    if (!ctx->pop_object(obj))
+    if (ctx->pop_object(obj))
     {
-      return;
-    }
+      const auto values = obj->values();
 
-    for (const auto& property : obj->properties())
-    {
-      result.push_back(property.second);
+      ctx->push(obj);
+      ctx->push_array(values.data(), values.size());
     }
-
-    ctx->push(obj);
-    ctx->push_array(result.data(), result.size());
   }
 
   /**
@@ -241,7 +312,7 @@ namespace plorth
    */
   static void w_entries(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<object> obj;
     std::vector<ref<value>> result;
 
@@ -250,7 +321,7 @@ namespace plorth
       return;
     }
 
-    for (const auto& property : obj->properties())
+    for (const auto& property : obj->entries())
     {
       ref<value> pair[2];
 
@@ -314,10 +385,10 @@ namespace plorth
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
-      const auto& properties = obj->properties();
+      ref<value> slot;
 
       ctx->push(obj);
-      ctx->push_boolean(properties.find(id->to_string()) != std::end(properties));
+      ctx->push_boolean(obj->own_property(id->to_string(), slot));
     }
   }
 
@@ -338,7 +409,7 @@ namespace plorth
    */
   static void w_new(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<object> obj;
     ref<value> prototype;
     ref<value> constructor;
@@ -427,10 +498,10 @@ namespace plorth
 
     if (ctx->pop_object(obj) && ctx->pop_string(id) && ctx->pop(val))
     {
-      object::container_type result = obj->properties();
+      auto properties = obj->entries();
 
-      result[id->to_string()] = val;
-      ctx->push_object(result);
+      properties.push_back(std::make_pair(id->to_string(), val));
+      ctx->push_object(properties);
     }
   }
 
@@ -454,9 +525,20 @@ namespace plorth
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
-      object::container_type result = obj->properties();
+      const auto id_str = id->to_string();
+      auto result = obj->entries();
+      bool found = false;
 
-      if (result.erase(id->to_string()) < 1)
+      for (auto it = result.begin(); it != std::end(result); ++it)
+      {
+        if (it->first == id_str)
+        {
+          found = true;
+          result.erase(it);
+          break;
+        }
+      }
+      if (!found)
       {
         ctx->error(
           error::code_range,
@@ -489,11 +571,11 @@ namespace plorth
 
     if (ctx->pop_object(a) && ctx->pop_object(b))
     {
-      object::container_type result = b->properties();
+      auto result = b->entries();
 
-      for (const auto& entry : a->properties())
+      for (const auto& entry : a->entries())
       {
-        result[entry.first] = entry.second;
+        result.push_back(entry);
       }
 
       ctx->push_object(result);

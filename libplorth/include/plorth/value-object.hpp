@@ -29,19 +29,41 @@
 #include <plorth/value.hpp>
 
 #include <unordered_map>
+#include <vector>
 
 namespace plorth
 {
+  /**
+   * Object is a container which maps a string key into any kind of value.
+   */
   class object : public value
   {
   public:
-    using container_type = std::unordered_map<unistring, ref<value>>;
+    using key_type = unistring;
+    using mapped_type = ref<value>;
+    using value_type = std::pair<unistring, ref<value>>;
 
-    explicit object(const container_type& properties);
+    explicit object();
+    explicit object(const std::vector<value_type>& properties);
 
-    inline const container_type& properties() const
+    /**
+     * Returns every non-inherited key contained in the object.
+     */
+    std::vector<key_type> keys() const;
+
+    /**
+     * Returns every non-inherited value contained in the object.
+     */
+    std::vector<mapped_type> values() const;
+
+    /**
+     * Returns every non-inherited property contained in the object.
+     */
+    std::vector<value_type> entries() const;
+
+    inline enum type type() const
     {
-      return m_properties;
+      return type_object;
     }
 
     /**
@@ -62,10 +84,15 @@ namespace plorth
                   ref<value>& slot,
                   bool inherited = true) const;
 
-    inline enum type type() const
-    {
-      return type_object;
-    }
+    /**
+     * Retrieves non-inherited property with given name from the object.
+     *
+     * \param name Name of the property to retrieve.
+     * \param slot Where the value of the found property will be assigned to.
+     * \return     Boolean flag which tells whether the property was found or
+     *             not.
+     */
+    bool own_property(const unistring& name, ref<value>& slot) const;
 
     bool equals(const ref<value>& that) const;
     unistring to_string() const;
@@ -73,7 +100,8 @@ namespace plorth
     void mark();
 
   private:
-    const container_type m_properties;
+    /** Underlying container for the properties. */
+    std::unordered_map<unistring, value*> m_properties;
   };
 }
 

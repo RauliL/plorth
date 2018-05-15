@@ -43,8 +43,6 @@ namespace plorth
     using value_type = ref<word>;
     using reference = value_type&;
     using const_reference = const value_type&;
-    /** Underlying container type. */
-    using container_type = std::unordered_map<unistring, value_type>;
 
     /**
      * Constructs new empty dictionary.
@@ -93,7 +91,7 @@ namespace plorth
 
   private:
     /** Container for the words in the dictionary. */
-    container_type m_words;
+    std::unordered_map<unistring, word*> m_words;
   };
 }
 

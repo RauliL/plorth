@@ -22,8 +22,7 @@ static void w_quit(const ref<context>&)
 static void w_stack(const ref<context>& ctx)
 {
   const auto& runtime = ctx->runtime();
-  const auto& stack = ctx->data();
-  const std::size_t size = stack.size();
+  const auto size = ctx->size();
 
   if (!size)
   {
@@ -31,9 +30,9 @@ static void w_stack(const ref<context>& ctx)
     return;
   }
 
-  for (std::size_t i = 0; i < size && i < 10; ++i)
+  for (context::size_type i = 0; i < size && i < 10; ++i)
   {
-    const auto& value = stack[size - i - 1];
+    const auto value = ctx->at(i);
 
     runtime->print(to_unistring(static_cast<number::int_type>(size - i)) + U": ");
     runtime->print(value ? value->to_source() : U"null");

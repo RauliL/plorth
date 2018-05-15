@@ -61,8 +61,8 @@ void initialize_repl_api(const ref<runtime>&);
 int main(int argc, char** argv)
 {
   memory::manager memory_manager;
-  ref<runtime> runtime = memory_manager.new_runtime();
-  ref<context> context = memory_manager.new_context(runtime);
+  ref<runtime> runtime = runtime::make(memory_manager);
+  ref<context> context = context::make(runtime);
 
 #if PLORTH_ENABLE_MODULES
   scan_module_path(runtime);

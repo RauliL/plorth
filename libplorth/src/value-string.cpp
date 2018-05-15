@@ -77,8 +77,8 @@ namespace plorth
       explicit concat_string(const ref<string>& left,
                              const ref<string>& right)
         : m_length(left->length() + right->length())
-        , m_left(left)
-        , m_right(right) {}
+        , m_left(left.get())
+        , m_right(right.get()) {}
 
       inline size_type length() const
       {
@@ -99,8 +99,8 @@ namespace plorth
 
     private:
       const size_type m_length;
-      const ref<string> m_left;
-      const ref<string> m_right;
+      string* m_left;
+      string* m_right;
     };
 
     class substring : public string
@@ -109,7 +109,7 @@ namespace plorth
       explicit substring(const ref<string>& original,
                          size_type offset,
                          size_type length)
-        : m_original(original)
+        : m_original(original.get())
         , m_offset(offset)
         , m_length(length) {}
 
@@ -124,7 +124,7 @@ namespace plorth
       }
 
     private:
-      const ref<string> m_original;
+      string* m_original;
       const size_type m_offset;
       const size_type m_length;
     };
@@ -136,7 +136,7 @@ namespace plorth
     {
     public:
       explicit reversed_string(const ref<string>& original)
-        : m_original(original) {}
+        : m_original(original.get()) {}
 
       inline size_type length() const
       {
@@ -149,7 +149,7 @@ namespace plorth
       }
 
     private:
-      const ref<string> m_original;
+      string* m_original;
     };
   }
 
@@ -691,7 +691,7 @@ namespace plorth
    */
   static void w_chars(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<string> str;
 
     if (ctx->pop_string(str))
@@ -725,7 +725,7 @@ namespace plorth
    */
   static void w_runes(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<string> str;
 
     if (ctx->pop_string(str))
@@ -759,7 +759,7 @@ namespace plorth
    */
   static void w_words(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<string> str;
 
     if (ctx->pop_string(str))
@@ -807,7 +807,7 @@ namespace plorth
    */
   static void w_lines(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<string> str;
 
     if (ctx->pop_string(str))
@@ -1188,7 +1188,7 @@ namespace plorth
 
       if (count > 0)
       {
-        const auto& runtime = ctx->runtime();
+        const auto runtime = ctx->runtime();
         ref<string> result = str;
 
         for (number::int_type i = 1; i < count; ++i)

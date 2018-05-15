@@ -49,17 +49,17 @@ namespace plorth
     /**
      * Returns identifier of the word.
      */
-    inline const ref<class symbol>& symbol() const
+    inline ref<class symbol> symbol() const
     {
-      return m_symbol;
+      return ref<class symbol>(m_symbol);
     }
 
     /**
      * Returns executable portion of the word.
      */
-    inline const ref<class quote>& quote() const
+    inline ref<class quote> quote() const
     {
-      return m_quote;
+      return ref<class quote>(m_quote);
     }
 
     inline enum type type() const
@@ -74,9 +74,9 @@ namespace plorth
 
   private:
     /** Identifier of the word. */
-    const ref<class symbol> m_symbol;
+    class symbol* m_symbol;
     /** Executable portion of the word. */
-    const ref<class quote> m_quote;
+    class quote* m_quote;
   };
 }
 

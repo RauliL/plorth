@@ -670,7 +670,7 @@ namespace plorth
    */
   static void w_is_instance_of(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<value> val;
     ref<object> obj;
 
@@ -1102,11 +1102,11 @@ namespace plorth
    */
   static void w_globals(const ref<context>& ctx)
   {
-    object::container_type result;
+    std::vector<object::value_type> result;
 
     for (const auto& word : ctx->runtime()->dictionary().words())
     {
-      result[word->symbol()->id()] = word->quote();
+      result.push_back(std::make_pair(word->symbol()->id(), word->quote()));
     }
     ctx->push_object(result);
   }
@@ -1121,11 +1121,11 @@ namespace plorth
    */
   static void w_locals(const ref<context>& ctx)
   {
-    object::container_type result;
+    std::vector<object::value_type> result;
 
     for (const auto& word : ctx->dictionary().words())
     {
-      result[word->symbol()->id()] = word->quote();
+      result.push_back(std::make_pair(word->symbol()->id(), word->quote()));
     }
     ctx->push_object(result);
   }
@@ -1147,7 +1147,7 @@ namespace plorth
 
     if (ctx->pop_string(id) && ctx->pop(val))
     {
-      const auto& runtime = ctx->runtime();
+      const auto runtime = ctx->runtime();
 
       ctx->dictionary().insert(runtime->word(
         runtime->symbol(id->to_string()),
@@ -1186,7 +1186,7 @@ namespace plorth
    */
   static void w_args(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     const auto& arguments = runtime->arguments();
     const auto size = arguments.size();
     std::vector<ref<value>> result;
@@ -1416,7 +1416,7 @@ namespace plorth
    */
   static void w_println(const ref<context>& ctx)
   {
-    const auto& runtime = ctx->runtime();
+    const auto runtime = ctx->runtime();
     ref<value> val;
 
     if (ctx->pop(val))

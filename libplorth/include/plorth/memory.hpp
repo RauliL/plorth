@@ -39,8 +39,16 @@ namespace plorth
 
   namespace memory
   {
+#if PLORTH_ENABLE_MEMORY_POOL
     struct pool;
+#endif
     struct slot;
+
+    struct generation
+    {
+      slot* head;
+      slot* tail;
+    };
 
     /**
      * Memory manager manages memory pools used by the interpreter and is used
@@ -71,25 +79,18 @@ namespace plorth
        */
       void* allocate(std::size_t size);
 
-      /**
-       * Creates new scripting runtime that uses this memory manager for memory
-       * allocation.
-       */
-      ref<runtime> new_runtime();
-
-      /**
-       * Creates new scripting context that uses given scripting runtime as
-       * it's runtime.
-       */
-      ref<context> new_context(const ref<class runtime>& runtime);
+      void collect();
 
       manager(const manager&) = delete;
       manager(manager&&) = delete;
       void operator=(const manager&) = delete;
       void operator=(manager&&) = delete;
 
-#if PLORTH_ENABLE_MEMORY_POOL
     private:
+      int m_allocation_counter;
+      generation m_nursery;
+      generation m_tenured;
+#if PLORTH_ENABLE_MEMORY_POOL
       /** Pointer to the first memory pool used by this manager. */
       pool* m_pool_head;
       /** Pointer to the last memory pool used by this manager. */
@@ -169,10 +170,7 @@ namespace plorth
        */
       inline void dec_use_count()
       {
-        if (--m_use_count <= 0)
-        {
-          delete this;
-        }
+        --m_use_count;
       }
 
       void* operator new(std::size_t size, class manager& manager);
@@ -210,9 +208,17 @@ namespace plorth
       /** Pointer to the last used slot in the pool. */
       slot* used_tail;
     };
+#endif
 
     struct slot
     {
+      /** Generation where the slot belongs to. */
+      struct generation* generation;
+      /** Next slot in the generation. */
+      slot* next_in_generation;
+      /** Previous slot in the generation. */
+      slot* prev_in_generation;
+#if PLORTH_ENABLE_MEMORY_POOL
       /** Memory pool where this slot belongs to. */
       struct pool* pool;
       /** Pointer to the next slot in the pool. */
@@ -221,10 +227,10 @@ namespace plorth
       slot* prev;
       /** Size of the slot. */
       std::size_t size;
+#endif
       /** Pointer to the allocated memory. */
       char* memory;
     };
-#endif
   }
 }
 

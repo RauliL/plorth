@@ -56,14 +56,14 @@ namespace plorth
 #if PLORTH_ENABLE_SYMBOL_CACHE
     using symbol_cache = std::unordered_map<unistring, ref<class symbol>>;
 #endif
+#if PLORTH_ENABLE_MODULES
+    using module_container = std::unordered_map<unistring, ref<class object>>;
+#endif
 
     /**
-     * Constructs new runtime.
-     *
-     * \param memory_manager Pointer to the memory manager to use for
-     *                       allocating memory.
+     * Constructs new scripting time using given memory allocator.
      */
-    explicit runtime(memory::manager* memory_manager);
+    static ref<runtime> make(memory::manager& memory_manager);
 
     /**
      * Returns the memory manager used by this scripting runtime.
@@ -131,7 +131,7 @@ namespace plorth
     /**
      * Returns the container which the runtime uses to cache imported modules.
      */
-    inline object::container_type& imported_modules()
+    inline module_container& imported_modules()
     {
       return m_imported_modules;
     }
@@ -139,7 +139,7 @@ namespace plorth
     /**
      * Returns the container which the runtime uses to cache imported modules.
      */
-    inline const object::container_type& imported_modules() const
+    inline const module_container& imported_modules() const
     {
       return m_imported_modules;
     }
@@ -204,6 +204,16 @@ namespace plorth
                            array::size_type size);
 
     /**
+     * Constructs object value from given properties.
+     *
+     * \param properties Properties of which the object consists from.
+     * \return           Reference to the created object value.
+     */
+    ref<class object> object(
+      const std::vector<object::value_type>& properties
+    );
+
+    /**
      * Constructs string value from given Unicode string.
      *
      * \param input Unicode string to construct string value from.
@@ -229,17 +239,13 @@ namespace plorth
      *                 encountered.
      * \return         Reference to the created symbol.
      */
-    ref<class symbol> symbol(
-      const unistring& id,
-      const struct position* position = nullptr
-    );
+    ref<class symbol> symbol(const unistring& id,
+                             const struct position* position = nullptr);
 
     /**
      * Constructs compiled quote from given sequence of values.
      */
-    ref<quote> compiled_quote(
-      const std::vector<ref<value>>& values
-    );
+    ref<quote> compiled_quote(const std::vector<ref<value>>& values);
 
     /**
      * Constructs native quote from given C++ callback.
@@ -270,101 +276,110 @@ namespace plorth
     /**
      * Returns shared instance of true boolean value.
      */
-    inline const ref<class boolean>& true_value() const
+    inline ref<class boolean> true_value() const
     {
-      return m_true_value;
+      return ref<class boolean>(m_true_value);
     }
 
     /**
      * Returns shared instance of false boolean value.
      */
-    inline const ref<class boolean>& false_value() const
+    inline ref<class boolean> false_value() const
     {
-      return m_false_value;
+      return ref<class boolean>(m_false_value);
     }
 
     /**
      * Helper method for converting C++ boolean value into Plorth boolean
      * value.
      */
-    inline const ref<class boolean>& boolean(bool b) const
+    inline ref<class boolean> boolean(bool b) const
     {
-      return b ? m_true_value : m_false_value;
+      return ref<class boolean>(b ? m_true_value : m_false_value);
     }
 
     /**
      * Returns prototype for array values.
      */
-    inline const ref<object>& array_prototype() const
+    inline ref<class object> array_prototype() const
     {
-      return m_array_prototype;
+      return ref<class object>(m_array_prototype);
     }
 
     /**
      * Returns prototype for boolean values.
      */
-    inline const ref<object>& boolean_prototype() const
+    inline ref<class object> boolean_prototype() const
     {
-      return m_boolean_prototype;
+      return ref<class object>(m_boolean_prototype);
     }
 
     /**
      * Returns prototype for error values.
      */
-    inline const ref<object>& error_prototype() const
+    inline ref<class object> error_prototype() const
     {
-      return m_error_prototype;
+      return ref<class object>(m_error_prototype);
     }
 
     /**
      * Returns prototype for number values.
      */
-    inline const ref<object>& number_prototype() const
+    inline ref<class object> number_prototype() const
     {
-      return m_number_prototype;
+      return ref<class object>(m_number_prototype);
     }
 
     /**
      * Returns prototype for objects.
      */
-    inline const ref<object>& object_prototype() const
+    inline ref<class object> object_prototype() const
     {
-      return m_object_prototype;
+      return ref<class object>(m_object_prototype);
     }
 
     /**
      * Returns prototype for quotes.
      */
-    inline const ref<object>& quote_prototype() const
+    inline ref<class object> quote_prototype() const
     {
-      return m_quote_prototype;
+      return ref<class object>(m_quote_prototype);
     }
 
     /**
      * Returns prototype for string values.
      */
-    inline const ref<object>& string_prototype() const
+    inline ref<class object> string_prototype() const
     {
-      return m_string_prototype;
+      return ref<class object>(m_string_prototype);
     }
 
     /**
      * Returns prototype for symbols.
      */
-    inline const ref<object>& symbol_prototype() const
+    inline ref<class object> symbol_prototype() const
     {
-      return m_symbol_prototype;
+      return ref<class object>(m_symbol_prototype);
     }
 
     /**
      * Returns prototype for words.
      */
-    inline const ref<object>& word_prototype() const
+    inline ref<class object> word_prototype() const
     {
-      return m_word_prototype;
+      return ref<class object>(m_word_prototype);
     }
 
     void mark();
+
+  private:
+    /**
+     * Constructs new runtime.
+     *
+     * \param memory_manager Pointer to the memory manager to use for
+     *                       allocating memory.
+     */
+    explicit runtime(memory::manager* memory_manager);
 
   private:
     /** Memory manager associated with this runtime. */
@@ -372,33 +387,35 @@ namespace plorth
     /** Global dictionary available to all contexts. */
     class dictionary m_dictionary;
     /** Shared instance of true boolean value. */
-    ref<class boolean> m_true_value;
+    class boolean* m_true_value;
     /** Shared instance of false boolean value. */
-    ref<class boolean> m_false_value;
+    class boolean* m_false_value;
     /** Prototype for array values. */
-    ref<object> m_array_prototype;
+    class object* m_array_prototype;
     /** Prototype for boolean values. */
-    ref<object> m_boolean_prototype;
+    class object* m_boolean_prototype;
     /** Prototype for error values. */
-    ref<object> m_error_prototype;
+    class object* m_error_prototype;
     /** Prototype for number values. */
-    ref<object> m_number_prototype;
+    class object* m_number_prototype;
     /** Prototype for objects. */
-    ref<object> m_object_prototype;
+    class object* m_object_prototype;
     /** Prototype for quotes. */
-    ref<object> m_quote_prototype;
+    class object* m_quote_prototype;
     /** Prototype for string values. */
-    ref<object> m_string_prototype;
+    class object* m_string_prototype;
     /** Prototype for symbol values. */
-    ref<object> m_symbol_prototype;
+    class object* m_symbol_prototype;
     /** Prototype for words. */
-    ref<object> m_word_prototype;
+    class object* m_word_prototype;
     /** List of command line arguments given for the interpreter. */
     std::vector<unistring> m_arguments;
     /** List of file system paths where to look modules from. */
     std::vector<unistring> m_module_paths;
+#if PLORTH_ENABLE_MODULES
     /** Container for already imported modules. */
-    object::container_type m_imported_modules;
+    module_container m_imported_modules;
+#endif
 #if PLORTH_ENABLE_SYMBOL_CACHE
     /** Cache for symbols used by the runtime. */
     symbol_cache m_symbol_cache;

@@ -30,8 +30,14 @@
 
 namespace plorth
 {
+  ref<context> context::make(const ref<class runtime>& runtime)
+  {
+    return ref<context>(new (runtime->memory_manager()) context(runtime));
+  }
+
   context::context(const ref<class runtime>& runtime)
-    : m_runtime(runtime) {}
+    : m_runtime(runtime.get())
+    , m_error(nullptr) {}
 
   void context::error(enum error::code code,
                       const unistring& message,
@@ -41,7 +47,11 @@ namespace plorth
     {
       position = &m_position;
     }
-    m_error = m_runtime->value<class error>(code, message, position);
+    m_error = new (m_runtime->memory_manager()) class error(
+      code,
+      message,
+      position
+    );
   }
 
   void context::push_null()
@@ -84,7 +94,7 @@ namespace plorth
     push(m_runtime->array(elements, size));
   }
 
-  void context::push_object(const object::container_type& properties)
+  void context::push_object(const std::vector<object::value_type>& properties)
   {
     push(m_runtime->value<object>(properties));
   }
@@ -103,6 +113,17 @@ namespace plorth
                           const ref<class quote>& quote)
   {
     push(m_runtime->word(symbol, quote));
+  }
+
+  bool context::peek(ref<value>& slot)
+  {
+    if (m_data.empty())
+    {
+      return false;
+    }
+    slot = ref<value>(m_data.back());
+
+    return true;
   }
 
   bool context::pop()
@@ -148,7 +169,7 @@ namespace plorth
   {
     if (!m_data.empty())
     {
-      slot = m_data.back();
+      slot = ref<value>(m_data.back());
       m_data.pop_back();
 
       return true;
@@ -162,7 +183,7 @@ namespace plorth
   {
     if (!m_data.empty())
     {
-      slot = m_data.back();
+      slot = ref<value>(m_data.back());
       if ((!slot && type != value::type_null) || (slot && !slot->is(type)))
       {
         error(

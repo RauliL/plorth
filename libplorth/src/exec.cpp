@@ -81,14 +81,14 @@ namespace plorth
 
     // Look for prototype of the current item.
     {
-      const auto& stack = ctx->data();
+      ref<value> val;
 
-      if (!stack.empty() && stack.back())
+      if (ctx->peek(val) && val)
       {
-        const auto prototype = stack.back()->prototype(ctx->runtime());
-        ref<value> val;
+        const auto runtime = ctx->runtime();
+        const auto prototype = val->prototype(runtime);
 
-        if (prototype && prototype->property(ctx->runtime(), id, val))
+        if (prototype && prototype->property(runtime, id, val))
         {
           if (val && val->is(value::type_quote))
           {

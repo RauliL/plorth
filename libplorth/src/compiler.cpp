@@ -242,7 +242,7 @@ namespace plorth
       ref<word> compile_word(context* ctx)
       {
         struct position position;
-        const auto& runtime = ctx->runtime();
+        const auto runtime = ctx->runtime();
         ref<class symbol> symbol;
         std::vector<ref<value>> values;
 
@@ -495,7 +495,7 @@ namespace plorth
       ref<object> compile_object(context* ctx)
       {
         struct position position;
-        object::container_type properties;
+        std::vector<object::value_type> properties;
 
         if (skip_whitespace())
         {
@@ -572,7 +572,7 @@ namespace plorth
               return ref<object>();
             }
 
-            properties[key->to_string()] = value;
+            properties.push_back(std::make_pair(key->to_string(), value));
 
             if (skip_whitespace() || (!peek(',') && !peek('}')))
             {
