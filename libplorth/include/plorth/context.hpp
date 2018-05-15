@@ -426,6 +426,8 @@ namespace plorth
       return m_position;
     }
 
+    void mark();
+
   private:
     /** Runtime associated with this context. */
     const ref<class runtime> m_runtime;

@@ -119,6 +119,36 @@ namespace plorth
       virtual ~managed();
 
       /**
+       * Returns true if this object has been marked by the memory manager to
+       * still be in use.
+       */
+      inline bool marked() const
+      {
+        return m_marked;
+      }
+
+      /**
+       * Sets the object to be "marked", e.g. meaning that it's still being
+       * used somewhere and should not be automatically deleted by the memory
+       * manager.
+       *
+       * Classes which derive from this class should override this method so
+       * that it calls this method to all managed objects which it uses.
+       */
+      inline virtual void mark()
+      {
+        m_marked = true;
+      }
+
+      /**
+       * Removes the marked flag from the object.
+       */
+      inline void unmark()
+      {
+        m_marked = false;
+      }
+
+      /**
        * Returns the number of references which this object currently has.
        */
       inline long use_count() const
@@ -154,6 +184,8 @@ namespace plorth
       void operator=(managed&&) = delete;
 
     private:
+      /** Whether this object has been marked or not. */
+      bool m_marked;
       /** Number of references the object currently has. */
       long m_use_count;
     };

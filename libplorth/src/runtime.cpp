@@ -192,6 +192,81 @@ namespace plorth
     println();
   }
 
+  void runtime::mark()
+  {
+    managed::mark();
+    m_dictionary.mark();
+    if (m_true_value && !m_true_value->marked())
+    {
+      m_true_value->mark();
+    }
+    if (m_false_value && !m_false_value->marked())
+    {
+      m_false_value->mark();
+    }
+    if (m_array_prototype && !m_array_prototype->marked())
+    {
+      m_array_prototype->mark();
+    }
+    if (m_boolean_prototype && !m_boolean_prototype->marked())
+    {
+      m_boolean_prototype->mark();
+    }
+    if (m_error_prototype && !m_error_prototype->marked())
+    {
+      m_error_prototype->mark();
+    }
+    if (m_number_prototype && !m_number_prototype->marked())
+    {
+      m_number_prototype->mark();
+    }
+    if (m_object_prototype && !m_object_prototype->marked())
+    {
+      m_object_prototype->mark();
+    }
+    if (m_quote_prototype && !m_quote_prototype->marked())
+    {
+      m_quote_prototype->mark();
+    }
+    if (m_string_prototype && !m_string_prototype->marked())
+    {
+      m_string_prototype->mark();
+    }
+    if (m_symbol_prototype && !m_symbol_prototype->marked())
+    {
+      m_symbol_prototype->mark();
+    }
+    if (m_word_prototype && !m_word_prototype->marked())
+    {
+      m_word_prototype->mark();
+    }
+    for (auto& entry : m_imported_modules)
+    {
+      if (entry.second && !entry.second->marked())
+      {
+        entry.second->mark();
+      }
+    }
+#if PLORTH_ENABLE_SYMBOL_CACHE
+    for (auto& entry : m_symbol_cache)
+    {
+      if (entry.second && !entry.second->marked())
+      {
+        entry.second->mark();
+      }
+    }
+#endif
+#if PLORTH_ENABLE_INTEGER_CACHE
+    for (int i = 0; i < 256; ++i)
+    {
+      if (m_integer_cache[i] && !m_integer_cache[i]->marked())
+      {
+        m_integer_cache[i]->mark();
+      }
+    }
+#endif
+  }
+
   static inline ref<object> make_prototype(
     class runtime* runtime,
     const char32_t* name,

@@ -70,6 +70,7 @@ namespace plorth
     bool equals(const ref<value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
+    void mark();
 
   private:
     const container_type m_properties;

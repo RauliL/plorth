@@ -131,7 +131,8 @@ namespace plorth
     }
 
     managed::managed()
-      : m_use_count(0) {}
+      : m_marked(false)
+      , m_use_count(0) {}
 
     managed::~managed() {}
 

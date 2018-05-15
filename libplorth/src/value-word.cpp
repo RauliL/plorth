@@ -66,6 +66,19 @@ namespace plorth
     return value<class word>(symbol, quote);
   }
 
+  void word::mark()
+  {
+    value::mark();
+    if (!m_symbol->marked())
+    {
+      m_symbol->mark();
+    }
+    if (!m_quote->marked())
+    {
+      m_quote->mark();
+    }
+  }
+
   /**
    * Word: symbol
    * Prototype: word

@@ -145,6 +145,18 @@ namespace plorth
     return result;
   }
 
+  void object::mark()
+  {
+    value::mark();
+    for (auto& property : m_properties)
+    {
+      if (property.second && !property.second->marked())
+      {
+        property.second->mark();
+      }
+    }
+  }
+
   /**
    * Word: keys
    * Prototype: object

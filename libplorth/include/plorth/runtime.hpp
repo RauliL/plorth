@@ -364,6 +364,8 @@ namespace plorth
       return m_word_prototype;
     }
 
+    void mark();
+
   private:
     /** Memory manager associated with this runtime. */
     memory::manager* m_memory_manager;

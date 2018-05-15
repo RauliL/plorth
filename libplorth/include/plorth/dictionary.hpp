@@ -86,6 +86,11 @@ namespace plorth
      */
     void insert(const_reference word);
 
+    /**
+     * Goes through all the words stored in the dictionary and marks them.
+     */
+    void mark();
+
   private:
     /** Container for the words in the dictionary. */
     container_type m_words;
