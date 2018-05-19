@@ -80,6 +80,8 @@ ADD_LIBRARY(
   src/exec.cpp
   src/eval.cpp
   src/globals.cpp
+  src/io-input.cpp
+  src/io-output.cpp
   src/memory.cpp
   src/module.cpp
   src/position.cpp

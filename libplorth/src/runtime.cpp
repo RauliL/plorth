@@ -52,11 +52,20 @@ namespace plorth
     const runtime::prototype_definition&
   );
 
-  std::shared_ptr<runtime> runtime::make(memory::manager& memory_manager)
+  std::shared_ptr<runtime> runtime::make(
+    memory::manager& memory_manager,
+    const std::shared_ptr<io::input>& input,
+    const std::shared_ptr<io::output>& output
+  )
   {
-    return std::shared_ptr<runtime>(new (memory_manager) runtime(
-      &memory_manager
-    ));
+    const auto runtime = std::shared_ptr<class runtime>(
+      new (memory_manager) class runtime(&memory_manager)
+    );
+
+    runtime->m_input = input ? input : io::input::standard(memory_manager);
+    runtime->m_output = output ? output : io::output::standard(memory_manager);
+
+    return runtime;
   }
 
   runtime::runtime(memory::manager* memory_manager)
@@ -131,55 +140,25 @@ namespace plorth
     );
   }
 
-  read_result runtime::read(unistring& output,
-                            std::size_t size,
-                            std::size_t& read)
+  io::input::result runtime::read(io::input::size_type size,
+                                  unistring& output,
+                                  io::input::size_type& read)
   {
-    const bool infinite = !size;
-    const auto eof = std::char_traits<char>::eof();
-    std::string buffer;
-
-    buffer.reserve(6);
-    while (infinite || size > 0)
+    if (m_input)
     {
-      auto c = std::cin.get();
-      std::size_t unichar_size;
-
-      if (c == eof)
-      {
-        return read_result_eof;
-      }
-      else if (!(unichar_size = utf8_sequence_length(c)))
-      {
-        return read_result_failure;
-      }
-      buffer.clear();
-      buffer.append(1, c);
-      for (std::size_t i = 1; i < unichar_size; ++i)
-      {
-        if ((c = std::cin.get()) == eof)
-        {
-          return read_result_failure;
-        }
-        buffer.append(1, c);
-      }
-      if (!utf8_decode_test(buffer, output))
-      {
-        return read_result_failure;
-      }
-      if (!infinite)
-      {
-        --size;
-      }
-      ++read;
+      return m_input->read(size, output, read);
     }
+    read = 0;
 
-    return read_result_ok;
+    return io::input::result_eof;
   }
 
   void runtime::print(const unistring& str) const
   {
-    std::cout << str;
+    if (m_output)
+    {
+      m_output->write(str);
+    }
   }
 
   void runtime::println() const
