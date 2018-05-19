@@ -123,7 +123,7 @@ static void plorth_initialize()
     return;
   }
   memory_manager = new memory::manager();
-  plorth_runtime = memory_manager->new_runtime();
-  plorth_context = memory_manager->new_context(plorth_runtime);
+  plorth_runtime = runtime::make(*memory_manager);
+  plorth_context = context::make(plorth_runtime);
   initialize_repl_api(plorth_runtime);
 }

@@ -70,20 +70,6 @@ namespace plorth
        */
       void* allocate(std::size_t size);
 
-      /**
-       * Creates new scripting runtime that uses this memory manager for memory
-       * allocation.
-       */
-      std::shared_ptr<runtime> new_runtime();
-
-      /**
-       * Creates new scripting context that uses given scripting runtime as
-       * it's runtime.
-       */
-      std::shared_ptr<context> new_context(
-        const std::shared_ptr<class runtime>& runtime
-      );
-
       manager(const manager&) = delete;
       manager(manager&&) = delete;
       void operator=(const manager&) = delete;

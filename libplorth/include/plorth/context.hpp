@@ -47,8 +47,11 @@ namespace plorth
      * Constructs new context.
      *
      * \param runtime Runtime associated with this context.
+     * \return        Reference to the created context.
      */
-    explicit context(const std::shared_ptr<class runtime>& runtime);
+    static std::shared_ptr<context> make(
+      const std::shared_ptr<class runtime>& runtime
+    );
 
     /**
      * Returns the runtime associated with this context.
@@ -425,6 +428,14 @@ namespace plorth
     {
       return m_position;
     }
+
+  protected:
+    /**
+     * Constructs new context.
+     *
+     * \param runtime Runtime associated with this context.
+     */
+    explicit context(const std::shared_ptr<class runtime>& runtime);
 
   private:
     /** Runtime associated with this context. */

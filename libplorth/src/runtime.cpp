@@ -45,10 +45,19 @@ namespace plorth
     runtime::prototype_definition word_prototype();
   }
 
-  static inline std::shared_ptr<object> make_prototype(runtime*,
-                                                       const char32_t*,
-                                                       const std::shared_ptr<object>&,
-                                                       const runtime::prototype_definition&);
+  static inline std::shared_ptr<object> make_prototype(
+    runtime*,
+    const char32_t*,
+    const std::shared_ptr<object>&,
+    const runtime::prototype_definition&
+  );
+
+  std::shared_ptr<runtime> runtime::make(memory::manager& memory_manager)
+  {
+    return std::shared_ptr<runtime>(new (memory_manager) runtime(
+      &memory_manager
+    ));
+  }
 
   runtime::runtime(memory::manager* memory_manager)
     : m_memory_manager(memory_manager)
@@ -190,10 +199,12 @@ namespace plorth
     println();
   }
 
-  static inline std::shared_ptr<object> make_prototype(class runtime* runtime,
-                                                       const char32_t* name,
-                                                       const std::shared_ptr<object>& parent_prototype,
-                                                       const runtime::prototype_definition& definition)
+  static inline std::shared_ptr<object> make_prototype(
+    class runtime* runtime,
+    const char32_t* name,
+    const std::shared_ptr<object>& parent_prototype,
+    const runtime::prototype_definition& definition
+  )
   {
     object::container_type properties;
     std::shared_ptr<object> prototype;

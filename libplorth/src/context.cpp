@@ -30,6 +30,15 @@
 
 namespace plorth
 {
+  std::shared_ptr<context> context::make(
+    const std::shared_ptr<class runtime>& runtime
+  )
+  {
+    return std::shared_ptr<context>(new (runtime->memory_manager()) context(
+      runtime
+    ));
+  }
+
   context::context(const std::shared_ptr<class runtime>& runtime)
     : m_runtime(runtime) {}
 
