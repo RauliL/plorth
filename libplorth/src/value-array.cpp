@@ -266,16 +266,16 @@ namespace plorth
     return result;
   }
 
-  array_iterator::array_iterator(const std::shared_ptr<array>& ary,
-                                 array::size_type index)
+  array::iterator::iterator(const std::shared_ptr<array>& ary,
+                            array::size_type index)
     : m_array(ary)
     , m_index(index) {}
 
-  array_iterator::array_iterator(const array_iterator& that)
+  array::iterator::iterator(const iterator& that)
     : m_array(that.m_array)
     , m_index(that.m_index) {}
 
-  array_iterator& array_iterator::operator=(const array_iterator& that)
+  array::iterator& array::iterator::operator=(const iterator& that)
   {
     m_array = that.m_array;
     m_index = that.m_index;
@@ -283,38 +283,38 @@ namespace plorth
     return *this;
   }
 
-  array_iterator& array_iterator::operator++()
+  array::iterator& array::iterator::operator++()
   {
     ++m_index;
 
     return *this;
   }
 
-  array_iterator array_iterator::operator++(int)
+  array::iterator array::iterator::operator++(int)
   {
-    array_iterator copy(*this);
+    const iterator copy(*this);
 
     ++m_index;
 
     return copy;
   }
 
-  array_iterator::reference array_iterator::operator*()
+  array::iterator::reference array::iterator::operator*()
   {
     return m_array->at(m_index);
   }
 
-  array_iterator::reference array_iterator::operator->()
+  array::iterator::reference array::iterator::operator->()
   {
     return m_array->at(m_index);
   }
 
-  bool array_iterator::operator==(const array_iterator& that) const
+  bool array::iterator::operator==(const iterator& that) const
   {
     return m_index == that.m_index;
   }
 
-  bool array_iterator::operator!=(const array_iterator& that) const
+  bool array::iterator::operator!=(const iterator& that) const
   {
     return m_index != that.m_index;
   }
