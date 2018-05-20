@@ -28,6 +28,9 @@
 #include <cstring>
 #include <fstream>
 #include <stack>
+#if PLORTH_ENABLE_MODULES
+# include <unordered_set>
+#endif
 
 #if defined(HAVE_UNISTD_H)
 # include <unistd.h>
@@ -45,6 +48,9 @@ using namespace plorth;
 static const char* script_filename = nullptr;
 static bool flag_test_syntax = false;
 static bool flag_fork = false;
+#if PLORTH_ENABLE_MODULES
+static std::unordered_set<unistring> imported_modules;
+#endif
 
 static void scan_arguments(const std::shared_ptr<runtime>&, int, char**);
 #if PLORTH_ENABLE_MODULES
@@ -55,6 +61,7 @@ static void compile_and_run(const std::shared_ptr<context>&,
                             const std::string&,
                             const unistring&);
 static void console_loop(const std::shared_ptr<context>&);
+static void handle_error(const std::shared_ptr<context>&);
 
 void initialize_repl_api(const std::shared_ptr<runtime>&);
 
@@ -69,6 +76,16 @@ int main(int argc, char** argv)
 #endif
 
   scan_arguments(runtime, argc, argv);
+
+#if PLORTH_ENABLE_MODULES
+  for (const auto& module_path : imported_modules)
+  {
+    if (!context->import(module_path))
+    {
+      handle_error(context);
+    }
+  }
+#endif
 
   if (script_filename)
   {
@@ -124,6 +141,9 @@ static void print_usage(std::ostream& out, const char* executable)
   out << "  -c        Check syntax only." << std::endl;
 #if HAVE_FORK
   out << "  -f        Fork to background before executing script." << std::endl;
+#endif
+#if PLORTH_ENABLE_MODULES
+  out << "  -r <path> Import module before executing script." << std::endl;
 #endif
   out << "  --version Print the version." << std::endl;
   out << "  --help    Display this message." << std::endl;
@@ -182,7 +202,6 @@ static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
     {
       // TODO: Add support for these command line switches:
       // -e: Compile and execute inline script.
-      // -r: Import module before execution of the script.
       switch (arg[i])
       {
       case 'c':
@@ -192,6 +211,32 @@ static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
       case 'f':
         flag_fork = true;
         break;
+
+#if PLORTH_ENABLE_MODULES
+      case 'r':
+        if (offset < argc)
+        {
+          unistring module_path;
+
+          if (!utf8_decode_test(argv[offset++], module_path))
+          {
+            std::cerr << "Unable to decode given module path." << std::endl;
+            std::exit(EXIT_FAILURE);
+          }
+          imported_modules.insert(module_path);
+          ++offset;
+        } else {
+          std::cerr << "Argument expected for the -r option." << std::endl;
+          print_usage(std::cerr, argv[0]);
+          std::exit(EX_USAGE);
+        }
+        break;
+#else
+      case 'r':
+        std::cerr << "Modules have been disabled." << std::endl;
+        std::exit(EXIT_FAILURE);
+        break;
+#endif
 
       case 'h':
         print_usage(std::cout, argv[0]);
@@ -270,10 +315,12 @@ static void handle_error(const std::shared_ptr<context>& ctx)
 
   if (err)
   {
+    const auto position = err->position();
+
     std::cerr << "Error: ";
-    if (err->position())
+    if (position && (!position->filename.empty() || position->line))
     {
-      std::cerr << *err->position() << ':';
+      std::cerr << *position << ':';
     }
     std::cerr << err->code() << " - " << err->message();
   } else {

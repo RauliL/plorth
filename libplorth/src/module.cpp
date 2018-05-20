@@ -49,7 +49,7 @@ namespace plorth
     // First attempt to resolve the module path into actual file system path.
     if (!module_resolve_path(this, path, resolved_path))
     {
-      error(error::code_import, U"No such file or directory.");
+      error(error::code_import, U"No such file or directory: " + path);
 
       return false;
     }
