@@ -61,8 +61,8 @@ void initialize_repl_api(const std::shared_ptr<runtime>&);
 int main(int argc, char** argv)
 {
   memory::manager memory_manager;
-  std::shared_ptr<runtime> runtime = memory_manager.new_runtime();
-  std::shared_ptr<context> context = memory_manager.new_context(runtime);
+  auto runtime = runtime::make(memory_manager);
+  auto context = context::make(runtime);
 
 #if PLORTH_ENABLE_MODULES
   scan_module_path(runtime);

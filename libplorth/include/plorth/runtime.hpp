@@ -51,20 +51,23 @@ namespace plorth
   class runtime : public memory::managed
   {
   public:
-    using prototype_definition = std::vector<std::pair<const char32_t*,
-                                                       quote::callback>>;
+    using prototype_definition = std::vector<
+      std::pair<const char32_t*, quote::callback>
+    >;
 #if PLORTH_ENABLE_SYMBOL_CACHE
-    using symbol_cache = std::unordered_map<unistring,
-                                           std::shared_ptr<class symbol>>;
+    using symbol_cache = std::unordered_map<
+      unistring,
+      std::shared_ptr<class symbol>
+    >;
 #endif
 
     /**
      * Constructs new runtime.
      *
-     * \param memory_manager Pointer to the memory manager to use for
-     *                       allocating memory.
+     * \param memory_manager Memory manager to use for allocating memory.
+     * \return               Reference to the created runtime.
      */
-    explicit runtime(memory::manager* memory_manager);
+    static std::shared_ptr<runtime> make(memory::manager& memory_manager);
 
     /**
      * Returns the memory manager used by this scripting runtime.
@@ -369,6 +372,15 @@ namespace plorth
     {
       return m_word_prototype;
     }
+
+  protected:
+    /**
+     * Constructs new runtime.
+     *
+     * \param memory_manager Pointer to the memory manager to use for
+     *                       allocating memory.
+     */
+    explicit runtime(memory::manager* memory_manager);
 
   private:
     /** Memory manager associated with this runtime. */

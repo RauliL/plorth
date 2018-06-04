@@ -120,16 +120,6 @@ namespace plorth
 #endif
     }
 
-    std::shared_ptr<runtime> manager::new_runtime()
-    {
-      return std::shared_ptr<runtime>(new (*this) runtime(this));
-    }
-
-    std::shared_ptr<context> manager::new_context(const std::shared_ptr<class runtime>& runtime)
-    {
-      return std::shared_ptr<context>(new (*this) context(runtime));
-    }
-
     managed::managed() {}
 
     managed::~managed() {}

@@ -136,7 +136,7 @@ namespace plorth
     }
 
     // Run the module code inside new execution context.
-    module_ctx = ctx->runtime()->memory_manager().new_context(ctx->runtime());
+    module_ctx = context::make(ctx->runtime());
     module_ctx->filename(path);
     if (!compiled_module->call(module_ctx))
     {
