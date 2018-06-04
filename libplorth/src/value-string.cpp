@@ -197,16 +197,16 @@ namespace plorth
     return json_stringify(to_string());
   }
 
-  string_iterator::string_iterator(const std::shared_ptr<string>& str,
-                                   string::size_type index)
+  string::iterator::iterator(const std::shared_ptr<string>& str,
+                             string::size_type index)
     : m_string(str)
     , m_index(index) {}
 
-  string_iterator::string_iterator(const string_iterator& that)
+  string::iterator::iterator(const iterator& that)
     : m_string(that.m_string)
     , m_index(that.m_index) {}
 
-  string_iterator& string_iterator::operator=(const string_iterator& that)
+  string::iterator& string::iterator::operator=(const iterator& that)
   {
     m_string = that.m_string;
     m_index = that.m_index;
@@ -214,33 +214,33 @@ namespace plorth
     return *this;
   }
 
-  string_iterator& string_iterator::operator++()
+  string::iterator& string::iterator::operator++()
   {
     ++m_index;
 
     return *this;
   }
 
-  string_iterator string_iterator::operator++(int)
+  string::iterator string::iterator::operator++(int)
   {
-    string_iterator copy(*this);
+    const iterator copy(*this);
 
     ++m_index;
 
     return copy;
   }
 
-  string_iterator::value_type string_iterator::operator*()
+  string::iterator::value_type string::iterator::operator*()
   {
     return m_string->at(m_index);
   }
 
-  bool string_iterator::operator==(const string_iterator& that) const
+  bool string::iterator::operator==(const iterator& that) const
   {
     return m_index == that.m_index;
   }
 
-  bool string_iterator::operator!=(const string_iterator& that) const
+  bool string::iterator::operator!=(const iterator& that) const
   {
     return m_index != that.m_index;
   }

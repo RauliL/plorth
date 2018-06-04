@@ -39,6 +39,7 @@ namespace plorth
     using value_type = unichar;
     using pointer = value_type*;
     using const_pointer = const value_type*;
+    class iterator;
 
     /**
      * Tests whether the string is empty.
@@ -71,7 +72,7 @@ namespace plorth
   /**
    * Iterator implementation for Plorth string.
    */
-  class string_iterator
+  class string::iterator
   {
   public:
     using difference_type = int;
@@ -80,17 +81,16 @@ namespace plorth
     using reference = value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    string_iterator(const std::shared_ptr<string>& str,
-                    string::size_type index = 0);
-    string_iterator(const string_iterator& that);
-    string_iterator& operator=(const string_iterator& that);
+    iterator(const std::shared_ptr<string>& str, string::size_type index = 0);
+    iterator(const iterator& that);
+    iterator& operator=(const iterator& that);
 
-    string_iterator& operator++();
-    string_iterator operator++(int);
+    iterator& operator++();
+    iterator operator++(int);
     value_type operator*();
 
-    bool operator==(const string_iterator& that) const;
-    bool operator!=(const string_iterator& that) const;
+    bool operator==(const iterator& that) const;
+    bool operator!=(const iterator& that) const;
 
   private:
     /** Reference to string which is being iterated. */
@@ -99,14 +99,14 @@ namespace plorth
     array::size_type m_index;
   };
 
-  inline string_iterator begin(const std::shared_ptr<string>& str)
+  inline string::iterator begin(const std::shared_ptr<string>& str)
   {
-    return string_iterator(str);
+    return string::iterator(str);
   }
 
-  inline string_iterator end(const std::shared_ptr<string>& str)
+  inline string::iterator end(const std::shared_ptr<string>& str)
   {
-    return string_iterator(str, str->length());
+    return string::iterator(str, str->length());
   }
 }
 
