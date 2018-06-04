@@ -1321,14 +1321,14 @@ namespace plorth
   static void w_read(const std::shared_ptr<context>& ctx)
   {
     unistring output;
-    std::size_t read;
-    read_result result = ctx->runtime()->read(output, 0, read);
+    io::input::size_type read;
+    auto result = ctx->runtime()->read(0, output, read);
 
-    if (result == read_result_failure)
+    if (result == io::input::result_failure)
     {
       ctx->error(error::code_io, U"Unable to decode input as UTF-8.");
     }
-    else if (result == read_result_eof && output.empty())
+    else if (result == io::input::result_eof && output.empty())
     {
       ctx->push_null();
     } else {
@@ -1359,8 +1359,8 @@ namespace plorth
     {
       const number::int_type amount = num->as_int();
       unistring output;
-      std::size_t read;
-      read_result result;
+      io::input::size_type read;
+      io::input::result result;
 
       if (amount < 0)
       {
@@ -1372,13 +1372,13 @@ namespace plorth
         ctx->error(error::code_range, U"Zero size to be read.");
         return;
       }
-      result = ctx->runtime()->read(output, amount, read);
-      if (result == read_result_failure)
+      result = ctx->runtime()->read(amount, output, read);
+      if (result == io::input::result_failure)
       {
         ctx->error(error::code_io, U"Unable to decode input as UTF-8.");
         return;
       }
-      else if (result == read_result_eof && output.empty())
+      else if (result == io::input::result_eof && output.empty())
       {
         ctx->push_null();
       } else {

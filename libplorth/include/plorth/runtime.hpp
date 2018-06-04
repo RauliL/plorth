@@ -27,6 +27,8 @@
 #define PLORTH_RUNTIME_HPP_GUARD
 
 #include <plorth/dictionary.hpp>
+#include <plorth/io-input.hpp>
+#include <plorth/io-output.hpp>
 #include <plorth/value-array.hpp>
 #include <plorth/value-boolean.hpp>
 #include <plorth/value-number.hpp>
@@ -35,19 +37,6 @@
 
 namespace plorth
 {
-  /**
-   * Represents results of read operation.
-   */
-  enum read_result
-  {
-    /** Reading from standard input stream was successful. */
-    read_result_ok,
-    /** End of input was encountered. */
-    read_result_eof,
-    /** UTF-8 decoding error was encountered. */
-    read_result_failure
-  };
-
   class runtime : public memory::managed
   {
   public:
@@ -65,9 +54,17 @@ namespace plorth
      * Constructs new runtime.
      *
      * \param memory_manager Memory manager to use for allocating memory.
+     * \param input          Input used by the runtime. If omitted, standard
+     *                       input stream of the process will be used.
+     * \param output         Output used by the runtime. If omitted, standard
+     *                       output stream of the process will be used.
      * \return               Reference to the created runtime.
      */
-    static std::shared_ptr<runtime> make(memory::manager& memory_manager);
+    static std::shared_ptr<runtime> make(
+      memory::manager& memory_manager,
+      const std::shared_ptr<io::input>& input = std::shared_ptr<io::input>(),
+      const std::shared_ptr<io::output>& output = std::shared_ptr<io::output>()
+    );
 
     /**
      * Returns the memory manager used by this scripting runtime.
@@ -75,6 +72,38 @@ namespace plorth
     inline memory::manager& memory_manager() const
     {
       return *m_memory_manager;
+    }
+
+    /**
+     * Returns the input used by the runtime.
+     */
+    inline std::shared_ptr<io::input>& input()
+    {
+      return m_input;
+    }
+
+    /**
+     * Returns the input used by the runtime.
+     */
+    inline const std::shared_ptr<io::input>& input() const
+    {
+      return m_input;
+    }
+
+    /**
+     * Returns the output used by the runtime.
+     */
+    inline std::shared_ptr<io::output>& output()
+    {
+      return m_output;
+    }
+
+    /**
+     * Returns the output used by the runtime.
+     */
+    inline const std::shared_ptr<io::output>& output() const
+    {
+      return m_output;
     }
 
     /**
@@ -149,26 +178,35 @@ namespace plorth
     }
 
     /**
-     * Reads Unicode code points from standard input stream and places them in
-     * the string given as argument.
+     * Reads Unicode code points from the input of the interpreter and places
+     * them in the string given as argument.
+     *
+     * \param size   Number of Unicode characters to be read. If zero is given,
+     *               input will be consumed until there is no more input to be
+     *               read.
+     * \param output Where the read Unicode characters will be placed into.
+     * \param read   Where the amount of read Unicode characters will be placed
+     *               into.
      */
-    read_result read(unistring& output, std::size_t size, std::size_t& read);
+    io::input::result read(
+      io::input::size_type size,
+      unistring& output,
+      io::input::size_type& read
+    );
 
     /**
-     * Outputs given Unicode string into the standard output stream of the
-     * interpreter.
+     * Outputs given Unicode string into the output of the interpreter.
      */
     void print(const unistring& str) const;
 
     /**
-     * Outputs system specific newline into the standard output stream of the
-     * interpreter.
+     * Outputs system specific new line into the output of the interpreter.
      */
     void println() const;
 
     /**
-     * Outputs given Unicode string and system specific newline into the
-     * standard output stream of the interpreter.
+     * Outputs given Unicode string and system specific new line into the
+     * output of the interpreter.
      */
     void println(const unistring& str) const;
 
@@ -385,6 +423,10 @@ namespace plorth
   private:
     /** Memory manager associated with this runtime. */
     memory::manager* m_memory_manager;
+    /** Input which the runtime uses. */
+    std::shared_ptr<io::input> m_input;
+    /** Output which the runtime uses. */
+    std::shared_ptr<io::output> m_output;
     /** Global dictionary available to all contexts. */
     class dictionary m_dictionary;
     /** Shared instance of true boolean value. */
