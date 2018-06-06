@@ -993,6 +993,20 @@ provided testing quote. Otherwise null is returned.
 
 ---
 
+### flatten
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>array</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+Creates new array with all sub-array elements concatted into it
+recursively.
+
+---
+
 ### for-each
 
 <dl>
@@ -1071,6 +1085,20 @@ the stack.
 
 Applies quote once for each element in the array and constructs a new
 array from values returned by the quote.
+
+---
+
+### nflatten
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, array</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+Creates new array with all sub-array elements concatted into it
+recursively up to the given maximum depth.
 
 ---
 
@@ -1703,6 +1731,21 @@ Constructs a copy of the object with the named property removed.
 
 ---
 
+### entries
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>object</dd>
+  <dt>Gives:</dt>
+  <dd>object, array</dd>
+</dl>
+
+Constructs an array of arrays where each non-inherited property in the
+object is represented as an pair (i.e. array containing two elements, one
+for the key and one for the value).
+
+---
+
 ### has-own?
 
 <dl>
@@ -1971,6 +2014,65 @@ substrings.
 
 ---
 
+### ends-with?
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, string</dd>
+  <dt>Gives:</dt>
+  <dd>string, boolean</dd>
+</dl>
+
+Tests whether end of the string is identical with the given substring.
+
+---
+
+### includes?
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, string</dd>
+  <dt>Gives:</dt>
+  <dd>string, boolean</dd>
+</dl>
+
+Tests whether the topmost string contains contents of the second string,
+returning true or false as appropriate.
+
+---
+
+### index-of
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, string</dd>
+  <dt>Gives:</dt>
+  <dd>string, number|null</dd>
+</dl>
+
+Searches for the first occurrence of a substring given as second topmost
+value of the stack from string given as topmost value of the stack. If the
+substring does not exist in the string, null will be returned. Otherwise,
+first numerical index of the occurrence is returned.
+
+---
+
+### last-index-of
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, string</dd>
+  <dt>Gives:</dt>
+  <dd>string, number|null</dd>
+</dl>
+
+Searches for the last occurrence of a substring given as second topmost
+value of the stack from string given as topmost value of the stack. If the
+substring does not exist in the string, null will be returned. Otherwise,
+last numerical index of the occurrence is returned.
+
+---
+
 ### length
 
 <dl>
@@ -2062,6 +2164,20 @@ of numbers.
 
 Tests whether the string contains only whitespace characters. Empty
 strings return false.
+
+---
+
+### starts-with?
+
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, string</dd>
+  <dt>Gives:</dt>
+  <dd>string, boolean</dd>
+</dl>
+
+Tests whether beginning of the string is identical with the given
+substring.
 
 ---
 

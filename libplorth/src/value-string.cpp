@@ -526,6 +526,9 @@ namespace plorth
    * Gives:
    * - string
    * - boolean
+   *
+   * Tests whether beginning of the string is identical with the given
+   * substring.
    */
   static void w_starts_with(const std::shared_ptr<context>& ctx)
   {
@@ -578,6 +581,8 @@ namespace plorth
    * Gives:
    * - string
    * - boolean
+   *
+   * Tests whether end of the string is identical with the given substring.
    */
   static void w_ends_with(const std::shared_ptr<context>& ctx)
   {
