@@ -791,6 +791,98 @@ namespace plorth
     ctx->push_string(result);
   }
 
+  static void do_flatten(const std::shared_ptr<array>& ary,
+                         std::vector<std::shared_ptr<value>>& container)
+  {
+    for (const auto& value : ary)
+    {
+      if (value && value->is(value::type_array))
+      {
+        do_flatten(std::static_pointer_cast<array>(value), container);
+      } else {
+        container.push_back(value);
+      }
+    }
+  }
+
+  /**
+   * Word: flatten
+   * Prototype: array
+   *
+   * Takes:
+   * - array
+   *
+   * Gives:
+   * - array
+   *
+   * Creates new array with all sub-array elements concatted into it
+   * recursively.
+   */
+  static void w_flatten(const std::shared_ptr<context>& ctx)
+  {
+    std::shared_ptr<array> ary;
+
+    if (ctx->pop_array(ary))
+    {
+      std::vector<std::shared_ptr<value>> result;
+
+      result.reserve(ary->size());
+      do_flatten(ary, result);
+      ctx->push_array(result.data(), result.size());
+    }
+  }
+
+  static void do_nflatten(const std::shared_ptr<array>& ary,
+                          std::vector<std::shared_ptr<value>>& container,
+                          const number::int_type limit,
+                          number::int_type depth)
+  {
+    for (const auto& value : ary)
+    {
+      if (value && value->is(value::type_array) && depth < limit)
+      {
+        do_nflatten(
+          std::static_pointer_cast<array>(value),
+          container,
+          limit,
+          depth + 1
+        );
+      } else {
+        container.push_back(value);
+      }
+    }
+  }
+
+  /**
+   * Word: nflatten
+   * Prototype: array
+   *
+   * Takes:
+   * - number
+   * - array
+   *
+   * Gives:
+   * - array
+   *
+   * Creates new array with all sub-array elements concatted into it
+   * recursively up to the given maximum depth.
+   */
+  static void w_nflatten(const std::shared_ptr<context>& ctx)
+  {
+    std::shared_ptr<array> ary;
+    std::shared_ptr<number> num;
+
+    if (ctx->pop_array(ary) && ctx->pop_number(num))
+    {
+      const auto limit = num->as_int();
+      std::vector<std::shared_ptr<value>> result;
+
+      result.reserve(ary->size());
+      do_nflatten(ary, result, limit, 0);
+      ctx->push_array(result.data(), result.size());
+    }
+  }
+
   /**
    * Word: >quote
    * Prototype: array
@@ -1371,6 +1463,8 @@ namespace plorth
         { U"uniq", w_uniq },
         { U"extract", w_extract },
         { U"join", w_join },
+        { U"flatten", w_flatten },
+        { U"nflatten", w_nflatten },
         { U">quote", w_to_quote },
 
         { U"for-each", w_for_each },
