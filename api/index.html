@@ -7,19 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   
-  
-  <title>API reference - Plorth</title>
-  
-
   <link rel="shortcut icon" href="../img/favicon.ico">
-
-  
+  <title>API reference - Plorth</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
 
   <link rel="stylesheet" href="../css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
   <link rel="stylesheet" href="../css/highlight.css">
-
   
   <script>
     // Current page data
@@ -30,9 +24,7 @@
   
   <script src="../js/jquery-2.1.1.min.js"></script>
   <script src="../js/modernizr-2.8.3.min.js"></script>
-  <script type="text/javascript" src="../js/highlight.pack.js"></script>
-  <script src="../js/theme.js"></script> 
-
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
   
 </head>
 
@@ -52,62 +44,58 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        <ul class="current">
+	<ul class="current">
+	  
           
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="..">Home</a>
-        
-    </li>
-<li>
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
           
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../installation/">Installation</a>
-        
-    </li>
-<li>
+            <li class="toctree-l1">
+		
+    <a class="" href="../installation/">Installation</a>
+	    </li>
           
-            <li>
-    <li class="toctree-l1 ">
-        <a class="" href="../language/">Language reference</a>
-        
-    </li>
-<li>
+            <li class="toctree-l1">
+		
+    <a class="" href="../language/">Language reference</a>
+	    </li>
           
-            <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">API reference</a>
-        
-            <ul>
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">API reference</a>
+    <ul class="subnav">
             
-                <li class="toctree-l3"><a href="#api-reference">API reference</a></li>
-                
-                    <li><a class="toctree-l4" href="#global-dictionary">Global dictionary</a></li>
-                
-                    <li><a class="toctree-l4" href="#array_1">array</a></li>
-                
-                    <li><a class="toctree-l4" href="#boolean_2">boolean</a></li>
-                
-                    <li><a class="toctree-l4" href="#error_1">error</a></li>
-                
-                    <li><a class="toctree-l4" href="#number_1">number</a></li>
-                
-                    <li><a class="toctree-l4" href="#object_1">object</a></li>
-                
-                    <li><a class="toctree-l4" href="#quote_2">quote</a></li>
-                
-                    <li><a class="toctree-l4" href="#string_2">string</a></li>
-                
-                    <li><a class="toctree-l4" href="#symbol_2">symbol</a></li>
-                
-                    <li><a class="toctree-l4" href="#word_2">word</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l2"><a href="#api-reference">API reference</a></li>
+    
+        <ul>
         
-    </li>
-<li>
+            <li><a class="toctree-l3" href="#global-dictionary">Global dictionary</a></li>
+        
+            <li><a class="toctree-l3" href="#array_1">array</a></li>
+        
+            <li><a class="toctree-l3" href="#boolean_2">boolean</a></li>
+        
+            <li><a class="toctree-l3" href="#error_1">error</a></li>
+        
+            <li><a class="toctree-l3" href="#number_1">number</a></li>
+        
+            <li><a class="toctree-l3" href="#object_1">object</a></li>
+        
+            <li><a class="toctree-l3" href="#quote_2">quote</a></li>
+        
+            <li><a class="toctree-l3" href="#string_2">string</a></li>
+        
+            <li><a class="toctree-l3" href="#symbol_2">symbol</a></li>
+        
+            <li><a class="toctree-l3" href="#word_2">word</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
           
         </ul>
       </div>
@@ -134,7 +122,7 @@
     <li>API reference</li>
     <li class="wy-breadcrumbs-aside">
       
-        
+        <a href="https://github.com/RauliL/plorth/"> Edit on RauliL/plorth</a>
       
     </li>
   </ul>
@@ -896,6 +884,17 @@ testing quote. Otherwise null is returned.</p>
 <p>Returns the index of the first element in the array that satisfies the
 provided testing quote. Otherwise null is returned.</p>
 <hr />
+<h3 id="flatten">flatten</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>array</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+<p>Creates new array with all sub-array elements concatted into it
+recursively.</p>
+<hr />
 <h3 id="for-each">for-each</h3>
 <dl>
   <dt>Takes:</dt>
@@ -958,6 +957,17 @@ the stack.</p>
 
 <p>Applies quote once for each element in the array and constructs a new
 array from values returned by the quote.</p>
+<hr />
+<h3 id="nflatten">nflatten</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>number, array</dd>
+  <dt>Gives:</dt>
+  <dd>array</dd>
+</dl>
+
+<p>Creates new array with all sub-array elements concatted into it
+recursively up to the given maximum depth.</p>
 <hr />
 <h3 id="pop">pop</h3>
 <dl>
@@ -1441,6 +1451,18 @@ thrown. Notice that inherited properties are also included in the search.</p>
 
 <p>Constructs a copy of the object with the named property removed.</p>
 <hr />
+<h3 id="entries">entries</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>object</dd>
+  <dt>Gives:</dt>
+  <dd>object, array</dd>
+</dl>
+
+<p>Constructs an array of arrays where each non-inherited property in the
+object is represented as an pair (i.e. array containing two elements, one
+for the key and one for the value).</p>
+<hr />
 <h3 id="has-own">has-own?</h3>
 <dl>
   <dt>Takes:</dt>
@@ -1649,6 +1671,53 @@ remaining characters into lower case.</p>
 <p>Extracts characters from the string and returns them in an array of
 substrings.</p>
 <hr />
+<h3 id="ends-with">ends-with?</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, string</dd>
+  <dt>Gives:</dt>
+  <dd>string, boolean</dd>
+</dl>
+
+<p>Tests whether end of the string is identical with the given substring.</p>
+<hr />
+<h3 id="includes_1">includes?</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, string</dd>
+  <dt>Gives:</dt>
+  <dd>string, boolean</dd>
+</dl>
+
+<p>Tests whether the topmost string contains contents of the second string,
+returning true or false as appropriate.</p>
+<hr />
+<h3 id="index-of_1">index-of</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, string</dd>
+  <dt>Gives:</dt>
+  <dd>string, number|null</dd>
+</dl>
+
+<p>Searches for the first occurrence of a substring given as second topmost
+value of the stack from string given as topmost value of the stack. If the
+substring does not exist in the string, null will be returned. Otherwise,
+first numerical index of the occurrence is returned.</p>
+<hr />
+<h3 id="last-index-of">last-index-of</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, string</dd>
+  <dt>Gives:</dt>
+  <dd>string, number|null</dd>
+</dl>
+
+<p>Searches for the last occurrence of a substring given as second topmost
+value of the stack from string given as topmost value of the stack. If the
+substring does not exist in the string, null will be returned. Otherwise,
+last numerical index of the occurrence is returned.</p>
+<hr />
 <h3 id="length_1">length</h3>
 <dl>
   <dt>Takes:</dt>
@@ -1721,6 +1790,17 @@ of numbers.</p>
 
 <p>Tests whether the string contains only whitespace characters. Empty
 strings return false.</p>
+<hr />
+<h3 id="starts-with">starts-with?</h3>
+<dl>
+  <dt>Takes:</dt>
+  <dd>string, string</dd>
+  <dt>Gives:</dt>
+  <dd>string, boolean</dd>
+</dl>
+
+<p>Tests whether beginning of the string is identical with the given
+substring.</p>
 <hr />
 <h3 id="swap-case">swap-case</h3>
 <dl>
@@ -1874,10 +1954,10 @@ of the stack.</p>
       </div>
 
     </section>
-
+    
   </div>
 
-<div class="rst-versions" role="note" style="cursor: pointer">
+  <div class="rst-versions" role="note" style="cursor: pointer">
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
@@ -1886,6 +1966,7 @@ of the stack.</p>
       
     </span>
 </div>
+    <script src="../js/theme.js"></script>
 
 </body>
 </html>
