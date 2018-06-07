@@ -54,14 +54,17 @@ namespace plorth
 
     void StackDisplay::update(const context::container_type& stack)
     {
+      auto it = stack.rbegin();
+      const auto end = stack.rend();
       const auto index_column = m_columns.index_column();
       const auto value_column = m_columns.value_column();
       int index = 0;
 
       m_tree_model->clear();
 
-      for (const auto& value : stack)
+      for (; it != end; ++it)
       {
+        const auto& value = *it;
         auto row = *(m_tree_model->append());
 
         row[index_column] = ++index;
