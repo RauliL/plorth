@@ -77,7 +77,10 @@ namespace plorth
 #endif
 
       m_paned.pack1(m_line_display, true, false);
-      m_paned.pack2(m_stack_display, false, false);
+      m_paned.pack2(m_notebook, false, false);
+
+      m_notebook.append_page(m_stack_display, "Stack");
+      m_notebook.append_page(m_dictionary_display, "Dictionary");
 
       m_box.pack_start(m_paned);
       m_box.pack_start(m_line_editor, Gtk::PACK_SHRINK);
@@ -137,6 +140,7 @@ namespace plorth
         }
         m_line_editor.set_stack_depth_count(m_context->size());
         m_stack_display.update(m_context->data());
+        m_dictionary_display.update(m_context->dictionary());
       }
     }
 

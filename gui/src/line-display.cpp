@@ -37,6 +37,7 @@ namespace plorth
     {
       m_text_view.set_monospace(true);
       m_text_view.set_editable(false);
+      m_text_view.set_wrap_mode(Gtk::WRAP_CHAR);
 
       m_scrolled_window.add(m_text_view);
       m_scrolled_window.set_policy(Gtk::POLICY_NEVER, Gtk::POLICY_ALWAYS);

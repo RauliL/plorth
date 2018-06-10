@@ -23,26 +23,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <plorth/gui/stack-display.hpp>
+#include <plorth/gui/dictionary-display.hpp>
 #include "./utils.hpp"
 
 namespace plorth
 {
   namespace gui
   {
-    StackDisplayColumns::StackDisplayColumns()
+    DictionaryDisplayColumns::DictionaryDisplayColumns()
     {
-      add(m_index_column);
-      add(m_value_column);
+      add(m_symbol_column);
+      add(m_quote_column);
     }
 
-    StackDisplay::StackDisplay()
+    DictionaryDisplay::DictionaryDisplay()
       : m_tree_model(Gtk::ListStore::create(m_columns))
     {
+      const auto& symbol_column = m_columns.symbol_column();
+      const auto& quote_column = m_columns.quote_column();
+
+      m_tree_model->set_sort_column(symbol_column, Gtk::SORT_ASCENDING);
       m_tree_view.override_font(utils::get_monospace_font());
       m_tree_view.set_model(m_tree_model);
-      m_tree_view.append_column("#", m_columns.index_column());
-      m_tree_view.append_column("Value", m_columns.value_column());
+      m_tree_view.append_column("Symbol", symbol_column);
+      m_tree_view.append_column("Quote", quote_column);
 
       m_scrolled_window.set_policy(
         Gtk::POLICY_AUTOMATIC,
@@ -53,24 +57,24 @@ namespace plorth
       add(m_scrolled_window);
     }
 
-    void StackDisplay::update(const context::container_type& stack)
+    void DictionaryDisplay::update(const class dictionary& dictionary)
     {
-      auto it = stack.rbegin();
-      const auto end = stack.rend();
-      const auto index_column = m_columns.index_column();
-      const auto value_column = m_columns.value_column();
-      int index = 0;
+      const auto symbol_column = m_columns.symbol_column();
+      const auto quote_column = m_columns.quote_column();
 
       m_tree_model->clear();
 
-      for (; it != end; ++it)
+      for (const auto& word : dictionary.words())
       {
-        const auto& value = *it;
         auto row = *(m_tree_model->append());
+        const auto& symbol = word->symbol();
+        const auto& quote = word->quote();
 
-        row[index_column] = ++index;
-        row[value_column] = utils::string_convert<Glib::ustring, unistring>(
-          value ? value->to_source() : U"null"
+        row[symbol_column] = utils::string_convert<Glib::ustring, unistring>(
+          symbol ? symbol->to_string() : U""
+        );
+        row[quote_column] = utils::string_convert<Glib::ustring, unistring>(
+          quote ? quote->to_string() : U"(null)"
         );
       }
     }

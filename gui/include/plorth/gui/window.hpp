@@ -27,6 +27,7 @@
 #define PLORTH_GUI_WINDOW_HPP_GUARD
 
 #include <plorth/plorth.hpp>
+#include <plorth/gui/dictionary-display.hpp>
 #include <plorth/gui/line-display.hpp>
 #include <plorth/gui/line-editor.hpp>
 #include <plorth/gui/stack-display.hpp>
@@ -61,7 +62,9 @@ namespace plorth
       std::stack<unichar> m_open_braces;
       Gtk::Box m_box;
       LineDisplay m_line_display;
+      Gtk::Notebook m_notebook;
       StackDisplay m_stack_display;
+      DictionaryDisplay m_dictionary_display;
       Gtk::Paned m_paned;
       LineEditor m_line_editor;
       text_written_signal m_text_written_signal;
