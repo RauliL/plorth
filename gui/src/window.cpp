@@ -96,6 +96,10 @@ namespace plorth
         this,
         &Window::on_text_written
       ));
+      m_dictionary_display.signal_word_activated().connect(sigc::mem_fun(
+        this,
+        &Window::on_word_activated
+      ));
     }
 
     void Window::on_show()
@@ -147,6 +151,13 @@ namespace plorth
     void Window::on_text_written(const Glib::ustring& text)
     {
       m_line_display.add_line(text, LineDisplay::LINE_TYPE_OUTPUT);
+    }
+
+    void Window::on_word_activated(const Glib::ustring& symbol,
+                                   const Glib::ustring& quote_source)
+    {
+      m_line_editor.set_text(": " + symbol + " " + quote_source + " ;");
+      m_line_editor.grab_focus();
     }
 
     bool Window::on_key_press_event(GdkEventKey* event)
