@@ -149,6 +149,18 @@ namespace plorth
       m_line_display.add_line(text, LineDisplay::LINE_TYPE_OUTPUT);
     }
 
+    bool Window::on_key_press_event(GdkEventKey* event)
+    {
+      // Terminate the application when user presses ^Q anywhere inside the
+      // main window.
+      if ((event->state & GDK_CONTROL_MASK) != 0 && event->keyval == GDK_KEY_q)
+      {
+        std::exit(EXIT_SUCCESS);
+      }
+
+      return Gtk::Window::on_key_press_event(event);
+    }
+
     static void count_open_braces(const Glib::ustring& input,
                                   std::stack<unichar>& open_braces)
     {
