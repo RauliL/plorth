@@ -23,53 +23,55 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PLORTH_GUI_WINDOW_HPP_GUARD
-#define PLORTH_GUI_WINDOW_HPP_GUARD
+#ifndef PLORTH_GUI_DICTIONARY_DISPLAY_HPP_GUARD
+#define PLORTH_GUI_DICTIONARY_DISPLAY_HPP_GUARD
 
-#include <plorth/plorth.hpp>
-#include <plorth/gui/dictionary-display.hpp>
-#include <plorth/gui/line-display.hpp>
-#include <plorth/gui/line-editor.hpp>
-#include <plorth/gui/stack-display.hpp>
+#include <plorth/dictionary.hpp>
+
+#include <gtkmm.h>
 
 namespace plorth
 {
   namespace gui
   {
-    /**
-     * Main window for the Plorth GUI REPL.
-     */
-    class Window : public Gtk::Window
+    class DictionaryDisplayColumns : public Gtk::TreeModel::ColumnRecord
     {
     public:
-      using text_written_signal = sigc::signal<void, Glib::ustring>;
+      explicit DictionaryDisplayColumns();
 
-      static const int DEFAULT_WIDTH;
-      static const int DEFAULT_HEIGHT;
+      inline const Gtk::TreeModelColumn<Glib::ustring>& symbol_column() const
+      {
+        return m_symbol_column;
+      }
 
-      explicit Window();
-
-    protected:
-      void on_show();
-      void on_line_received(const Glib::ustring& line);
-      void on_text_written(const Glib::ustring& text);
+      inline const Gtk::TreeModelColumn<Glib::ustring>& quote_column() const
+      {
+        return m_quote_column;
+      }
 
     private:
-      memory::manager m_memory_manager;
-      const std::shared_ptr<runtime> m_runtime;
-      const std::shared_ptr<context> m_context;
-      unistring m_source;
-      std::stack<unichar> m_open_braces;
-      Gtk::Box m_box;
-      LineDisplay m_line_display;
-      Gtk::Notebook m_notebook;
-      StackDisplay m_stack_display;
-      DictionaryDisplay m_dictionary_display;
-      Gtk::Paned m_paned;
-      LineEditor m_line_editor;
-      text_written_signal m_text_written_signal;
+      Gtk::TreeModelColumn<Glib::ustring> m_symbol_column;
+      Gtk::TreeModelColumn<Glib::ustring> m_quote_column;
+    };
+
+    /**
+     * Custom GTK widget which is used to display contents of Plorth
+     * dictionary.
+     */
+    class DictionaryDisplay : public Gtk::Bin
+    {
+    public:
+      explicit DictionaryDisplay();
+
+      void update(const class dictionary& dictionary);
+
+    private:
+      Gtk::ScrolledWindow m_scrolled_window;
+      Gtk::TreeView m_tree_view;
+      DictionaryDisplayColumns m_columns;
+      Glib::RefPtr<Gtk::ListStore> m_tree_model;
     };
   }
 }
 
-#endif /* !PLORTH_GUI_WINDOW_HPP_GUARD */
+#endif /* !PLORTH_GUI_DICTIONARY_DISPLAY_HPP_GUARD */

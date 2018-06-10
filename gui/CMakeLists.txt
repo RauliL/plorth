@@ -19,6 +19,7 @@ INCLUDE_DIRECTORIES(
 
 ADD_EXECUTABLE(
   plorth-gui
+  src/dictionary-display.cpp
   src/line-display.cpp
   src/line-editor.cpp
   src/main.cpp
