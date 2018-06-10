@@ -76,6 +76,11 @@ namespace plorth
       }
     }
 
+    void LineEditor::set_text(const Glib::ustring& text)
+    {
+      m_entry.set_text(text);
+    }
+
     void LineEditor::on_activate()
     {
       set_line_count(m_line_count + 1);

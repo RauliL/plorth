@@ -47,6 +47,10 @@ namespace plorth
       m_tree_view.set_model(m_tree_model);
       m_tree_view.append_column("Symbol", symbol_column);
       m_tree_view.append_column("Quote", quote_column);
+      m_tree_view.signal_row_activated().connect(sigc::mem_fun(
+        this,
+        &DictionaryDisplay::on_row_activated
+      ));
 
       m_scrolled_window.set_policy(
         Gtk::POLICY_AUTOMATIC,
@@ -75,6 +79,22 @@ namespace plorth
         );
         row[quote_column] = utils::string_convert<Glib::ustring, unistring>(
           quote ? quote->to_string() : U"(null)"
+        );
+      }
+    }
+
+    void DictionaryDisplay::on_row_activated(const Gtk::TreeModel::Path& path,
+                                             Gtk::TreeViewColumn* column)
+    {
+      const auto iter = m_tree_model->get_iter(path);
+
+      if (iter)
+      {
+        const auto& row = *iter;
+
+        m_signal_word_activated.emit(
+          row[m_columns.symbol_column()],
+          row[m_columns.quote_column()]
         );
       }
     }

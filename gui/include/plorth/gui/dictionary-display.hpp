@@ -61,15 +61,38 @@ namespace plorth
     class DictionaryDisplay : public Gtk::Bin
     {
     public:
+      using word_activated_signal = sigc::signal<
+        void,
+        Glib::ustring,
+        Glib::ustring
+      >;
+
       explicit DictionaryDisplay();
 
       void update(const class dictionary& dictionary);
+
+      inline word_activated_signal& signal_word_activated()
+      {
+        return m_signal_word_activated;
+      }
+
+      inline const word_activated_signal& signal_word_activated() const
+      {
+        return m_signal_word_activated;
+      }
+
+    protected:
+      void on_row_activated(
+        const Gtk::TreeModel::Path& path,
+        Gtk::TreeViewColumn* column
+      );
 
     private:
       Gtk::ScrolledWindow m_scrolled_window;
       Gtk::TreeView m_tree_view;
       DictionaryDisplayColumns m_columns;
       Glib::RefPtr<Gtk::ListStore> m_tree_model;
+      word_activated_signal m_signal_word_activated;
     };
   }
 }

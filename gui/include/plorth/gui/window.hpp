@@ -53,6 +53,10 @@ namespace plorth
       void on_show();
       void on_line_received(const Glib::ustring& line);
       void on_text_written(const Glib::ustring& text);
+      void on_word_activated(
+        const Glib::ustring& symbol,
+        const Glib::ustring& quote_source
+      );
       bool on_key_press_event(GdkEventKey* event);
 
     private:

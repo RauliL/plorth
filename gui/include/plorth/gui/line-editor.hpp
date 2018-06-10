@@ -57,6 +57,8 @@ namespace plorth
 
       void set_stack_depth_count(int stack_depth_count);
 
+      void set_text(const Glib::ustring& text);
+
       inline sigc::signal<void, Glib::ustring>& signal_line_received()
       {
         return m_signal_line_received;
