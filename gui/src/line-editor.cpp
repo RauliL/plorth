@@ -24,6 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/gui/line-editor.hpp>
+#include "./utils.hpp"
 
 namespace plorth
 {
@@ -34,15 +35,13 @@ namespace plorth
       , m_stack_depth_count(0)
       , m_box(Gtk::ORIENTATION_HORIZONTAL)
     {
-      Pango::FontDescription font;
-
-      font.set_family("monospace");
+      const auto& font = utils::get_monospace_font();
 
       update_prompt();
-      m_label.override_font(font);
 
       m_entry.set_has_frame(false);
       m_entry.override_font(font);
+      m_label.override_font(font);
 
       m_box.pack_start(m_label, Gtk::PACK_SHRINK);
       m_box.pack_start(m_entry);

@@ -23,6 +23,7 @@ ADD_EXECUTABLE(
   src/line-editor.cpp
   src/main.cpp
   src/stack-display.cpp
+  src/utils.cpp
   src/window.cpp
 )
 
