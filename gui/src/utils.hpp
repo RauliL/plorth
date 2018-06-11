@@ -27,7 +27,7 @@
 #define PLORTH_GUI_UTILS_HPP_GUARD
 
 #include <plorth/plorth.hpp>
-#include <glibmm.h>
+#include <pangomm.h>
 
 namespace plorth
 {
