@@ -34,47 +34,14 @@ namespace plorth
     const int Window::DEFAULT_HEIGHT = 250;
 
     static void count_open_braces(const Glib::ustring&, std::stack<unichar>&);
-#if PLORTH_ENABLE_MODULES
-    static void scan_module_path(const std::shared_ptr<runtime>&);
-#endif
 
-    namespace
-    {
-      class custom_output : public io::output
-      {
-      public:
-        explicit custom_output(Window::text_written_signal signal)
-          : m_signal(signal) {}
-
-        void write(const unistring& text)
-        {
-          m_signal.emit(utils::string_convert<Glib::ustring, unistring>(text));
-        }
-
-      private:
-        const Window::text_written_signal m_signal;
-      };
-    }
-
-    Window::Window()
-      : m_runtime(runtime::make(m_memory_manager))
-      , m_context(context::make(m_runtime))
+    Window::Window(const Glib::RefPtr<Context>& context)
+      : m_context(context)
       , m_box(Gtk::ORIENTATION_VERTICAL)
     {
-      const auto output = m_runtime->value<custom_output>(
-        m_text_written_signal
-      );
-
       set_title("Plorth");
       set_border_width(5);
       set_default_size(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-
-      m_runtime->output() = output;
-      m_runtime->input() = io::input::dummy(m_memory_manager);
-
-#if PLORTH_ENABLE_MODULES
-      scan_module_path(m_runtime);
-#endif
 
       m_paned.pack1(m_line_display, true, false);
       m_paned.pack2(m_notebook, false, false);
@@ -92,7 +59,11 @@ namespace plorth
         this,
         &Window::on_line_received
       ));
-      m_text_written_signal.connect(sigc::mem_fun(
+      m_context->signal_error_thrown().connect(sigc::mem_fun(
+        this,
+        &Window::on_error_thrown
+      ));
+      m_context->signal_text_written().connect(sigc::mem_fun(
         this,
         &Window::on_text_written
       ));
@@ -115,36 +86,35 @@ namespace plorth
         return;
       }
       m_line_display.add_line(line + '\n', LineDisplay::LINE_TYPE_INPUT);
-      m_source.append(utils::string_convert<unistring, Glib::ustring>(line));
+      m_source.append(line);
       m_source.append(1, '\n');
       count_open_braces(line, m_open_braces);
       if (m_open_braces.empty())
       {
-        auto script = m_context->compile(
+        const auto& stack = m_context->stack();
+
+        m_context->execute(
           m_source,
-          U"<eval>",
+          "<eval>",
           m_line_editor.get_line_count() - 1
         );
-
         m_source.clear();
-        if (!script || !script->call(m_context))
-        {
-          const auto error = m_context->error();
-
-          m_context->clear_error();
-          if (error)
-          {
-            m_line_display.add_line(
-              utils::string_convert<Glib::ustring, unistring>(
-                error->to_string()
-              ) + '\n',
-              LineDisplay::LINE_TYPE_ERROR
-            );
-          }
-        }
-        m_line_editor.set_stack_depth_count(m_context->size());
-        m_stack_display.update(m_context->data());
+        m_line_editor.set_stack_depth_count(stack.size());
+        m_stack_display.update(stack);
         m_dictionary_display.update(m_context->dictionary());
+      }
+    }
+
+    void Window::on_error_thrown(const std::shared_ptr<error>& error)
+    {
+      if (error)
+      {
+        m_line_display.add_line(
+          utils::string_convert<Glib::ustring, unistring>(
+            error->to_string()
+          ) + '\n',
+          LineDisplay::LINE_TYPE_ERROR
+        );
       }
     }
 
@@ -222,48 +192,5 @@ namespace plorth
         }
       }
     }
-
-#if PLORTH_ENABLE_MODULES
-    static void scan_module_path(const std::shared_ptr<runtime>& runtime)
-    {
-#if defined(_WIN32)
-      static const unichar path_separator = ';';
-#else
-      static const unichar path_separator = ':';
-#endif
-      auto& module_paths = runtime->module_paths();
-      const char* begin = std::getenv("PLORTHPATH");
-      const char* end = begin;
-
-      if (end)
-      {
-        for (; *end; ++end)
-        {
-          if (*end != path_separator)
-          {
-            continue;
-          }
-
-          if (end - begin > 0)
-          {
-            module_paths.push_back(utf8_decode(std::string(begin, end - begin)));
-          }
-          begin = end + 1;
-        }
-
-        if (end - begin > 0)
-        {
-          module_paths.push_back(utf8_decode(std::string(begin, end - begin)));
-        }
-      }
-
-#if defined(PLORTH_RUNTIME_LIBRARY_PATH)
-      if (module_paths.empty())
-      {
-        module_paths.push_back(PLORTH_RUNTIME_LIBRARY_PATH);
-      }
-#endif
-    }
-#endif
   }
 }

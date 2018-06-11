@@ -26,7 +26,7 @@
 #ifndef PLORTH_GUI_WINDOW_HPP_GUARD
 #define PLORTH_GUI_WINDOW_HPP_GUARD
 
-#include <plorth/plorth.hpp>
+#include <plorth/gui/context.hpp>
 #include <plorth/gui/dictionary-display.hpp>
 #include <plorth/gui/line-display.hpp>
 #include <plorth/gui/line-editor.hpp>
@@ -42,16 +42,15 @@ namespace plorth
     class Window : public Gtk::Window
     {
     public:
-      using text_written_signal = sigc::signal<void, Glib::ustring>;
-
       static const int DEFAULT_WIDTH;
       static const int DEFAULT_HEIGHT;
 
-      explicit Window();
+      explicit Window(const Glib::RefPtr<Context>& context);
 
     protected:
       void on_show();
       void on_line_received(const Glib::ustring& line);
+      void on_error_thrown(const std::shared_ptr<error>& error);
       void on_text_written(const Glib::ustring& text);
       void on_word_activated(
         const Glib::ustring& symbol,
@@ -60,11 +59,9 @@ namespace plorth
       bool on_key_press_event(GdkEventKey* event);
 
     private:
-      memory::manager m_memory_manager;
-      const std::shared_ptr<runtime> m_runtime;
-      const std::shared_ptr<context> m_context;
-      unistring m_source;
-      std::stack<unichar> m_open_braces;
+      Glib::RefPtr<Context> m_context;
+      Glib::ustring m_source;
+      std::stack<char32_t> m_open_braces;
       Gtk::Box m_box;
       LineDisplay m_line_display;
       Gtk::Notebook m_notebook;
@@ -72,7 +69,6 @@ namespace plorth
       DictionaryDisplay m_dictionary_display;
       Gtk::Paned m_paned;
       LineEditor m_line_editor;
-      text_written_signal m_text_written_signal;
     };
   }
 }
