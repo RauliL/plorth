@@ -70,7 +70,7 @@ namespace plorth
 
         row[index_column] = ++index;
         row[value_column] = utils::string_convert<Glib::ustring, unistring>(
-          value ? value->to_source() : U"null"
+          value::to_source(value)
         );
       }
     }

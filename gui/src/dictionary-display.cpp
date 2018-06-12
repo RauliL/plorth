@@ -75,10 +75,10 @@ namespace plorth
         const auto& quote = word->quote();
 
         row[symbol_column] = utils::string_convert<Glib::ustring, unistring>(
-          symbol ? symbol->to_string() : U""
+          value::to_string(symbol)
         );
         row[quote_column] = utils::string_convert<Glib::ustring, unistring>(
-          quote ? quote->to_string() : U"(null)"
+          value::to_string(quote)
         );
       }
     }

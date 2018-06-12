@@ -103,6 +103,8 @@ namespace plorth
     }
 
     bool equals(const std::shared_ptr<value>& that) const;
+
+  protected:
     unistring to_string() const;
     unistring to_source() const;
 

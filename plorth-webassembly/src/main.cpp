@@ -91,12 +91,7 @@ static std::wstring plorth_stack(int index)
     {
       const auto& value = stack[size - index - 1];
 
-      if (value)
-      {
-        result = utf32le_encode(value->to_source());
-      } else {
-        result = L"null";
-      }
+      result = utf32le_encode(value::to_string(value));
     } else {
       EM_ASM({ throw new Error('Stack index out of bounds.'); });
     }

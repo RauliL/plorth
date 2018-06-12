@@ -572,7 +572,7 @@ namespace plorth
               return std::shared_ptr<object>();
             }
 
-            properties[key->to_string()] = value;
+            properties[key->as_string()] = value;
 
             if (skip_whitespace() || (!peek(',') && !peek('}')))
             {

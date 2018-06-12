@@ -598,12 +598,7 @@ namespace plorth
     if (ctx->pop(value))
     {
       ctx->push(value);
-      if (value)
-      {
-        ctx->push_string(value->type_description());
-      } else {
-        ctx->push_string(U"null");
-      }
+      ctx->push_string(value::type_description(value));
     }
   }
 
@@ -740,12 +735,7 @@ namespace plorth
     {
       return;
     }
-    else if (value)
-    {
-      ctx->push_string(value->to_string());
-    } else {
-      ctx->push_string(U"");
-    }
+    ctx->push_string(value::to_string(value));
   }
 
   /**
@@ -768,12 +758,7 @@ namespace plorth
     {
       return;
     }
-    else if (value)
-    {
-      ctx->push_string(value->to_source());
-    } else {
-      ctx->push_string(U"null");
-    }
+    ctx->push_string(value::to_source(value));
   }
 
   /**
@@ -1035,7 +1020,7 @@ namespace plorth
       return;
     }
 
-    quote = ctx->compile(source->to_string());
+    quote = ctx->compile(source->as_string());
     if (quote)
     {
       ctx->push(quote);
@@ -1100,7 +1085,7 @@ namespace plorth
       const auto& runtime = ctx->runtime();
 
       ctx->dictionary().insert(runtime->word(
-        runtime->symbol(id->to_string()),
+        runtime->symbol(id->as_string()),
         runtime->compiled_quote({ val })
       ));
     }
@@ -1121,7 +1106,7 @@ namespace plorth
 
     if (ctx->pop_string(path))
     {
-      ctx->import(path->to_string());
+      ctx->import(path->as_string());
     }
   }
 
@@ -1177,11 +1162,13 @@ namespace plorth
     {
       if (value::is(val, value::type_string))
       {
-        message = std::static_pointer_cast<string>(val)->to_string();
+        message = std::static_pointer_cast<string>(val)->as_string();
       } else {
         ctx->error(
           error::code_type,
-          U"Expected string, got " + val->type_description() + U" instead."
+          U"Expected string, got " +
+          value::type_description(val) +
+          U" instead."
         );
         return;
       }
@@ -1351,7 +1338,7 @@ namespace plorth
 
     if (ctx->pop(val) && val)
     {
-      ctx->runtime()->print(val->to_string());
+      ctx->runtime()->print(value::to_string(val));
     }
   }
 
@@ -1371,10 +1358,7 @@ namespace plorth
 
     if (ctx->pop(val))
     {
-      if (val)
-      {
-        runtime->print(val->to_string());
-      }
+      runtime->print(value::to_string(val));
       runtime->println();
     }
   }

@@ -81,14 +81,19 @@ namespace plorth
     virtual enum type type() const = 0;
 
     /**
-     * Returns textual description of type of the value.
-     */
-    unistring type_description() const;
-
-    /**
      * Returns textual description of given value type.
      */
     static unistring type_description(enum type type);
+
+    /**
+     * Returns textual description of type of given value.
+     */
+    static inline unistring type_description(
+      const std::shared_ptr<value>& value
+    )
+    {
+      return type_description(type(value));
+    }
 
     /**
      * Tests whether reference of a value is of given type.
@@ -146,6 +151,24 @@ namespace plorth
                      std::shared_ptr<value>& slot);
 
     /**
+     * Constructs string representation of given value.
+     */
+    static inline unistring to_string(const std::shared_ptr<value>& value)
+    {
+      return value ? value->to_string() : U"";
+    }
+
+    /**
+     * Constructs a string that resembles as accurately as possible what the
+     * given value would look like in the source code.
+     */
+    static inline unistring to_source(const std::shared_ptr<value>& value)
+    {
+      return value ? value->to_source() : U"null";
+    }
+
+  protected:
+    /**
      * Constructs string representation of the value.
      */
     virtual unistring to_string() const = 0;
@@ -155,6 +178,8 @@ namespace plorth
      * value would look like in source code.
      */
     virtual unistring to_source() const = 0;
+
+    friend std::ostream& operator<<(std::ostream&, const value*);
   };
 
   bool operator==(const std::shared_ptr<value>&, const std::shared_ptr<value>&);

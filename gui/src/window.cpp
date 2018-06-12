@@ -107,15 +107,12 @@ namespace plorth
 
     void Window::on_error_thrown(const std::shared_ptr<error>& error)
     {
-      if (error)
-      {
-        m_line_display.add_line(
-          utils::string_convert<Glib::ustring, unistring>(
-            error->to_string()
-          ) + '\n',
-          LineDisplay::LINE_TYPE_ERROR
-        );
-      }
+      m_line_display.add_line(
+        utils::string_convert<Glib::ustring, unistring>(
+          value::to_string(error)
+        ) + '\n',
+        LineDisplay::LINE_TYPE_ERROR
+      );
     }
 
     void Window::on_text_written(const Glib::ustring& text)

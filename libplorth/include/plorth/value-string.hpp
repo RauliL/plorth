@@ -59,13 +59,24 @@ namespace plorth
      */
     virtual value_type at(size_type offset) const = 0;
 
+    /**
+     * Returns the entire contents of the string.
+     */
+    virtual unistring as_string() const = 0;
+
     enum type type() const
     {
       return type_string;
     }
 
     bool equals(const std::shared_ptr<class value>& that) const;
-    unistring to_string() const;
+
+  protected:
+    inline unistring to_string() const
+    {
+      return as_string();
+    }
+
     unistring to_source() const;
   };
 

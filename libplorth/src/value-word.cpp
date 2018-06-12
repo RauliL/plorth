@@ -53,7 +53,7 @@ namespace plorth
 
   unistring word::to_source() const
   {
-    return U": " + m_symbol->id() + U" " + m_quote->to_string() + U" ;";
+    return U": " + m_symbol->id() + U" " + value::to_string(m_quote) + U" ;";
   }
 
   std::shared_ptr<word> runtime::word(

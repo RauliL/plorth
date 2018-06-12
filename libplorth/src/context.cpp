@@ -137,8 +137,10 @@ namespace plorth
       {
         error(
           error::code_type,
-          U"Expected " + value::type_description(type) + U", got " +
-          (value ? value->type_description().c_str() : U"null") +
+          U"Expected " +
+          value::type_description(type) +
+          U", got " +
+          value::type_description(value) +
           U" instead."
         );
 
@@ -176,8 +178,10 @@ namespace plorth
       {
         error(
           error::code_type,
-          U"Expected " + value::type_description(type) + U", got " +
-          (slot ? slot->type_description().c_str() : U"null") +
+          U"Expected " +
+          value::type_description(type) +
+          U", got " +
+          value::type_description(slot) +
           U" instead."
         );
 

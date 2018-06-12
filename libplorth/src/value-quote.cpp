@@ -60,30 +60,6 @@ namespace plorth
         return true;
       }
 
-      unistring to_string() const
-      {
-        unistring result;
-        bool first = true;
-
-        for (const auto& value : m_values)
-        {
-          if (first)
-          {
-            first = false;
-          } else {
-            result += ' ';
-          }
-          if (value)
-          {
-            result += value->to_source();
-          } else {
-            result += U"null";
-          }
-        }
-
-        return result;
-      }
-
       bool equals(const std::shared_ptr<value>& that) const
       {
         std::shared_ptr<compiled_quote> q;
@@ -107,6 +83,26 @@ namespace plorth
         }
 
         return true;
+      }
+
+    protected:
+      unistring to_string() const
+      {
+        unistring result;
+        bool first = true;
+
+        for (const auto& value : m_values)
+        {
+          if (first)
+          {
+            first = false;
+          } else {
+            result += ' ';
+          }
+          result += value::to_source(value);
+        }
+
+        return result;
       }
 
     private:
@@ -135,16 +131,17 @@ namespace plorth
         return !ctx->error();
       }
 
-      unistring to_string() const
-      {
-        return U"\"native quote\"";
-      }
-
       bool equals(const std::shared_ptr<value>& that) const
       {
         // Currently there is no way to compare two std::function instances
         // against each other, even when they are the same type.
         return this == that.get();
+      }
+
+    protected:
+      unistring to_string() const
+      {
+        return U"\"native quote\"";
       }
 
     private:

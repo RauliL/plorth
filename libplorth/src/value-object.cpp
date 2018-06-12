@@ -124,10 +124,7 @@ namespace plorth
       }
       result += property.first;
       result += '=';
-      if (property.second)
-      {
-        result += property.second->to_string();
-      }
+      result += value::to_string(property.second);
     }
 
     return result;
@@ -151,12 +148,7 @@ namespace plorth
       result += json_stringify(property.first);
       result += ':';
       result += ' ';
-      if (property.second)
-      {
-        result += property.second->to_source();
-      } else {
-        result += U"null";
-      }
+      result += value::to_source(property.second);
     }
     result += '}';
 
@@ -294,7 +286,11 @@ namespace plorth
       std::shared_ptr<value> slot;
 
       ctx->push(obj);
-      ctx->push_boolean(!!obj->property(ctx->runtime(), id->to_string(), slot));
+      ctx->push_boolean(!!obj->property(
+        ctx->runtime(),
+        id->as_string(),
+        slot
+      ));
     }
   }
 
@@ -323,7 +319,9 @@ namespace plorth
       const auto& properties = obj->properties();
 
       ctx->push(obj);
-      ctx->push_boolean(properties.find(id->to_string()) != std::end(properties));
+      ctx->push_boolean(
+        properties.find(id->as_string()) != std::end(properties)
+      );
     }
   }
 
@@ -398,13 +396,13 @@ namespace plorth
       std::shared_ptr<value> val;
 
       ctx->push(obj);
-      if (obj->property(ctx->runtime(), id->to_string(), val))
+      if (obj->property(ctx->runtime(), id->as_string(), val))
       {
         ctx->push(val);
       } else {
         ctx->error(
           error::code_range,
-          U"No such property: `" + id->to_string() + U"'"
+          U"No such property: `" + id->as_string() + U"'"
         );
       }
     }
@@ -435,7 +433,7 @@ namespace plorth
     {
       object::container_type result = obj->properties();
 
-      result[id->to_string()] = val;
+      result[id->as_string()] = val;
       ctx->push_object(result);
     }
   }
@@ -462,11 +460,11 @@ namespace plorth
     {
       object::container_type result = obj->properties();
 
-      if (result.erase(id->to_string()) < 1)
+      if (result.erase(id->as_string()) < 1)
       {
         ctx->error(
           error::code_range,
-          U"No such property: `" + id->to_string() + U"'"
+          U"No such property: `" + id->as_string() + U"'"
         );
       } else {
         ctx->push_object(result);

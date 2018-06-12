@@ -27,11 +27,6 @@
 
 namespace plorth
 {
-  unistring value::type_description() const
-  {
-    return type_description(type());
-  }
-
   unistring value::type_description(enum type type)
   {
     switch (type)

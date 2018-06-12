@@ -230,10 +230,7 @@ namespace plorth
         result += ',';
         result += ' ';
       }
-      if (element)
-      {
-        result += element->to_string();
-      }
+      result += value::to_string(element);
     }
 
     return result;
@@ -254,12 +251,7 @@ namespace plorth
         result += ',';
         result += ' ';
       }
-      if (element)
-      {
-        result += element->to_source();
-      } else {
-        result += U"null";
-      }
+      result += value::to_source(element);
     }
     result += ']';
 
@@ -778,14 +770,9 @@ namespace plorth
 
       if (i > 0)
       {
-        result += separator->to_string();
+        result += separator->as_string();
       }
-      if (element)
-      {
-        result += element->to_string();
-      } else {
-        result += U"null";
-      }
+      result += value::to_string(element);
     }
 
     ctx->push_string(result);

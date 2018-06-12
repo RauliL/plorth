@@ -78,6 +78,7 @@ namespace plorth
       return type_quote;
     }
 
+  protected:
     unistring to_source() const;
   };
 }

@@ -35,9 +35,11 @@ static void w_stack(const std::shared_ptr<context>& ctx)
   {
     const auto& value = stack[size - i - 1];
 
-    runtime->print(to_unistring(static_cast<number::int_type>(size - i)) + U": ");
-    runtime->print(value ? value->to_source() : U"null");
-    runtime->println();
+    runtime->println(
+      to_unistring(static_cast<number::int_type>(size - i)) +
+      U": " +
+      value::to_source(value)
+    );
   }
 }
 

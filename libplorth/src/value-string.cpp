@@ -61,9 +61,14 @@ namespace plorth
         return m_length;
       }
 
-      value_type at(size_type offset) const
+      inline value_type at(size_type offset) const
       {
         return m_chars[offset];
+      }
+
+      inline unistring as_string() const
+      {
+        return unistring(m_chars, m_length);
       }
 
     private:
@@ -97,6 +102,17 @@ namespace plorth
         }
       }
 
+      unistring as_string() const
+      {
+        unistring result;
+
+        result.reserve(m_length);
+        result.append(m_left->as_string());
+        result.append(m_right->as_string());
+
+        return result;
+      }
+
     private:
       const size_type m_length;
       const std::shared_ptr<string> m_left;
@@ -123,6 +139,11 @@ namespace plorth
         return m_original->at(m_offset + offset);
       }
 
+      inline unistring as_string() const
+      {
+        return unistring(); // TODO
+      }
+
     private:
       const std::shared_ptr<string> m_original;
       const size_type m_offset;
@@ -146,6 +167,20 @@ namespace plorth
       value_type at(size_type offset) const
       {
         return m_original->at(length() - offset - 1);
+      }
+
+      inline unistring as_string() const
+      {
+        const auto length = m_original->length();
+        unistring result;
+
+        result.reserve(length);
+        for (size_type i = 0; i < length; ++i)
+        {
+          result.append(1, m_original->at(length - i - 1));
+        }
+
+        return result;
       }
 
     private:
@@ -178,23 +213,9 @@ namespace plorth
     return true;
   }
 
-  unistring string::to_string() const
-  {
-    const size_type len = length();
-    unistring result;
-
-    result.reserve(len);
-    for (size_type i = 0; i < len; ++i)
-    {
-      result.append(1, at(i));
-    }
-
-    return result;
-  }
-
   unistring string::to_source() const
   {
-    return json_stringify(to_string());
+    return json_stringify(as_string());
   }
 
   string::iterator::iterator(const std::shared_ptr<string>& str,
@@ -1126,7 +1147,7 @@ namespace plorth
 
     if (ctx->pop_string(a))
     {
-      const unistring str = a->to_string();
+      const auto str = a->as_string();
 
       if (is_number(str))
       {
@@ -1289,12 +1310,12 @@ namespace plorth
         {
           ctx->error(
             error::code_value,
-            U"Cannot convert " + str->to_source() + U" into symbol."
+            U"Cannot convert " + value::to_source(str) + U" into symbol."
           );
           return;
         }
       }
-      ctx->push_symbol(str->to_string());
+      ctx->push_symbol(str->as_string());
     }
   }
 
