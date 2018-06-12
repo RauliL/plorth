@@ -111,7 +111,7 @@ namespace plorth
   {
     std::shared_ptr<number> num;
 
-    if (!that || !that->is(type_number))
+    if (!value::is(that, type_number))
     {
       return false;
     }

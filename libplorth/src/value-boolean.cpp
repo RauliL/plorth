@@ -32,7 +32,7 @@ namespace plorth
 
   bool boolean::equals(const std::shared_ptr<class value>& that) const
   {
-    if (!that || !that->is(type_boolean))
+    if (!is(that, type_boolean))
     {
       return false;
     }

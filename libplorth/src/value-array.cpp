@@ -193,7 +193,7 @@ namespace plorth
   {
     std::shared_ptr<array> ary;
 
-    if (!that || !that->is(type_array))
+    if (!is(that, type_array))
     {
       return false;
     }
@@ -796,7 +796,7 @@ namespace plorth
   {
     for (const auto& value : ary)
     {
-      if (value && value->is(value::type_array))
+      if (value::is(value, value::type_array))
       {
         do_flatten(std::static_pointer_cast<array>(value), container);
       } else {
@@ -839,7 +839,7 @@ namespace plorth
   {
     for (const auto& value : ary)
     {
-      if (value && value->is(value::type_array) && depth < limit)
+      if (value::is(value, value::type_array) && depth < limit)
       {
         do_nflatten(
           std::static_pointer_cast<array>(value),

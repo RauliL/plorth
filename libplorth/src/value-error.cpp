@@ -83,7 +83,7 @@ namespace plorth
   {
     std::shared_ptr<error> err;
 
-    if (!that || !that->is(type_error))
+    if (!is(that, type_error))
     {
       return false;
     }

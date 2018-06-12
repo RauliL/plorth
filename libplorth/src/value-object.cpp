@@ -63,7 +63,7 @@ namespace plorth
   {
     std::shared_ptr<object> obj;
 
-    if (!that || !that->is(type_object))
+    if (!is(that, type_object))
     {
       return false;
     }
@@ -337,7 +337,7 @@ namespace plorth
     }
 
     if (!obj->property(runtime, U"prototype", prototype, false)
-        || !prototype->is(value::type_object))
+        || !value::is(prototype, value::type_object))
     {
       ctx->error(error::code_type, U"Object has no prototype.");
       return;
@@ -348,7 +348,7 @@ namespace plorth
     if (std::static_pointer_cast<object>(prototype)->property(runtime,
                                                               U"constructor",
                                                               constructor)
-        && constructor->is(value::type_quote))
+        && value::is(constructor, value::type_quote))
     {
       std::static_pointer_cast<quote>(constructor)->call(ctx);
     }

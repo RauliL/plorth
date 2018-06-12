@@ -158,7 +158,7 @@ namespace plorth
     const size_type len = length();
     std::shared_ptr<string> str;
 
-    if (!that || !that->is(type_string))
+    if (!is(that, type_string))
     {
       return false;
     }

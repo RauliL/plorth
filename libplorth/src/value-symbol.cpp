@@ -59,7 +59,7 @@ namespace plorth
 
   bool symbol::equals(const std::shared_ptr<value>& that) const
   {
-    if (that && that->is(type_symbol))
+    if (is(that, type_symbol))
     {
       return !m_id.compare(std::static_pointer_cast<symbol>(that)->m_id);
     } else {

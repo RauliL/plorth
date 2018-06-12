@@ -110,7 +110,7 @@ namespace plorth
           {
             return runtime->object_prototype();
           }
-          else if (property->second && property->second->is(type_object))
+          else if (value::is(property->second, type_object))
           {
             return std::static_pointer_cast<object>(property->second);
           } else {

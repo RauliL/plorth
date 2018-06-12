@@ -77,7 +77,7 @@ namespace plorth
     // context.
     for (const auto& property : module->properties())
     {
-      if (property.second && property.second->is(value::type_quote))
+      if (value::is(property.second, value::type_quote))
       {
         m_dictionary.insert(m_runtime->word(
           m_runtime->symbol(property.first),

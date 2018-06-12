@@ -83,12 +83,12 @@ namespace plorth
     static unistring type_description(enum type type);
 
     /**
-     * Tests whether the value is of given type.
+     * Tests whether reference of a value is of given type.
      */
-    inline bool is(enum type t) const
+    static inline bool is(const std::shared_ptr<value>& value, enum type type)
     {
-      return type() == t;
-    };
+      return value ? value->type() == type : type == type_null;
+    }
 
     /**
      * Determines prototype object of the value, based on it's type. If the

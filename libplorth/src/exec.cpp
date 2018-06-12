@@ -96,7 +96,7 @@ namespace plorth
 
         if (prototype && prototype->property(ctx->runtime(), id, val))
         {
-          if (val && val->is(value::type_quote))
+          if (value::is(val, value::type_quote))
           {
             return std::static_pointer_cast<quote>(val)->call(ctx);
           }

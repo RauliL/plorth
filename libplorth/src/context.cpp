@@ -133,7 +133,7 @@ namespace plorth
     {
       const auto& value = m_data.back();
 
-      if ((!value && type != value::type_null) || (value && !value->is(type)))
+      if (!value::is(value, type))
       {
         error(
           error::code_type,
@@ -172,7 +172,7 @@ namespace plorth
     if (!m_data.empty())
     {
       slot = m_data.back();
-      if ((!slot && type != value::type_null) || (slot && !slot->is(type)))
+      if (!value::is(slot, type))
       {
         error(
           error::code_type,

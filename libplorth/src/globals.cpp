@@ -397,6 +397,18 @@ namespace plorth
     }
   }
 
+  static inline void value_type_test(const std::shared_ptr<context>& ctx,
+                                     enum value::type type)
+  {
+    std::shared_ptr<class value> value;
+
+    if (ctx->pop(value))
+    {
+      ctx->push(value);
+      ctx->push_boolean(value::is(value, type));
+    }
+  }
+
   /**
    * Word: array?
    *
@@ -411,13 +423,7 @@ namespace plorth
    */
   static void w_is_array(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<class value> value;
-
-    if (ctx->pop(value))
-    {
-      ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_array));
-    }
+    value_type_test(ctx, value::type_array);
   }
 
   /**
@@ -434,13 +440,7 @@ namespace plorth
    */
   static void w_is_boolean(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<class value> value;
-
-    if (ctx->pop(value))
-    {
-      ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_boolean));
-    }
+    value_type_test(ctx, value::type_boolean);
   }
 
   /**
@@ -457,13 +457,7 @@ namespace plorth
    */
   static void w_is_error(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<class value> value;
-
-    if (ctx->pop(value))
-    {
-      ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_error));
-    }
+    value_type_test(ctx, value::type_error);
   }
 
   /**
@@ -480,13 +474,7 @@ namespace plorth
    */
   static void w_is_number(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<class value> value;
-
-    if (ctx->pop(value))
-    {
-      ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_number));
-    }
+    value_type_test(ctx, value::type_number);
   }
 
   /**
@@ -503,13 +491,7 @@ namespace plorth
    */
   static void w_is_null(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<class value> value;
-
-    if (ctx->pop(value))
-    {
-      ctx->push(value);
-      ctx->push_boolean(!value);
-    }
+    value_type_test(ctx, value::type_null);
   }
 
   /**
@@ -526,13 +508,7 @@ namespace plorth
    */
   static void w_is_object(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<class value> value;
-
-    if (ctx->pop(value))
-    {
-      ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_object));
-    }
+    value_type_test(ctx, value::type_object);
   }
 
   /**
@@ -549,13 +525,7 @@ namespace plorth
    */
   static void w_is_quote(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<class value> value;
-
-    if (ctx->pop(value))
-    {
-      ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_quote));
-    }
+    value_type_test(ctx, value::type_quote);
   }
 
   /**
@@ -572,13 +542,7 @@ namespace plorth
    */
   static void w_is_string(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<class value> value;
-
-    if (ctx->pop(value))
-    {
-      ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_string));
-    }
+    value_type_test(ctx, value::type_string);
   }
 
   /**
@@ -595,13 +559,7 @@ namespace plorth
    */
   static void w_is_symbol(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<value> val;
-
-    if (ctx->pop(val))
-    {
-      ctx->push(val);
-      ctx->push_boolean(val && val->is(value::type_symbol));
-    }
+    value_type_test(ctx, value::type_symbol);
   }
 
   /**
@@ -618,13 +576,7 @@ namespace plorth
    */
   static void w_is_word(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<value> val;
-
-    if (ctx->pop(val))
-    {
-      ctx->push(val);
-      ctx->push_boolean(val && val->is(value::type_word));
-    }
+    value_type_test(ctx, value::type_word);
   }
 
   /**
@@ -682,8 +634,7 @@ namespace plorth
       ctx->push(val);
 
       if (!obj->property(runtime, U"prototype", prototype1, false) ||
-          !prototype1 ||
-          !prototype1->is(value::type_object) ||
+          !value::is(prototype1, value::type_object) ||
           !prototype2)
       {
         ctx->push_boolean(false);
@@ -699,8 +650,7 @@ namespace plorth
                                                                     U"__proto__",
                                                                     prototype2,
                                                                     false) &&
-             prototype2 &&
-             prototype2->is(value::type_object))
+             value::is(prototype2, value::type_object))
       {
         if (prototype1->equals(prototype2))
         {
@@ -762,7 +712,7 @@ namespace plorth
     {
       return;
     }
-    else if (value && value->is(value::type_boolean))
+    else if (value::is(value, value::type_boolean))
     {
       ctx->push(value);
     } else {
@@ -1225,7 +1175,7 @@ namespace plorth
 
     if (val)
     {
-      if (val->is(value::type_string))
+      if (value::is(val, value::type_string))
       {
         message = std::static_pointer_cast<string>(val)->to_string();
       } else {
