@@ -629,7 +629,7 @@ namespace plorth
     if (ctx->pop_object(obj) && ctx->pop(val))
     {
       std::shared_ptr<value> prototype1;
-      std::shared_ptr<value> prototype2 = val->prototype(runtime);
+      std::shared_ptr<value> prototype2 = value::prototype_of(runtime, val);
 
       ctx->push(val);
 
@@ -685,7 +685,7 @@ namespace plorth
       ctx->push(value);
       if (value)
       {
-        ctx->push(value->prototype(ctx->runtime()));
+        ctx->push(value::prototype_of(ctx->runtime(), value));
       } else {
         ctx->push_null();
       }

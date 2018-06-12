@@ -68,6 +68,14 @@ namespace plorth
     };
 
     /**
+     * Returns type of given value.
+     */
+    static inline enum type type(const std::shared_ptr<value>& value)
+    {
+      return value ? value->type() : type_null;
+    }
+
+    /**
      * Returns type of the value.
      */
     virtual enum type type() const = 0;
@@ -87,20 +95,22 @@ namespace plorth
      */
     static inline bool is(const std::shared_ptr<value>& value, enum type type)
     {
-      return value ? value->type() == type : type == type_null;
+      return value::type(value) == type;
     }
 
     /**
-     * Determines prototype object of the value, based on it's type. If the
+     * Determines prototype object of given value, based on it's type. If the
      * value is an object, property called "__proto__" will be used instead,
      * with the runtime's object prototype acting as a fallback.
      *
      * \param runtime Script runtime to use for prototype retrieval.
-     * \return        Prototype object of the value.
+     * \param value   Reference to value of which prototype to determine.
+     * \return        Reference to the prototype object of given value.
      */
-    std::shared_ptr<object> prototype(
-      const std::shared_ptr<class runtime>& runtime
-    ) const;
+    static std::shared_ptr<object> prototype_of(
+      const std::shared_ptr<runtime>& runtime,
+      const std::shared_ptr<value>& value
+    );
 
     /**
      * Tests whether two values are equal.

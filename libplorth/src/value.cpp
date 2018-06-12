@@ -70,54 +70,42 @@ namespace plorth
     return U"unknown";
   }
 
-  std::shared_ptr<object> value::prototype(const std::shared_ptr<class runtime>& runtime) const
+  std::shared_ptr<object> value::prototype_of(
+    const std::shared_ptr<runtime>& runtime,
+    const std::shared_ptr<value>& value
+  )
   {
-    switch (type())
+    switch (type(value))
     {
-      case type_null:
-        return runtime->object_prototype();
+    case type_null:
+      return runtime->object_prototype();
 
-      case type_boolean:
-        return runtime->boolean_prototype();
+    case type_boolean:
+      return runtime->boolean_prototype();
 
-      case type_number:
-        return runtime->number_prototype();
+    case type_number:
+      return runtime->number_prototype();
 
-      case type_string:
-        return runtime->string_prototype();
+    case type_string:
+      return runtime->string_prototype();
 
-      case type_array:
-        return runtime->array_prototype();
+    case type_array:
+      return runtime->array_prototype();
 
-      case type_symbol:
-        return runtime->symbol_prototype();
+    case type_symbol:
+      return runtime->symbol_prototype();
 
-      case type_quote:
-        return runtime->quote_prototype();
+    case type_quote:
+      return runtime->quote_prototype();
 
-      case type_word:
-        return runtime->word_prototype();
+    case type_word:
+      return runtime->word_prototype();
 
-      case type_error:
-        return runtime->error_prototype();
+    case type_error:
+      return runtime->error_prototype();
 
-      case type_object:
-        {
-          const auto& properties = static_cast<const object*>(this)->properties();
-          const auto property = properties.find(U"__proto__");
-
-          if (property == std::end(properties))
-          {
-            return runtime->object_prototype();
-          }
-          else if (value::is(property->second, type_object))
-          {
-            return std::static_pointer_cast<object>(property->second);
-          } else {
-            return std::shared_ptr<object>();
-          }
-        }
-        break;
+    case type_object:
+      return std::static_pointer_cast<object>(value)->prototype(runtime);
     }
 
     return std::shared_ptr<object>(); // Just to make GCC happy.

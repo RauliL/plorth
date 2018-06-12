@@ -59,6 +59,24 @@ namespace plorth
     return false;
   }
 
+  std::shared_ptr<object> object::prototype(
+    const std::shared_ptr<runtime>& runtime
+  ) const
+  {
+    const auto property = m_properties.find(U"__proto__");
+
+    if (property == std::end(m_properties))
+    {
+      return runtime->object_prototype();
+    }
+    else if (is(property->second, type_object))
+    {
+      return std::static_pointer_cast<object>(property->second);
+    } else {
+      return std::shared_ptr<object>();
+    }
+  }
+
   bool object::equals(const std::shared_ptr<value>& that) const
   {
     std::shared_ptr<object> obj;

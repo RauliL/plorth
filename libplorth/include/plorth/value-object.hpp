@@ -62,6 +62,18 @@ namespace plorth
                   std::shared_ptr<value>& slot,
                   bool inherited = true) const;
 
+    /**
+     * Determines prototype of the object, based on it's properties. If the
+     * object has a property called "__proto__", and it's value is another
+     * object, that object will be used as the prototype. Otherwise, object
+     * prototype from the runtime will be used instead.
+     *
+     * \param runtime Script runtime to use for prototype retrieval.
+     */
+    std::shared_ptr<object> prototype(
+      const std::shared_ptr<runtime>& runtime
+    ) const;
+
     inline enum type type() const
     {
       return type_object;

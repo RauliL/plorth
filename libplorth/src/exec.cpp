@@ -91,7 +91,10 @@ namespace plorth
 
       if (!stack.empty() && stack.back())
       {
-        const auto prototype = stack.back()->prototype(ctx->runtime());
+        const auto prototype = value::prototype_of(
+          ctx->runtime(),
+          stack.back()
+        );
         std::shared_ptr<value> val;
 
         if (prototype && prototype->property(ctx->runtime(), id, val))
