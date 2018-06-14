@@ -190,6 +190,110 @@ namespace plorth
       char* memory;
     };
   }
+
+  /**
+   * Reference of a managed object. Keeps track of the objects usage, so that
+   * the garbage collector knows which objects are being used as local
+   * variables in the C++ code.
+   */
+  template<class T>
+  class ref
+  {
+  public:
+    using value_type = T;
+    using pointer = T*;
+
+    /**
+     * Constructs null reference.
+     */
+    ref()
+      : m_object(nullptr) {}
+
+    /**
+     * Constructs copy of existing reference.
+     */
+    template<class U>
+    ref(const ref<U>& that)
+      : m_object(that.get())
+    {
+      if (m_object)
+      {
+        m_object->inc_use_count();
+      }
+    }
+
+    ref(ref<T>&& that)
+      : m_object(that.m_object)
+    {
+      that.m_object = nullptr;
+    }
+
+    /**
+     * Constructs reference from pointer to the given object.
+     */
+    ref(pointer object)
+      : m_object(object)
+    {
+      m_object->inc_use_count();
+    }
+
+    /**
+     * Destructor.
+     */
+    ~ref()
+    {
+      if (m_object)
+      {
+        m_object->dec_use_count();
+      }
+    }
+
+    template<class U>
+    ref<T>& operator=(const ref<U>& that)
+    {
+      return *this; // TODO
+    }
+
+    ref<T>& operator=(ref<T>&& that)
+    {
+      if (m_object != that.m_object)
+      {
+        if (m_object)
+        {
+          m_object->dec_use_count();
+        }
+        if ((m_object = that.m_object))
+        {
+          m_object->inc_use_count();
+        }
+        that.m_object = nullptr;
+      }
+
+      return *this;
+    }
+
+    /**
+     * Returns pointer to the referenced object.
+     */
+    inline pointer operator->() const
+    {
+      return m_object;
+    }
+
+    inline explicit operator bool() const
+    {
+      return !!m_object;
+    }
+
+    inline bool operator!() const
+    {
+      return !m_object;
+    }
+
+  private:
+    /** Pointer to the referenced object. */
+    pointer m_object;
+  };
 }
 
 #endif /* !PLORTH_MEMORY_HPP_GUARD */
