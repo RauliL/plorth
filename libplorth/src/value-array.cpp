@@ -64,6 +64,20 @@ namespace plorth
         return m_elements[i];
       }
 
+      void mark()
+      {
+        array::mark();
+        for (size_type i = 0; i < m_size; ++i)
+        {
+          auto& value = m_elements[i];
+
+          if (value && !value->marked())
+          {
+            value->mark();
+          }
+        }
+      }
+
     private:
       const size_type m_size;
       pointer m_elements;
@@ -95,6 +109,19 @@ namespace plorth
           return m_left->at(offset);
         } else {
           return m_right->at(offset - left_size);
+        }
+      }
+
+      void mark()
+      {
+        array::mark();
+        if (!m_left->marked())
+        {
+          m_left->mark();
+        }
+        if (!m_right->marked())
+        {
+          m_right->mark();
         }
       }
 
@@ -131,6 +158,19 @@ namespace plorth
         }
       }
 
+      void mark()
+      {
+        array::mark();
+        if (!m_array->marked())
+        {
+          m_array->mark();
+        }
+        if (m_extra && !m_extra->marked())
+        {
+          m_extra->mark();
+        }
+      }
+
     private:
       const std::shared_ptr<array> m_array;
       const std::shared_ptr<value> m_extra;
@@ -159,6 +199,15 @@ namespace plorth
         return m_array->at(m_offset + offset);
       }
 
+      void mark()
+      {
+        array::mark();
+        if (!m_array->marked())
+        {
+          m_array->mark();
+        }
+      }
+
     private:
       const std::shared_ptr<array> m_array;
       const size_type m_offset;
@@ -182,6 +231,15 @@ namespace plorth
       const_reference at(size_type offset) const
       {
         return m_array->at(size() - offset - 1);
+      }
+
+      void mark()
+      {
+        array::mark();
+        if (!m_array->marked())
+        {
+          m_array->mark();
+        }
       }
 
     private:

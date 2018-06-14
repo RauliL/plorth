@@ -75,4 +75,17 @@ namespace plorth
   {
     m_words[word->symbol()->id()] = word;
   }
+
+  void dictionary::mark()
+  {
+    for (auto& entry : m_words)
+    {
+      auto& word = entry.second;
+
+      if (!word->marked())
+      {
+        word->mark();
+      }
+    }
+  }
 }

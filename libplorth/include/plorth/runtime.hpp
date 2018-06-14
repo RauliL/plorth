@@ -411,6 +411,8 @@ namespace plorth
       return m_word_prototype;
     }
 
+    void mark();
+
   protected:
     /**
      * Constructs new runtime.
@@ -453,10 +455,12 @@ namespace plorth
     std::shared_ptr<object> m_word_prototype;
     /** List of command line arguments given for the interpreter. */
     std::vector<unistring> m_arguments;
+#if PLORTH_ENABLE_MODULES
     /** List of file system paths where to look modules from. */
     std::vector<unistring> m_module_paths;
     /** Container for already imported modules. */
     object::container_type m_imported_modules;
+#endif
 #if PLORTH_ENABLE_SYMBOL_CACHE
     /** Cache for symbols used by the runtime. */
     symbol_cache m_symbol_cache;

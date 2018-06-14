@@ -84,6 +84,11 @@ namespace plorth
      */
     void insert(const value_type& word);
 
+    /**
+     * Goes through every word the dictionary and marks them as used.
+     */
+    void mark();
+
   private:
     /** Container for the words in the dictionary. */
     container_type m_words;

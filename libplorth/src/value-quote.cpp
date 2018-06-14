@@ -109,6 +109,18 @@ namespace plorth
         return true;
       }
 
+      void mark()
+      {
+        quote::mark();
+        for (auto& value : m_values)
+        {
+          if (value && !value->marked())
+          {
+            value->mark();
+          }
+        }
+      }
+
     private:
       const std::vector<std::shared_ptr<value>> m_values;
     };

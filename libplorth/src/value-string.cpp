@@ -97,6 +97,19 @@ namespace plorth
         }
       }
 
+      void mark()
+      {
+        string::mark();
+        if (!m_left->marked())
+        {
+          m_left->mark();
+        }
+        if (!m_right->marked())
+        {
+          m_right->mark();
+        }
+      }
+
     private:
       const size_type m_length;
       const std::shared_ptr<string> m_left;
@@ -123,6 +136,15 @@ namespace plorth
         return m_original->at(m_offset + offset);
       }
 
+      void mark()
+      {
+        string::mark();
+        if (!m_original->marked())
+        {
+          m_original->mark();
+        }
+      }
+
     private:
       const std::shared_ptr<string> m_original;
       const size_type m_offset;
@@ -146,6 +168,15 @@ namespace plorth
       value_type at(size_type offset) const
       {
         return m_original->at(length() - offset - 1);
+      }
+
+      void mark()
+      {
+        string::mark();
+        if (!m_original->marked())
+        {
+          m_original->mark();
+        }
       }
 
     private:

@@ -133,6 +133,33 @@ namespace plorth
        */
       virtual ~managed();
 
+      /**
+       * Returns true if this object has been marked as used by the garbage
+       * collector, false otherwise.
+       */
+      inline bool marked() const
+      {
+        return m_marked;
+      }
+
+      /**
+       * Marks the object as used. Derived classes should override this method
+       * so that it marks all the objects used by the the derived class.
+       */
+      inline virtual void mark()
+      {
+        m_marked = true;
+      }
+
+      /**
+       * Sets the object as unused, if it has been previously marked as used by
+       * the garbage collector.
+       */
+      inline void unmark()
+      {
+        m_marked = false;
+      }
+
       void* operator new(std::size_t size, class manager& manager);
       void operator delete(void* pointer);
 
@@ -140,6 +167,10 @@ namespace plorth
       managed(managed&&) = delete;
       void operator=(const managed&) = delete;
       void operator=(managed&&) = delete;
+
+    private:
+      /** Whether this object has been marked or not. */
+      bool m_marked;
     };
 
     /**

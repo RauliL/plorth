@@ -429,6 +429,8 @@ namespace plorth
       return m_position;
     }
 
+    void mark();
+
   protected:
     /**
      * Constructs new context.

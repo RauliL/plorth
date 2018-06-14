@@ -56,6 +56,19 @@ namespace plorth
     return U": " + m_symbol->id() + U" " + m_quote->to_string() + U" ;";
   }
 
+  void word::mark()
+  {
+    value::mark();
+    if (!m_symbol->marked())
+    {
+      m_symbol->mark();
+    }
+    if (!m_quote->marked())
+    {
+      m_quote->mark();
+    }
+  }
+
   std::shared_ptr<word> runtime::word(
     const unistring& id,
     const std::shared_ptr<class quote>& quote

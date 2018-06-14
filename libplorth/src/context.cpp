@@ -255,4 +255,25 @@ namespace plorth
   {
     return typed_context_pop<word>(this, slot, value::type_word);
   }
+
+  void context::mark()
+  {
+    managed::mark();
+    if (!m_runtime->marked())
+    {
+      m_runtime->mark();
+    }
+    if (m_error && !m_error->marked())
+    {
+      m_error->mark();
+    }
+    for (auto& value : m_data)
+    {
+      if (value && !value->marked())
+      {
+        value->mark();
+      }
+    }
+    m_dictionary.mark();
+  }
 }
