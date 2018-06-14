@@ -41,12 +41,6 @@ OPTION(
 )
 
 OPTION(
-  PLORTH_ENABLE_MEMORY_POOL
-  "Enable if you want the interpreter to use memory pools."
-  ON
-)
-
-OPTION(
   PLORTH_ENABLE_MUTEXES
   "Enable if you want to implement thread safety with mutexes."
   ON

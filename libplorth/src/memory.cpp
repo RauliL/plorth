@@ -24,51 +24,48 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
-#if PLORTH_ENABLE_MEMORY_POOL
-# if !defined(PLORTH_MEMORY_POOL_SIZE)
-#  define PLORTH_MEMORY_POOL_SIZE (4096 * 32)
-# endif
-#endif
 
 namespace plorth
 {
   namespace memory
   {
-#if PLORTH_ENABLE_MEMORY_POOL
-    static pool* pool_create();
-    static slot* pool_allocate(pool*, std::size_t);
-#endif
+    static void add_slot_to_generation(slot*, slot**, slot**);
+    static void remove_slot_from_generation(slot*, slot**, slot**);
 
-    manager::manager()
-#if PLORTH_ENABLE_MEMORY_POOL
-      : m_pool_head(nullptr)
-      , m_pool_tail(nullptr)
-#endif
-      {}
+    manager::manager(const allocator_type& allocator)
+      : m_allocator(allocator)
+      , m_free_head(nullptr)
+      , m_free_tail(nullptr)
+      , m_nursery_head(nullptr)
+      , m_nursery_tail(nullptr) {}
 
     manager::~manager()
     {
-#if PLORTH_ENABLE_MEMORY_POOL
-      pool* current;
-      pool* prev;
+      slot* current;
+      slot* next;
 
-      for (current = m_pool_tail; current; current = prev)
+      for (current = m_free_head; current; current = next)
       {
-        prev = current->prev;
-        for (struct slot* slot = current->used_head; slot; slot = slot->next)
-        {
-          delete reinterpret_cast<managed*>(slot->memory);
-        }
-        std::free(static_cast<void*>(current));
+        next = current->next;
+        m_allocator.deallocate(
+          static_cast<char*>(static_cast<void*>(current)),
+          sizeof(slot) + current->size
+        );
       }
-#endif
+      for (current = m_nursery_head; current; current = next)
+      {
+        next = current->next;
+        delete reinterpret_cast<managed*>(current->memory);
+        m_allocator.deallocate(
+          static_cast<char*>(static_cast<void*>(current)),
+          sizeof(slot) + current->size
+        );
+      }
     }
 
-    void* manager::allocate(std::size_t size)
+    slot* manager::allocate(std::size_t size)
     {
-#if PLORTH_ENABLE_MEMORY_POOL
       const std::size_t remainder = size % 8;
-      struct pool* pool;
       struct slot* slot;
 
       if (remainder)
@@ -76,48 +73,46 @@ namespace plorth
         size += 8 - remainder;
       }
 
-      // First go through existing memory pools and check whether we can slice
-      // a slot from any of them.
-      for (pool = m_pool_tail; pool; pool = pool->prev)
+      // First go through the unused slots and see if any of them is large
+      // enough to hold memory for the object being allocated.
+      for (slot = m_free_head; slot; slot = slot->next)
       {
-        if ((slot = pool_allocate(pool, size)))
+        // Too small? Continue to next slot.
+        if (slot->size < size)
         {
-          return static_cast<void*>(slot->memory);
+          continue;
         }
+
+        // Otherwise remove the slot from the list of free slots and place it
+        // into nursery instead. Afterwards, return the slot so it can be used.
+        remove_slot_from_generation(slot, &m_free_head, &m_free_tail);
+        add_slot_to_generation(slot, &m_nursery_head, &m_nursery_tail);
+
+        return slot;
       }
 
-      // If all existing pools are full, create a new one. If that one fails,
-      // abort the entire process as it's a signal that we are out of memory.
-      if (!(pool = pool_create()))
-      {
-        std::abort();
-      }
+      // No free slots are available, so allocate memory for new one.
+      slot = static_cast<struct slot*>(
+        static_cast<void*>(
+          m_allocator.allocate(sizeof(struct slot) + size)
+        )
+      );
 
-# if defined(PLORTH_ENABLE_GC_DEBUG)
-      std::fprintf(stderr, "GC: Memory pool allocated.\n");
-# endif
+      slot->manager = this;
+      slot->size = size;
+      slot->memory = (
+        static_cast<char*>(static_cast<void*>(slot)) + sizeof(struct slot)
+      );
 
-      // Place the newly created pool into linked list of memory pools.
-      if ((pool->prev = m_pool_tail))
-      {
-        m_pool_tail->next = pool;
-      } else {
-        m_pool_head = pool;
-      }
-      m_pool_tail = pool;
+      add_slot_to_generation(slot, &m_nursery_head, &m_nursery_tail);
 
-      // Try to allocate slot from the freshly created memory pool. If even
-      // that is not possible, crash and burn as something is seriously wrong
-      // now.
-      if (!(slot = pool_allocate(pool, size)))
-      {
-        std::abort();
-      }
+      return slot;
+    }
 
-      return static_cast<void*>(slot->memory);
-#else
-      return std::malloc(size);
-#endif
+    void manager::deallocate(struct slot* slot)
+    {
+      remove_slot_from_generation(slot, &m_nursery_head, &m_nursery_tail);
+      add_slot_to_generation(slot, &m_free_head, &m_free_tail);
     }
 
     managed::managed() {}
@@ -126,24 +121,38 @@ namespace plorth
 
     void* managed::operator new(std::size_t size, class manager& manager)
     {
-      return manager.allocate(size);
+      return static_cast<void*>(manager.allocate(size)->memory);
     }
 
     void managed::operator delete(void* pointer)
     {
-#if PLORTH_ENABLE_MEMORY_POOL
-      struct slot* slot;
-      struct pool* pool;
+      auto slot = static_cast<struct slot*>(
+        static_cast<void*>(
+          static_cast<char*>(pointer) - sizeof(struct slot)
+        )
+      );
 
-      if (!pointer)
+      slot->manager->deallocate(slot);
+    }
+
+    static void add_slot_to_generation(struct slot* slot,
+                                       struct slot** head,
+                                       struct slot** tail)
+    {
+      slot->next = nullptr;
+      if ((slot->prev = *tail))
       {
-        return;
+        slot->prev->next = slot;
+      } else {
+        *head = slot;
       }
+      *tail = slot;
+    }
 
-      slot = reinterpret_cast<struct slot*>(static_cast<char*>(pointer) - sizeof(struct slot));
-      pool = slot->pool;
-
-      // Remove the slot from the linked of list of used slots in the pool.
+    static void remove_slot_from_generation(struct slot* slot,
+                                            struct slot** head,
+                                            struct slot** tail)
+    {
       if (slot->next && slot->prev)
       {
         slot->next->prev = slot->prev;
@@ -152,135 +161,19 @@ namespace plorth
       else if (slot->next)
       {
         slot->next->prev = nullptr;
-        pool->used_head = slot->next;
+        *head = slot->next;
       }
       else if (slot->prev)
       {
         slot->prev->next = nullptr;
-        pool->used_tail = slot->prev;
+        *tail = slot->prev;
       } else {
-        pool->used_head = nullptr;
-        pool->used_tail = nullptr;
+        *head = nullptr;
+        *tail = nullptr;
       }
 
-      // Then place the slot into linked of list of free slots in the pool.
       slot->next = nullptr;
-      if ((slot->prev = slot->pool->free_tail))
-      {
-        pool->free_tail->next = slot;
-      } else {
-        pool->free_head = slot;
-      }
-      pool->free_tail = slot;
-
-      // Remove the pool if it's no longer used.
-      if (pool->next && pool->prev && !pool->used_head && !pool->used_tail)
-      {
-        pool->next->prev = pool->prev;
-        pool->prev->next = pool->next;
-# if defined(PLORTH_ENABLE_GC_DEBUG)
-        std::fprintf(stderr, "GC: Memory pool removed.\n");
-# endif
-        std::free(static_cast<void*>(pool));
-      }
-#else
-      if (pointer)
-      {
-        std::free(pointer);
-      }
-#endif
+      slot->prev = nullptr;
     }
-
-#if PLORTH_ENABLE_MEMORY_POOL
-    static pool* pool_create()
-    {
-      char* memory = static_cast<char*>(std::malloc(sizeof(struct pool) + PLORTH_MEMORY_POOL_SIZE));
-      struct pool* pool;
-
-      if (!memory)
-      {
-        return nullptr;
-      }
-
-      pool = reinterpret_cast<struct pool*>(memory);
-      pool->next = nullptr;
-      pool->prev = nullptr;
-      pool->remaining = PLORTH_MEMORY_POOL_SIZE;
-      pool->memory = memory + sizeof(struct pool);
-      pool->free_head = nullptr;
-      pool->free_tail = nullptr;
-      pool->used_head = nullptr;
-      pool->used_tail = nullptr;
-
-      return pool;
-    }
-
-    static slot* pool_allocate(struct pool* pool, std::size_t size)
-    {
-      struct slot* slot;
-      char* memory;
-
-      for (slot = pool->free_head; slot; slot = slot->next)
-      {
-        if (slot->size < size)
-        {
-          continue;
-        }
-
-        if (slot->next && slot->prev)
-        {
-          slot->next->prev = slot->prev;
-          slot->prev->next = slot->next;
-        }
-        else if (slot->next)
-        {
-          slot->next->prev = nullptr;
-          pool->free_head = slot->next;
-        }
-        else if (slot->prev)
-        {
-          slot->prev->next = nullptr;
-          pool->free_tail = slot->prev;
-        } else {
-          pool->free_head = nullptr;
-          pool->free_tail = nullptr;
-        }
-
-        slot->next = nullptr;
-        if ((slot->prev = pool->used_tail))
-        {
-          slot->prev->next = slot;
-        } else {
-          pool->used_head = slot;
-        }
-        pool->used_tail = slot;
-
-        return slot;
-      }
-
-      if (pool->remaining < size + sizeof(struct slot))
-      {
-        return nullptr;
-      }
-
-      memory = pool->memory + (PLORTH_MEMORY_POOL_SIZE - pool->remaining);
-      pool->remaining -= size + sizeof(struct slot);
-
-      slot = reinterpret_cast<struct slot*>(memory);
-      slot->pool = pool;
-      slot->next = nullptr;
-      if ((slot->prev = pool->used_tail))
-      {
-        slot->prev->next = slot;
-      } else {
-        pool->used_head = slot;
-      }
-      pool->used_tail = slot;
-      slot->size = size;
-      slot->memory = memory + sizeof(struct slot);
-
-      return slot;
-    }
-#endif /* PLORTH_ENABLE_MEMORY_POOL */
   }
 }

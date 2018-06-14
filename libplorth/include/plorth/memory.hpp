@@ -33,25 +33,26 @@
 
 namespace plorth
 {
-  class context;
-  class runtime;
-
   namespace memory
   {
-    struct pool;
     struct slot;
 
     /**
-     * Memory manager manages memory pools used by the interpreter and is used
-     * for allocated memory for managed objects.
+     * Memory manager acts as an garbage collector for the interpreter,
+     * managing lifespan of slots of allocated memory used to store objects
+     * used by the interpreter.
      */
     class manager
     {
     public:
+      using allocator_type = std::allocator<char>;
+
       /**
        * Constructs new memory manager.
+       *
+       * \param allocator Allocator used for allocating chunks of memory.
        */
-      explicit manager();
+      explicit manager(const allocator_type& allocator = allocator_type());
 
       /**
        * Destructor. Note that when a memory manager is being destroyed, all
@@ -61,6 +62,22 @@ namespace plorth
       ~manager();
 
       /**
+       * Returns the allocator used for allocating chunks of memory.
+       */
+      inline allocator_type& allocator()
+      {
+        return m_allocator;
+      }
+
+      /**
+       * Returns the allocator used for allocating chunks of memory.
+       */
+      inline const allocator_type& allocator() const
+      {
+        return m_allocator;
+      }
+
+      /**
        * Allocates memory for a managed object from memory pools of this memory
        * manager. New memory pools are being created when previous ones are
        * full.
@@ -68,20 +85,31 @@ namespace plorth
        * \param size Size of the object to allocate memory for.
        * \return     Pointer to the allocated memory.
        */
-      void* allocate(std::size_t size);
+      slot* allocate(std::size_t size);
+
+      /**
+       * Removes given slot from the generation where it currently resides and
+       * places it into list of free slots, so that it can be re-used when
+       * another slot of same size is being allocated.
+       */
+      void deallocate(struct slot* slot);
 
       manager(const manager&) = delete;
       manager(manager&&) = delete;
       void operator=(const manager&) = delete;
       void operator=(manager&&) = delete;
 
-#if PLORTH_ENABLE_MEMORY_POOL
     private:
-      /** Pointer to the first memory pool used by this manager. */
-      pool* m_pool_head;
-      /** Pointer to the last memory pool used by this manager. */
-      pool* m_pool_tail;
-#endif
+      /** The allocator used for allocating memory. */
+      allocator_type m_allocator;
+      /** Pointer to first unused slot. */
+      slot* m_free_head;
+      /** Pointer to last unused slot. */
+      slot* m_free_tail;
+      /** Pointer to first slot in nursery generation. */
+      slot* m_nursery_head;
+      /** Pointer to last slot in nursery generation. */
+      slot* m_nursery_tail;
     };
 
     /**
@@ -114,41 +142,22 @@ namespace plorth
       void operator=(managed&&) = delete;
     };
 
-#if PLORTH_ENABLE_MEMORY_POOL
-    struct pool
-    {
-      /** Pointer to the next pool in the memory manager. */
-      pool* next;
-      /** Pointer to the previous pool in the memory manager. */
-      pool* prev;
-      /** Amount of bytes still unslotted in this pool. */
-      std::size_t remaining;
-      /** Pointer to the allocated memory. */
-      char* memory;
-      /** Pointer to the first free slot in the pool. */
-      slot* free_head;
-      /** Pointer to the last free slot in the pool. */
-      slot* free_tail;
-      /** Pointer to the first used slot in the pool. */
-      slot* used_head;
-      /** Pointer to the last used slot in the pool. */
-      slot* used_tail;
-    };
-
+    /**
+     * Represents single slot of allocated memory.
+     */
     struct slot
     {
-      /** Memory pool where this slot belongs to. */
-      struct pool* pool;
-      /** Pointer to the next slot in the pool. */
+      /** Pointer to the memory manager handling this slot. */
+      manager* manager;
+      /** Pointer to the next slot in the generation. */
       slot* next;
-      /** Pointer to the previous slot in the pool. */
+      /** Pointer to the previous slot in the generation. */
       slot* prev;
-      /** Size of the slot. */
+      /** Size of this slot. */
       std::size_t size;
       /** Pointer to the allocated memory. */
       char* memory;
     };
-#endif
   }
 }
 
