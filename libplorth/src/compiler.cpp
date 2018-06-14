@@ -144,10 +144,10 @@ namespace plorth
       /**
        * Compiles top-level script into quote.
        */
-      std::shared_ptr<quote> compile(context* ctx)
+      ref<quote> compile(context* ctx)
       {
-        std::vector<std::shared_ptr<class value>> values;
-        std::shared_ptr<class value> value;
+        std::vector<ref<class value>> values;
+        ref<class value> value;
 
         while (!eof())
         {
@@ -157,7 +157,7 @@ namespace plorth
           }
           else if (!(value = compile_value(ctx)))
           {
-            return std::shared_ptr<quote>();
+            return ref<quote>();
           }
           values.push_back(value);
         }
@@ -165,7 +165,7 @@ namespace plorth
         return ctx->runtime()->compiled_quote(values);
       }
 
-      std::shared_ptr<value> compile_value(context* ctx)
+      ref<value> compile_value(context* ctx)
       {
         if (skip_whitespace())
         {
@@ -175,7 +175,7 @@ namespace plorth
             &m_position
           );
 
-          return std::shared_ptr<value>();
+          return ref<value>();
         }
 
         switch (peek())
@@ -201,7 +201,7 @@ namespace plorth
         }
       }
 
-      std::shared_ptr<symbol> compile_symbol(context* ctx)
+      ref<symbol> compile_symbol(context* ctx)
       {
         struct position position;
         unistring buffer;
@@ -214,7 +214,7 @@ namespace plorth
             &m_position
           );
 
-          return std::shared_ptr<symbol>();
+          return ref<symbol>();
         }
 
         position = m_position;
@@ -227,7 +227,7 @@ namespace plorth
             &m_position
           );
 
-          return std::shared_ptr<symbol>();
+          return ref<symbol>();
         }
 
         buffer.append(1, read());
@@ -239,12 +239,12 @@ namespace plorth
         return ctx->runtime()->symbol(buffer, &position);
       }
 
-      std::shared_ptr<word> compile_word(context* ctx)
+      ref<word> compile_word(context* ctx)
       {
         struct position position;
         const auto& runtime = ctx->runtime();
-        std::shared_ptr<class symbol> symbol;
-        std::vector<std::shared_ptr<value>> values;
+        ref<class symbol> symbol;
+        std::vector<ref<value>> values;
 
         if (skip_whitespace())
         {
@@ -254,7 +254,7 @@ namespace plorth
             &m_position
           );
 
-          return std::shared_ptr<word>();
+          return ref<word>();
         }
 
         position = m_position;
@@ -267,12 +267,12 @@ namespace plorth
             &position
           );
 
-          return std::shared_ptr<word>();
+          return ref<word>();
         }
 
         if (!(symbol = compile_symbol(ctx)))
         {
-          return std::shared_ptr<word>();
+          return ref<word>();
         }
 
         for (;;)
@@ -285,7 +285,7 @@ namespace plorth
               &position
             );
 
-            return std::shared_ptr<word>();
+            return ref<word>();
           }
           else if (peek_read(';'))
           {
@@ -295,7 +295,7 @@ namespace plorth
 
             if (!value)
             {
-              return std::shared_ptr<word>();
+              return ref<word>();
             }
             values.push_back(value);
           }
@@ -304,10 +304,10 @@ namespace plorth
         return runtime->word(symbol, runtime->compiled_quote(values));
       }
 
-      std::shared_ptr<quote> compile_quote(context* ctx)
+      ref<quote> compile_quote(context* ctx)
       {
         struct position position;
-        std::vector<std::shared_ptr<value>> values;
+        std::vector<ref<value>> values;
 
         if (skip_whitespace())
         {
@@ -317,7 +317,7 @@ namespace plorth
             &m_position
           );
 
-          return std::shared_ptr<quote>();
+          return ref<quote>();
         }
 
         position = m_position;
@@ -330,7 +330,7 @@ namespace plorth
             &position
           );
 
-          return std::shared_ptr<quote>();
+          return ref<quote>();
         }
 
         for (;;)
@@ -343,7 +343,7 @@ namespace plorth
               &position
             );
 
-            return std::shared_ptr<quote>();
+            return ref<quote>();
           }
           else if (peek_read(')'))
           {
@@ -353,7 +353,7 @@ namespace plorth
 
             if (!value)
             {
-              return std::shared_ptr<quote>();
+              return ref<quote>();
             }
             values.push_back(value);
           }
@@ -362,7 +362,7 @@ namespace plorth
         return ctx->runtime()->compiled_quote(values);
       }
 
-      std::shared_ptr<string> compile_string(context* ctx)
+      ref<string> compile_string(context* ctx)
       {
         struct position position;
         unichar separator;
@@ -376,7 +376,7 @@ namespace plorth
             &m_position
           );
 
-          return std::shared_ptr<string>();
+          return ref<string>();
         }
 
         position = m_position;
@@ -389,7 +389,7 @@ namespace plorth
             &position
           );
 
-          return std::shared_ptr<string>();
+          return ref<string>();
         }
 
         for (;;)
@@ -402,7 +402,7 @@ namespace plorth
               &position
             );
 
-            return std::shared_ptr<string>();
+            return ref<string>();
           }
           else if (peek_read(separator))
           {
@@ -412,7 +412,7 @@ namespace plorth
           {
             if (!compile_escape_sequence(ctx, buffer))
             {
-              return std::shared_ptr<string>();
+              return ref<string>();
             }
           } else {
             buffer.append(1, read());
@@ -422,10 +422,10 @@ namespace plorth
         return ctx->runtime()->string(buffer);
       }
 
-      std::shared_ptr<array> compile_array(context* ctx)
+      ref<array> compile_array(context* ctx)
       {
         struct position position;
-        std::vector<std::shared_ptr<value>> elements;
+        std::vector<ref<value>> elements;
 
         if (skip_whitespace())
         {
@@ -435,7 +435,7 @@ namespace plorth
             &m_position
           );
 
-          return std::shared_ptr<array>();
+          return ref<array>();
         }
 
         position = m_position;
@@ -448,7 +448,7 @@ namespace plorth
             &position
           );
 
-          return std::shared_ptr<array>();
+          return ref<array>();
         }
 
         for (;;)
@@ -461,7 +461,7 @@ namespace plorth
               &position
             );
 
-            return std::shared_ptr<array>();
+            return ref<array>();
           }
           else if (peek_read(']'))
           {
@@ -471,7 +471,7 @@ namespace plorth
 
             if (!value)
             {
-              return std::shared_ptr<array>();
+              return ref<array>();
             }
             elements.push_back(value);
             if (skip_whitespace() || (!peek(',') && !peek(']')))
@@ -482,7 +482,7 @@ namespace plorth
                 &position
               );
 
-              return std::shared_ptr<array>();
+              return ref<array>();
             } else {
               peek_read(',');
             }
@@ -492,7 +492,7 @@ namespace plorth
         return ctx->runtime()->array(elements.data(), elements.size());
       }
 
-      std::shared_ptr<object> compile_object(context* ctx)
+      ref<object> compile_object(context* ctx)
       {
         struct position position;
         object::container_type properties;
@@ -505,7 +505,7 @@ namespace plorth
             &m_position
           );
 
-          return std::shared_ptr<object>();
+          return ref<object>();
         }
 
         position = m_position;
@@ -518,7 +518,7 @@ namespace plorth
             &position
           );
 
-          return std::shared_ptr<object>();
+          return ref<object>();
         }
 
         for (;;)
@@ -531,18 +531,18 @@ namespace plorth
               &position
             );
 
-            return std::shared_ptr<object>();
+            return ref<object>();
           }
           else if (peek_read('}'))
           {
             break;
           } else {
-            std::shared_ptr<string> key;
-            std::shared_ptr<class value> value;
+            ref<string> key;
+            ref<class value> value;
 
             if (!(key = compile_string(ctx)))
             {
-              return std::shared_ptr<object>();
+              return ref<object>();
             }
 
             if (skip_whitespace())
@@ -553,7 +553,7 @@ namespace plorth
                 &position
               );
 
-              return std::shared_ptr<object>();
+              return ref<object>();
             }
 
             if (!peek_read(':'))
@@ -564,12 +564,12 @@ namespace plorth
                 &m_position
               );
 
-              return std::shared_ptr<object>();
+              return ref<object>();
             }
 
             if (!(value = compile_value(ctx)))
             {
-              return std::shared_ptr<object>();
+              return ref<object>();
             }
 
             properties[key->to_string()] = value;
@@ -582,7 +582,7 @@ namespace plorth
                 &position
               );
 
-              return std::shared_ptr<object>();
+              return ref<object>();
             } else {
               peek_read(',');
             }
@@ -751,10 +751,10 @@ namespace plorth
     };
   }
 
-  std::shared_ptr<quote> context::compile(const unistring& source,
-                                          const unistring& filename,
-                                          int line,
-                                          int column)
+  ref<quote> context::compile(const unistring& source,
+                              const unistring& filename,
+                              int line,
+                              int column)
   {
     return compiler(source, filename, line, column).compile(this);
   }

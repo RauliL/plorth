@@ -105,7 +105,7 @@ namespace plorth
       }
     }
 
-    void Window::on_error_thrown(const std::shared_ptr<error>& error)
+    void Window::on_error_thrown(const ref<error>& error)
     {
       if (error)
       {

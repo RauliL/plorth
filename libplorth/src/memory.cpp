@@ -115,7 +115,8 @@ namespace plorth
       add_slot_to_generation(slot, &m_free_head, &m_free_tail);
     }
 
-    managed::managed() {}
+    managed::managed()
+      : m_use_count(0) {}
 
     managed::~managed() {}
 

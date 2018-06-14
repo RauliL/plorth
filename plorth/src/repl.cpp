@@ -9,7 +9,7 @@ using namespace plorth;
  *
  * Exits the interpreter.
  */
-static void w_quit(const std::shared_ptr<context>&)
+static void w_quit(const ref<context>&)
 {
   std::exit(EXIT_SUCCESS);
 }
@@ -19,11 +19,10 @@ static void w_quit(const std::shared_ptr<context>&)
  *
  * Displays ten of the top-most values from the data stack.
  */
-static void w_stack(const std::shared_ptr<context>& ctx)
+static void w_stack(const ref<context>& ctx)
 {
   const auto& runtime = ctx->runtime();
-  const auto& stack = ctx->data();
-  const std::size_t size = stack.size();
+  const auto size = ctx->size();
 
   if (!size)
   {
@@ -33,15 +32,17 @@ static void w_stack(const std::shared_ptr<context>& ctx)
 
   for (std::size_t i = 0; i < size && i < 10; ++i)
   {
-    const auto& value = stack[size - i - 1];
+    const auto value = ctx->at(i);
 
-    runtime->print(to_unistring(static_cast<number::int_type>(size - i)) + U": ");
-    runtime->print(value ? value->to_source() : U"null");
-    runtime->println();
+    runtime->println(
+      to_unistring(static_cast<number::int_type>(size - i)) +
+      U": " +
+      (value ? value->to_source() : U"null")
+    );
   }
 }
 
-void initialize_repl_api(const std::shared_ptr<runtime>& runtime)
+void initialize_repl_api(const ref<runtime>& runtime)
 {
   auto& dictionary = runtime->dictionary();
 

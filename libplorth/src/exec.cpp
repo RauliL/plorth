@@ -29,15 +29,11 @@
 
 namespace plorth
 {
-  static bool exec_val(const std::shared_ptr<context>&,
-                       const std::shared_ptr<value>&);
-  static bool exec_sym(const std::shared_ptr<context>&,
-                       const std::shared_ptr<symbol>&);
-  static bool exec_wrd(const std::shared_ptr<context>&,
-                       const std::shared_ptr<word>&);
+  static bool exec_val(const ref<context>&, const ref<value>&);
+  static bool exec_sym(const ref<context>&, const ref<symbol>&);
+  static bool exec_wrd(const ref<context>&, const ref<word>&);
 
-  bool value::exec(const std::shared_ptr<context>& ctx,
-                   const std::shared_ptr<value>& val)
+  bool value::exec(const ref<context>& ctx, const ref<value>& val)
   {
     if (!val)
     {
@@ -47,21 +43,20 @@ namespace plorth
     }
     switch (val->type())
     {
-      case value::type_symbol:
-        return exec_sym(ctx, std::static_pointer_cast<symbol>(val));
+    case value::type_symbol:
+      return exec_sym(ctx, val.cast<symbol>());
 
-      case value::type_word:
-        return exec_wrd(ctx, std::static_pointer_cast<word>(val));
+    case value::type_word:
+      return exec_wrd(ctx, val.cast<word>());
 
-      default:
-        return exec_val(ctx, val);
+    default:
+      return exec_val(ctx, val);
     }
   }
 
-  static bool exec_val(const std::shared_ptr<context>& ctx,
-                       const std::shared_ptr<value>& val)
+  static bool exec_val(const ref<context>& ctx, const ref<value>& val)
   {
-    std::shared_ptr<value> slot;
+    ref<value> slot;
 
     if (!value::eval(ctx, val, slot))
     {
@@ -72,8 +67,7 @@ namespace plorth
     return true;
   }
 
-  static bool exec_sym(const std::shared_ptr<context>& ctx,
-                       const std::shared_ptr<symbol>& sym)
+  static bool exec_sym(const ref<context>& ctx, const ref<symbol>& sym)
   {
     const auto position = sym->position();
     const auto id = sym->id();
@@ -87,18 +81,18 @@ namespace plorth
 
     // Look for prototype of the current item.
     {
-      const auto& stack = ctx->data();
+      ref<value> slot;
 
-      if (!stack.empty() && stack.back())
+      if (ctx->peek(slot))
       {
-        const auto prototype = stack.back()->prototype(ctx->runtime());
-        std::shared_ptr<value> val;
+        const auto prototype = slot->prototype(ctx->runtime());
+        ref<value> val;
 
         if (prototype && prototype->property(ctx->runtime(), id, val))
         {
           if (val && val->is(value::type_quote))
           {
-            return std::static_pointer_cast<quote>(val)->call(ctx);
+            return val.cast<quote>()->call(ctx);
           }
           ctx->push(val);
 
@@ -137,8 +131,7 @@ namespace plorth
     return false;
   }
 
-  static bool exec_wrd(const std::shared_ptr<context>& ctx,
-                       const std::shared_ptr<word>& wrd)
+  static bool exec_wrd(const ref<context>& ctx, const ref<word>& wrd)
   {
     ctx->dictionary().insert(wrd);
 

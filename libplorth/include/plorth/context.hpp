@@ -41,7 +41,10 @@ namespace plorth
   class context : public memory::managed
   {
   public:
-    using container_type = std::deque<std::shared_ptr<value>>;
+    using size_type = std::size_t;
+    using value_type = ref<value>;
+    using reference = value_type&;
+    using const_reference = const value_type&;
 
     /**
      * Constructs new context.
@@ -49,14 +52,12 @@ namespace plorth
      * \param runtime Runtime associated with this context.
      * \return        Reference to the created context.
      */
-    static std::shared_ptr<context> make(
-      const std::shared_ptr<class runtime>& runtime
-    );
+    static ref<context> make(const ref<class runtime>& runtime);
 
     /**
      * Returns the runtime associated with this context.
      */
-    inline const std::shared_ptr<class runtime>& runtime() const
+    inline ref<class runtime> runtime() const
     {
       return m_runtime;
     }
@@ -65,7 +66,7 @@ namespace plorth
      * Returns the currently uncaught error in this context or null reference
      * if this context has no error.
      */
-    inline const std::shared_ptr<class error>& error() const
+    inline ref<class error> error() const
     {
       return m_error;
     }
@@ -75,9 +76,9 @@ namespace plorth
      *
      * \param error Error instance to set as the currently uncaught error.
      */
-    inline void error(const std::shared_ptr<class error>& error)
+    inline void error(const ref<class error>& error)
     {
-      m_error = error;
+      m_error = error.get();
     }
 
     /**
@@ -89,16 +90,18 @@ namespace plorth
      * \param position Optional position in the source code where the error
      *                 occurred
      */
-    void error(enum error::code code,
-               const unistring& message,
-               const struct position* position = nullptr);
+    void error(
+      enum error::code code,
+      const unistring& message,
+      const struct position* position = nullptr
+    );
 
     /**
      * Removes currently uncaught error in the context.
      */
     inline void clear_error()
     {
-      m_error.reset();
+      m_error = nullptr;
     }
 
     /**
@@ -130,36 +133,12 @@ namespace plorth
      * \return         Reference the quote that was compiled from given source,
      *                 or null reference if syntax error was encountered.
      */
-    std::shared_ptr<quote> compile(const unistring& source,
-                                   const unistring& filename = U"",
-                                   int line = 1,
-                                   int column = 1);
-
-    /**
-     * Imports module from file system and inserts all of it's exported words
-     * into dictionary of this execution context.
-     *
-     * \param path Module path.
-     * \return     Boolean flag telling whether the import was successfull or
-     *             whether some kind of error was occurred.
-     */
-    bool import(const unistring& path);
-
-    /**
-     * Provides direct access to the data stack.
-     */
-    inline container_type& data()
-    {
-      return m_data;
-    }
-
-    /**
-     * Provides direct access to the data stack.
-     */
-    inline const container_type& data() const
-    {
-      return m_data;
-    }
+    ref<quote> compile(
+      const unistring& source,
+      const unistring& filename = U"",
+      int line = 1,
+      int column = 1
+    );
 
     /**
      * Returns true if the data stack is empty.
@@ -172,9 +151,17 @@ namespace plorth
     /**
      * Returns the number of values currently in the data stack.
      */
-    inline std::size_t size() const
+    inline size_type size() const
     {
       return m_data.size();
+    }
+
+    /**
+     * Returns value from datastack at given offset.
+     */
+    inline value_type at(size_type offset) const
+    {
+      return m_data[m_data.size() - offset - 1];
     }
 
     /**
@@ -186,11 +173,20 @@ namespace plorth
     }
 
     /**
+     * Places value from top of the stack into given slot. If the stack is
+     * empty, nothing will be done instead.
+     *
+     * \param slot Where the value will be placed into.
+     * \return     True if the stack is not empty, false otherwise.
+     */
+    bool peek(reference slot) const;
+
+    /**
      * Pushes given value into the data stack.
      */
-    inline void push(const std::shared_ptr<class value>& value)
+    inline void push(const_reference value)
     {
-      m_data.push_back(value);
+      m_data.push_back(value.get());
     }
 
     /**
@@ -252,14 +248,14 @@ namespace plorth
      * Constructs quote from given sequence of values and pushes it onto the
      * data stack.
      */
-    void push_quote(const std::vector<std::shared_ptr<value>>& values);
+    void push_quote(const std::vector<value_type>& values);
 
     /**
      * Constructs word from given pair of symbol and quote and pushes it onto
      * the data stack.
      */
-    void push_word(const std::shared_ptr<class symbol>& symbol,
-                   const std::shared_ptr<class quote>& quote);
+    void push_word(const ref<class symbol>& symbol,
+                   const ref<class quote>& quote);
 
     /**
      * Pops value from the data stack and discards it. If the stack is empty,
@@ -289,7 +285,7 @@ namespace plorth
      * \return     Boolean flag that tells whether the operation was
      *             successfull or not.
      */
-    bool pop(std::shared_ptr<value>& slot);
+    bool pop(reference slot);
 
     /**
      * Pops value of certain type from the data stack and places it into given
@@ -301,7 +297,7 @@ namespace plorth
      * \return     Boolean flag that tells whether the operation was
      *             successfull or not.
      */
-    bool pop(std::shared_ptr<value>& slot, enum value::type type);
+    bool pop(reference slot, enum value::type type);
 
     /**
      * Pops boolean value from the data stack and places it into given slot. If
@@ -323,7 +319,7 @@ namespace plorth
      * \return     Boolean flag that tells whether the operation was
      *             successfull or not.
      */
-    bool pop_number(std::shared_ptr<number>& slot);
+    bool pop_number(ref<number>& slot);
 
     /**
      * Pops string value from the data stack and places it into given slot. If
@@ -334,7 +330,7 @@ namespace plorth
      * \return     Boolean flag that tells whether the operation was
      *             successfull or not.
      */
-    bool pop_string(std::shared_ptr<string>& slot);
+    bool pop_string(ref<string>& slot);
 
     /**
      * Pops array value from the data stack and places it into given slot. If
@@ -345,7 +341,7 @@ namespace plorth
      * \return     Boolean flag that tells whether the operation was
      *             successfull or not.
      */
-    bool pop_array(std::shared_ptr<array>& slot);
+    bool pop_array(ref<array>& slot);
 
     /**
      * Pops object from the data stack and places it into given slot. If the
@@ -356,7 +352,7 @@ namespace plorth
      * \return     Boolean flag that tells whether the operation was
      *             successfull or not.
      */
-    bool pop_object(std::shared_ptr<object>& slot);
+    bool pop_object(ref<object>& slot);
 
     /**
      * Pops symbol from the data stack and places it into given slot. If the
@@ -367,7 +363,7 @@ namespace plorth
      * \return     Boolean flag that tells whether the operation was
      *             successfull or not.
      */
-    bool pop_symbol(std::shared_ptr<symbol>& slot);
+    bool pop_symbol(ref<symbol>& slot);
 
     /**
      * Pops quote from the data stack and places it into given slot. If the
@@ -378,7 +374,7 @@ namespace plorth
      * \return     Boolean flag that tells whether the operation was
      *             successfull or not.
      */
-    bool pop_quote(std::shared_ptr<quote>& slot);
+    bool pop_quote(ref<quote>& slot);
 
     /**
      * Pops word from the data stack and places it into given slot. If the
@@ -389,7 +385,7 @@ namespace plorth
      * \return     Boolean flag that tells whether the operation was
      *             successfull or not.
      */
-    bool pop_word(std::shared_ptr<word>& slot);
+    bool pop_word(ref<word>& slot);
 
 #if PLORTH_ENABLE_MODULES
     /**
@@ -437,15 +433,15 @@ namespace plorth
      *
      * \param runtime Runtime associated with this context.
      */
-    explicit context(const std::shared_ptr<class runtime>& runtime);
+    explicit context(const ref<class runtime>& runtime);
 
   private:
     /** Runtime associated with this context. */
-    const std::shared_ptr<class runtime> m_runtime;
+    class runtime* m_runtime;
     /** Currently uncaught error in this context. */
-    std::shared_ptr<class error> m_error;
+    class error* m_error;
     /** Data stack used for storing values in this context. */
-    container_type m_data;
+    std::deque<value*> m_data;
     /** Container for words associated with this context. */
     class dictionary m_dictionary;
 #if PLORTH_ENABLE_MODULES

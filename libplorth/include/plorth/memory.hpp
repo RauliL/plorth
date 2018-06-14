@@ -160,6 +160,21 @@ namespace plorth
         m_marked = false;
       }
 
+      inline int use_count() const
+      {
+        return m_use_count;
+      }
+
+      inline void inc_use_count()
+      {
+        ++m_use_count;
+      }
+
+      inline void dec_use_count()
+      {
+        --m_use_count;
+      }
+
       void* operator new(std::size_t size, class manager& manager);
       void operator delete(void* pointer);
 
@@ -171,6 +186,8 @@ namespace plorth
     private:
       /** Whether this object has been marked or not. */
       bool m_marked;
+      /** How many references are currently being held to this object. */
+      int m_use_count;
     };
 
     /**
@@ -212,6 +229,18 @@ namespace plorth
     /**
      * Constructs copy of existing reference.
      */
+    ref(const ref<T>& that)
+      : m_object(that.m_object)
+    {
+      if (m_object)
+      {
+        m_object->inc_use_count();
+      }
+    }
+
+    /**
+     * Constructs copy of existing reference.
+     */
     template<class U>
     ref(const ref<U>& that)
       : m_object(that.get())
@@ -222,6 +251,9 @@ namespace plorth
       }
     }
 
+    /**
+     * Moves value of existing reference into new one.
+     */
     ref(ref<T>&& that)
       : m_object(that.m_object)
     {
@@ -234,7 +266,10 @@ namespace plorth
     ref(pointer object)
       : m_object(object)
     {
-      m_object->inc_use_count();
+      if (m_object)
+      {
+        m_object->inc_use_count();
+      }
     }
 
     /**
@@ -248,12 +283,52 @@ namespace plorth
       }
     }
 
+    /**
+     * Copies value from another reference into this one.
+     */
     template<class U>
     ref<T>& operator=(const ref<U>& that)
     {
-      return *this; // TODO
+      U* object = that.get();
+
+      if (m_object != object)
+      {
+        if (m_object)
+        {
+          m_object->dec_use_count();
+        }
+        if ((m_object = object))
+        {
+          m_object->inc_use_count();
+        }
+      }
+
+      return *this;
     }
 
+    /**
+     * Copies value from another reference into this one.
+     */
+    ref<T>& operator=(const ref<T>& that)
+    {
+      if (m_object != that.m_object)
+      {
+        if (m_object)
+        {
+          m_object->dec_use_count();
+        }
+        if ((m_object = that.m_object))
+        {
+          m_object->inc_use_count();
+        }
+      }
+
+      return *this;
+    }
+
+    /**
+     * Moves value from another reference into this one.
+     */
     ref<T>& operator=(ref<T>&& that)
     {
       if (m_object != that.m_object)
@@ -275,16 +350,53 @@ namespace plorth
     /**
      * Returns pointer to the referenced object.
      */
+    inline pointer get() const
+    {
+      return m_object;
+    }
+
+    /**
+     * Casts the reference into another type.
+     */
+    template<class U>
+    inline ref<U> cast() const
+    {
+      return static_cast<U*>(m_object);
+    }
+
+    /**
+     * Resets the reference to null pointer.
+     */
+    void reset()
+    {
+      if (m_object)
+      {
+        m_object->dec_use_count();
+        m_object = nullptr;
+      }
+    }
+
+    /**
+     * Returns pointer to the referenced object.
+     */
     inline pointer operator->() const
     {
       return m_object;
     }
 
+    /**
+     * Boolean coercion operator. Returns true if the reference is non-null,
+     * false otherwise.
+     */
     inline explicit operator bool() const
     {
       return !!m_object;
     }
 
+    /**
+     * Boolean negation operator. Returns true if the reference is null, false
+     * otherwise.
+     */
     inline bool operator!() const
     {
       return !m_object;

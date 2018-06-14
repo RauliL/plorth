@@ -92,14 +92,14 @@ namespace plorth
 
   namespace io
   {
-    std::shared_ptr<input> input::standard(memory::manager& memory_manager)
+    ref<input> input::standard(memory::manager& memory_manager)
     {
-      return std::shared_ptr<input>(new (memory_manager) standard_input());
+      return ref<input>(new (memory_manager) standard_input());
     }
 
-    std::shared_ptr<input> input::dummy(memory::manager& memory_manager)
+    ref<input> input::dummy(memory::manager& memory_manager)
     {
-      return std::shared_ptr<input>(new (memory_manager) dummy_input());
+      return ref<input>(new (memory_manager) dummy_input());
     }
   }
 }

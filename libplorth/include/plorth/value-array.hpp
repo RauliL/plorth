@@ -40,9 +40,7 @@ namespace plorth
   {
   public:
     using size_type = std::size_t;
-    using value_type = std::shared_ptr<value>;
-    using reference = value_type&;
-    using const_reference = const value_type&;
+    using value_type = ref<value>;
     using pointer = value_type*;
     using const_pointer = const value_type*;
     class iterator;
@@ -55,14 +53,14 @@ namespace plorth
     /**
      * Returns element of the array from given index.
      */
-    virtual const_reference at(size_type offset) const = 0;
+    virtual value_type at(size_type offset) const = 0;
 
     inline enum type type() const
     {
       return type_array;
     }
 
-    bool equals(const std::shared_ptr<value>& that) const;
+    bool equals(const ref<value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
   };
@@ -73,37 +71,34 @@ namespace plorth
   class array::iterator
   {
   public:
-    using difference_type = int;
-    using value_type = const std::shared_ptr<value>;
-    using pointer = value_type*;
-    using reference = value_type&;
+    using value_type = const ref<value>;
     using iterator_category = std::forward_iterator_tag;
 
-    iterator(const std::shared_ptr<array>& ary, array::size_type index = 0);
+    iterator(const ref<array>& ary, array::size_type index = 0);
     iterator(const iterator& that);
     iterator& operator=(const iterator& that);
 
     iterator& operator++();
     iterator operator++(int);
-    reference operator*();
-    reference operator->();
+    value_type operator*();
+    value_type operator->();
 
     bool operator==(const iterator& that) const;
     bool operator!=(const iterator& that) const;
 
   private:
     /** Reference to array which is being iterated. */
-    std::shared_ptr<array> m_array;
+    ref<array> m_array;
     /** Current offset in the iterated array. */
     array::size_type m_index;
   };
 
-  inline array::iterator begin(const std::shared_ptr<array>& ary)
+  inline array::iterator begin(const ref<array>& ary)
   {
     return array::iterator(ary);
   }
 
-  inline array::iterator end(const std::shared_ptr<array>& ary)
+  inline array::iterator end(const ref<array>& ary)
   {
     return array::iterator(ary, ary->size());
   }

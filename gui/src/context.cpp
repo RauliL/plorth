@@ -31,7 +31,7 @@ namespace plorth
   namespace gui
   {
 #if PLORTH_ENABLE_MODULES
-    static void scan_module_path(const std::shared_ptr<runtime>&);
+    static void scan_module_path(const ref<runtime>&);
 #endif
 
     namespace
@@ -91,7 +91,7 @@ namespace plorth
     }
 
 #if PLORTH_ENABLE_MODULES
-    static void scan_module_path(const std::shared_ptr<runtime>& runtime)
+    static void scan_module_path(const ref<runtime>& runtime)
     {
 #if defined(_WIN32)
       static const unichar path_separator = ';';
