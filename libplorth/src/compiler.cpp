@@ -589,7 +589,7 @@ namespace plorth
           }
         }
 
-        return ctx->runtime()->value<object>(properties);
+        return ctx->runtime()->object(properties);
       }
 
       bool compile_escape_sequence(context* ctx, unistring& buffer)

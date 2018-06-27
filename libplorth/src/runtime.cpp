@@ -295,7 +295,7 @@ namespace plorth
       properties[entry.first] = runtime->native_quote(entry.second);
     }
     properties[U"__proto__"] = nullptr;
-    prototype = runtime->value<object>(properties);
+    prototype = runtime->object(properties);
 
     // Define prototype into global dictionary as constant if name has been
     // given.
@@ -304,7 +304,7 @@ namespace plorth
       runtime->dictionary().insert(runtime->word(
         runtime->symbol(name),
         runtime->compiled_quote({
-          runtime->value<object>(object::container_type({
+          runtime->object(object::container_type({
             { U"__proto__", runtime->object_prototype() },
             { U"prototype", prototype }
           }))

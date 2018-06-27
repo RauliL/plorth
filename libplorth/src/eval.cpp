@@ -112,7 +112,7 @@ namespace plorth
   {
     object::container_type properties;
 
-    for (const auto& property : obj->properties())
+    for (const auto& property : obj->entries())
     {
       ref<value> value_slot;
 
@@ -122,7 +122,7 @@ namespace plorth
       }
       properties[property.first] = value_slot;
     }
-    slot = ctx->runtime()->value<object>(properties);
+    slot = ctx->runtime()->object(properties);
 
     return true;
   }

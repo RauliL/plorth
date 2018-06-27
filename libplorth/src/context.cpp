@@ -107,7 +107,7 @@ namespace plorth
 
   void context::push_object(const object::container_type& properties)
   {
-    push(m_runtime->value<object>(properties));
+    push(m_runtime->object(properties));
   }
 
   void context::push_symbol(const unistring& id)

@@ -61,9 +61,14 @@ namespace plorth
         return m_length;
       }
 
-      value_type at(size_type offset) const
+      inline value_type at(size_type offset) const
       {
         return m_chars[offset];
+      }
+
+      inline unistring as_string() const
+      {
+        return unistring(m_chars, m_length);
       }
 
     private:
@@ -94,6 +99,11 @@ namespace plorth
         } else {
           return m_right->at(offset - left_length);
         }
+      }
+
+      inline unistring as_string() const
+      {
+        return m_left->as_string() + m_right->as_string();
       }
 
       void mark()
@@ -130,9 +140,22 @@ namespace plorth
         return m_length;
       }
 
-      value_type at(size_type offset) const
+      inline value_type at(size_type offset) const
       {
         return m_original->at(m_offset + offset);
+      }
+
+      unistring as_string() const
+      {
+        unistring result;
+
+        result.reserve(m_length);
+        for (size_type i = 0; i < m_length; ++i)
+        {
+          result.append(1, at(i));
+        }
+
+        return result;
       }
 
       void mark()
@@ -164,9 +187,23 @@ namespace plorth
         return m_original->length();
       }
 
-      value_type at(size_type offset) const
+      inline value_type at(size_type offset) const
       {
         return m_original->at(length() - offset - 1);
+      }
+
+      unistring as_string() const
+      {
+        const auto length = m_original->length();
+        unistring result;
+
+        result.reserve(length);
+        for (size_type i = 0; i < length; ++i)
+        {
+          result.append(1, at(i));
+        }
+
+        return result;
       }
 
       void mark()
@@ -210,16 +247,7 @@ namespace plorth
 
   unistring string::to_string() const
   {
-    const size_type len = length();
-    unistring result;
-
-    result.reserve(len);
-    for (size_type i = 0; i < len; ++i)
-    {
-      result.append(1, at(i));
-    }
-
-    return result;
+    return as_string();
   }
 
   unistring string::to_source() const

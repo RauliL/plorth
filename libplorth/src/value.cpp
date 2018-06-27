@@ -103,18 +103,18 @@ namespace plorth
 
       case type_object:
         {
-          const auto& properties = static_cast<const object*>(this)->properties();
-          const auto property = properties.find(U"__proto__");
+          const auto object = static_cast<const class object*>(this);
+          ref<value> prototype;
 
-          if (property == std::end(properties))
+          if (!object->own_property(U"__proto__", prototype))
           {
             return runtime->object_prototype();
           }
-          else if (property->second && property->second->is(type_object))
+          else if (prototype && prototype->is(type_object))
           {
-            return property->second.cast<object>();
+            return prototype.cast<class object>();
           } else {
-            return ref<object>();
+            return ref<class object>();
           }
         }
         break;

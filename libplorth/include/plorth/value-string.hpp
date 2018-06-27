@@ -59,6 +59,11 @@ namespace plorth
      */
     virtual value_type at(size_type offset) const = 0;
 
+    /**
+     * Constructs C++ string from contents of the Plorth string.
+     */
+    virtual unistring as_string() const = 0;
+
     enum type type() const
     {
       return type_string;

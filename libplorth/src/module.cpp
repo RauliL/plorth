@@ -31,10 +31,10 @@ namespace plorth
   );
 #endif
 
-  std::vector<std::pair<unistring, ref<object>>> runtime::imported_modules()
+  std::vector<std::pair<unistring, ref<class object>>> runtime::imported_modules()
     const
   {
-    std::vector<std::pair<unistring, ref<object>>> container;
+    std::vector<std::pair<unistring, ref<class object>>> container;
 
     container.reserve(m_imported_modules.size());
     for (const auto& entry : m_imported_modules)
@@ -57,8 +57,8 @@ namespace plorth
 
 #if PLORTH_ENABLE_MODULES
     unistring resolved_path;
-    std::unordered_map<unistring, object*>::iterator entry;
-    ref<object> module;
+    std::unordered_map<unistring, class object*>::iterator entry;
+    ref<class object> module;
     auto& dictionary = ctx->dictionary();
 
     // First attempt to resolve the module path into actual file system path.
@@ -90,7 +90,7 @@ namespace plorth
 
     // Transfer all exported words from the module into the calling execution
     // context.
-    for (const auto& property : module->properties())
+    for (const auto& property : module->entries())
     {
       if (property.second && property.second->is(value::type_quote))
       {
@@ -171,7 +171,7 @@ namespace plorth
       result[word->symbol()->id()] = word->quote();
     }
 
-    return ctx->runtime()->value<object>(result);
+    return ctx->runtime()->object(result);
   }
 
   static bool is_absolute_path(const unistring& path)

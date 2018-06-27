@@ -35,11 +35,16 @@ namespace plorth
   class object : public value
   {
   public:
-    using container_type = std::unordered_map<unistring, ref<value>>;
+    using key_type = unistring;
+    using mapped_type = ref<value>;
+    using value_type = std::pair<const key_type, mapped_type>;
+    using size_type = std::size_t;
+    using container_type = std::unordered_map<key_type, mapped_type>;
 
-    explicit object(const container_type& properties);
-
-    container_type properties() const;
+    virtual size_type size() const = 0;
+    virtual std::vector<key_type> keys() const = 0;
+    virtual std::vector<mapped_type> values() const = 0;
+    virtual std::vector<value_type> entries() const = 0;
 
     /**
      * Retrieves property with given name from the object itself and it's
@@ -54,10 +59,17 @@ namespace plorth
      * \return          Boolean flag which tells whether the property was found
      *                  or not.
      */
-    bool property(const ref<class runtime>& runtime,
-                  const unistring& name,
-                  ref<value>& slot,
-                  bool inherited = true) const;
+    bool property(
+      const ref<class runtime>& runtime,
+      const key_type& name,
+      mapped_type& slot,
+      bool inherited = true
+    ) const;
+
+    virtual bool own_property(
+      const key_type& name,
+      mapped_type& slot
+    ) const = 0;
 
     inline enum type type() const
     {
@@ -67,10 +79,6 @@ namespace plorth
     bool equals(const ref<value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
-    void mark();
-
-  private:
-    std::unordered_map<unistring, value*> m_properties;
   };
 }
 

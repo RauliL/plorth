@@ -31,13 +31,21 @@ namespace plorth
   {
     static void add_slot_to_generation(slot*, slot**, slot**);
     static void remove_slot_from_generation(slot*, slot**, slot**);
+    static inline void deallocate_slot(manager::allocator_type&, slot*);
+    static void mark_generation(slot*);
+    static void unmark_generation(slot*);
+    static void sweep_generation(manager::allocator_type&, slot**, slot**);
 
     manager::manager(const allocator_type& allocator)
       : m_allocator(allocator)
       , m_free_head(nullptr)
       , m_free_tail(nullptr)
       , m_nursery_head(nullptr)
-      , m_nursery_tail(nullptr) {}
+      , m_nursery_tail(nullptr)
+      , m_nursery_counter(0)
+      , m_tenured_head(nullptr)
+      , m_tenured_tail(nullptr)
+      , m_tenured_counter(0) {}
 
     manager::~manager()
     {
@@ -47,19 +55,19 @@ namespace plorth
       for (current = m_free_head; current; current = next)
       {
         next = current->next;
-        m_allocator.deallocate(
-          static_cast<char*>(static_cast<void*>(current)),
-          sizeof(slot) + current->size
-        );
+        deallocate_slot(m_allocator, current);
       }
       for (current = m_nursery_head; current; current = next)
       {
         next = current->next;
-        delete reinterpret_cast<managed*>(current->memory);
-        m_allocator.deallocate(
-          static_cast<char*>(static_cast<void*>(current)),
-          sizeof(slot) + current->size
-        );
+        delete current->object;
+        deallocate_slot(m_allocator, current);
+      }
+      for (current = m_tenured_head; current; current = next)
+      {
+        next = current->next;
+        delete current->object;
+        deallocate_slot(m_allocator, current);
       }
     }
 
@@ -91,6 +99,28 @@ namespace plorth
         return slot;
       }
 
+      if (++m_nursery_counter >= 1024)
+      {
+        m_nursery_counter = 0;
+        collect();
+      }
+
+      for (slot = m_free_head; slot; slot = slot->next)
+      {
+        // Too small? Continue to next slot.
+        if (slot->size < size)
+        {
+          continue;
+        }
+
+        // Otherwise remove the slot from the list of free slots and place it
+        // into nursery instead. Afterwards, return the slot so it can be used.
+        remove_slot_from_generation(slot, &m_free_head, &m_free_tail);
+        add_slot_to_generation(slot, &m_nursery_head, &m_nursery_tail);
+
+        return slot;
+      }
+
       // No free slots are available, so allocate memory for new one.
       slot = static_cast<struct slot*>(
         static_cast<void*>(
@@ -100,8 +130,10 @@ namespace plorth
 
       slot->manager = this;
       slot->size = size;
-      slot->memory = (
-        static_cast<char*>(static_cast<void*>(slot)) + sizeof(struct slot)
+      slot->object = static_cast<managed*>(
+        static_cast<void*>(
+          static_cast<char*>(static_cast<void*>(slot)) + sizeof(struct slot)
+        )
       );
 
       add_slot_to_generation(slot, &m_nursery_head, &m_nursery_tail);
@@ -115,6 +147,24 @@ namespace plorth
       add_slot_to_generation(slot, &m_free_head, &m_free_tail);
     }
 
+    void manager::collect()
+    {
+      mark_generation(m_nursery_head);
+      sweep_generation(m_allocator, &m_nursery_head, &m_nursery_tail);
+      if (++m_tenured_counter < 16)
+      {
+        unmark_generation(m_nursery_head);
+        // TODO: Perform move.
+        return;
+      }
+      m_tenured_counter = 0;
+      mark_generation(m_tenured_head);
+      sweep_generation(m_allocator, &m_tenured_head, &m_tenured_tail);
+      // TODO: Perform move.
+      unmark_generation(m_nursery_head);
+      unmark_generation(m_tenured_head);
+    }
+
     managed::managed()
       : m_use_count(0) {}
 
@@ -122,19 +172,10 @@ namespace plorth
 
     void* managed::operator new(std::size_t size, class manager& manager)
     {
-      return static_cast<void*>(manager.allocate(size)->memory);
+      return static_cast<void*>(manager.allocate(size)->object);
     }
 
-    void managed::operator delete(void* pointer)
-    {
-      auto slot = static_cast<struct slot*>(
-        static_cast<void*>(
-          static_cast<char*>(pointer) - sizeof(struct slot)
-        )
-      );
-
-      slot->manager->deallocate(slot);
-    }
+    void managed::operator delete(void* pointer) {}
 
     static void add_slot_to_generation(struct slot* slot,
                                        struct slot** head,
@@ -175,6 +216,60 @@ namespace plorth
 
       slot->next = nullptr;
       slot->prev = nullptr;
+    }
+
+    static inline void deallocate_slot(manager::allocator_type& allocator,
+                                       struct slot* slot)
+    {
+      allocator.deallocate(
+        static_cast<char*>(static_cast<void*>(slot)),
+        sizeof(struct slot) + slot->size
+      );
+    }
+
+    static void mark_generation(struct slot* slot)
+    {
+      for (; slot; slot = slot->next)
+      {
+        if (!slot->object->marked() && slot->object->use_count() > 0)
+        {
+          slot->object->mark();
+        }
+      }
+    }
+
+    static void unmark_generation(struct slot* slot)
+    {
+      for (; slot; slot = slot->next)
+      {
+        slot->object->unmark();
+      }
+    }
+
+    static void sweep_generation(manager::allocator_type& allocator,
+                                 slot** head,
+                                 slot** tail)
+    {
+      slot* current;
+      slot* next;
+      slot* new_head = nullptr;
+      slot* new_tail = nullptr;
+
+      for (current = *head; current; current = next)
+      {
+        next = current->next;
+        if (current->object->marked())
+        {
+          current->object->unmark();
+          add_slot_to_generation(current, &new_head, &new_tail);
+        } else {
+          delete current->object;
+          deallocate_slot(allocator, current);
+        }
+      }
+
+      *head = new_head;
+      *tail = new_tail;
     }
   }
 }

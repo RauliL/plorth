@@ -94,6 +94,11 @@ namespace plorth
        */
       void deallocate(struct slot* slot);
 
+      /**
+       * Launches the garbage collection.
+       */
+      void collect();
+
       manager(const manager&) = delete;
       manager(manager&&) = delete;
       void operator=(const manager&) = delete;
@@ -110,6 +115,10 @@ namespace plorth
       slot* m_nursery_head;
       /** Pointer to last slot in nursery generation. */
       slot* m_nursery_tail;
+      int m_nursery_counter;
+      slot* m_tenured_head;
+      slot* m_tenured_tail;
+      int m_tenured_counter;
     };
 
     /**
@@ -204,7 +213,7 @@ namespace plorth
       /** Size of this slot. */
       std::size_t size;
       /** Pointer to the allocated memory. */
-      char* memory;
+      managed* object;
     };
   }
 
