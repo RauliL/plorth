@@ -224,7 +224,6 @@ static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
             std::exit(EXIT_FAILURE);
           }
           imported_modules.insert(module_path);
-          ++offset;
         } else {
           std::cerr << "Argument expected for the -r option." << std::endl;
           print_usage(std::cerr, argv[0]);
