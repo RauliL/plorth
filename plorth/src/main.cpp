@@ -39,6 +39,8 @@
 # include <sysexits.h>
 #endif
 
+#include <linenoise.h>
+
 #if !defined(EX_USAGE)
 # define EX_USAGE 64
 #endif
@@ -97,7 +99,7 @@ int main(int argc, char** argv)
       const std::string source = std::string(
         std::istreambuf_iterator<char>(is),
         std::istreambuf_iterator<char>()
-        );
+      );
 
       is.close();
       context->clear();
@@ -373,9 +375,9 @@ static void compile_and_run(const std::shared_ptr<context>& ctx,
   }
 }
 
-static void count_open_braces(const std::string& input, std::stack<char>& open_braces)
+static void count_open_braces(const char* input, std::stack<char>& open_braces)
 {
-  const std::size_t length = input.length();
+  const auto length = std::strlen(input);
 
   for (std::size_t i = 0; i < length; ++i)
   {
@@ -428,55 +430,88 @@ static void console_loop(const std::shared_ptr<class context>& context)
   int line_counter = 0;
   unistring source;
   std::stack<char> open_braces;
+  char prompt[BUFSIZ];
 
   initialize_repl_api(context->runtime());
 
-  while (std::cin.good())
+  for (;;)
   {
-    std::string line;
+    char* line;
 
-    std::cout << "plorth:"
-              << ++line_counter
-              << ':'
-              << context->size()
-              << (open_braces.empty() ? '>' : '*')
-              << ' ';
-    if (!std::getline(std::cin, line))
+    // First construct the prompt which is shown to the user. It contains text
+    // "plorth", current line number, size of the execution context and
+    // visual indication on whether the source code still contains open braces
+    // or not.
+    std::snprintf(
+      prompt,
+      BUFSIZ,
+      "plorth:%d:%ld%c ",
+      ++line_counter,
+      context->size(),
+      open_braces.empty() ? '>' : '*'
+    );
+
+    // Read line from the user.
+    if (!(line = linenoise(prompt)))
     {
-      // Output final newline after ^D has been pressed by the user.
-      std::cout << std::endl;
       break;
     }
-    else if (!line.empty())
+
+    // Skip empty lines.
+    if (!*line)
     {
-      if (!utf8_decode_test(line, source))
-      {
-        std::cout << "Unable to decode given input as UTF-8." << std::endl;
-        continue;
-      }
-      source.append(1, '\n');
-      count_open_braces(line, open_braces);
-      if (open_braces.empty())
-      {
-        const auto script = context->compile(source, U"<repl>", line_counter);
+      linenoiseFree(line);
+      continue;
+    }
 
-        source.clear();
-        if (script)
-        {
-          script->call(context);
-        }
-        if (context->error())
-        {
-          const auto& error = context->error();
+    // Add the line into history.
+    linenoiseHistoryAdd(line);
 
-          if (error->position())
-          {
-            std::cout << *error->position() << ':';
-          }
-          std::cout << error << std::endl;
-          context->clear_error();
-        }
+    // And attempt to decode the input as UTF-8.
+    if (!utf8_decode_test(line, source))
+    {
+      std::cout << "Unable to decode given input as UTF-8." << std::endl;
+      linenoiseFree(line);
+      continue;
+    }
+
+    // Insert new line into the source code so that the line counter
+    source.append(1, '\n');
+
+    // See whether the line contains special characters such as open braces and
+    // so on.
+    count_open_braces(line, open_braces);
+
+    // We no longer need the original line, so free it.
+    linenoiseFree(line);
+
+    // Do not attempt to compile the source code when it still has unclosed
+    // braces.
+    if (!open_braces.empty())
+    {
+      continue;
+    }
+
+    // Attempt to compile the source code into a quote and execute it unless
+    // syntax errors were encountered.
+    if (auto script = context->compile(source, U"<repl>", line_counter))
+    {
+      script->call(context);
+    }
+
+    // Clear the source code buffer so that we can use it again.
+    source.clear();
+
+    // If the execution context has any error present, display it. Also reset
+    // the error status so that the execution context can be reused.
+    if (const auto& error = context->error())
+    {
+      if (auto position = error->position())
+      {
+        std::cout << *position << ':';
       }
+      std::cout << error << std::endl;
+      context->clear_error();
     }
   }
 }
