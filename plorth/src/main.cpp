@@ -50,6 +50,7 @@ using namespace plorth;
 static const char* script_filename = nullptr;
 static bool flag_test_syntax = false;
 static bool flag_fork = false;
+static std::string inline_script;
 #if PLORTH_ENABLE_MODULES
 static std::unordered_set<unistring> imported_modules;
 #endif
@@ -116,6 +117,10 @@ int main(int argc, char** argv)
       std::exit(EXIT_FAILURE);
     }
   }
+  else if (!inline_script.empty())
+  {
+    compile_and_run(context, inline_script, U"-e");
+  }
   else if (is_console_interactive())
   {
     console_loop(context);
@@ -140,15 +145,19 @@ static void print_usage(std::ostream& out, const char* executable)
       << executable
       << " [switches] [--] [programfile] [arguments]"
       << std::endl;
-  out << "  -c        Check syntax only." << std::endl;
+  out << "  -c           Check syntax only." << std::endl;
 #if HAVE_FORK
-  out << "  -f        Fork to background before executing script." << std::endl;
+  out << "  -f           Fork to background before executing script."
+      << std::endl;
 #endif
+  out << "  -e <program> One line of program. (Several -e's allowed, omit "
+      << "programfile.)"
+      << std::endl;
 #if PLORTH_ENABLE_MODULES
-  out << "  -r <path> Import module before executing script." << std::endl;
+  out << "  -r <path>    Import module before executing script." << std::endl;
 #endif
-  out << "  --version Print the version." << std::endl;
-  out << "  --help    Display this message." << std::endl;
+  out << "  --version    Print the version." << std::endl;
+  out << "  --help       Display this message." << std::endl;
   out << std::endl;
 }
 
@@ -168,7 +177,10 @@ static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
     }
     else if (*arg != '-')
     {
-      script_filename = arg;
+      if (inline_script.empty())
+      {
+        script_filename = arg;
+      }
       break;
     }
     else if (!arg[1])
@@ -202,12 +214,22 @@ static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
     }
     for (int i = 1; arg[i]; ++i)
     {
-      // TODO: Add support for these command line switches:
-      // -e: Compile and execute inline script.
       switch (arg[i])
       {
       case 'c':
         flag_test_syntax = true;
+        break;
+
+      case 'e':
+        if (offset < argc)
+        {
+          inline_script.append(argv[offset++]);
+          inline_script.append('\n', 1);
+        } else {
+          std::cerr << "Argument expected for the -e option." << std::endl;
+          print_usage(std::cerr, argv[0]);
+          std::exit(EX_USAGE);
+        }
         break;
 
       case 'f':
