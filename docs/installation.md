@@ -15,6 +15,13 @@ by executing the following command:
 $ git clone https://github.com/RauliL/plorth.git
 ```
 
+If you are planning on using the command line interface, you will also need to
+execute the following command to pull in external dependencies used by it:
+
+```bash
+$ git submodule --init
+```
+
 ## Compiling
 
 After you have cloned the source code from GitHub, you need to compile the
