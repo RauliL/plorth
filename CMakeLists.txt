@@ -1,6 +1,24 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 PROJECT(plorth C CXX)
 
+OPTION(
+  PLORTH_ENABLE_CLI
+  "Whether CLI interpreter should be built or not."
+  ON
+)
+
+OPTION(
+  PLORTH_ENABLE_GUI
+  "Whether GUI interpreter should be built or not."
+  OFF
+)
+
+OPTION(
+  PLORTH_ENABLE_WEBASSEMBLY
+  "Whether WebAssembly interpreter should be built or not."
+  OFF
+)
+
 INCLUDE(CheckCXXCompilerFlag)
 
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -14,9 +32,13 @@ ELSE()
   MESSAGE(FATAL_ERROR "Compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
 ENDIF()
 
-IF(DEFINED ENV{EMSCRIPTEN})
-  ADD_SUBDIRECTORY(webassembly)
-ELSE()
+ADD_SUBDIRECTORY(libplorth)
+IF(PLORTH_ENABLE_CLI)
   ADD_SUBDIRECTORY(cli)
 ENDIF()
-ADD_SUBDIRECTORY(libplorth)
+IF(PLORTH_ENABLE_GUI)
+  ADD_SUBDIRECTORY(gui)
+ENDIF()
+IF(PLORTH_ENABLE_WEBASSEMBLY)
+  ADD_SUBDIRECTORY(webassembly)
+ENDIF()
