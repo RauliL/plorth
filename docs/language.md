@@ -31,10 +31,19 @@ Various command line flags can also be given to the interpreter. These are:
     execute the program.</td>
   </tr>
   <tr>
+    <th scope="row">-e &lt;program&gt;</th>
+    <td>Execute one line of a program. Multiple <code>-e</code>'s are
+    allowed</td>
+  </tr>
+  <tr>
     <th scope="row">-f</th>
     <td>After the program has been compiled, forks the interpreter process
     into background before executing the program. This feature is not available
     on every platform. (Microsoft Windows)</td>
+  </tr>
+  <tr>
+    <th scope="row">-r &lt;path&gt;</th>
+    <td>Import module from given path before executing the script.</td>
   </tr>
   <tr>
     <th scope="row">--version</th>
