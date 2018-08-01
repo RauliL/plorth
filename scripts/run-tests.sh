@@ -4,10 +4,10 @@ set -ev
 
 mkdir -p build
 cd build
-env CXXFLAGS="-Wall -Werror" cmake ..
+cmake ..
 make
 for file in ../tests/test-*.plorth
 do
   echo $file
-  ./plorth/plorth $file
+  ./cli/plorth $file
 done
