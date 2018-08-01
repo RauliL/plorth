@@ -69,8 +69,6 @@ CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp"
 )
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
 ADD_LIBRARY(
   plorth
   SHARED
@@ -98,6 +96,25 @@ ADD_LIBRARY(
   src/value-string.cpp
   src/value-symbol.cpp
   src/value-word.cpp
+)
+
+TARGET_COMPILE_OPTIONS(
+  plorth
+  PRIVATE
+    -Wall -Werror
+)
+
+TARGET_COMPILE_FEATURES(
+  plorth
+  PRIVATE
+    cxx_std_11
+)
+
+TARGET_INCLUDE_DIRECTORIES(
+  plorth
+  PUBLIC
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
 IF(NOT DEFINED ENV{EMSCRIPTEN})
