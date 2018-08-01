@@ -48,7 +48,6 @@ namespace plorth
   static inline std::shared_ptr<object> make_prototype(
     runtime*,
     const char32_t*,
-    const std::shared_ptr<object>&,
     const runtime::prototype_definition&
   );
 
@@ -87,55 +86,46 @@ namespace plorth
     m_object_prototype = make_prototype(
       this,
       U"object",
-      std::shared_ptr<object>(),
       api::object_prototype()
     );
     m_array_prototype = make_prototype(
       this,
       U"array",
-      std::shared_ptr<object>(),
       api::array_prototype()
     );
     m_boolean_prototype = make_prototype(
       this,
       U"boolean",
-      std::shared_ptr<object>(),
       api::boolean_prototype()
     );
     m_error_prototype = make_prototype(
       this,
       U"error",
-      std::shared_ptr<object>(),
       api::error_prototype()
     );
     m_number_prototype = make_prototype(
       this,
       U"number",
-      std::shared_ptr<object>(),
       api::number_prototype()
     );
     m_quote_prototype = make_prototype(
       this,
       U"quote",
-      std::shared_ptr<object>(),
       api::quote_prototype()
     );
     m_string_prototype = make_prototype(
       this,
       U"string",
-      std::shared_ptr<object>(),
       api::string_prototype()
     );
     m_symbol_prototype = make_prototype(
       this,
       U"symbol",
-      std::shared_ptr<object>(),
       api::symbol_prototype()
     );
     m_word_prototype = make_prototype(
       this,
       U"word",
-      std::shared_ptr<object>(),
       api::word_prototype()
     );
   }
@@ -181,19 +171,21 @@ namespace plorth
   static inline std::shared_ptr<object> make_prototype(
     class runtime* runtime,
     const char32_t* name,
-    const std::shared_ptr<object>& parent_prototype,
     const runtime::prototype_definition& definition
   )
   {
-    object::container_type properties;
+    std::vector<object::value_type> properties;
     std::shared_ptr<object> prototype;
 
     for (auto& entry : definition)
     {
-      properties[entry.first] = runtime->native_quote(entry.second);
+      properties.push_back({
+        entry.first,
+        runtime->native_quote(entry.second)
+      });
     }
-    properties[U"__proto__"] = parent_prototype;
-    prototype = runtime->value<object>(properties);
+    properties.push_back({ U"__proto__", std::shared_ptr<value>() });
+    prototype = runtime->object(properties);
 
     // Define prototype into global dictionary as constant if name has been
     // given.
@@ -202,10 +194,10 @@ namespace plorth
       runtime->dictionary().insert(runtime->word(
         runtime->symbol(name),
         runtime->compiled_quote({
-          runtime->value<object>(object::container_type({
+          runtime->object({
             { U"__proto__", runtime->object_prototype() },
             { U"prototype", prototype }
-          }))
+          })
         })
       ));
     }

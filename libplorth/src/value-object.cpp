@@ -30,38 +30,338 @@
 
 namespace plorth
 {
-  object::object(const container_type& properties)
-    : m_properties(properties) {}
-
-  bool object::property(const std::shared_ptr<class runtime>& runtime,
-                        const unistring& name,
-                        std::shared_ptr<value>& slot,
-                        bool inherited) const
+  namespace
   {
-    const auto property = m_properties.find(name);
-
-    if (property != std::end(m_properties))
+    class simple_object : public object
     {
-      slot = property->second;
+    public:
+      using container_type = std::unordered_map<key_type, mapped_type>;
 
-      return true;
-    }
-    if (inherited)
+      template<class InputIt>
+      explicit simple_object(InputIt first, InputIt last)
+        : m_container(first, last) {}
+
+      bool has_own_property(const key_type& key) const
+      {
+        return m_container.find(key) != std::end(m_container);
+      }
+
+      bool own_property(const key_type& key, mapped_type& slot) const
+      {
+        const auto property = m_container.find(key);
+
+        if (property != std::end(m_container))
+        {
+          slot = property->second;
+
+          return true;
+        }
+
+        return false;
+      }
+
+      size_type size() const
+      {
+        return m_container.size();
+      }
+
+      std::vector<key_type> keys() const
+      {
+        std::vector<key_type> result;
+
+        result.reserve(m_container.size());
+        for (const auto& property : m_container)
+        {
+          result.push_back(property.first);
+        }
+
+        return result;
+      }
+
+      std::vector<mapped_type> values() const
+      {
+        std::vector<mapped_type> result;
+
+        result.reserve(m_container.size());
+        for (const auto& property : m_container)
+        {
+          result.push_back(property.second);
+        }
+
+        return result;
+      }
+
+      std::vector<value_type> entries() const
+      {
+        return std::vector<value_type>(
+          std::begin(m_container),
+          std::end(m_container)
+        );
+      }
+
+    private:
+      const container_type m_container;
+    };
+
+    class set_object : public object
+    {
+    public:
+      explicit set_object(const std::shared_ptr<class object>& object,
+                          const key_type& key,
+                          const mapped_type& value)
+        : m_object(object)
+        , m_key(key)
+        , m_value(value) {}
+
+      bool has_own_property(const key_type& key) const
+      {
+        return key == m_key || m_object->has_own_property(key);
+      }
+
+      bool own_property(const key_type& key, mapped_type& slot) const
+      {
+        if (key == m_key)
+        {
+          slot = m_value;
+
+          return true;
+        }
+
+        return m_object->own_property(key, slot);
+      }
+
+      size_type size() const
+      {
+        return m_object->size() + 1;
+      }
+
+      std::vector<key_type> keys() const
+      {
+        auto keys = m_object->keys();
+
+        keys.push_back(m_key);
+
+        return keys;
+      }
+
+      std::vector<mapped_type> values() const
+      {
+        auto values = m_object->values();
+
+        values.push_back(m_value);
+
+        return values;
+      }
+
+      std::vector<value_type> entries() const
+      {
+        auto entries = m_object->entries();
+
+        entries.push_back({ m_key, m_value });
+
+        return entries;
+      }
+
+    private:
+      const std::shared_ptr<object> m_object;
+      const key_type m_key;
+      const mapped_type m_value;
+    };
+
+    class set_object_override : public object
+    {
+    public:
+      explicit set_object_override(const std::shared_ptr<class object>& object,
+                                   const key_type& key,
+                                   const mapped_type& value)
+        : m_object(object)
+        , m_key(key)
+        , m_value(value) {}
+
+      bool has_own_property(const key_type& key) const
+      {
+        return key == m_key || m_object->has_own_property(key);
+      }
+
+      bool own_property(const key_type& key, mapped_type& slot) const
+      {
+        if (key == m_key)
+        {
+          slot = m_value;
+
+          return true;
+        }
+
+        return m_object->own_property(key, slot);
+      }
+
+      size_type size() const
+      {
+        return m_object->size();
+      }
+
+      std::vector<key_type> keys() const
+      {
+        return m_object->keys();
+      }
+
+      std::vector<mapped_type> values() const
+      {
+        std::vector<mapped_type> result;
+
+        result.reserve(m_object->size());
+        for (const auto property : m_object->entries())
+        {
+          if (property.first == m_key)
+          {
+            result.push_back(m_value);
+          } else {
+            result.push_back(property.second);
+          }
+        }
+
+        return result;
+      }
+
+      std::vector<value_type> entries() const
+      {
+        std::vector<value_type> result;
+
+        result.reserve(m_object->size());
+        for (const auto property : m_object->entries())
+        {
+          if (property.first == m_key)
+          {
+            result.push_back({ m_key, m_value });
+          } else {
+            result.push_back(property);
+          }
+        }
+
+        return result;
+      }
+
+    private:
+      const std::shared_ptr<object> m_object;
+      const key_type m_key;
+      const mapped_type m_value;
+    };
+
+    class delete_object : public object
+    {
+    public:
+      explicit delete_object(const std::shared_ptr<class object>& object,
+                             const key_type& removed_key)
+        : m_object(object)
+        , m_removed_key(removed_key) {}
+
+      bool has_own_property(const key_type& key) const
+      {
+        return m_removed_key != key && m_object->has_own_property(key);
+      }
+
+      bool own_property(const key_type& key, mapped_type& slot) const
+      {
+        return key != m_removed_key && m_object->own_property(key, slot);
+      }
+
+      size_type size() const
+      {
+        return m_object->size() - 1;
+      }
+
+      std::vector<key_type> keys() const
+      {
+        std::vector<key_type> result;
+
+        for (const auto& key : m_object->keys())
+        {
+          if (key != m_removed_key)
+          {
+            result.push_back(key);
+          }
+        }
+
+        return result;
+      }
+
+      std::vector<mapped_type> values() const
+      {
+        std::vector<mapped_type> result;
+
+        for (const auto& property : m_object->entries())
+        {
+          if (property.first != m_removed_key)
+          {
+            result.push_back(property.second);
+          }
+        }
+
+        return result;
+      }
+
+      std::vector<value_type> entries() const
+      {
+        std::vector<value_type> result;
+
+        for (const auto& property : m_object->entries())
+        {
+          if (property.first != m_removed_key)
+          {
+            result.push_back(property);
+          }
+        }
+
+        return result;
+      }
+
+    private:
+      const std::shared_ptr<object> m_object;
+      const key_type m_removed_key;
+    };
+  }
+
+  bool object::has_property(const std::shared_ptr<class runtime>& runtime,
+                            const key_type& key) const
+  {
+    if (!has_own_property(key))
     {
       const auto proto = prototype(runtime);
 
       if (proto && this != proto.get())
       {
-        return proto->property(runtime, name, slot, true);
+        return proto->has_property(runtime, key);
       }
+
+      return false;
     }
 
-    return false;
+    return true;
+  }
+
+  bool object::property(const std::shared_ptr<class runtime>& runtime,
+                        const key_type& key,
+                        mapped_type& slot) const
+  {
+    if (!own_property(key, slot))
+    {
+      const auto proto = prototype(runtime);
+
+      if (proto && this != proto.get())
+      {
+        return proto->property(runtime, key, slot);
+      }
+
+      return false;
+    }
+
+    return true;
   }
 
   bool object::equals(const std::shared_ptr<value>& that) const
   {
     std::shared_ptr<object> obj;
+    std::shared_ptr<value> slot;
 
     if (!that || !that->is(type_object))
     {
@@ -72,16 +372,14 @@ namespace plorth
     {
       return true;
     }
-    else if (m_properties.size() != obj->m_properties.size())
+    else if (size() != obj->size())
     {
       return false;
     }
 
-    for (auto entry1 : m_properties)
+    for (auto property : entries())
     {
-      const auto entry2 = obj->m_properties.find(entry1.first);
-
-      if (entry2 == std::end(obj->m_properties) || entry1.second != entry2->second)
+      if (!obj->own_property(property.first, slot) || property.second != slot)
       {
         return false;
       }
@@ -95,7 +393,7 @@ namespace plorth
     unistring result;
     bool first = true;
 
-    for (const auto& property : m_properties)
+    for (const auto property : entries())
     {
       if (first)
       {
@@ -121,7 +419,7 @@ namespace plorth
     bool first = true;
 
     result += '{';
-    for (const auto& property : m_properties)
+    for (const auto property : entries())
     {
       if (first)
       {
@@ -143,6 +441,18 @@ namespace plorth
     result += '}';
 
     return result;
+  }
+
+  std::shared_ptr<object> runtime::object(
+    const std::vector<object::value_type>& properties
+  )
+  {
+    return std::shared_ptr<class object>(
+      new (*m_memory_manager) simple_object(
+        std::begin(properties),
+        std::end(properties)
+      )
+    );
   }
 
   /**
@@ -170,9 +480,10 @@ namespace plorth
       return;
     }
 
-    for (const auto& property : obj->properties())
+    result.reserve(obj->size());
+    for (const auto key : obj->keys())
     {
-      result.push_back(runtime->string(property.first));
+      result.push_back(runtime->string(key));
     }
 
     ctx->push(obj);
@@ -196,20 +507,12 @@ namespace plorth
   static void w_values(const std::shared_ptr<context>& ctx)
   {
     std::shared_ptr<object> obj;
-    std::vector<std::shared_ptr<value>> result;
 
-    if (!ctx->pop_object(obj))
+    if (ctx->pop_object(obj))
     {
-      return;
+      ctx->push(obj);
+      ctx->push_array(obj->values());
     }
-
-    for (const auto& property : obj->properties())
-    {
-      result.push_back(property.second);
-    }
-
-    ctx->push(obj);
-    ctx->push_array(result.data(), result.size());
   }
 
   /**
@@ -238,7 +541,7 @@ namespace plorth
       return;
     }
 
-    for (const auto& property : obj->properties())
+    for (const auto property : obj->entries())
     {
       std::shared_ptr<value> pair[2];
 
@@ -248,7 +551,7 @@ namespace plorth
     }
 
     ctx->push(obj);
-    ctx->push_array(result.data(), result.size());
+    ctx->push_array(result);
   }
 
   /**
@@ -273,10 +576,8 @@ namespace plorth
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
-      std::shared_ptr<value> slot;
-
       ctx->push(obj);
-      ctx->push_boolean(!!obj->property(ctx->runtime(), id->to_string(), slot));
+      ctx->push_boolean(obj->has_property(ctx->runtime(), id->to_string()));
     }
   }
 
@@ -302,10 +603,8 @@ namespace plorth
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
-      const auto& properties = obj->properties();
-
       ctx->push(obj);
-      ctx->push_boolean(properties.find(id->to_string()) != std::end(properties));
+      ctx->push_boolean(obj->has_own_property(id->to_string()));
     }
   }
 
@@ -336,7 +635,8 @@ namespace plorth
       return;
     }
 
-    if (!obj->property(runtime, U"prototype", prototype, false)
+    if (!obj->own_property(U"prototype", prototype)
+        || !prototype
         || !prototype->is(value::type_object))
     {
       ctx->error(error::code_type, U"Object has no prototype.");
@@ -348,6 +648,7 @@ namespace plorth
     if (std::static_pointer_cast<object>(prototype)->property(runtime,
                                                               U"constructor",
                                                               constructor)
+        && constructor
         && constructor->is(value::type_quote))
     {
       std::static_pointer_cast<quote>(constructor)->call(ctx);
@@ -415,10 +716,16 @@ namespace plorth
 
     if (ctx->pop_object(obj) && ctx->pop_string(id) && ctx->pop(val))
     {
-      object::container_type result = obj->properties();
+      const auto key = id->to_string();
+      std::shared_ptr<object> result;
 
-      result[id->to_string()] = val;
-      ctx->push_object(result);
+      if (obj->has_own_property(key))
+      {
+        result = ctx->runtime()->value<set_object_override>(obj, key, val);
+      } else {
+        result = ctx->runtime()->value<set_object>(obj, key, val);
+      }
+      ctx->push(result);
     }
   }
 
@@ -442,17 +749,16 @@ namespace plorth
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
-      object::container_type result = obj->properties();
+      const auto name = id->to_string();
 
-      if (result.erase(id->to_string()) < 1)
+      if (!obj->has_own_property(name))
       {
         ctx->error(
           error::code_range,
-          U"No such property: `" + id->to_string() + U"'"
+          U"No such property: `" + name + U"'"
         );
-      } else {
-        ctx->push_object(result);
       }
+      ctx->push(ctx->runtime()->value<delete_object>(obj, name));
     }
   }
 
@@ -477,14 +783,20 @@ namespace plorth
 
     if (ctx->pop_object(a) && ctx->pop_object(b))
     {
-      object::container_type result = b->properties();
+      const auto entries = b->entries();
+      std::unordered_map<unistring, std::shared_ptr<value>> properties(
+        std::begin(entries),
+        std::end(entries)
+      );
 
-      for (const auto& entry : a->properties())
+      for (const auto property : a->entries())
       {
-        result[entry.first] = entry.second;
+        properties[property.first] = property.second;
       }
-
-      ctx->push_object(result);
+      ctx->push_object(std::vector<object::value_type>(
+        std::begin(properties),
+        std::end(properties)
+      ));
     }
   }
 

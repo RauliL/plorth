@@ -43,6 +43,7 @@ namespace plorth
     using value_type = std::shared_ptr<word>;
     /** Underlying container type. */
     using container_type = std::unordered_map<unistring, value_type>;
+    using size_type = container_type::size_type;
 
     /**
      * Constructs new empty dictionary.
@@ -58,6 +59,14 @@ namespace plorth
      * Copies contents of another dictionary into this one.
      */
     dictionary& operator=(const dictionary& that);
+
+    /**
+     * Returns the number of words the dictionary contains.
+     */
+    inline size_type size() const
+    {
+      return m_words.size();
+    }
 
     /**
      * Returns words from the dictionary as iterable vector.

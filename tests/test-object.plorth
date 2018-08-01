@@ -70,7 +70,7 @@ test-case
 "delete"
 [
   ( "a" { "a": 1 } delete {} = ),
-  ( ( "a" {} delete ) ( drop true ) ( false ) try-else ),
+  ( ( "a" {} delete ) ( drop true ) ( false ) try-else nip ),
 ]
 test-case
 

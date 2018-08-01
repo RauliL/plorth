@@ -83,19 +83,26 @@ namespace plorth
     push(m_runtime->string(value.c_str(), value.length()));
   }
 
-  void context::push_string(string::const_pointer chars, string::size_type length)
+  void context::push_string(string::const_pointer chars,
+                            string::size_type length)
   {
     push(m_runtime->string(chars, length));
   }
 
-  void context::push_array(array::const_pointer elements, array::size_type size)
+  void context::push_array(const std::vector<std::shared_ptr<value>>& elements)
+  {
+    push_array(elements.data(), elements.size());
+  }
+
+  void context::push_array(array::const_pointer elements,
+                           array::size_type size)
   {
     push(m_runtime->array(elements, size));
   }
 
-  void context::push_object(const object::container_type& properties)
+  void context::push_object(const std::vector<object::value_type>& properties)
   {
-    push(m_runtime->value<object>(properties));
+    push(m_runtime->object(properties));
   }
 
   void context::push_symbol(const unistring& id)

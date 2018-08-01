@@ -74,50 +74,50 @@ namespace plorth
   {
     switch (type())
     {
-      case type_null:
-        return runtime->object_prototype();
+    case type_null:
+      return runtime->object_prototype();
 
-      case type_boolean:
-        return runtime->boolean_prototype();
+    case type_boolean:
+      return runtime->boolean_prototype();
 
-      case type_number:
-        return runtime->number_prototype();
+    case type_number:
+      return runtime->number_prototype();
 
-      case type_string:
-        return runtime->string_prototype();
+    case type_string:
+      return runtime->string_prototype();
 
-      case type_array:
-        return runtime->array_prototype();
+    case type_array:
+      return runtime->array_prototype();
 
-      case type_symbol:
-        return runtime->symbol_prototype();
+    case type_symbol:
+      return runtime->symbol_prototype();
 
-      case type_quote:
-        return runtime->quote_prototype();
+    case type_quote:
+      return runtime->quote_prototype();
 
-      case type_word:
-        return runtime->word_prototype();
+    case type_word:
+      return runtime->word_prototype();
 
-      case type_error:
-        return runtime->error_prototype();
+    case type_error:
+      return runtime->error_prototype();
 
-      case type_object:
+    case type_object:
+      {
+        std::shared_ptr<value> slot;
+
+        if (static_cast<const object*>(this)->own_property(U"__proto__", slot))
         {
-          const auto& properties = static_cast<const object*>(this)->properties();
-          const auto property = properties.find(U"__proto__");
-
-          if (property == std::end(properties))
+          if (slot && slot->is(type_object))
           {
-            return runtime->object_prototype();
-          }
-          else if (property->second && property->second->is(type_object))
-          {
-            return std::static_pointer_cast<object>(property->second);
+            return std::static_pointer_cast<object>(slot);
           } else {
             return std::shared_ptr<object>();
           }
         }
-        break;
+
+        return runtime->object_prototype();
+      }
+      break;
     }
 
     return std::shared_ptr<object>(); // Just to make GCC happy.
