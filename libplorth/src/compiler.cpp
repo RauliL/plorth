@@ -495,7 +495,7 @@ namespace plorth
       std::shared_ptr<object> compile_object(context* ctx)
       {
         struct position position;
-        object::container_type properties;
+        std::vector<object::value_type> properties;
 
         if (skip_whitespace())
         {
@@ -572,7 +572,7 @@ namespace plorth
               return std::shared_ptr<object>();
             }
 
-            properties[key->to_string()] = value;
+            properties.push_back({ key->to_string(), value });
 
             if (skip_whitespace() || (!peek(',') && !peek('}')))
             {
@@ -589,7 +589,7 @@ namespace plorth
           }
         }
 
-        return ctx->runtime()->value<object>(properties);
+        return ctx->runtime()->object(properties);
       }
 
       bool compile_escape_sequence(context* ctx, unistring& buffer)

@@ -234,13 +234,19 @@ namespace plorth
      * Constructs array from given sequence of values and pushes it into the
      * data stack.
      */
+    void push_array(const std::vector<std::shared_ptr<value>>& elements);
+
+    /**
+     * Constructs array from given sequence of values and pushes it into the
+     * data stack.
+     */
     void push_array(array::const_pointer elements, array::size_type size);
 
     /**
      * Constructs object from given properties and pushes it into the data
      * stack.
      */
-    void push_object(const object::container_type& properties);
+    void push_object(const std::vector<object::value_type>& properties);
 
     /**
      * Constructs symbol from given identifier and pushes it onto the data

@@ -109,9 +109,10 @@ namespace plorth
                        const std::shared_ptr<object>& obj,
                        std::shared_ptr<value>& slot)
   {
-    object::container_type properties;
+    std::vector<object::value_type> properties;
 
-    for (const auto& property : obj->properties())
+    properties.reserve(obj->size());
+    for (const auto& property : obj->entries())
     {
       std::shared_ptr<value> value_slot;
 
@@ -119,9 +120,9 @@ namespace plorth
       {
         return false;
       }
-      properties[property.first] = value_slot;
+      properties.push_back({ property.first, value_slot });
     }
-    slot = ctx->runtime()->value<object>(properties);
+    slot = ctx->runtime()->object(properties);
 
     return true;
   }

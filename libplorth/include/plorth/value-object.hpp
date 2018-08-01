@@ -26,41 +26,105 @@
 #ifndef PLORTH_VALUE_OBJECT_HPP_GUARD
 #define PLORTH_VALUE_OBJECT_HPP_GUARD
 
-#include <plorth/value.hpp>
+#include <utility>
+#include <vector>
 
-#include <unordered_map>
+#include <plorth/value.hpp>
 
 namespace plorth
 {
+  /**
+   * Object is an associative container which maps strings into values. Just
+   * like in JavaScript, Plorth objects also supports inheritance through
+   * prototypes, if the object has an property called "__proto__" that maps to
+   * another object.
+   */
   class object : public value
   {
   public:
-    using container_type = std::unordered_map<unistring, std::shared_ptr<value>>;
+    using size_type = std::size_t;
+    using key_type = unistring;
+    using mapped_type = std::shared_ptr<value>;
+    using value_type = std::pair<key_type, mapped_type>;
 
-    explicit object(const container_type& properties);
+    /**
+     * Tests whether the object has property with given name, including
+     * inherited properties.
+     *
+     * \param runtime Scripting runtime. Required for prototype chain
+     *                inheritance.
+     * \param key     Name of the property to test existance of.
+     * \return        Boolean flag which tells whether the property exists or
+     *                not.
+     */
+    bool has_property(
+      const std::shared_ptr<class runtime>& runtime,
+      const key_type& key
+    ) const;
 
-    inline const container_type& properties() const
-    {
-      return m_properties;
-    }
+    /**
+     * Tests whether the object has property with given name, omitting
+     * inherited properties.
+     *
+     * \param key Name of the property to test existance of.
+     * \return    Boolean flag which tells whether the property exists or not.
+     */
+    virtual bool has_own_property(const key_type& key) const = 0;
 
     /**
      * Retrieves property with given name from the object itself and it's
      * prototypes.
      *
-     * \param runtime   Scripting runtime. Required for prototype chain
-     *                  inheritance.
-     * \param name      Name of the property to retrieve.
-     * \param slot      Where value of the found property will be assigned to.
-     * \param inherited Whether inherited properties from prototype chain
-     *                  should be included in the search or not.
-     * \return          Boolean flag which tells whether the property was found
-     *                  or not.
+     * \param runtime Scripting runtime. Required for prototype chain
+     *                inheritance.
+     * \param key     Name of the property to retrieve.
+     * \param slot    Where value of the found property will be assigned to.
+     * \return        Boolean flag which tells whether the property was found
+     *                or not.
      */
-    bool property(const std::shared_ptr<class runtime>& runtime,
-                  const unistring& name,
-                  std::shared_ptr<value>& slot,
-                  bool inherited = true) const;
+    bool property(
+      const std::shared_ptr<class runtime>& runtime,
+      const key_type& key,
+      mapped_type& slot
+    ) const;
+
+    /**
+     * Retrieves property with given name from the object itself, omitting
+     * prototype inheritance.
+     *
+     * \param key  Name of the property to retrieve.
+     * \param slot Where value of the found property will be assigned to.
+     * \return     Boolean flag which tells whether the property was found or
+     *             not.
+     */
+    virtual bool own_property(
+      const key_type& key,
+      mapped_type& slot
+    ) const = 0;
+
+    /**
+     * Returns the number of properties (not including inherited ones) which
+     * the object has.
+     */
+    virtual size_type size() const = 0;
+
+    /**
+     * Returns names of the properties which the object has. This does not
+     * include inherited properties.
+     */
+    virtual std::vector<key_type> keys() const = 0;
+
+    /**
+     * Returns values of the properties which the object has. This does not
+     * include inherited properties.
+     */
+    virtual std::vector<mapped_type> values() const = 0;
+
+    /**
+     * Returns each property which the object has. This does not include
+     * inherited properties.
+     */
+    virtual std::vector<value_type> entries() const = 0;
 
     inline enum type type() const
     {
@@ -70,9 +134,6 @@ namespace plorth
     bool equals(const std::shared_ptr<value>& that) const;
     unistring to_string() const;
     unistring to_source() const;
-
-  private:
-    const container_type m_properties;
   };
 }
 

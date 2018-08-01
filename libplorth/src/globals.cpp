@@ -681,7 +681,7 @@ namespace plorth
 
       ctx->push(val);
 
-      if (!obj->property(runtime, U"prototype", prototype1, false) ||
+      if (!obj->own_property(U"prototype", prototype1) ||
           !prototype1 ||
           !prototype1->is(value::type_object) ||
           !prototype2)
@@ -695,10 +695,10 @@ namespace plorth
         return;
       }
 
-      while (std::static_pointer_cast<object>(prototype2)->property(runtime,
-                                                                    U"__proto__",
-                                                                    prototype2,
-                                                                    false) &&
+      while (std::static_pointer_cast<object>(prototype2)->own_property(
+              U"__proto__",
+              prototype2
+             ) &&
              prototype2 &&
              prototype2->is(value::type_object))
       {
@@ -1102,11 +1102,13 @@ namespace plorth
    */
   static void w_globals(const std::shared_ptr<context>& ctx)
   {
-    object::container_type result;
+    const auto& dictionary = ctx->runtime()->dictionary();
+    std::vector<object::value_type> result;
 
-    for (const auto& word : ctx->runtime()->dictionary().words())
+    result.reserve(dictionary.size());
+    for (const auto& word : dictionary.words())
     {
-      result[word->symbol()->id()] = word->quote();
+      result.push_back({ word->symbol()->id(), word->quote() });
     }
     ctx->push_object(result);
   }
@@ -1121,11 +1123,13 @@ namespace plorth
    */
   static void w_locals(const std::shared_ptr<context>& ctx)
   {
-    object::container_type result;
+    const auto& dictionary = ctx->dictionary();
+    std::vector<object::value_type> result;
 
-    for (const auto& word : ctx->dictionary().words())
+    result.reserve(dictionary.size());
+    for (const auto& word : dictionary.words())
     {
-      result[word->symbol()->id()] = word->quote();
+      result.push_back({ word->symbol()->id(), word->quote() });
     }
     ctx->push_object(result);
   }
