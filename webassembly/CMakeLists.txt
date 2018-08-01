@@ -12,31 +12,39 @@ SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${EMSCRIPTEN_CXX_FLAGS}"
 
 ADD_EXECUTABLE(
   plorth-webassembly
-  ../plorth/src/repl.cpp
+  ../libplorth/src/compiler.cpp
+  ../libplorth/src/context.cpp
+  ../libplorth/src/dictionary.cpp
+  ../libplorth/src/exec.cpp
+  ../libplorth/src/eval.cpp
+  ../libplorth/src/globals.cpp
+  ../libplorth/src/io-input.cpp
+  ../libplorth/src/io-output.cpp
+  ../libplorth/src/memory.cpp
+  ../libplorth/src/module.cpp
+  ../libplorth/src/position.cpp
+  ../libplorth/src/runtime.cpp
+  ../libplorth/src/unicode.cpp
+  ../libplorth/src/utils.cpp
+  ../libplorth/src/value.cpp
+  ../libplorth/src/value-array.cpp
+  ../libplorth/src/value-boolean.cpp
+  ../libplorth/src/value-error.cpp
+  ../libplorth/src/value-number.cpp
+  ../libplorth/src/value-object.cpp
+  ../libplorth/src/value-quote.cpp
+  ../libplorth/src/value-string.cpp
+  ../libplorth/src/value-symbol.cpp
+  ../libplorth/src/value-word.cpp
+  ../cli/src/repl.cpp
   src/main.cpp
-)
-
-TARGET_COMPILE_OPTIONS(
-  plorth-webassembly
-  PRIVATE
-    -Wall -Werror
-)
-
-TARGET_COMPILE_FEATURES(
-  plorth-webassembly
-  PRIVATE
-    cxx_std_11
 )
 
 TARGET_INCLUDE_DIRECTORIES(
   plorth-webassembly
   PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../libplorth/include
-)
-
-TARGET_LINK_LIBRARIES(
-  plorth-webassembly
-  plorth
 )
 
 SET_TARGET_PROPERTIES(
