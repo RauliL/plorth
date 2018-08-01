@@ -4,20 +4,18 @@ PROJECT(libplorth C CXX)
 INCLUDE(CheckIncludeFile)
 INCLUDE(CheckFunctionExists)
 
-CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
-CHECK_INCLUDE_FILE(sysexits.h HAVE_SYSEXITS_H)
 CHECK_INCLUDE_FILE(sys/types.h HAVE_SYS_TYPES_H)
 CHECK_INCLUDE_FILE(sys/stat.h HAVE_SYS_STAT_H)
+CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
 
-CHECK_FUNCTION_EXISTS(fork HAVE_FORK)
-CHECK_FUNCTION_EXISTS(isatty HAVE_ISATTY)
 CHECK_FUNCTION_EXISTS(stat HAVE_STAT)
 CHECK_FUNCTION_EXISTS(realpath HAVE_REALPATH)
 
 IF(PLORTH_ENABLE_MODULES)
   IF(NOT ${HAVE_STAT})
     MESSAGE(FATAL_ERROR "Required function stat() is missing.")
-  ELSEIF(NOT ${HAVE_REALPATH})
+  ENDIF()
+  IF(NOT ${HAVE_REALPATH})
     MESSAGE(FATAL_ERROR "Required function realpath() is missing.")
   ENDIF()
 ENDIF()
@@ -65,11 +63,9 @@ OPTION(
 )
 
 CONFIGURE_FILE(
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp.in"
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp"
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/config.hpp
 )
-
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 ADD_LIBRARY(
   plorth
@@ -98,6 +94,25 @@ ADD_LIBRARY(
   src/value-string.cpp
   src/value-symbol.cpp
   src/value-word.cpp
+)
+
+TARGET_COMPILE_OPTIONS(
+  plorth
+  PRIVATE
+    -Wall -Werror
+)
+
+TARGET_COMPILE_FEATURES(
+  plorth
+  PRIVATE
+    cxx_std_11
+)
+
+TARGET_INCLUDE_DIRECTORIES(
+  plorth
+  PUBLIC
+    $<INSTALL_INTERFACE:include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
 IF(NOT DEFINED ENV{EMSCRIPTEN})

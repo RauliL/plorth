@@ -28,24 +28,7 @@
 
 #include <plorth/version.hpp>
 
-#define PLORTH_RUNTIME_LIBRARY_PATH U"${CMAKE_INSTALL_PREFIX}/lib/plorth"
-
 // Optional features.
-#cmakedefine PLORTH_ENABLE_MODULES 1
-#cmakedefine PLORTH_ENABLE_SYMBOL_CACHE 1
-#cmakedefine PLORTH_ENABLE_INTEGER_CACHE 1
-#cmakedefine PLORTH_ENABLE_MEMORY_POOL 1
-#cmakedefine PLORTH_ENABLE_MUTEXES 1
-#cmakedefine PLORTH_ENABLE_32BIT_INT 1
-#cmakedefine PLORTH_ENABLE_GC_DEBUG 1
-
-// Optional headers.
-#cmakedefine HAVE_UNISTD_H 1
-#cmakedefine HAVE_SYS_TYPES_H 1
-#cmakedefine HAVE_SYS_STAT_H 1
-
-// Optional functions.
-#cmakedefine HAVE_STAT 1
-#cmakedefine HAVE_REALPATH 1
+#define PLORTH_ENABLE_32BIT_INT 1
 
 #endif /* !PLORTH_CONFIG_HPP_GUARD */

@@ -24,6 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/plorth.hpp>
+#include <plorth/cli/config.hpp>
 
 #include <cstring>
 #include <fstream>

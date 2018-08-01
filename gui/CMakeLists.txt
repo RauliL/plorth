@@ -5,16 +5,10 @@ FIND_PACKAGE(PkgConfig)
 
 SET(CMAKE_CXX_STANDARD 11)
 
-PKG_CHECK_MODULES(GTKMM gtkmm-3.0)
+PKG_CHECK_MODULES(GTKMM gtkmm-3.0 REQUIRED)
 
 LINK_DIRECTORIES(
   ${GTKMM_LIBRARY_DIRS}
-)
-
-INCLUDE_DIRECTORIES(
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}../libplorth/include
-  ${GTKMM_INCLUDE_DIRS}
 )
 
 ADD_EXECUTABLE(
@@ -27,6 +21,25 @@ ADD_EXECUTABLE(
   src/stack-display.cpp
   src/utils.cpp
   src/window.cpp
+)
+
+TARGET_COMPILE_OPTIONS(
+  plorth-gui
+  PRIVATE
+    -Wall -Werror
+)
+
+TARGET_COMPILE_FEATURES(
+  plorth-gui
+  PRIVATE
+    cxx_std_11
+)
+
+TARGET_INCLUDE_DIRECTORIES(
+  plorth-gui
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${GTKMM_INCLUDE_DIRS}
 )
 
 TARGET_LINK_LIBRARIES(

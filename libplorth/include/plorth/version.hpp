@@ -23,29 +23,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PLORTH_CONFIG_HPP_GUARD
-#define PLORTH_CONFIG_HPP_GUARD
+#ifndef PLORTH_VERSION_HPP_GUARD
+#define PLORTH_VERSION_HPP_GUARD
 
-#include <plorth/version.hpp>
+#define PLORTH_VERSION U"1.0.0-alpha.8"
 
-#define PLORTH_RUNTIME_LIBRARY_PATH U"${CMAKE_INSTALL_PREFIX}/lib/plorth"
-
-// Optional features.
-#cmakedefine PLORTH_ENABLE_MODULES 1
-#cmakedefine PLORTH_ENABLE_SYMBOL_CACHE 1
-#cmakedefine PLORTH_ENABLE_INTEGER_CACHE 1
-#cmakedefine PLORTH_ENABLE_MEMORY_POOL 1
-#cmakedefine PLORTH_ENABLE_MUTEXES 1
-#cmakedefine PLORTH_ENABLE_32BIT_INT 1
-#cmakedefine PLORTH_ENABLE_GC_DEBUG 1
-
-// Optional headers.
-#cmakedefine HAVE_UNISTD_H 1
-#cmakedefine HAVE_SYS_TYPES_H 1
-#cmakedefine HAVE_SYS_STAT_H 1
-
-// Optional functions.
-#cmakedefine HAVE_STAT 1
-#cmakedefine HAVE_REALPATH 1
-
-#endif /* !PLORTH_CONFIG_HPP_GUARD */
+#endif /* !PLORTH_VERSION_HPP_GUARD */
