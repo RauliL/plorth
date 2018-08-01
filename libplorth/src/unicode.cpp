@@ -96,10 +96,13 @@ namespace plorth
 
   std::string utf8_encode(const unistring& input)
   {
+    const auto length = input.length();
     std::string result;
 
-    for (const auto& c : input)
+    for (std::string::size_type i = 0; i < length; ++i)
     {
+      const auto c = input[i];
+
       if (!unichar_validate(c))
       {
         continue;

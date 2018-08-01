@@ -40,7 +40,14 @@ namespace plorth
     public:
       void write(const unistring& str)
       {
-        std::cout << str;
+        const auto bytes = utf8_encode(str);
+
+        std::fwrite(
+          static_cast<const void*>(bytes.c_str()),
+          sizeof(char),
+          bytes.length(),
+          stdout
+        );
       }
     };
   }
