@@ -29,9 +29,11 @@
 namespace plorth
 {
   word::word(const std::shared_ptr<class symbol>& symbol,
-             const std::shared_ptr<class quote>& quote)
+             const std::shared_ptr<class quote>& quote,
+             const std::shared_ptr<context>& declaring_context)
     : m_symbol(symbol)
-    , m_quote(quote) {}
+    , m_quote(quote)
+    , m_declaring_context(declaring_context) {}
 
   bool word::equals(const std::shared_ptr<value>& that) const
   {

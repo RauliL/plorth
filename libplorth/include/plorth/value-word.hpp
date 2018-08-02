@@ -40,11 +40,16 @@ namespace plorth
     /**
      * Constructs new word.
      *
-     * \param symbol Identifier of the word.
-     * \param quote  Executable portion of the word.
+     * \param symbol            Identifier of the word.
+     * \param quote             Executable portion of the word.
+     * \param declaring_context Optional execution context in which the word
+     *                          was originally declared in.
      */
-    explicit word(const std::shared_ptr<class symbol>& symbol,
-                  const std::shared_ptr<class quote>& quote);
+    explicit word(
+      const std::shared_ptr<class symbol>& symbol,
+      const std::shared_ptr<class quote>& quote,
+      const std::shared_ptr<context>& declaring_context = std::shared_ptr<context>()
+    );
 
     /**
      * Returns identifier of the word.
@@ -76,6 +81,8 @@ namespace plorth
     const std::shared_ptr<class symbol> m_symbol;
     /** Executable portion of the word. */
     const std::shared_ptr<class quote> m_quote;
+    /** Execution context in which the word was originally declared in. */
+    const std::shared_ptr<context> m_declaring_context;
   };
 }
 
