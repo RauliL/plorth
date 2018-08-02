@@ -21,6 +21,7 @@ ADD_EXECUTABLE(
   src/stack-display.cpp
   src/utils.cpp
   src/window.cpp
+  ../cli/src/utils.cpp
 )
 
 TARGET_COMPILE_OPTIONS(

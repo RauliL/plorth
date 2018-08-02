@@ -25,6 +25,7 @@
  */
 #include <plorth/gui/window.hpp>
 #include "./utils.hpp"
+#include "../../cli/src/utils.hpp"
 
 namespace plorth
 {
@@ -32,8 +33,6 @@ namespace plorth
   {
     const int Window::DEFAULT_WIDTH = 450;
     const int Window::DEFAULT_HEIGHT = 250;
-
-    static void count_open_braces(const Glib::ustring&, std::stack<unichar>&);
 
     Window::Window(const Glib::RefPtr<Context>& context)
       : m_context(context)
@@ -88,7 +87,11 @@ namespace plorth
       m_line_display.add_line(line + '\n', LineDisplay::LINE_TYPE_INPUT);
       m_source.append(line);
       m_source.append(1, '\n');
-      count_open_braces(line, m_open_braces);
+      plorth::cli::utils::count_open_braces(
+        line,
+        line.length(),
+        m_open_braces
+      );
       if (m_open_braces.empty())
       {
         const auto& stack = m_context->stack();
@@ -140,57 +143,6 @@ namespace plorth
       }
 
       return Gtk::Window::on_key_press_event(event);
-    }
-
-    static void count_open_braces(const Glib::ustring& input,
-                                  std::stack<unichar>& open_braces)
-    {
-      const auto length = input.length();
-
-      for (Glib::ustring::size_type i = 0; i < length; ++i)
-      {
-        switch (input[i])
-        {
-          case '#':
-            return;
-
-          case '(':
-            open_braces.push(')');
-            break;
-
-          case '[':
-            open_braces.push(']');
-            break;
-
-          case '{':
-            open_braces.push('}');
-            break;
-
-          case ')':
-          case ']':
-          case '}':
-            if (!open_braces.empty() && open_braces.top() == input[i])
-            {
-              open_braces.pop();
-            }
-            break;
-
-          case '"':
-            while (i < length)
-            {
-              if (input[i] == '"')
-              {
-                break;
-              }
-              else if (input[i] == '\\' && i + 1 < length)
-              {
-                i += 2;
-              } else {
-                ++i;
-              }
-            }
-        }
-      }
     }
   }
 }

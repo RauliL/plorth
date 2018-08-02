@@ -28,7 +28,6 @@
 
 #include <cstring>
 #include <fstream>
-#include <stack>
 #if PLORTH_ENABLE_MODULES
 # include <unordered_set>
 #endif
@@ -41,6 +40,7 @@
 #endif
 
 #include <linenoise.h>
+#include "./utils.hpp"
 
 #if !defined(EX_USAGE)
 # define EX_USAGE 64
@@ -57,17 +57,19 @@ static std::unordered_set<unistring> imported_modules;
 #endif
 
 static void scan_arguments(const std::shared_ptr<runtime>&, int, char**);
-#if PLORTH_ENABLE_MODULES
-static void scan_module_path(const std::shared_ptr<runtime>&);
-#endif
 static inline bool is_console_interactive();
 static void compile_and_run(const std::shared_ptr<context>&,
                             const std::string&,
                             const unistring&);
-static void console_loop(const std::shared_ptr<context>&);
 static void handle_error(const std::shared_ptr<context>&);
 
-void initialize_repl_api(const std::shared_ptr<runtime>&);
+namespace plorth
+{
+  namespace cli
+  {
+    void repl_loop(const std::shared_ptr<context>&);
+  }
+}
 
 int main(int argc, char** argv)
 {
@@ -76,7 +78,7 @@ int main(int argc, char** argv)
   auto context = context::make(runtime);
 
 #if PLORTH_ENABLE_MODULES
-  scan_module_path(runtime);
+  plorth::cli::utils::scan_module_path(runtime);
 #endif
 
   scan_arguments(runtime, argc, argv);
@@ -124,7 +126,7 @@ int main(int argc, char** argv)
   }
   else if (is_console_interactive())
   {
-    console_loop(context);
+    plorth::cli::repl_loop(context);
   } else {
     compile_and_run(
       context,
@@ -281,49 +283,6 @@ static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
   }
 }
 
-#if PLORTH_ENABLE_MODULES
-static void scan_module_path(const std::shared_ptr<class runtime>& runtime)
-{
-#if defined(_WIN32)
-  static const unichar path_separator = ';';
-#else
-  static const unichar path_separator = ':';
-#endif
-  auto& module_paths = runtime->module_paths();
-  const char* begin = std::getenv("PLORTHPATH");
-  const char* end = begin;
-
-  if (end)
-  {
-    for (; *end; ++end)
-    {
-      if (*end != path_separator)
-      {
-        continue;
-      }
-
-      if (end - begin > 0)
-      {
-        module_paths.push_back(utf8_decode(std::string(begin, end - begin)));
-      }
-      begin = end + 1;
-    }
-
-    if (end - begin > 0)
-    {
-      module_paths.push_back(utf8_decode(std::string(begin, end - begin)));
-    }
-  }
-
-#if defined(PLORTH_RUNTIME_LIBRARY_PATH)
-  if (module_paths.empty())
-  {
-    module_paths.push_back(PLORTH_RUNTIME_LIBRARY_PATH);
-  }
-#endif
-}
-#endif
-
 static inline bool is_console_interactive()
 {
 #if defined(HAVE_ISATTY)
@@ -395,146 +354,5 @@ static void compile_and_run(const std::shared_ptr<context>& ctx,
   if (!script->call(ctx))
   {
     handle_error(ctx);
-  }
-}
-
-static void count_open_braces(const char* input, std::stack<char>& open_braces)
-{
-  const auto length = std::strlen(input);
-
-  for (std::size_t i = 0; i < length; ++i)
-  {
-    switch (input[i])
-    {
-      case '#':
-        return;
-
-      case '(':
-        open_braces.push(')');
-        break;
-
-      case '[':
-        open_braces.push(']');
-        break;
-
-      case '{':
-        open_braces.push('}');
-        break;
-
-      case ')':
-      case ']':
-      case '}':
-        if (!open_braces.empty() && open_braces.top() == input[i])
-        {
-          open_braces.pop();
-        }
-        break;
-
-      case '"':
-        while (i < length)
-        {
-          if (input[i] == '"')
-          {
-            break;
-          }
-          else if (input[i] == '\\' && i + 1 < length)
-          {
-            i += 2;
-          } else {
-            ++i;
-          }
-        }
-    }
-  }
-}
-
-static void console_loop(const std::shared_ptr<class context>& context)
-{
-  int line_counter = 0;
-  unistring source;
-  std::stack<char> open_braces;
-  char prompt[BUFSIZ];
-
-  initialize_repl_api(context->runtime());
-
-  for (;;)
-  {
-    char* line;
-
-    // First construct the prompt which is shown to the user. It contains text
-    // "plorth", current line number, size of the execution context and
-    // visual indication on whether the source code still contains open braces
-    // or not.
-    std::snprintf(
-      prompt,
-      BUFSIZ,
-      "plorth:%d:%ld%c ",
-      ++line_counter,
-      context->size(),
-      open_braces.empty() ? '>' : '*'
-    );
-
-    // Read line from the user.
-    if (!(line = linenoise(prompt)))
-    {
-      break;
-    }
-
-    // Skip empty lines.
-    if (!*line)
-    {
-      linenoiseFree(line);
-      continue;
-    }
-
-    // Add the line into history.
-    linenoiseHistoryAdd(line);
-
-    // And attempt to decode the input as UTF-8.
-    if (!utf8_decode_test(line, source))
-    {
-      std::cout << "Unable to decode given input as UTF-8." << std::endl;
-      linenoiseFree(line);
-      continue;
-    }
-
-    // Insert new line into the source code so that the line counter
-    source.append(1, '\n');
-
-    // See whether the line contains special characters such as open braces and
-    // so on.
-    count_open_braces(line, open_braces);
-
-    // We no longer need the original line, so free it.
-    linenoiseFree(line);
-
-    // Do not attempt to compile the source code when it still has unclosed
-    // braces.
-    if (!open_braces.empty())
-    {
-      continue;
-    }
-
-    // Attempt to compile the source code into a quote and execute it unless
-    // syntax errors were encountered.
-    if (auto script = context->compile(source, U"<repl>", line_counter))
-    {
-      script->call(context);
-    }
-
-    // Clear the source code buffer so that we can use it again.
-    source.clear();
-
-    // If the execution context has any error present, display it. Also reset
-    // the error status so that the execution context can be reused.
-    if (const auto& error = context->error())
-    {
-      if (auto position = error->position())
-      {
-        std::cout << *position << ':';
-      }
-      std::cout << error << std::endl;
-      context->clear_error();
-    }
   }
 }

@@ -23,66 +23,71 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <plorth/gui/context.hpp>
-#include "./utils.hpp"
-#include "../../cli/src/utils.hpp"
+#include <stack>
+
+#include <plorth/runtime.hpp>
 
 namespace plorth
 {
-  namespace gui
+  namespace cli
   {
-    namespace
+    namespace utils
     {
-      class custom_output : public io::output
-      {
-      public:
-        explicit custom_output(Context::text_written_signal signal)
-          : m_signal(signal) {}
-
-        void write(const unistring& text)
-        {
-          m_signal.emit(utils::string_convert<Glib::ustring, unistring>(text));
-        }
-
-      private:
-        const Context::text_written_signal m_signal;
-      };
-    }
-
-    Context::Context()
-      : m_runtime(runtime::make(m_memory_manager))
-      , m_context(context::make(m_runtime))
-    {
-      const auto output = m_runtime->value<custom_output>(
-        m_signal_text_written
-      );
-
-      m_runtime->output() = output;
-      m_runtime->input() = io::input::dummy(m_memory_manager);
-
 #if PLORTH_ENABLE_MODULES
-      plorth::cli::utils::scan_module_path(m_runtime);
+      void scan_module_path(const std::shared_ptr<runtime>&);
 #endif
-    }
 
-    void Context::execute(const Glib::ustring& source_code,
-                          const Glib::ustring& file,
-                          int line)
-    {
-      auto script = m_context->compile(
-        utils::string_convert<unistring, Glib::ustring>(source_code),
-        utils::string_convert<unistring, Glib::ustring>(file),
-        line
-      );
-
-      if (!script || !script->call(m_context))
+      template<class StringT>
+      static void count_open_braces(const StringT& input,
+                                    std::size_t length,
+                                    std::stack<char32_t>& open_braces)
       {
-        auto error = m_context->error();
-
-        m_context->clear_error();
-        if (error)
+        for (std::size_t i = 0; i < length; ++i)
         {
-          m_signal_error_thrown.emit(error);
+          const auto c = input[i];
+
+          switch (c)
+          {
+          case '#':
+            return;
+
+          case '(':
+            open_braces.push(')');
+            break;
+
+          case '[':
+            open_braces.push(']');
+            break;
+
+          case '{':
+            open_braces.push('}');
+            break;
+
+          case ')':
+          case ']':
+          case '}':
+            if (!open_braces.empty()
+                && open_braces.top() == static_cast<char32_t>(c))
+            {
+              open_braces.pop();
+            }
+            break;
+
+          case '\'':
+          case '"':
+            while (++i < length)
+            {
+              if (input[i] == c)
+              {
+                break;
+              }
+              else if (input[i] == '\\' && i + 1 < length)
+              {
+                ++i;
+              }
+            }
+            break;
+          }
         }
       }
     }

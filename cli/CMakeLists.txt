@@ -17,8 +17,10 @@ CONFIGURE_FILE(
 ADD_EXECUTABLE(
   plorth-cli
   ext/linenoise/linenoise.c
+  src/api.cpp
   src/main.cpp
   src/repl.cpp
+  src/utils.cpp
 )
 
 TARGET_COMPILE_OPTIONS(
