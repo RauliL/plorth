@@ -45,10 +45,10 @@ namespace plorth
     /**
      * Enumeration for different supported quote types.
      */
-    enum quote_type
+    enum class quote_type
     {
-      quote_type_native,
-      quote_type_compiled
+      native = 0,
+      compiled = 1
     };
 
     /**
@@ -75,7 +75,7 @@ namespace plorth
 
     inline enum type type() const
     {
-      return type_quote;
+      return type::quote;
     }
 
     unistring to_source() const;

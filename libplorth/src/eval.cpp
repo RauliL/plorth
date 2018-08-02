@@ -56,16 +56,16 @@ namespace plorth
     }
     switch (val->type())
     {
-      case value::type_array:
+      case value::type::array:
         return eval_ary(ctx, std::static_pointer_cast<array>(val), slot);
 
-      case value::type_object:
+      case value::type::object:
         return eval_obj(ctx, std::static_pointer_cast<object>(val), slot);
 
-      case value::type_symbol:
+      case value::type::symbol:
         return eval_sym(ctx, std::static_pointer_cast<symbol>(val), slot);
 
-      case value::type_word:
+      case value::type::word:
         return eval_wrd(ctx, std::static_pointer_cast<word>(val), slot);
 
       default:
@@ -154,7 +154,7 @@ namespace plorth
       slot = ctx->runtime()->number(id);
     } else {
       ctx->error(
-        error::code_syntax,
+        error::code::syntax,
         U"Unexpected `" + id + U"'; Missing value."
       );
 
@@ -169,7 +169,7 @@ namespace plorth
                        std::shared_ptr<value>& slot)
   {
     ctx->error(
-      error::code_syntax,
+      error::code::syntax,
       U"Unexpected word declaration; Missing value."
     );
 

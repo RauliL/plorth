@@ -193,7 +193,7 @@ namespace plorth
   {
     std::shared_ptr<array> ary;
 
-    if (!that || !that->is(type_array))
+    if (!is(that, type::array))
     {
       return false;
     }
@@ -405,7 +405,7 @@ namespace plorth
       if (!size)
       {
         ctx->push(ary);
-        ctx->error(error::code_range, U"Array is empty.");
+        ctx->error(error::code::range, U"Array is empty.");
         return;
       }
 
@@ -796,7 +796,7 @@ namespace plorth
   {
     for (const auto& value : ary)
     {
-      if (value && value->is(value::type_array))
+      if (value::is(value, value::type::array))
       {
         do_flatten(std::static_pointer_cast<array>(value), container);
       } else {
@@ -839,7 +839,7 @@ namespace plorth
   {
     for (const auto& value : ary)
     {
-      if (value && value->is(value::type_array) && depth < limit)
+      if (value::is(value, value::type::array) && depth < limit)
       {
         do_nflatten(
           std::static_pointer_cast<array>(value),
@@ -1136,7 +1136,7 @@ namespace plorth
 
     if (size == 0)
     {
-      ctx->error(error::code_range, U"Cannot reduce empty array.");
+      ctx->error(error::code::range, U"Cannot reduce empty array.");
       return;
     }
 
@@ -1216,7 +1216,7 @@ namespace plorth
       {
         ctx->push_array(nullptr, 0);
       } else {
-        ctx->error(error::code_range, U"Invalid repeat count.");
+        ctx->error(error::code::range, U"Invalid repeat count.");
       }
     }
   }
@@ -1381,7 +1381,7 @@ namespace plorth
 
       if (!size || index < 0 || index >= static_cast<number::int_type>(size))
       {
-        ctx->error(error::code_range, U"Array index out of bounds.");
+        ctx->error(error::code::range, U"Array index out of bounds.");
         return;
       }
 

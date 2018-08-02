@@ -170,7 +170,7 @@ namespace plorth
         if (skip_whitespace())
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected end of input; Missing value.",
             &m_position
           );
@@ -209,7 +209,7 @@ namespace plorth
         if (skip_whitespace())
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected end of input; Missing symbol.",
             &m_position
           );
@@ -222,7 +222,7 @@ namespace plorth
         if (!unichar_isword(peek()))
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected input; Missing symbol.",
             &m_position
           );
@@ -249,7 +249,7 @@ namespace plorth
         if (skip_whitespace())
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected end of input; Missing word.",
             &m_position
           );
@@ -262,7 +262,7 @@ namespace plorth
         if (!peek_read(':'))
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected input; Missing word.",
             &position
           );
@@ -280,7 +280,7 @@ namespace plorth
           if (skip_whitespace())
           {
             ctx->error(
-              error::code_syntax,
+              error::code::syntax,
               U"Unterminated word; Missing `;'.",
               &position
             );
@@ -312,7 +312,7 @@ namespace plorth
         if (skip_whitespace())
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected end of input; Missing quote.",
             &m_position
           );
@@ -325,7 +325,7 @@ namespace plorth
         if (!peek_read('('))
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected input; Missing quote.",
             &position
           );
@@ -338,7 +338,7 @@ namespace plorth
           if (skip_whitespace())
           {
             ctx->error(
-              error::code_syntax,
+              error::code::syntax,
               U"Unterminated quote; Missing `)'.",
               &position
             );
@@ -371,7 +371,7 @@ namespace plorth
         if (skip_whitespace())
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected end of input; Missing string.",
             &m_position
           );
@@ -384,7 +384,7 @@ namespace plorth
         if (!peek_read('"', separator) && !peek_read('\'', separator))
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected input; Missing string.",
             &position
           );
@@ -397,7 +397,7 @@ namespace plorth
           if (eof())
           {
             ctx->error(
-              error::code_syntax,
+              error::code::syntax,
               unistring(U"Unterminated string; Missing `") + separator + U"'",
               &position
             );
@@ -430,7 +430,7 @@ namespace plorth
         if (skip_whitespace())
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected end of input; Missing array.",
             &m_position
           );
@@ -443,7 +443,7 @@ namespace plorth
         if (!peek_read('['))
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected input; Missing array.",
             &position
           );
@@ -456,7 +456,7 @@ namespace plorth
           if (skip_whitespace())
           {
             ctx->error(
-              error::code_syntax,
+              error::code::syntax,
               U"Unterminated array; Missing `]'.",
               &position
             );
@@ -477,7 +477,7 @@ namespace plorth
             if (skip_whitespace() || (!peek(',') && !peek(']')))
             {
               ctx->error(
-                error::code_syntax,
+                error::code::syntax,
                 U"Unterminated array; Missing `]'.",
                 &position
               );
@@ -500,7 +500,7 @@ namespace plorth
         if (skip_whitespace())
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected end of input; Missing object.",
             &m_position
           );
@@ -513,7 +513,7 @@ namespace plorth
         if (!peek_read('{'))
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected input; Missing object.",
             &position
           );
@@ -526,7 +526,7 @@ namespace plorth
           if (skip_whitespace())
           {
             ctx->error(
-              error::code_syntax,
+              error::code::syntax,
               U"Unterminated object; Missing `}'.",
               &position
             );
@@ -548,7 +548,7 @@ namespace plorth
             if (skip_whitespace())
             {
               ctx->error(
-                error::code_syntax,
+                error::code::syntax,
                 U"Unterminated object; Missing `}'.",
                 &position
               );
@@ -559,7 +559,7 @@ namespace plorth
             if (!peek_read(':'))
             {
               ctx->error(
-                error::code_syntax,
+                error::code::syntax,
                 U"Missing `:' after property key.",
                 &m_position
               );
@@ -577,7 +577,7 @@ namespace plorth
             if (skip_whitespace() || (!peek(',') && !peek('}')))
             {
               ctx->error(
-                error::code_syntax,
+                error::code::syntax,
                 U"Unterminated object; Missing `}'.",
                 &position
               );
@@ -599,7 +599,7 @@ namespace plorth
         if (eof())
         {
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Unexpected end of input; Missing escape sequence.",
             &m_position
           );
@@ -647,7 +647,7 @@ namespace plorth
               if (eof())
               {
                 ctx->error(
-                  error::code_syntax,
+                  error::code::syntax,
                   U"Unterminated escape sequence.",
                   &position
                 );
@@ -657,7 +657,7 @@ namespace plorth
               else if (!std::isxdigit(peek()))
               {
                 ctx->error(
-                  error::code_syntax,
+                  error::code::syntax,
                   U"Illegal Unicode hex escape sequence.",
                   &position
                 );
@@ -680,7 +680,7 @@ namespace plorth
             if (!unichar_validate(result))
             {
               ctx->error(
-                error::code_syntax,
+                error::code::syntax,
                 U"Illegal Unicode hex escape sequence.",
                 &position
               );
@@ -694,7 +694,7 @@ namespace plorth
 
         default:
           ctx->error(
-            error::code_syntax,
+            error::code::syntax,
             U"Illegal escape sequence in string literal.",
             &position
           );

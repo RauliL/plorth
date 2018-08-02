@@ -47,10 +47,10 @@ namespace plorth
     }
     switch (val->type())
     {
-      case value::type_symbol:
+      case value::type::symbol:
         return exec_sym(ctx, std::static_pointer_cast<symbol>(val));
 
-      case value::type_word:
+      case value::type::word:
         return exec_wrd(ctx, std::static_pointer_cast<word>(val));
 
       default:
@@ -96,7 +96,7 @@ namespace plorth
 
         if (prototype && prototype->property(ctx->runtime(), id, val))
         {
-          if (val && val->is(value::type_quote))
+          if (value::is(val, value::type::quote))
           {
             return std::static_pointer_cast<quote>(val)->call(ctx);
           }
@@ -132,7 +132,7 @@ namespace plorth
     }
 
     // Otherwise it's reference error.
-    ctx->error(error::code_reference, U"Unrecognized word: `" + id + U"'");
+    ctx->error(error::code::reference, U"Unrecognized word: `" + id + U"'");
 
     return false;
   }

@@ -36,78 +36,80 @@ namespace plorth
   {
     switch (type)
     {
-    case value::type_null:
+    case type::null:
       return U"null";
 
-    case value::type_boolean:
+    case type::boolean:
       return U"boolean";
 
-    case value::type_number:
+    case type::number:
       return U"number";
 
-    case value::type_string:
+    case type::string:
       return U"string";
 
-    case value::type_array:
+    case type::array:
       return U"array";
 
-    case value::type_object:
+    case type::object:
       return U"object";
 
-    case value::type_symbol:
+    case type::symbol:
       return U"symbol";
 
-    case value::type_quote:
+    case type::quote:
       return U"quote";
 
-    case value::type_word:
+    case type::word:
       return U"word";
 
-    case value::type_error:
+    case type::error:
       return U"error";
     }
 
     return U"unknown";
   }
 
-  std::shared_ptr<object> value::prototype(const std::shared_ptr<class runtime>& runtime) const
+  std::shared_ptr<object> value::prototype(
+    const std::shared_ptr<class runtime>& runtime
+  ) const
   {
     switch (type())
     {
-    case type_null:
+    case type::null:
       return runtime->object_prototype();
 
-    case type_boolean:
+    case type::boolean:
       return runtime->boolean_prototype();
 
-    case type_number:
+    case type::number:
       return runtime->number_prototype();
 
-    case type_string:
+    case type::string:
       return runtime->string_prototype();
 
-    case type_array:
+    case type::array:
       return runtime->array_prototype();
 
-    case type_symbol:
+    case type::symbol:
       return runtime->symbol_prototype();
 
-    case type_quote:
+    case type::quote:
       return runtime->quote_prototype();
 
-    case type_word:
+    case type::word:
       return runtime->word_prototype();
 
-    case type_error:
+    case type::error:
       return runtime->error_prototype();
 
-    case type_object:
+    case type::object:
       {
         std::shared_ptr<value> slot;
 
         if (static_cast<const object*>(this)->own_property(U"__proto__", slot))
         {
-          if (slot && slot->is(type_object))
+          if (is(slot, type::object))
           {
             return std::static_pointer_cast<object>(slot);
           } else {

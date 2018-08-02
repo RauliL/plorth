@@ -61,7 +61,7 @@ namespace plorth
 
     enum type type() const
     {
-      return type_string;
+      return type::string;
     }
 
     bool equals(const std::shared_ptr<class value>& that) const;

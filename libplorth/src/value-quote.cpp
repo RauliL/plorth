@@ -44,7 +44,7 @@ namespace plorth
 
       inline enum quote_type quote_type() const
       {
-        return quote_type_compiled;
+        return quote_type::compiled;
       }
 
       bool call(const std::shared_ptr<context>& ctx) const
@@ -88,8 +88,8 @@ namespace plorth
       {
         std::shared_ptr<compiled_quote> q;
 
-        if (!that->is(type_quote)
-            || !std::static_pointer_cast<quote>(that)->is(quote_type_compiled))
+        if (!value::is(that, type::quote) ||
+            !std::static_pointer_cast<quote>(that)->is(quote_type::compiled))
         {
           return false;
         }
@@ -125,7 +125,7 @@ namespace plorth
 
       inline enum quote_type quote_type() const
       {
-        return quote_type_native;
+        return quote_type::native;
       }
 
       bool call(const std::shared_ptr<context>& ctx) const

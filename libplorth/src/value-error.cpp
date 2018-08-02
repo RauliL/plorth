@@ -51,28 +51,28 @@ namespace plorth
   {
     switch (code)
     {
-    case error::code_syntax:
+    case error::code::syntax:
       return U"Syntax error";
 
-    case error::code_reference:
+    case error::code::reference:
       return U"Reference error";
 
-    case error::code_type:
+    case error::code::type:
       return U"Type error";
 
-    case error::code_value:
+    case error::code::value:
       return U"Value error";
 
-    case error::code_range:
+    case error::code::range:
       return U"Range error";
 
-    case error::code_import:
+    case error::code::import:
       return U"Import error";
 
-    case error::code_io:
+    case error::code::io:
       return U"I/O error";
 
-    case error::code_unknown:
+    case error::code::unknown:
       return U"Unknown error";
     }
 
@@ -83,7 +83,7 @@ namespace plorth
   {
     std::shared_ptr<error> err;
 
-    if (!that || !that->is(type_error))
+    if (!is(that, type::error))
     {
       return false;
     }
@@ -135,10 +135,12 @@ namespace plorth
   {
     std::shared_ptr<value> err;
 
-    if (ctx->pop(err, value::type_error))
+    if (ctx->pop(err, value::type::error))
     {
       ctx->push(err);
-      ctx->push_int(std::static_pointer_cast<error>(err)->code());
+      ctx->push_int(static_cast<number::int_type>(
+        std::static_pointer_cast<error>(err)->code()
+      ));
     }
   }
 
@@ -160,9 +162,9 @@ namespace plorth
   {
     std::shared_ptr<value> err;
 
-    if (ctx->pop(err, value::type_error))
+    if (ctx->pop(err, value::type::error))
     {
-      const unistring& message = std::static_pointer_cast<error>(err)->message();
+      const auto& message = std::static_pointer_cast<error>(err)->message();
 
       ctx->push(err);
       if (message.empty())
@@ -195,7 +197,7 @@ namespace plorth
   {
     std::shared_ptr<value> err;
 
-    if (ctx->pop(err, value::type_error))
+    if (ctx->pop(err, value::type::error))
     {
       const auto position = std::static_pointer_cast<error>(err)->position();
 
@@ -228,7 +230,7 @@ namespace plorth
   {
     std::shared_ptr<value> err;
 
-    if (ctx->pop(err, value::type_error))
+    if (ctx->pop(err, value::type::error))
     {
       ctx->error(std::static_pointer_cast<error>(err));
     }

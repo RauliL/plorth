@@ -35,7 +35,7 @@ namespace plorth
     // Do not import empty paths.
     if (path.empty() || std::all_of(path.begin(), path.end(), unichar_isspace))
     {
-      error(error::code_import, U"Empty import path.");
+      error(error::code::import, U"Empty import path.");
 
       return false;
     }
@@ -49,7 +49,7 @@ namespace plorth
     // First attempt to resolve the module path into actual file system path.
     if (!module_resolve_path(this, path, resolved_path))
     {
-      error(error::code_import, U"No such file or directory: " + path);
+      error(error::code::import, U"No such file or directory: " + path);
 
       return false;
     }
@@ -77,7 +77,7 @@ namespace plorth
     // context.
     for (const auto& property : module->entries())
     {
-      if (property.second && property.second->is(value::type_quote))
+      if (value::is(property.second, value::type::quote))
       {
         m_dictionary.insert(m_runtime->word(
           m_runtime->symbol(property.first),
@@ -88,7 +88,7 @@ namespace plorth
 
     return true;
 #else
-    error(error::code_import, U"Modules have been disabled.");
+    error(error::code::import, U"Modules have been disabled.");
 
     return false;
 #endif
@@ -107,7 +107,7 @@ namespace plorth
 
     if (!is.good())
     {
-      ctx->error(error::code_import, U"Unable to import `" + path + U"'");
+      ctx->error(error::code::import, U"Unable to import `" + path + U"'");
 
       return std::shared_ptr<object>();
     }
@@ -122,7 +122,7 @@ namespace plorth
     if (!utf8_decode_test(raw_source, source))
     {
       ctx->error(
-        error::code_import,
+        error::code::import,
         U"Unable to decode source code into UTF-8."
       );
 
@@ -144,7 +144,7 @@ namespace plorth
       {
         ctx->error(module_ctx->error());
       } else {
-        ctx->error(error::code_import, U"Module import failed.");
+        ctx->error(error::code::import, U"Module import failed.");
       }
 
       return std::shared_ptr<object>();

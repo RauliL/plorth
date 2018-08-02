@@ -158,7 +158,7 @@ namespace plorth
     const size_type len = length();
     std::shared_ptr<string> str;
 
-    if (!that || !that->is(type_string))
+    if (!is(that, type::string))
     {
       return false;
     }
@@ -1132,7 +1132,7 @@ namespace plorth
       {
         ctx->push_number(str);
       } else {
-        ctx->error(error::code_value, U"Could not convert string to number.");
+        ctx->error(error::code::value, U"Could not convert string to number.");
       }
     }
   }
@@ -1207,7 +1207,7 @@ namespace plorth
       {
         ctx->push_string(nullptr, 0);
       } else {
-        ctx->error(error::code_range, U"Invalid repeat count.");
+        ctx->error(error::code::range, U"Invalid repeat count.");
       }
     }
   }
@@ -1248,7 +1248,7 @@ namespace plorth
 
       if (!length || index < 0 || index >= static_cast<number::int_type>(length))
       {
-        ctx->error(error::code_range, U"String index out of bounds.");
+        ctx->error(error::code::range, U"String index out of bounds.");
         return;
       }
 
@@ -1280,7 +1280,7 @@ namespace plorth
 
       if (!length)
       {
-        ctx->error(error::code_value, U"Cannot construct empty symbol.");
+        ctx->error(error::code::value, U"Cannot construct empty symbol.");
         return;
       }
       for (string::size_type i = 0; i < length; ++i)
@@ -1288,7 +1288,7 @@ namespace plorth
         if (!unichar_isword(str->at(i)))
         {
           ctx->error(
-            error::code_value,
+            error::code::value,
             U"Cannot convert " + str->to_source() + U" into symbol."
           );
           return;

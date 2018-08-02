@@ -397,6 +397,18 @@ namespace plorth
     }
   }
 
+  static inline void type_test(const std::shared_ptr<context>& ctx,
+                               enum value::type type)
+  {
+    std::shared_ptr<value> val;
+
+    if (ctx->pop(val))
+    {
+      ctx->push(val);
+      ctx->push_boolean(value::is(val, type));
+    }
+  }
+
   /**
    * Word: array?
    *
@@ -411,13 +423,7 @@ namespace plorth
    */
   static void w_is_array(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<class value> value;
-
-    if (ctx->pop(value))
-    {
-      ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_array));
-    }
+    type_test(ctx, value::type::array);
   }
 
   /**
@@ -434,13 +440,7 @@ namespace plorth
    */
   static void w_is_boolean(const std::shared_ptr<context>& ctx)
   {
-    std::shared_ptr<class value> value;
-
-    if (ctx->pop(value))
-    {
-      ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_boolean));
-    }
+    type_test(ctx, value::type::boolean);
   }
 
   /**
@@ -462,7 +462,7 @@ namespace plorth
     if (ctx->pop(value))
     {
       ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_error));
+      ctx->push_boolean(value::is(value, value::type::error));
     }
   }
 
@@ -485,7 +485,7 @@ namespace plorth
     if (ctx->pop(value))
     {
       ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_number));
+      ctx->push_boolean(value::is(value, value::type::number));
     }
   }
 
@@ -508,7 +508,7 @@ namespace plorth
     if (ctx->pop(value))
     {
       ctx->push(value);
-      ctx->push_boolean(!value);
+      ctx->push_boolean(value::is(value, value::type::null));
     }
   }
 
@@ -531,7 +531,7 @@ namespace plorth
     if (ctx->pop(value))
     {
       ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_object));
+      ctx->push_boolean(value::is(value, value::type::object));
     }
   }
 
@@ -554,7 +554,7 @@ namespace plorth
     if (ctx->pop(value))
     {
       ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_quote));
+      ctx->push_boolean(value::is(value, value::type::quote));
     }
   }
 
@@ -577,7 +577,7 @@ namespace plorth
     if (ctx->pop(value))
     {
       ctx->push(value);
-      ctx->push_boolean(value && value->is(value::type_string));
+      ctx->push_boolean(value::is(value, value::type::string));
     }
   }
 
@@ -600,7 +600,7 @@ namespace plorth
     if (ctx->pop(val))
     {
       ctx->push(val);
-      ctx->push_boolean(val && val->is(value::type_symbol));
+      ctx->push_boolean(value::is(val, value::type::symbol));
     }
   }
 
@@ -623,7 +623,7 @@ namespace plorth
     if (ctx->pop(val))
     {
       ctx->push(val);
-      ctx->push_boolean(val && val->is(value::type_word));
+      ctx->push_boolean(value::is(val, value::type::word));
     }
   }
 
@@ -682,8 +682,7 @@ namespace plorth
       ctx->push(val);
 
       if (!obj->own_property(U"prototype", prototype1) ||
-          !prototype1 ||
-          !prototype1->is(value::type_object) ||
+          !value::is(prototype1, value::type::object) ||
           !prototype2)
       {
         ctx->push_boolean(false);
@@ -699,8 +698,7 @@ namespace plorth
               U"__proto__",
               prototype2
              ) &&
-             prototype2 &&
-             prototype2->is(value::type_object))
+            value::is(prototype2, value::type::object))
       {
         if (prototype1->equals(prototype2))
         {
@@ -762,7 +760,7 @@ namespace plorth
     {
       return;
     }
-    else if (value && value->is(value::type_boolean))
+    else if (value::is(value, value::type::boolean))
     {
       ctx->push(value);
     } else {
@@ -897,7 +895,7 @@ namespace plorth
 
       if (size < 0)
       {
-        ctx->error(error::code_range, U"Negative array size.");
+        ctx->error(error::code::range, U"Negative array size.");
         return;
       }
 
@@ -1229,12 +1227,12 @@ namespace plorth
 
     if (val)
     {
-      if (val->is(value::type_string))
+      if (val->is(value::type::string))
       {
         message = std::static_pointer_cast<string>(val)->to_string();
       } else {
         ctx->error(
-          error::code_type,
+          error::code::type,
           U"Expected string, got " + val->type_description() + U" instead."
         );
         return;
@@ -1258,7 +1256,7 @@ namespace plorth
    */
   static void w_type_error(const std::shared_ptr<context>& ctx)
   {
-    make_error(ctx, error::code_type);
+    make_error(ctx, error::code::type);
   }
 
   /**
@@ -1275,7 +1273,7 @@ namespace plorth
    */
   static void w_value_error(const std::shared_ptr<context>& ctx)
   {
-    make_error(ctx, error::code_value);
+    make_error(ctx, error::code::value);
   }
 
   /**
@@ -1292,7 +1290,7 @@ namespace plorth
    */
   static void w_range_error(const std::shared_ptr<context>& ctx)
   {
-    make_error(ctx, error::code_range);
+    make_error(ctx, error::code::range);
   }
 
   /**
@@ -1309,7 +1307,7 @@ namespace plorth
    */
   static void w_unknown_error(const std::shared_ptr<context>& ctx)
   {
-    make_error(ctx, error::code_unknown);
+    make_error(ctx, error::code::unknown);
   }
 
   /**
@@ -1328,11 +1326,11 @@ namespace plorth
     io::input::size_type read;
     auto result = ctx->runtime()->read(0, output, read);
 
-    if (result == io::input::result_failure)
+    if (result == io::input::result::failure)
     {
-      ctx->error(error::code_io, U"Unable to decode input as UTF-8.");
+      ctx->error(error::code::io, U"Unable to decode input as UTF-8.");
     }
-    else if (result == io::input::result_eof && output.empty())
+    else if (result == io::input::result::eof && output.empty())
     {
       ctx->push_null();
     } else {
@@ -1368,21 +1366,21 @@ namespace plorth
 
       if (amount < 0)
       {
-        ctx->error(error::code_range, U"Negative size to be read.");
+        ctx->error(error::code::range, U"Negative size to be read.");
         return;
       }
       else if (amount == 0)
       {
-        ctx->error(error::code_range, U"Zero size to be read.");
+        ctx->error(error::code::range, U"Zero size to be read.");
         return;
       }
       result = ctx->runtime()->read(amount, output, read);
-      if (result == io::input::result_failure)
+      if (result == io::input::result::failure)
       {
-        ctx->error(error::code_io, U"Unable to decode input as UTF-8.");
+        ctx->error(error::code::io, U"Unable to decode input as UTF-8.");
         return;
       }
-      else if (result == io::input::result_eof && output.empty())
+      else if (result == io::input::result::eof && output.empty())
       {
         ctx->push_null();
       } else {
@@ -1453,7 +1451,7 @@ namespace plorth
 
       if (!unichar_validate(c))
       {
-        ctx->error(error::code_range, U"Invalid Unicode code point.");
+        ctx->error(error::code::range, U"Invalid Unicode code point.");
       } else {
         ctx->runtime()->print(unistring(1, static_cast<unichar>(c)));
       }

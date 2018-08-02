@@ -47,11 +47,11 @@ namespace plorth
 
           if (byte == eof)
           {
-            return result_eof;
+            return result::eof;
           }
           else if (!(unichar_size = utf8_sequence_length(byte)))
           {
-            return result_failure;
+            return result::failure;
           }
           buffer.clear();
           buffer.append(1, byte);
@@ -59,13 +59,13 @@ namespace plorth
           {
             if ((byte = std::cin.get()) == eof)
             {
-              return result_failure;
+              return result::failure;
             }
             buffer.append(1, byte);
           }
           if (!utf8_decode_test(buffer, output))
           {
-            return result_failure;
+            return result::failure;
           }
           if (!infinite)
           {
@@ -74,7 +74,7 @@ namespace plorth
           ++read;
         }
 
-        return result_ok;
+        return result::ok;
       }
     };
 
@@ -85,7 +85,7 @@ namespace plorth
       {
         read = 0;
 
-        return result_eof;
+        return result::eof;
       }
     };
   }
