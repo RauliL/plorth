@@ -19,7 +19,7 @@ If you are planning on using the command line interface, you will also need to
 execute the following command to pull in external dependencies used by it:
 
 ```bash
-$ git submodule --init
+$ git submodule update --init
 ```
 
 ## Compiling
