@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
-PROJECT(plorth-webassembly C CXX)
+PROJECT(plorth-webassembly CXX)
 
 IF(NOT DEFINED ENV{EMSCRIPTEN})
   MESSAGE(FATAL_ERROR "Emscripten environment variable wasn't found.")
