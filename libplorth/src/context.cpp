@@ -129,7 +129,7 @@ namespace plorth
 
       return true;
     }
-    error(error::code_range, U"Stack underflow.");
+    error(error::code::range, U"Stack underflow.");
 
     return false;
   }
@@ -140,12 +140,14 @@ namespace plorth
     {
       const auto& value = m_data.back();
 
-      if ((!value && type != value::type_null) || (value && !value->is(type)))
+      if (!value::is(value, type))
       {
         error(
-          error::code_type,
-          U"Expected " + value::type_description(type) + U", got " +
-          (value ? value->type_description().c_str() : U"null") +
+          error::code::type,
+          U"Expected " +
+          value::type_description(type) +
+          U", got " +
+          value::type_description(value ? value->type() : value::type::null) +
           U" instead."
         );
 
@@ -155,7 +157,7 @@ namespace plorth
 
       return true;
     }
-    error(error::code_range, U"Stack underflow.");
+    error(error::code::range, U"Stack underflow.");
 
     return false;
   }
@@ -169,7 +171,7 @@ namespace plorth
 
       return true;
     }
-    error(error::code_range, U"Stack underflow.");
+    error(error::code::range, U"Stack underflow.");
 
     return false;
   }
@@ -179,12 +181,14 @@ namespace plorth
     if (!m_data.empty())
     {
       slot = m_data.back();
-      if ((!slot && type != value::type_null) || (slot && !slot->is(type)))
+      if (!value::is(slot, type))
       {
         error(
-          error::code_type,
-          U"Expected " + value::type_description(type) + U", got " +
-          (slot ? slot->type_description().c_str() : U"null") +
+          error::code::type,
+          U"Expected " +
+          value::type_description(type) +
+          U", got " +
+          value::type_description(slot ? slot->type() : value::type::null) +
           U" instead."
         );
 
@@ -194,7 +198,7 @@ namespace plorth
 
       return true;
     }
-    error(error::code_range, U"Stack underflow.");
+    error(error::code::range, U"Stack underflow.");
 
     return false;
   }
@@ -203,7 +207,7 @@ namespace plorth
   {
     std::shared_ptr<class value> value;
 
-    if (!pop(value, value::type_boolean))
+    if (!pop(value, value::type::boolean))
     {
       return false;
     }
@@ -230,36 +234,36 @@ namespace plorth
 
   bool context::pop_number(std::shared_ptr<number>& slot)
   {
-    return typed_context_pop<number>(this, slot, value::type_number);
+    return typed_context_pop<number>(this, slot, value::type::number);
   }
 
   bool context::pop_string(std::shared_ptr<string>& slot)
   {
-    return typed_context_pop<string>(this, slot, value::type_string);
+    return typed_context_pop<string>(this, slot, value::type::string);
   }
 
   bool context::pop_array(std::shared_ptr<array>& slot)
   {
-    return typed_context_pop<array>(this, slot, value::type_array);
+    return typed_context_pop<array>(this, slot, value::type::array);
   }
 
   bool context::pop_object(std::shared_ptr<object>& slot)
   {
-    return typed_context_pop<object>(this, slot, value::type_object);
+    return typed_context_pop<object>(this, slot, value::type::object);
   }
 
   bool context::pop_quote(std::shared_ptr<quote>& slot)
   {
-    return typed_context_pop<quote>(this, slot, value::type_quote);
+    return typed_context_pop<quote>(this, slot, value::type::quote);
   }
 
   bool context::pop_symbol(std::shared_ptr<symbol>& slot)
   {
-    return typed_context_pop<symbol>(this, slot, value::type_symbol);
+    return typed_context_pop<symbol>(this, slot, value::type::symbol);
   }
 
   bool context::pop_word(std::shared_ptr<word>& slot)
   {
-    return typed_context_pop<word>(this, slot, value::type_word);
+    return typed_context_pop<word>(this, slot, value::type::word);
   }
 }

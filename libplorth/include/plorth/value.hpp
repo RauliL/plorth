@@ -43,28 +43,28 @@ namespace plorth
     /**
      * Enumeration of different supported value types.
      */
-    enum type
+    enum class type
     {
       /** Value for null. */
-      type_null,
+      null = 0,
       /** Boolean values. */
-      type_boolean,
+      boolean = 1,
       /** Number (floating point) values. */
-      type_number,
+      number = 2,
       /** String (Unicode) values. */
-      type_string,
+      string = 3,
       /** Array values. */
-      type_array,
+      array = 4,
       /** Other type of objects. */
-      type_object,
+      object = 5,
       /** Symbols. */
-      type_symbol,
+      symbol = 6,
       /** Quotes. */
-      type_quote,
+      quote = 7,
       /** Words. */
-      type_word,
+      word = 8,
       /** Errors. */
-      type_error
+      error = 9
     };
 
     /**
@@ -83,12 +83,20 @@ namespace plorth
     static unistring type_description(enum type type);
 
     /**
+     * Tests whether given value is of given type.
+     */
+    static inline bool is(const std::shared_ptr<value>& val, enum type t)
+    {
+      return val ? val->is(t) : t == type::null;
+    }
+
+    /**
      * Tests whether the value is of given type.
      */
     inline bool is(enum type t) const
     {
       return type() == t;
-    };
+    }
 
     /**
      * Determines prototype object of the value, based on it's type. If the

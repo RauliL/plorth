@@ -37,7 +37,7 @@ namespace plorth
   {
     std::shared_ptr<word> w;
 
-    if (!that || !that->is(type_word))
+    if (!is(that, type::word))
     {
       return false;
     }

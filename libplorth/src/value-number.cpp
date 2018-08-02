@@ -53,7 +53,7 @@ namespace plorth
 
       enum number_type number_type() const
       {
-        return number_type_int;
+        return number_type::integer;
       }
 
       int_type as_int() const
@@ -78,7 +78,7 @@ namespace plorth
 
       enum number_type number_type() const
       {
-        return number_type_real;
+        return number_type::real;
       }
 
       int_type as_int() const
@@ -111,12 +111,12 @@ namespace plorth
   {
     std::shared_ptr<number> num;
 
-    if (!that || !that->is(type_number))
+    if (!value::is(that, type::number))
     {
       return false;
     }
     num = std::static_pointer_cast<number>(that);
-    if (is(number_type_real) || num->is(number_type_real))
+    if (is(number_type::real) || num->is(number_type::real))
     {
       return as_real() == num->as_real();
     } else {
@@ -126,7 +126,7 @@ namespace plorth
 
   unistring number::to_string() const
   {
-    if (is(number_type_real))
+    if (is(number_type::real))
     {
       return to_unistring(as_real());
     } else {
@@ -223,7 +223,7 @@ namespace plorth
     if (ctx->pop_number(num))
     {
       ctx->push(num);
-      if (num->is(number::number_type_real))
+      if (num->is(number::number_type::real))
       {
         ctx->push_boolean(std::isnan(num->as_real()));
       } else {
@@ -252,7 +252,7 @@ namespace plorth
     if (ctx->pop_number(num))
     {
       ctx->push(num);
-      if (num->is(number::number_type_real))
+      if (num->is(number::number_type::real))
       {
         ctx->push_boolean(std::isfinite(num->as_real()));
       } else {
@@ -278,7 +278,7 @@ namespace plorth
 
     if (ctx->pop_number(num) && ctx->pop_quote(quo))
     {
-      number::int_type count = num->as_int();
+      auto count = num->as_int();
 
       if (count < 0)
       {
@@ -313,7 +313,7 @@ namespace plorth
 
     if (ctx->pop_number(num))
     {
-      if (num->is(number::number_type_real))
+      if (num->is(number::number_type::real))
       {
         ctx->push_real(std::fabs(num->as_real()));
       } else {
@@ -340,7 +340,7 @@ namespace plorth
 
     if (ctx->pop_number(num))
     {
-      if (num->is(number::number_type_real))
+      if (num->is(number::number_type::real))
       {
         ctx->push_int(std::round(num->as_real()));
       } else {
@@ -367,7 +367,7 @@ namespace plorth
 
     if (ctx->pop_number(num))
     {
-      if (num->is(number::number_type_real))
+      if (num->is(number::number_type::real))
       {
         ctx->push_int(std::ceil(num->as_real()));
       } else {
@@ -394,7 +394,7 @@ namespace plorth
 
     if (ctx->pop_number(num))
     {
-      if (num->is(number::number_type_real))
+      if (num->is(number::number_type::real))
       {
         ctx->push_int(std::floor(num->as_real()));
       } else {
@@ -423,7 +423,7 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
+      if (a->is(number::number_type::real) || b->is(number::number_type::real))
       {
         ctx->push(a->as_real() > b->as_real() ? a : b);
       } else {
@@ -452,7 +452,7 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
+      if (a->is(number::number_type::real) || b->is(number::number_type::real))
       {
         ctx->push(a->as_real() < b->as_real() ? a : b);
       } else {
@@ -483,9 +483,9 @@ namespace plorth
 
     if (ctx->pop_number(c) && ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real)
-          || b->is(number::number_type_real)
-          || c->is(number::number_type_real))
+      if (a->is(number::number_type::real)
+          || b->is(number::number_type::real)
+          || c->is(number::number_type::real))
       {
         const number::real_type min = a->as_real();
         const number::real_type max = b->as_real();
@@ -501,9 +501,9 @@ namespace plorth
         }
         ctx->push_real(number);
       } else {
-        const number::int_type min = a->as_int();
-        const number::int_type max = b->as_int();
-        number::int_type number = c->as_int();
+        const auto min = a->as_int();
+        const auto max = b->as_int();
+        auto number = c->as_int();
 
         if (number > max)
         {
@@ -541,9 +541,9 @@ namespace plorth
 
     if (ctx->pop_number(c) && ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real)
-          || b->is(number::number_type_real)
-          || c->is(number::number_type_real))
+      if (a->is(number::number_type::real)
+          || b->is(number::number_type::real)
+          || c->is(number::number_type::real))
       {
         const number::real_type min = a->as_real();
         const number::real_type max = b->as_real();
@@ -560,7 +560,7 @@ namespace plorth
     }
   }
 
-  template< typename RealOperation, typename IntOperation >
+  template<class RealOperation, class IntOperation>
   static void number_op(
     const std::shared_ptr<context>& ctx,
     const RealOperation& real_op,
@@ -578,8 +578,8 @@ namespace plorth
 
     result = real_op(a->as_real(), b->as_real());
 
-    if (a->is(number::number_type_int) &&
-        b->is(number::number_type_int) &&
+    if (a->is(number::number_type::integer) &&
+        b->is(number::number_type::integer) &&
         std::fabs(result) <= number::int_max)
     {
       // Repeat the operation with full integer precision
@@ -861,7 +861,7 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
+      if (a->is(number::number_type::real) || b->is(number::number_type::real))
       {
         ctx->push_boolean(a->as_real() < b->as_real());
       } else {
@@ -890,7 +890,7 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
+      if (a->is(number::number_type::real) || b->is(number::number_type::real))
       {
         ctx->push_boolean(a->as_real() > b->as_real());
       } else {
@@ -919,7 +919,7 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
+      if (a->is(number::number_type::real) || b->is(number::number_type::real))
       {
         ctx->push_boolean(a->as_real() <= b->as_real());
       } else {
@@ -949,7 +949,7 @@ namespace plorth
 
     if (ctx->pop_number(b) && ctx->pop_number(a))
     {
-      if (a->is(number::number_type_real) || b->is(number::number_type_real))
+      if (a->is(number::number_type::real) || b->is(number::number_type::real))
       {
         ctx->push_boolean(a->as_real() >= b->as_real());
       } else {

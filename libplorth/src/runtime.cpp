@@ -140,7 +140,7 @@ namespace plorth
     }
     read = 0;
 
-    return io::input::result_eof;
+    return io::input::result::eof;
   }
 
   void runtime::print(const unistring& str) const

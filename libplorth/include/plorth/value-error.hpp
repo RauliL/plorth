@@ -34,24 +34,24 @@ namespace plorth
   class error : public value
   {
   public:
-    enum code
+    enum class code
     {
       /** Syntax error. */
-      code_syntax = 1,
+      syntax = 1,
       /** Reference error. */
-      code_reference = 2,
+      reference = 2,
       /** Type error. */
-      code_type = 3,
+      type = 3,
       /** Value error. */
-      code_value = 4,
+      value = 4,
       /** Range error. */
-      code_range = 5,
+      range = 5,
       /** Import error. */
-      code_import = 6,
+      import = 6,
       /** I/O error. */
-      code_io = 7,
+      io = 7,
       /** Unknown error. */
-      code_unknown = 100
+      unknown = 100
     };
 
     /**
@@ -62,9 +62,11 @@ namespace plorth
      * \param position Optional position in source code where the error
      *                 occurred.
      */
-    explicit error(enum code code,
-                   const unistring& message,
-                   const struct position* position = nullptr);
+    explicit error(
+      enum code code,
+      const unistring& message,
+      const struct position* position = nullptr
+    );
 
     ~error();
 
@@ -99,7 +101,7 @@ namespace plorth
 
     inline enum type type() const
     {
-      return type_error;
+      return type::error;
     }
 
     bool equals(const std::shared_ptr<value>& that) const;

@@ -363,7 +363,7 @@ namespace plorth
     std::shared_ptr<object> obj;
     std::shared_ptr<value> slot;
 
-    if (!that || !that->is(type_object))
+    if (!is(that, type::object))
     {
       return false;
     }
@@ -636,10 +636,9 @@ namespace plorth
     }
 
     if (!obj->own_property(U"prototype", prototype)
-        || !prototype
-        || !prototype->is(value::type_object))
+        || !value::is(prototype, value::type::object))
     {
-      ctx->error(error::code_type, U"Object has no prototype.");
+      ctx->error(error::code::type, U"Object has no prototype.");
       return;
     }
 
@@ -648,8 +647,7 @@ namespace plorth
     if (std::static_pointer_cast<object>(prototype)->property(runtime,
                                                               U"constructor",
                                                               constructor)
-        && constructor
-        && constructor->is(value::type_quote))
+        && value::is(constructor, value::type::quote))
     {
       std::static_pointer_cast<quote>(constructor)->call(ctx);
     }
@@ -686,7 +684,7 @@ namespace plorth
         ctx->push(val);
       } else {
         ctx->error(
-          error::code_range,
+          error::code::range,
           U"No such property: `" + id->to_string() + U"'"
         );
       }
@@ -754,7 +752,7 @@ namespace plorth
       if (!obj->has_own_property(name))
       {
         ctx->error(
-          error::code_range,
+          error::code::range,
           U"No such property: `" + name + U"'"
         );
       }

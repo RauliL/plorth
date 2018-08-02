@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
-PROJECT(plorth-gui C CXX)
+PROJECT(plorth-gui CXX)
 
 FIND_PACKAGE(PkgConfig)
 

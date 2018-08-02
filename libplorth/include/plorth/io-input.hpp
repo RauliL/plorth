@@ -44,14 +44,14 @@ namespace plorth
       /**
        * Represents results of read operation.
        */
-      enum result
+      enum class result
       {
         /** Reading from standard input stream was successful. */
-        result_ok,
+        ok = 1,
         /** End of input was encountered. */
-        result_eof,
+        eof = -1,
         /** Unicode decoding error was encountered. */
-        result_failure
+        failure = 0
       };
 
       /**

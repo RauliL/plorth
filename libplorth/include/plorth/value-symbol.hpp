@@ -80,7 +80,7 @@ namespace plorth
 
     inline enum type type() const
     {
-      return type_symbol;
+      return type::symbol;
     }
 
     bool equals(const std::shared_ptr<value>& that) const;

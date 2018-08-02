@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-PROJECT(libplorth C CXX)
+PROJECT(libplorth CXX)
 
 INCLUDE(CheckIncludeFile)
 INCLUDE(CheckFunctionExists)

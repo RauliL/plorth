@@ -48,10 +48,10 @@ namespace plorth
     /**
      * Enumeration for different supported number types.
      */
-    enum number_type
+    enum class number_type
     {
-      number_type_int,
-      number_type_real
+      integer = 0,
+      real = 1
     };
 
     /**
@@ -79,7 +79,7 @@ namespace plorth
 
     inline enum type type() const
     {
-      return type_number;
+      return type::number;
     }
 
     bool equals(const std::shared_ptr<class value>& that) const;

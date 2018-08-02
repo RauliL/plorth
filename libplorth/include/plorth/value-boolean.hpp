@@ -42,7 +42,7 @@ namespace plorth
 
     inline enum type type() const
     {
-      return type_boolean;
+      return type::boolean;
     }
 
     bool equals(const std::shared_ptr<class value>& that) const;
