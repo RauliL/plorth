@@ -36,7 +36,7 @@ ADD_EXECUTABLE(
   ../libplorth/src/value-string.cpp
   ../libplorth/src/value-symbol.cpp
   ../libplorth/src/value-word.cpp
-  ../cli/src/repl.cpp
+  ../cli/src/api.cpp
   src/main.cpp
 )
 

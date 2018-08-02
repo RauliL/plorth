@@ -35,7 +35,13 @@ static std::shared_ptr<context> plorth_context;
 
 static void plorth_initialize();
 
-void initialize_repl_api(const std::shared_ptr<runtime>&);
+namespace plorth
+{
+  namespace cli
+  {
+    void initialize_repl_api(const std::shared_ptr<runtime>&);
+  }
+}
 
 /**
  * Compiles and executes given source code.
@@ -125,5 +131,5 @@ static void plorth_initialize()
   memory_manager = new memory::manager();
   plorth_runtime = runtime::make(*memory_manager);
   plorth_context = context::make(plorth_runtime);
-  initialize_repl_api(plorth_runtime);
+  plorth::cli::initialize_repl_api(plorth_runtime);
 }
