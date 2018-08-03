@@ -1,0 +1,24 @@
+#!/usr/bin/env plorth
+#
+# Simple assertions for Plorth.
+#
+
+# Takes either quote or boolean value as argument. If the value is a boolean
+# value of false, an error with message "Assertion failed" will be thrown. If
+# the value is an quote, it will be executed. If the result of the execution is
+# false, an error with message "Assertion failed" and source code of the quote
+# will be thrown.
+: assert
+  quote?
+  (
+    dup call
+    ( drop )
+    ( >source "Assertion failed: " swap + unknown-error throw )
+    if-else
+  )
+  (
+    not
+    ( "Assertion failed." unknown-error throw )
+  )
+  if-else
+;
