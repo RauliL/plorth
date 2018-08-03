@@ -1,54 +1,63 @@
-"./framework" import
+#!/usr/bin/env plorth
+
+"../runtime/test" import
+
+"quote prototype"
+(
+  "call"
+  (
+    ( ( true ) call ) assert
+    ( ( 1 dup + ) call 2 = ) assert
+  ) it
+
+  "compose"
+  (
+    ( ( 1 ) ( 2 ) compose quote? nip ) assert
+    ( ( 1 ) ( 2 ) compose call + 3 = ) assert
+  ) it
+
+  "curry"
+  (
+    ( 1 ( dup + ) curry quote? nip ) assert
+    ( 1 ( dup + ) curry call 2 = ) assert
+  ) it
+
+  "negate"
+  (
+    ( ( true ) negate quote? nip ) assert
+    ( ( true ) negate call not ) assert
+  ) it
+
+  "dip"
+  (
+    ( "foo" ( depth 1 = ) dip "foo" = and ) assert
+  ) it
+
+  "2dip"
+  (
+    ( "foo" "bar" ( depth 1 = ) 2dip "bar" = swap "foo" = and and ) assert
+  ) it
+
+  ">word"
+  (
+    ( "foo" >symbol ( bar ) >word word? nip ) assert
+  ) it
+) describe
 
 "quote literals"
-[
-  ( ( ) quote? nip ),
-  ( ( 1 2 + ) typeof "quote" = nip ),
-]
-test-case
+(
+  "empty"
+  (
+    ( () quote? nip ) assert
+  ) it
 
-"call"
-[
-  ( ( true ) call ),
-  ( ( 1 1 + ) call 2 = ),
-]
-test-case
+  "non-empty"
+  (
+    ( ( 1 2 + ) typeof "quote" = nip ) assert
+  ) it
 
-"compose"
-[
-  ( ( 1 ) ( 2 ) compose quote? nip ),
-  ( ( 1 ) ( 2 ) compose call + 3 = ),
-]
-test-case
-
-"curry"
-[
-  ( 1 ( dup + ) curry quote? nip ),
-  ( 1 ( dup + ) curry call 2 = ),
-]
-test-case
-
-"negate"
-[
-  ( ( true ) negate quote? nip ),
-  ( ( true ) negate call not ),
-]
-test-case
-
-"dip"
-[
-  ( "foo" ( depth 1 = ) dip "foo" = and ),
-]
-test-case
-
-"2dip"
-[
-  ( "foo" "bar" ( depth 1 = ) 2dip "bar" = swap "foo" = and and ),
-]
-test-case
-
-">word"
-[
-  ( "foo" >symbol ( bar ) >word word? nip ),
-]
-test-case
+  "recursive"
+  (
+    ( ( 1 ( 2 ( 3 ) ) ) quote? swap call quote? nip nip and ) assert
+  ) it
+) describe

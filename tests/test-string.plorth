@@ -1,198 +1,221 @@
-"./framework" import
+#!/usr/bin/env plorth
 
-"length"
-[
-  ( "" length nip 0 = ),
-  ( "foo" length nip 3 = ),
-]
-test-case
+"../runtime/test" import
 
-"chars"
-[
-  ( "" chars nip [] = ),
-  ( "foo" chars nip ["f", "o", "o"] = ),
-]
-test-case
+"string prototype"
+(
+  "length"
+  (
+    ( "" length nip 0 = ) assert
+    ( "foo" length nip 3 = ) assert
+  ) it
 
-"runes"
-[
-  ( "" runes nip [] = ),
-  ( "foo" runes nip [102, 111, 111] = ),
-]
-test-case
+  "chars"
+  (
+    ( "" chars nip [] = ) assert
+    ( "foo" chars nip ["f", "o", "o"] = ) assert
+  ) it
 
-"words"
-[
-  ( "" words nip length nip 0 = ),
-  ( "foo" words nip length nip 1 = ),
-  ( "foo\tbar" words nip length nip 2 = ),
-  ( "foo\r\n \tbar" words nip length nip 2 = ),
-]
-test-case
+  "runes"
+  (
+    ( "" runes nip [] = ) assert
+    ( "foo" runes nip [102, 111, 111] = ) assert
+  ) it
 
-"lines"
-[
-  ( "foo" lines nip length 1 = nip ),
-  ( "foo\nbar" lines nip length 2 = nip ),
-  ( "foo\r\nbar" lines nip length 2 = nip ),
-  ( "foo\rbar" lines nip length 2 = nip ),
-]
-test-case
+  "words"
+  (
+    ( "" words nip length nip 0 = ) assert
+    ( "foo" words nip length nip 1 = ) assert
+    ( "foo\tbar" words nip length nip 2 = ) assert
+    ( "foo\r\n \tbar" words nip length nip 2 = ) assert
+  ) it
 
-"includes?"
-[
-  ( "foo" "foobar" includes? nip ),
-  ( "bar" "foobar" includes? nip ),
-  ( "baz" "foobar" includes? not nip ),
-  ( "" "foobar" includes? nip ),
-  ( "foobar" "foo" includes? not nip ),
-]
-test-case
+  "lines"
+  (
+    ( "foo" lines nip length 1 = nip ) assert
+    ( "foo\nbar" lines nip length 2 = nip ) assert
+    ( "foo\r\nbar" lines nip length 2 = nip ) assert
+    ( "foo\rbar" lines nip length 2 = nip ) assert
+  ) it
 
-"index-of"
-[
-  ( "foo" "foobar" index-of nip 0 = ),
-  ( "bar" "foobar" index-of nip 3 = ),
-  ( "baz" "foobar" index-of nip null? nip ),
-  ( "" "foobar" index-of nip 0 = ),
-  ( "foobar" "foo" index-of nip null? nip ),
-]
-test-case
+  "includes?"
+  (
+    ( "foo" "foobar" includes? nip  ) assert
+    ( "bar" "foobar" includes? nip  ) assert
+    ( "baz" "foobar" includes? not nip  ) assert
+    ( "" "foobar" includes? nip  ) assert
+    ( "foobar" "foo" includes? not nip  ) assert
+  ) it
 
-"last-index-of"
-[
-  ( "foo" "foofoobar" last-index-of nip 3 = ),
-  ( "bar" "foobar" last-index-of nip 3 = ),
-  ( "baz" "foobar" last-index-of nip null? nip ),
-  ( "" "foobar" last-index-of nip 6 = ),
-  ( "foobar" "foo" last-index-of nip null? nip ),
-]
-test-case
+  "index-of"
+  (
+    ( "foo" "foobar" index-of nip 0 =  ) assert
+    ( "bar" "foobar" index-of nip 3 =  ) assert
+    ( "baz" "foobar" index-of nip null? nip  ) assert
+    ( "" "foobar" index-of nip 0 =  ) assert
+    ( "foobar" "foo" index-of nip null? nip  ) assert
+  ) it
 
-"starts-with?"
-[
-  ( "foo" "foobar" starts-with? nip ),
-  ( "bar" "foobar" starts-with? nip not ),
-  ( "" "foobar" starts-with? nip ),
-  ( "foobar" "foo" starts-with? nip not ),
-]
-test-case
+  "last-index-of"
+  (
+    ( "foo" "foofoobar" last-index-of nip 3 =  ) assert
+    ( "bar" "foobar" last-index-of nip 3 =  ) assert
+    ( "baz" "foobar" last-index-of nip null? nip  ) assert
+    ( "" "foobar" last-index-of nip 6 =  ) assert
+    ( "foobar" "foo" last-index-of nip null? nip  ) assert
+  ) it
 
-"ends-with?"
-[
-  ( "bar" "foobar" ends-with? nip ),
-  ( "foo" "foobar" ends-with? nip not ),
-  ( "" "foobar" ends-with? nip ),
-  ( "foobar" "foo" ends-with? nip not ),
-]
-test-case
+  "starts-with?"
+  (
+    ( "foo" "foobar" starts-with? nip  ) assert
+    ( "bar" "foobar" starts-with? nip not  ) assert
+    ( "" "foobar" starts-with? nip  ) assert
+    ( "foobar" "foo" starts-with? nip not  ) assert
+  ) it
 
-"space?"
-[
-  ( "" space? not nip ),
-  ( " \t\r\n " space? nip ),
-  ( " foo\t" space? not nip ),
-]
-test-case
+  "ends-with?"
+  (
+    ( "bar" "foobar" ends-with? nip  ) assert
+    ( "foo" "foobar" ends-with? nip not  ) assert
+    ( "" "foobar" ends-with? nip  ) assert
+    ( "foobar" "foo" ends-with? nip not  ) assert
+  ) it
 
-"lower-case?"
-[
-  ( "foo" lower-case? nip ),
-  ( "FOO" lower-case? not nip ),
-]
-test-case
+  "space?"
+  (
+    ( "" space? not nip  ) assert
+    ( " \t\r\n " space? nip  ) assert
+    ( " foo\t" space? not nip  ) assert
+  ) it
 
-"upper-case?"
-[
-  ( "FOO" upper-case? nip ),
-  ( "foo" upper-case? not nip ),
-]
-test-case
+  "lower-case?"
+  (
+    ( "foo" lower-case? nip  ) assert
+    ( "FOO" lower-case? not nip  ) assert
+  ) it
 
-"reverse"
-[
-  ( "foo" reverse "oof" = ),
-]
-test-case
+  "upper-case?"
+  (
+    ( "FOO" upper-case? nip  ) assert
+    ( "foo" upper-case? not nip  ) assert
+  ) it
 
-"upper-case"
-[
-  ( "foo" upper-case "FOO" = ),
-  ( "FOO" upper-case "FOO" = ),
-]
-test-case
+  "reverse"
+  (
+    ( "foo" reverse "oof" =  ) assert
+  ) it
 
-"lower-case"
-[
-  ( "FOO" lower-case "foo" = ),
-  ( "foo" lower-case "foo" = ),
-]
-test-case
+  "upper-case"
+  (
+    ( "foo" upper-case "FOO" =  ) assert
+    ( "FOO" upper-case "FOO" =  ) assert
+  ) it
 
-"swap-case"
-[
-  ( "fooBAR" swap-case "FOObar" = ),
-]
-test-case
+  "lower-case"
+  (
+    ( "FOO" lower-case "foo" =  ) assert
+    ( "foo" lower-case "foo" =  ) assert
+  ) it
 
-"capitalize"
-[
-  ( "foo" capitalize "Foo" = ),
-  ( "FOO" capitalize "Foo" = ),
-]
-test-case
+  "swap-case"
+  (
+    ( "fooBAR" swap-case "FOObar" =  ) assert
+  ) it
 
-"trim"
-[
-  ( " foo " trim "foo" = ),
-  ( "foo" dup trim = ),
-]
-test-case
+  "capitalize"
+  (
+    ( "foo" capitalize "Foo" =  ) assert
+    ( "FOO" capitalize "Foo" =  ) assert
+  ) it
 
-"trim-left"
-[
-  ( " foo" trim-left "foo" = ),
-  ( "foo " dup trim-left = ),
-]
-test-case
+  "trim"
+  (
+    ( " foo " trim "foo" =  ) assert
+    ( "foo" dup trim =  ) assert
+  ) it
 
-"trim-right"
-[
-  ( "foo " trim-right "foo" = ),
-  ( " foo" dup trim-right = ),
-]
-test-case
+  "trim-left"
+  (
+    ( " foo" trim-left "foo" =  ) assert
+    ( "foo " dup trim-left =  ) assert
+  ) it
 
-"+"
-[
-  ( "foo" "bar" + "foobar" = ),
-  ( "foo" "" + "foo" = ),
-  ( "" "bar" + "bar" = ),
-  ( "" dup dup + = ),
-]
-test-case
+  "trim-right"
+  (
+    ( "foo " trim-right "foo" =  ) assert
+    ( " foo" dup trim-right =  ) assert
+  ) it
 
-"*"
-[
-  ( 2 "foo" * "foofoo" = ),
-  ( 0 "foo" * "" = ),
-]
-test-case
+  "+"
+  (
+    ( "foo" "bar" + "foobar" =  ) assert
+    ( "foo" "" + "foo" =  ) assert
+    ( "" "bar" + "bar" =  ) assert
+    ( "" dup dup + =  ) assert
+  ) it
 
-"@"
-[
-  ( 0 "foo" @ "f" = nip ),
-  ( -1 "foo" @ "o" = nip ),
-  ( ( 0 "" @ ) ( drop true ) ( false ) try-else nip ),
-]
-test-case
+  "*"
+  (
+    ( 2 "foo" * "foofoo" =  ) assert
+    ( 0 "foo" * "" =  ) assert
+  ) it
 
-">symbol"
-[
-  ( "foo" >symbol symbol? nip ),
-  ( ( "" >symbol ) ( drop true ) ( false ) try-else ),
-  ( ( "  " >symbol ) ( drop true ) ( false ) try-else ),
-  ( ( ":foo" >symbol ) ( drop true ) ( false ) try-else ),
-  ( ( "(foo)" >symbol ) ( drop true ) ( false ) try-else ),
-]
-test-case
+  "@"
+  (
+    ( 0 "foo" @ "f" = nip  ) assert
+    ( -1 "foo" @ "o" = nip  ) assert
+    ( ( 0 "" @ ) ( drop true ) ( false ) try-else nip  ) assert
+  ) it
+
+  ">symbol"
+  (
+    ( "foo" >symbol symbol? nip  ) assert
+    ( ( "" >symbol ) ( drop true ) ( false ) try-else  ) assert
+    ( ( "  " >symbol ) ( drop true ) ( false ) try-else  ) assert
+    ( ( ":foo" >symbol ) ( drop true ) ( false ) try-else  ) assert
+    ( ( "(foo)" >symbol ) ( drop true ) ( false ) try-else  ) assert
+  ) it
+) describe
+
+"string literals"
+(
+  "empty"
+  (
+    ( "" length 0 = ) assert
+  ) it
+
+  "non-empty"
+  (
+    ( "foo" length 3 = ) assert
+  ) it
+
+  "escape sequences"
+  (
+    ( extract runes nip = assert )
+    {
+      "\b": 8,
+      "\t": 9,
+      "\n": 10,
+      "\f": 12,
+      "\r": 13,
+      "\"": 34,
+      "\'": 39,
+      "\\": 92,
+      "\/": 47,
+      "\u0048": 72,
+      "\u00e4": 228,
+    }
+    entries nip for-each
+  ) it
+
+  "invalid escape sequences"
+  (
+    ( ( compile ) ( drop true ) ( false ) try-else )
+    [
+      "'\\x'",
+      "'\\u00'",
+      "'\\uxxxx'",
+    ]
+    for-each
+  ) it
+) describe

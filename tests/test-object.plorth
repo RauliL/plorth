@@ -1,83 +1,87 @@
-"./framework" import
+#!/usr/bin/env plorth
+
+"../runtime/test" import
+
+"object prototype"
+(
+  "keys"
+  (
+    ( {} keys [] = nip ) assert
+    ( { "a": 1 } keys ["a"] = nip ) assert
+  ) it
+
+  "values"
+  (
+    ( {} values [] = nip ) assert
+    ( { "a": 1 } values [1] = nip ) assert
+  ) it
+
+  "entries"
+  (
+    ( {} entries [] = nip ) assert
+    ( { "a": 1 } entries [["a", 1]] = nip ) assert
+  ) it
+
+  "has?"
+  (
+    ( "a" {} has? not nip ) assert
+    ( "keys" {} has? nip ) assert
+    ( "a" { "a": 1 } has? nip ) assert
+  ) it
+
+  "has-own?"
+  (
+    ( "a" {} has-own? not nip ) assert
+    ( "keys" {} has-own? not nip ) assert
+    ( "a" { "a": 1 } has-own? nip ) assert
+  ) it
+
+  "new"
+  (
+    ( ( {} new ) ( drop true ) ( false ) try-else ) assert
+    ( ( { "prototype": {} } new ) ( false ) ( drop true ) try-else ) assert
+    ( { "prototype": { "a": 1 } } new "a" swap has? nip ) assert
+    (
+      { "prototype": { "constructor": ( 1 "a" rot ! ) } } new "a" swap has? nip
+    ) assert
+  ) it
+
+  "@"
+  (
+    ( "a" { "a": 1 } @ 1 = nip ) assert
+    ( ( "a" {} @ ) ( 2drop true ) ( false ) try-else ) assert
+  ) it
+
+  "!"
+  (
+    ( "a" 2 "a" { "a": 1 } ! @ 2 = nip ) assert
+    ( 1 "a" {} ! { "a": 1 } = ) assert
+  ) it
+
+  "delete"
+  (
+    ( "a" { "a": 1 } delete {} = ) assert
+    ( ( "a" {} delete ) ( drop true ) ( false ) try-else nip ) assert
+  ) it
+
+  "+"
+  (
+    ( { "a": 1 } {} + keys length 1 = nip nip ) assert
+    ( "a" { "a": 1 } { "a": 2 } + @ 2 = nip ) assert
+    ( { "a": 1 } { "b": 2 } + { "a": 1, "b": 2 } = ) assert
+  ) it
+) describe
 
 "object literals"
-[
-  ( {} object? nip ),
-  ( { "a": 1, "b": true, "c": [1, 2, 3] } object? nip ),
-]
-test-case
+(
+  "empty"
+  (
+    ( {} object? swap keys nip length nip 0 = and ) assert
+  ) it
 
-"keys"
-[
-  ( {} keys [] = nip ),
-  ( { "a": 1 } keys ["a"] = nip ),
-]
-test-case
-
-"values"
-[
-  ( {} values [] = nip ),
-  ( { "a": 1 } values [1] = nip ),
-]
-test-case
-
-"entries"
-[
-  ( {} entries [] = nip ),
-  ( { "a": 1 } entries [["a", 1]] = nip ),
-]
-test-case
-
-"has?"
-[
-  ( "a" {} has? not nip ),
-  ( "keys" {} has? nip ),
-  ( "a" { "a": 1 } has? nip ),
-]
-test-case
-
-"has-own?"
-[
-  ( "a" {} has-own? not nip ),
-  ( "keys" {} has-own? not nip ),
-  ( "a" { "a": 1 } has-own? nip ),
-]
-test-case
-
-"new"
-[
-  ( ( {} new ) ( drop true ) ( false ) try-else ),
-  ( ( { "prototype": {} } new ) ( false ) ( drop true ) try-else ),
-  ( { "prototype": { "a": 1 } } new "a" swap has? nip ),
-  ( { "prototype": { "constructor": ( 1 "a" rot ! ) } } new "a" swap has? nip ),
-]
-test-case
-
-"@"
-[
-  ( "a" { "a": 1 } @ 1 = nip ),
-  ( ( "a" {} @ ) ( 2drop true ) ( false ) try-else ),
-]
-test-case
-
-"!"
-[
-  ( "a" 2 "a" { "a": 1 } ! @ 2 = nip ),
-  ( 1 "a" {} ! { "a": 1 } = ),
-]
-test-case
-
-"delete"
-[
-  ( "a" { "a": 1 } delete {} = ),
-  ( ( "a" {} delete ) ( drop true ) ( false ) try-else nip ),
-]
-test-case
-
-"+"
-[
-  ( { "a": 1 } {} + keys length 1 = nip nip ),
-  ( "a" { "a": 1 } { "a": 2 } + @ 2 = nip ),
-  ( { "a": 1 } { "b": 2 } + { "a": 1, "b": 2 } = ),
-]
-test-case
+  "non-empty"
+  (
+    ( { "a": 1, "b": true, "c": [1, 2, 3] } object? nip ) assert
+    ( "a" { "a": 1 } has-own? nip ) assert
+  ) it
+) describe

@@ -1,29 +1,30 @@
-"./framework" import
+#!/usr/bin/env plorth
 
-"and"
-[
-  ( true true and ),
-  ( true false and not ),
-]
-test-case
+"../runtime/test" import
 
-"or"
-[
-  ( false true or ),
-  ( false false or not ),
-]
-test-case
+"boolean prototype"
+(
+  "and"
+  (
+    ( true true and ) assert
+    ( true false and not ) assert
+  ) it
 
-"xor"
-[
-  ( true false xor ),
-  ( false false xor not ),
-]
-test-case
+  "or"
+  (
+    ( false true or ) assert
+    ( false false or not ) assert
+  ) it
 
-"not"
-[
-  ( true not false = ),
-  ( false not true = ),
-]
-test-case
+  "xor"
+  (
+    ( true false xor ) assert
+    ( false dup xor not ) assert
+  ) it
+
+  "not"
+  (
+    ( true not false = ) assert
+    ( false not true = ) assert
+  ) it
+) describe

@@ -1,23 +1,59 @@
-"./framework" import
+#!/usr/bin/env plorth
 
-"instance-of?"
-[
-  ( [] array instance-of? nip ),
-  ( true boolean instance-of? nip ),
-  ( "" string instance-of? nip ),
-  ( {} object instance-of? nip ),
-  ( "foo" >symbol symbol instance-of? nip ),
-  ( [] string instance-of? not nip ),
-  ( "" array instance-of? not nip ),
-  ( {} {} instance-of? not nip ),
-]
-test-case
+"../runtime/test" import
 
-"array constructors"
-[
-  ( 1 1array [1] = ),
-  ( 1 2 2array [1, 2] = ),
-  ( 1 2 3 dup narray [1, 2, 3] = ),
-  ( ( -5 narray ) ( drop true ) ( false ) try-else ),
-]
-test-case
+"global dictionary"
+(
+  "null"
+  (
+    ( null null? nip ) assert
+  ) it
+
+  "true"
+  (
+    ( true ) assert
+  ) it
+
+  "false"
+  (
+    ( false not ) assert
+  ) it
+
+  "inf"
+  (
+    ( 1 0 / >source compile call inf = ) assert
+    ( inf finite? not ) assert
+  ) it
+
+  "-inf"
+  (
+    ( -1 0 / >source compile call -inf = ) assert
+    ( -inf finite? not ) assert
+  ) it
+
+  "nan"
+  (
+    ( 0 0 / >source compile call dup != ) assert
+    ( nan nan? ) assert
+  ) it
+
+  "instance-of?"
+  (
+     ( [] array instance-of? nip ) assert
+     ( true boolean instance-of? nip ) assert
+     ( "" string instance-of? nip ) assert
+     ( {} object instance-of? nip ) assert
+     ( "foo" >symbol symbol instance-of? nip ) assert
+     ( [] string instance-of? not nip ) assert
+     ( "" array instance-of? not nip ) assert
+     ( {} {} instance-of? not nip ) assert
+  ) it
+
+  "array constructors"
+  (
+     ( 1 1array [1] = ) assert
+     ( 1 2 2array [1, 2] = ) assert
+     ( 1 2 3 dup narray [1, 2, 3] = ) assert
+     ( ( -5 narray ) ( drop true ) ( false ) try-else ) assert
+  ) it
+) describe

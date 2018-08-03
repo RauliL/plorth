@@ -1,9 +1,12 @@
-"./framework" import
+#!/usr/bin/env plorth
 
-"call"
-[
-  ( "true" >symbol call true = ),
-  ( "foo" dup "=" >symbol call ),
-]
-test-case
+"../runtime/test" import
 
+"symbol prototype"
+(
+  "call"
+  (
+    ( "true" >symbol call true = ) assert
+    ( "foo" dup "=" >symbol call ) assert
+  ) it
+) describe

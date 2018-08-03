@@ -1,0 +1,32 @@
+#!/usr/bin/env plorth
+#
+# Minimal test framework for Plorth.
+#
+
+"./ansi-terminal" import
+"./assert" import
+
+: describe
+  swap ansi-yellow ansi-reset rot swap ":" + + + println
+  ( call )
+  ( throw )
+  ( "" println )
+  try-else
+;
+
+: it
+  ( dip )
+  (
+    message swap code rot "Assertion failed" swap starts-with? nip swap 100 =
+      and
+    (
+      swap
+      ansi-red "\u2718 " ansi-reset + + swap + println
+      throw
+    )
+    ( throw )
+    if-else
+  )
+  ( ansi-green "\u2714 " ansi-reset + + swap + println )
+  try-else
+;

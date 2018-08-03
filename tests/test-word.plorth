@@ -1,26 +1,27 @@
-"./framework" import
+#!/usr/bin/env plorth
 
-"symbol"
-[
-  ( "foo" >symbol dup () >word symbol nip symbol? nip ),
-]
-test-case
+"../runtime/test" import
 
-"quote"
-[
-  ( "foo" >symbol ( foo ) >word quote nip quote? nip ),
-]
-test-case
+"word prototype"
+(
+  "symbol"
+  (
+    ( "foo" >symbol dup () >word symbol nip symbol? nip ) assert
+  ) it
 
-"call"
-[
-  ( "foo" >symbol ( true ) >word call ),
-]
-test-case
+  "quote"
+  (
+    ( "foo" >symbol ( foo ) >word quote nip quote? nip ) assert
+  ) it
 
-"define"
-[
-  ( "testtest" >symbol ( true ) >word define "testtest" locals has-own? nip ),
-]
-test-case
+  "call"
+  (
+    ( "foo" >symbol ( true ) >word call ) assert
+  ) it
 
+  "define"
+  (
+    ( "testtest" >symbol ( true ) >word define "testtest" locals has-own? nip )
+      assert
+  ) it
+) describe
