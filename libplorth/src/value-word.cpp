@@ -83,18 +83,20 @@ namespace plorth
 
   std::shared_ptr<word> runtime::word(
     const std::u32string& id,
-    const std::shared_ptr<class quote>& quote
+    const std::shared_ptr<class quote>& quote,
+    const std::shared_ptr<context>& declaring_context
   )
   {
-    return word(symbol(id), quote);
+    return word(symbol(id), quote, declaring_context);
   }
 
   std::shared_ptr<word> runtime::word(
     const std::shared_ptr<class symbol>& symbol,
-    const std::shared_ptr<class quote>& quote
+    const std::shared_ptr<class quote>& quote,
+    const std::shared_ptr<context>& declaring_context
   )
   {
-    return value<class word>(symbol, quote);
+    return value<class word>(symbol, quote, declaring_context);
   }
 
   /**

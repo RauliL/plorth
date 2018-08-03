@@ -246,8 +246,11 @@ namespace plorth
      * Constructs word from given pair of symbol and quote and pushes it onto
      * the data stack.
      */
-    void push_word(const std::shared_ptr<class symbol>& symbol,
-                   const std::shared_ptr<class quote>& quote);
+    void push_word(
+      const std::shared_ptr<class symbol>& symbol,
+      const std::shared_ptr<class quote>& quote,
+      const std::shared_ptr<context>& declaring_context = std::shared_ptr<context>()
+    );
 
     /**
      * Pops value from the data stack and discards it. If the stack is empty,

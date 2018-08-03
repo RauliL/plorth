@@ -43,10 +43,7 @@ namespace plorth
     using prototype_definition = std::vector<
       std::pair<const char32_t*, quote::callback>
     >;
-    using module_container = std::unordered_map<
-      std::u32string,
-      std::shared_ptr<class object>
-    >;
+    using module_container = std::unordered_map<std::u32string, dictionary>;
 #if PLORTH_ENABLE_SYMBOL_CACHE
     using symbol_cache = std::unordered_map<
       std::u32string,
@@ -303,19 +300,23 @@ namespace plorth
     std::shared_ptr<quote> native_quote(quote::callback callback);
 
     /**
-     * Constructs word from given string and quote.
+     * Constructs word from given string and quote and optional declaring
+     * context.
      */
     std::shared_ptr<class word> word(
       const std::u32string& id,
-      const std::shared_ptr<class quote>& quote
+      const std::shared_ptr<class quote>& quote,
+      const std::shared_ptr<context>& declaring_context = std::shared_ptr<context>()
     );
 
     /**
-     * Constructs word from given symbol and quote.
+     * Constructs word from given symbol and quote and optional declaring
+     * context.
      */
     std::shared_ptr<class word> word(
       const std::shared_ptr<class symbol>& symbol,
-      const std::shared_ptr<class quote>& quote
+      const std::shared_ptr<class quote>& quote,
+      const std::shared_ptr<context>& declaring_context = std::shared_ptr<context>()
     );
 
     /**

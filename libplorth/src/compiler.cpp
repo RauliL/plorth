@@ -301,7 +301,7 @@ namespace plorth
           }
         }
 
-        return runtime->word(symbol, runtime->compiled_quote(values));
+        return runtime->word(symbol, runtime->compiled_quote(values), ctx);
       }
 
       std::shared_ptr<quote> compile_quote(const std::shared_ptr<context>& ctx)

@@ -23,11 +23,20 @@ namespace plorth
 #if PLORTH_ENABLE_MODULES
   static const char* plorth_file_extension = ".plorth";
 
-  static std::shared_ptr<object> module_import(context*,
-                                               const std::u32string&);
-  static bool module_resolve_path(context*,
-                                  const std::u32string&,
-                                  std::u32string&);
+  static bool import_module(
+    context*,
+    const std::u32string&,
+    dictionary&
+  );
+  static void import_module_dictionary(
+    dictionary&,
+    const dictionary&
+  );
+  static bool module_resolve_path(
+    context*,
+    const std::u32string&,
+    std::u32string&
+  );
 #endif
 
   bool context::import(const std::u32string& path)
@@ -44,7 +53,6 @@ namespace plorth
     std::u32string resolved_path;
     auto& imported_modules = m_runtime->imported_modules();
     runtime::module_container::iterator entry;
-    std::shared_ptr<object> module;
 
     // First attempt to resolve the module path into actual file system path.
     if (!module_resolve_path(this, path, resolved_path))
@@ -62,28 +70,17 @@ namespace plorth
     // Otherwise begin the process of reading source code from the file,
     // compiling that into a quote and finally executing the quote in new
     // separate execution context.
-    if (entry != std::end(imported_modules))
+    if (entry == std::end(imported_modules))
     {
-      module = std::static_pointer_cast<object>(entry->second);
-    }
-    else if ((module = module_import(this, resolved_path)))
-    {
-      imported_modules[resolved_path] = module;
-    } else {
-      return false;
-    }
+      class dictionary module_dictionary;
 
-    // Transfer all exported words from the module into the calling execution
-    // context.
-    for (const auto& property : module->entries())
-    {
-      if (value::is(property.second, value::type::quote))
+      if (!import_module(this, resolved_path, module_dictionary))
       {
-        m_dictionary.insert(m_runtime->word(
-          m_runtime->symbol(property.first),
-          std::static_pointer_cast<quote>(property.second)
-        ));
+        return false;
       }
+      import_module_dictionary(m_dictionary, module_dictionary);
+    } else {
+      import_module_dictionary(m_dictionary, entry->second);
     }
 
     return true;
@@ -95,21 +92,21 @@ namespace plorth
   }
 
 #if PLORTH_ENABLE_MODULES
-  static std::shared_ptr<object> module_import(context* ctx,
-                                               const std::u32string& path)
+  static bool import_module(context* ctx,
+                            const std::u32string& path,
+                            dictionary& module_dictionary)
   {
     std::ifstream is(utf8_encode(path));
     std::string raw_source;
-    std::u32string source;
-    std::shared_ptr<quote> compiled_module;
+    std::u32string encoded_source;
     std::shared_ptr<context> module_ctx;
-    std::vector<object::value_type> result;
+    std::shared_ptr<quote> compiled_module;
 
     if (!is.good())
     {
       ctx->error(error::code::import, U"Unable to import `" + path + U"'");
 
-      return std::shared_ptr<object>();
+      return false;
     }
 
     raw_source = std::string(
@@ -119,14 +116,14 @@ namespace plorth
     is.close();
 
     // First decode the source as UTF-8.
-    if (!utf8_decode_test(raw_source, source))
+    if (!utf8_decode_test(raw_source, encoded_source))
     {
       ctx->error(
         error::code::import,
         U"Unable to decode source code into UTF-8."
       );
 
-      return std::shared_ptr<object>();
+      return false;
     }
 
     // Create an execution context for the new module.
@@ -134,7 +131,7 @@ namespace plorth
     module_ctx->filename(path);
 
     // Then attempt to compile the module and execute it.
-    if (!(compiled_module = quote::compile(module_ctx, source, path))
+    if (!(compiled_module = quote::compile(module_ctx, encoded_source, path))
         || !compiled_module->call(module_ctx))
     {
       if (auto error = module_ctx->error())
@@ -145,16 +142,61 @@ namespace plorth
         ctx->error(error::code::import, U"Module import failed.");
       }
 
-      return std::shared_ptr<object>();
+      return false;
     }
 
-    // Finally convert the module into object.
-    for (const auto& word : module_ctx->dictionary().words())
+    const auto& source_dictionary = module_ctx->dictionary();
+
+    if (auto exports = source_dictionary.find(U"exports"))
     {
-      result.push_back({ word->symbol()->id(), word->quote() });
+      std::shared_ptr<array> ary;
+
+      module_ctx->clear();
+      if (!exports->call(module_ctx) || !module_ctx->pop_array(ary))
+      {
+        if (auto error = module_ctx->error())
+        {
+          ctx->error(error);
+          module_ctx->clear_error();
+        } else {
+          ctx->error(error::code::import, U"TODO: Proper error message.");
+        }
+
+        return false;
+      }
+      for (const auto& element : ary)
+      {
+        if (value::is(element, value::type::string))
+        {
+          const auto id = element->to_string();
+          const auto entry = source_dictionary.find(id);
+
+          if (entry)
+          {
+            module_dictionary.insert(entry);
+          }
+          // TODO: Throw error otherwise.
+        }
+        else if (value::is(element, value::type::word))
+        {
+          module_dictionary.insert(std::static_pointer_cast<word>(element));
+        }
+        // TODO: Perhaps throw error otherwise?
+      }
+    } else {
+      module_dictionary = source_dictionary;
     }
 
-    return ctx->runtime()->object(result);
+    return true;
+  }
+
+  static void import_module_dictionary(dictionary& target,
+                                       const dictionary& source)
+  {
+    for (const auto& word : source.words())
+    {
+      target.insert(word);
+    }
   }
 
   static bool is_absolute_path(const std::u32string& path)

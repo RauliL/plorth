@@ -1151,7 +1151,8 @@ namespace plorth
 
       ctx->dictionary().insert(runtime->word(
         runtime->symbol(id->to_string()),
-        runtime->compiled_quote({ val })
+        runtime->compiled_quote({ val }),
+        ctx
       ));
     }
   }

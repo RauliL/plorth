@@ -357,7 +357,7 @@ namespace plorth
 
     if (ctx->pop_quote(quo) && ctx->pop_symbol(sym))
     {
-      ctx->push_word(sym, quo);
+      ctx->push_word(sym, quo, ctx);
     }
   }
 
