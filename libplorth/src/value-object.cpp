@@ -388,9 +388,9 @@ namespace plorth
     return true;
   }
 
-  unistring object::to_string() const
+  std::u32string object::to_string() const
   {
-    unistring result;
+    std::u32string result;
     bool first = true;
 
     for (const auto property : entries())
@@ -413,9 +413,9 @@ namespace plorth
     return result;
   }
 
-  unistring object::to_source() const
+  std::u32string object::to_source() const
   {
-    unistring result;
+    std::u32string result;
     bool first = true;
 
     result += '{';
@@ -782,7 +782,7 @@ namespace plorth
     if (ctx->pop_object(a) && ctx->pop_object(b))
     {
       const auto entries = b->entries();
-      std::unordered_map<unistring, std::shared_ptr<value>> properties(
+      std::unordered_map<std::u32string, std::shared_ptr<value>> properties(
         std::begin(entries),
         std::end(entries)
       );

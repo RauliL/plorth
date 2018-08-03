@@ -46,18 +46,18 @@ namespace plorth
     return m_symbol->equals(w->m_symbol) && m_quote->equals(w->m_quote);
   }
 
-  unistring word::to_string() const
+  std::u32string word::to_string() const
   {
     return to_source();
   }
 
-  unistring word::to_source() const
+  std::u32string word::to_source() const
   {
     return U": " + m_symbol->id() + U" " + m_quote->to_string() + U" ;";
   }
 
   std::shared_ptr<word> runtime::word(
-    const unistring& id,
+    const std::u32string& id,
     const std::shared_ptr<class quote>& quote
   )
   {

@@ -60,9 +60,9 @@ namespace plorth
         return true;
       }
 
-      unistring to_string() const
+      std::u32string to_string() const
       {
-        unistring result;
+        std::u32string result;
         bool first = true;
 
         for (const auto& value : m_values)
@@ -135,7 +135,7 @@ namespace plorth
         return !ctx->error();
       }
 
-      unistring to_string() const
+      std::u32string to_string() const
       {
         return U"\"native quote\"";
       }
@@ -166,7 +166,7 @@ namespace plorth
     );
   }
 
-  unistring quote::to_source() const
+  std::u32string quote::to_source() const
   {
     return U"(" + to_string() + U")";
   }

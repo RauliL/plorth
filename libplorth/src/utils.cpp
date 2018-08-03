@@ -40,13 +40,13 @@ namespace plorth
 #endif
 
   static const char digitmap[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-  static const unistring unistring_nan = {'n', 'a', 'n'};
-  static const unistring unistring_inf = {'i', 'n', 'f'};
-  static const unistring unistring_inf_neg = {'-', 'i', 'n', 'f'};
+  static const std::u32string string_nan = {'n', 'a', 'n'};
+  static const std::u32string string_inf = {'i', 'n', 'f'};
+  static const std::u32string string_inf_neg = {'-', 'i', 'n', 'f'};
 
-  unistring json_stringify(const unistring& input)
+  std::u32string json_stringify(const std::u32string& input)
   {
-    unistring result;
+    std::u32string result;
 
     result.reserve(input.length() + 2);
     result.append(1, '"');
@@ -88,14 +88,14 @@ namespace plorth
           break;
 
         default:
-          if (unichar_iscntrl(c))
+          if (unicode_iscntrl(c))
           {
             char buffer[7];
 
             std::snprintf(buffer, 7, "\\u%04x", c);
             for (const char* p = buffer; *p; ++p)
             {
-              result.append(1, static_cast<unichar>(*p));
+              result.append(1, static_cast<char32_t>(*p));
             }
           } else {
             result.append(1, c);
@@ -108,10 +108,10 @@ namespace plorth
     return result;
   }
 
-  bool is_number(const unistring& input)
+  bool is_number(const std::u32string& input)
   {
     const auto length = input.length();
-    unistring::size_type start;
+    std::u32string::size_type start;
     bool dot_seen = false;
     bool exponent_seen = false;
 
@@ -167,11 +167,11 @@ namespace plorth
     return true;
   }
 
-  unistring to_unistring(number::int_type number)
+  std::u32string to_unistring(number::int_type number)
   {
     const bool negative = number < 0;
     uint_type mag = static_cast<uint_type>(negative ? -number : number);
-    unistring result;
+    std::u32string result;
 
     if (mag != 0)
     {
@@ -193,24 +193,24 @@ namespace plorth
     return result;
   }
 
-  unistring to_unistring(number::real_type number)
+  std::u32string to_unistring(number::real_type number)
   {
     char buffer[20];
 
     if (std::isnan(number))
     {
-      return unistring_nan;
+      return string_nan;
     }
     else if (std::isinf(number))
     {
-      return number < 0.0 ? unistring_inf_neg : unistring_inf;
+      return number < 0.0 ? string_inf_neg : string_inf;
     }
     std::snprintf(buffer, sizeof(buffer), "%g", number);
 
     return utf8_decode(buffer);
   }
 
-  number::int_type to_integer(const unistring& input)
+  number::int_type to_integer(const std::u32string& input)
   {
     static const number::int_type div = number::int_max / 10;
     static const number::int_type rem = number::int_max % 10;
@@ -231,7 +231,7 @@ namespace plorth
 
     for (; offset < length; ++offset)
     {
-      const unichar c = input[offset];
+      const auto c = input[offset];
       int digit;
 
       if (!std::isdigit(c))
@@ -249,11 +249,11 @@ namespace plorth
     return sign ? number : -number;
   }
 
-  number::real_type to_real(const unistring& input)
+  number::real_type to_real(const std::u32string& input)
   {
     const auto length = input.length();
     number::real_type number;
-    unistring::size_type offset;
+    std::u32string::size_type offset;
     bool seen_digits = false;
     bool seen_dot = false;
     bool sign;
@@ -264,15 +264,15 @@ namespace plorth
       return false;
     }
 
-    if (!input.compare(unistring_nan))
+    if (!input.compare(string_nan))
     {
       return NAN;
     }
-    else if (!input.compare(unistring_inf))
+    else if (!input.compare(string_inf))
     {
       return INFINITY;
     }
-    else if (!input.compare(unistring_inf_neg))
+    else if (!input.compare(string_inf_neg))
     {
       return -INFINITY;
     }
@@ -339,26 +339,26 @@ namespace plorth
     return number;
   }
 
-  unistring dirname(const unistring& path)
+  std::u32string dirname(const std::u32string& path)
   {
     const auto length = path.length();
-    unistring::size_type index;
+    std::u32string::size_type index;
 
     if (!length)
     {
-      return unistring();
+      return std::u32string();
     }
 
     index = path.find_last_of(PLORTH_FILE_SEPARATOR);
     // No slashes found?
-    if (index == unistring::npos)
+    if (index == std::u32string::npos)
     {
       return U".";
     }
     // Slash is the first character?
     else if (index == 0)
     {
-      return unistring(1, PLORTH_FILE_SEPARATOR);
+      return std::u32string(1, PLORTH_FILE_SEPARATOR);
     }
     // Slash is the last character?
     else if (index == length - 1)

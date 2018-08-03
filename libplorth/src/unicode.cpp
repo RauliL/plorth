@@ -29,64 +29,14 @@ namespace plorth
 {
   static bool utf8_advance(std::string::const_iterator&,
                            const std::string::const_iterator&,
-                           unichar&);
+                           char32_t&);
 
 #if defined(__EMSCRIPTEN__)
-  static unichar utf32le_decode_char(wchar_t);
-  static wchar_t utf32le_encode_char(unichar);
+  static char32_t utf32le_decode_char(wchar_t);
+  static wchar_t utf32le_encode_char(char32_t);
 #endif
 
-  std::ostream& operator<<(std::ostream& out, const unistring& s)
-  {
-    for (const auto& c : s)
-    {
-      if (!unichar_validate(c))
-      {
-        continue;
-      }
-
-      if (c <= 0x7f)
-      {
-        out << static_cast<char>(c);
-      }
-      else if (c <= 0x07ff)
-      {
-        out << static_cast<char>(0xc0 | ((c & 0x7c0) >> 6));
-        out << static_cast<char>(0x80 | (c & 0x3f));
-      }
-      else if (c <= 0xffff)
-      {
-        out << static_cast<char>(0xe0 | ((c & 0xf000)) >> 12);
-        out << static_cast<char>(0x80 | ((c & 0xfc0)) >> 6);
-        out << static_cast<char>(0x80 | (c & 0x3f));
-      } else {
-        out << static_cast<char>(0xf0 | ((c & 0x1c0000) >> 18));
-        out << static_cast<char>(0x80 | ((c & 0x3f000) >> 12));
-        out << static_cast<char>(0x80 | ((c & 0xfc0) >> 6));
-        out << static_cast<char>(0x80 | (c & 0x3f));
-      }
-    }
-
-    return out;
-  }
-
-#if defined(__EMSCRIPTEN__)
-  std::wostream& operator<<(std::wostream& out, const unistring& s)
-  {
-    for (const auto& c : s)
-    {
-      if (!unichar_validate(c))
-      {
-        continue;
-      }
-
-      out << utf32le_encode_char(c);
-    }
-    return out;
-  }
-#endif
-
-  bool unichar_validate(unichar c)
+  bool unicode_validate(char32_t c)
   {
     return !(c > 0x10ffff
         || (c & 0xfffe) == 0xfffe
@@ -94,7 +44,7 @@ namespace plorth
         || (c >= 0xfdd0 && c <= 0xfdef));
   }
 
-  std::string utf8_encode(const unistring& input)
+  std::string utf8_encode(const std::u32string& input)
   {
     const auto length = input.length();
     std::string result;
@@ -103,7 +53,7 @@ namespace plorth
     {
       const auto c = input[i];
 
-      if (!unichar_validate(c))
+      if (!unicode_validate(c))
       {
         continue;
       }
@@ -133,15 +83,15 @@ namespace plorth
     return result;
   }
 
-  unistring utf8_decode(const std::string& input)
+  std::u32string utf8_decode(const std::string& input)
   {
     auto it = std::begin(input);
     const auto end = std::end(input);
-    unistring result;
+    std::u32string result;
 
     while (it != end)
     {
-      unichar c;
+      char32_t c;
 
       if (!utf8_advance(it, end, c))
       {
@@ -153,14 +103,14 @@ namespace plorth
     return result;
   }
 
-  bool utf8_decode_test(const std::string& input, unistring& output)
+  bool utf8_decode_test(const std::string& input, std::u32string& output)
   {
     auto it = std::begin(input);
     const auto end = std::end(input);
 
     while (it != end)
     {
-      unichar c;
+      char32_t c;
 
       if (!utf8_advance(it, end, c))
       {
@@ -173,9 +123,9 @@ namespace plorth
   }
 
 #if defined(__EMSCRIPTEN__)
-  unistring utf32le_decode(const std::wstring& input)
+  std::u32string utf32le_decode(const std::wstring& input)
   {
-    unistring output;
+    std::u32string output;
 
     for (const auto& c : input)
     {
@@ -185,13 +135,13 @@ namespace plorth
     return output;
   }
 
-  std::wstring utf32le_encode(const unistring& input)
+  std::wstring utf32le_encode(const std::u32string& input)
   {
     std::wstring output;
 
     for (const auto& c : input)
     {
-      if (!unichar_validate(c))
+      if (!unicode_validate(c))
       {
         continue;
       }
@@ -202,14 +152,14 @@ namespace plorth
     return output;
   }
 
-  static unichar utf32le_decode_char(wchar_t c)
+  static char32_t utf32le_decode_char(wchar_t c)
   {
     const unsigned char* p = reinterpret_cast<const unsigned char*>(&c);
 
-    return static_cast<unichar>(((p[3] * 256 + p[2]) * 256 + p[1]) * 256 + p[0]);
+    return static_cast<char32_t>(((p[3] * 256 + p[2]) * 256 + p[1]) * 256 + p[0]);
   }
 
-  wchar_t utf32le_encode_char(unichar c)
+  wchar_t utf32le_encode_char(char32_t c)
   {
     unsigned char buffer[4];
 
@@ -224,7 +174,7 @@ namespace plorth
 
   static bool utf8_advance(std::string::const_iterator& it,
                            const std::string::const_iterator& end,
-                           unichar& result)
+                           char32_t& result)
   {
     const std::size_t sequence_length = utf8_sequence_length(*it);
 
@@ -309,9 +259,9 @@ namespace plorth
     }
   }
 
-  bool unichar_iscntrl(unichar c)
+  bool unicode_iscntrl(char32_t c)
   {
-    static const unichar cntrl_table[19][2] =
+    static const char32_t cntrl_table[19][2] =
     {
       { 0x0000, 0x001f }, { 0x007f, 0x009f }, { 0x00ad, 0x00ad },
       { 0x0600, 0x0603 }, { 0x06dd, 0x06dd }, { 0x070f, 0x070f },
@@ -333,9 +283,9 @@ namespace plorth
     return false;
   }
 
-  bool unichar_isgraph(unichar c)
+  bool unicode_isgraph(char32_t c)
   {
-    static const unichar graph_table[424][2] =
+    static const char32_t graph_table[424][2] =
     {
       { 0x0021, 0x007e }, { 0x00a1, 0x0241 }, { 0x0250, 0x036f },
       { 0x0374, 0x0375 }, { 0x037a, 0x037a }, { 0x037e, 0x037e },
@@ -492,9 +442,9 @@ namespace plorth
     return false;
   }
 
-  bool unichar_isspace(unichar c)
+  bool unicode_isspace(char32_t c)
   {
-    static const unichar space_table[11][2] =
+    static const char32_t space_table[11][2] =
     {
       { 0x0009, 0x000d }, { 0x0020, 0x0020 },
       { 0x0085, 0x0085 }, { 0x00a0, 0x00a0 },
@@ -515,9 +465,9 @@ namespace plorth
     return false;
   }
 
-  bool unichar_isupper(unichar c)
+  bool unicode_isupper(char32_t c)
   {
-    static const unichar upper_table[476][2] =
+    static const char32_t upper_table[476][2] =
     {
     { 0x0041, 0x005a }, { 0x00c0, 0x00d6 }, { 0x00d8, 0x00de },
     { 0x0100, 0x0100 }, { 0x0102, 0x0102 }, { 0x0104, 0x0104 },
@@ -691,9 +641,9 @@ namespace plorth
     return false;
   }
 
-  bool unichar_islower(unichar c)
+  bool unicode_islower(char32_t c)
   {
-    static const unichar lower_table[480][2] =
+    static const char32_t lower_table[480][2] =
     {
       { 0x0061, 0x007a }, { 0x00aa, 0x00aa }, { 0x00b5, 0x00b5 },
       { 0x00ba, 0x00ba }, { 0x00df, 0x00f6 }, { 0x00f8, 0x00ff },
@@ -868,13 +818,13 @@ namespace plorth
     return false;
   }
 
-  bool unichar_isword(unichar c)
+  bool unicode_isword(char32_t c)
   {
     return c != '(' && c != ')' && c != '[' && c != ']' && c != '{'
-      && c != '}' && c != ':' && c != ';' && c != ',' && unichar_isgraph(c);
+      && c != '}' && c != ':' && c != ';' && c != ',' && unicode_isgraph(c);
   }
 
-  unichar unichar_tolower(unichar cp)
+  char32_t unicode_tolower(char32_t cp)
   {
     if (cp >= 'A' && cp <= 'Z')
     {
@@ -947,7 +897,7 @@ namespace plorth
     return cp;
   }
 
-  unichar unichar_toupper(unichar cp)
+  char32_t unicode_toupper(char32_t cp)
   {
     if (cp >= 'a' && cp <= 'z')
     {

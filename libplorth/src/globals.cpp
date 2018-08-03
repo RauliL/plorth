@@ -1218,7 +1218,7 @@ namespace plorth
                          enum error::code code)
   {
     std::shared_ptr<value> val;
-    unistring message;
+    std::u32string message;
 
     if (!ctx->pop(val))
     {
@@ -1322,7 +1322,7 @@ namespace plorth
    */
   static void w_read(const std::shared_ptr<context>& ctx)
   {
-    unistring output;
+    std::u32string output;
     io::input::size_type read;
     auto result = ctx->runtime()->read(0, output, read);
 
@@ -1360,7 +1360,7 @@ namespace plorth
     if (ctx->pop_number(num))
     {
       const number::int_type amount = num->as_int();
-      unistring output;
+      std::u32string output;
       io::input::size_type read;
       io::input::result result;
 
@@ -1449,11 +1449,11 @@ namespace plorth
     {
       number::int_type c = num->as_int();
 
-      if (!unichar_validate(c))
+      if (!unicode_validate(c))
       {
         ctx->error(error::code::range, U"Invalid Unicode code point.");
       } else {
-        ctx->runtime()->print(unistring(1, static_cast<unichar>(c)));
+        ctx->runtime()->print(std::u32string(1, static_cast<char32_t>(c)));
       }
     }
   }

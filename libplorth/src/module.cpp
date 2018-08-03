@@ -24,16 +24,16 @@ namespace plorth
   static const char* plorth_file_extension = ".plorth";
 
   static std::shared_ptr<object> module_import(context*,
-                                               const unistring&);
+                                               const std::u32string&);
   static bool module_resolve_path(context*,
-                                  const unistring&,
-                                  unistring&);
+                                  const std::u32string&,
+                                  std::u32string&);
 #endif
 
-  bool context::import(const unistring& path)
+  bool context::import(const std::u32string& path)
   {
     // Do not import empty paths.
-    if (path.empty() || std::all_of(path.begin(), path.end(), unichar_isspace))
+    if (path.empty() || std::all_of(path.begin(), path.end(), unicode_isspace))
     {
       error(error::code::import, U"Empty import path.");
 
@@ -41,7 +41,7 @@ namespace plorth
     }
 
 #if PLORTH_ENABLE_MODULES
-    unistring resolved_path;
+    std::u32string resolved_path;
     auto& imported_modules = m_runtime->imported_modules();
     runtime::module_container::iterator entry;
     std::shared_ptr<object> module;
@@ -96,11 +96,11 @@ namespace plorth
 
 #if PLORTH_ENABLE_MODULES
   static std::shared_ptr<object> module_import(context* ctx,
-                                               const unistring& path)
+                                               const std::u32string& path)
   {
     std::ifstream is(utf8_encode(path));
     std::string raw_source;
-    unistring source;
+    std::u32string source;
     std::shared_ptr<quote> compiled_module;
     std::shared_ptr<context> module_ctx;
     std::vector<object::value_type> result;
@@ -159,7 +159,7 @@ namespace plorth
     return ctx->runtime()->object(result);
   }
 
-  static bool is_absolute_path(const unistring& path)
+  static bool is_absolute_path(const std::u32string& path)
   {
     const auto length = path.length();
 
@@ -207,7 +207,7 @@ namespace plorth
    * use it as the path from where to read source code from.
    */
   static bool resolve_into_file(const std::string& path,
-                                unistring& resolved_path)
+                                std::u32string& resolved_path)
   {
     struct ::stat st;
 
@@ -251,8 +251,8 @@ namespace plorth
   }
 
   static bool module_resolve_path(context* ctx,
-                                  const unistring& path,
-                                  unistring& resolved_path)
+                                  const std::u32string& path,
+                                  std::u32string& resolved_path)
   {
     std::string encoded_path = utf8_encode(path);
     char buffer[PATH_MAX];
@@ -289,7 +289,7 @@ namespace plorth
       // Skip empty paths.
       if (directory.empty() || std::all_of(directory.begin(),
                                            directory.end(),
-                                           unichar_isspace))
+                                           unicode_isspace))
       {
         continue;
       }

@@ -78,7 +78,7 @@ namespace plorth
       return type::quote;
     }
 
-    unistring to_source() const;
+    std::u32string to_source() const;
   };
 }
 

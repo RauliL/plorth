@@ -32,13 +32,13 @@ namespace plorth
     class dummy_output : public io::output
     {
     public:
-      void write(const unistring&) {}
+      void write(const std::u32string&) {}
     };
 
     class standard_output : public io::output
     {
     public:
-      void write(const unistring& str)
+      void write(const std::u32string& str)
       {
         const auto bytes = utf8_encode(str);
 

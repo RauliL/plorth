@@ -124,7 +124,7 @@ namespace plorth
     }
   }
 
-  unistring number::to_string() const
+  std::u32string number::to_string() const
   {
     if (is(number_type::real))
     {
@@ -134,7 +134,7 @@ namespace plorth
     }
   }
 
-  unistring number::to_source() const
+  std::u32string number::to_source() const
   {
     return to_string();
   }
@@ -173,16 +173,16 @@ namespace plorth
     );
   }
 
-  std::shared_ptr<class number> runtime::number(const unistring& value)
+  std::shared_ptr<class number> runtime::number(const std::u32string& value)
   {
     const auto dot_index = value.find('.');
     const auto exponent_index_lower_case = value.find('e');
     const auto exponent_index_upper_case = value.find('E');
 
     if (
-      dot_index == unistring::npos &&
-      exponent_index_lower_case == unistring::npos &&
-      exponent_index_upper_case == unistring::npos
+      dot_index == std::u32string::npos &&
+      exponent_index_lower_case == std::u32string::npos &&
+      exponent_index_upper_case == std::u32string::npos
     )
     {
       const number::int_type result = to_integer(value);

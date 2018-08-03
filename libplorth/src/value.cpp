@@ -27,12 +27,12 @@
 
 namespace plorth
 {
-  unistring value::type_description() const
+  std::u32string value::type_description() const
   {
     return type_description(type());
   }
 
-  unistring value::type_description(enum type type)
+  std::u32string value::type_description(enum type type)
   {
     switch (type)
     {
@@ -139,7 +139,7 @@ namespace plorth
 
   std::ostream& operator<<(std::ostream& out, enum value::type type)
   {
-    out << value::type_description(type);
+    out << utf8_encode(value::type_description(type));
 
     return out;
   }
@@ -148,7 +148,7 @@ namespace plorth
   {
     if (value)
     {
-      os << value->to_string();
+      os << utf8_encode(value->to_string());
     } else {
       os << "<no value>";
     }

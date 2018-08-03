@@ -35,95 +35,79 @@
 
 namespace plorth
 {
-  using unichar = char32_t;
-  using unistring = std::u32string;
-
-  /**
-   * Decodes Unicode string into UTF-8 and outputs it into given byte stream.
-   */
-  std::ostream& operator<<(std::ostream&, const unistring&);
-
-#if defined(__EMSCRIPTEN__)
-  /**
-   * Decodes Unicode string into UTF-32LE and outputs it into given wide char
-   * stream.
-   */
-  std::wostream& operator<<(std::wostream&, const unistring&);
-#endif
-
   /**
    * Decodes UTF-8 encoded byte string into Unicode string. Encountered encoding
    * errors are ignored.
    */
-  unistring utf8_decode(const std::string&);
+  std::u32string utf8_decode(const std::string&);
 
   /**
    * Decodes UTF-8 encoded byte string into Unicode string with validation.
    */
-  bool utf8_decode_test(const std::string&, unistring&);
+  bool utf8_decode_test(const std::string&, std::u32string&);
 
   /**
    * Encodes Unicode string into UTF-8 encoded byte string.
    */
-  std::string utf8_encode(const unistring&);
+  std::string utf8_encode(const std::u32string&);
 
 #if defined(__EMSCRIPTEN__)
   /**
    * Decodes UTF-32LE encoded wide character string into Unicode string.
    * Encountered encoding errors are ignored.
    */
-  unistring utf32le_decode(const std::wstring&);
+  std::u32string utf32le_decode(const std::wstring&);
 
   /**
    * Encodes Unicode string into UTF-32LE encoded wide character string.
    */
-  std::wstring utf32le_encode(const unistring&);
+  std::wstring utf32le_encode(const std::u32string&);
 #endif
 
   /**
    * Determines whether given character is valid Unicode code point.
    */
-  bool unichar_validate(unichar);
+  bool unicode_validate(char32_t);
 
   /**
    * Determines whether a character is a control character.
    */
-  bool unichar_iscntrl(unichar);
+  bool unicode_iscntrl(char32_t);
 
   /**
    * Determines whether a character is printable and not a space.
    */
-  bool unichar_isgraph(unichar);
+  bool unicode_isgraph(char32_t);
 
   /**
    * Determines whether a character is whitespace.
    */
-  bool unichar_isspace(unichar);
+  bool unicode_isspace(char32_t);
 
   /**
    * Determines whether a character is upper case.
    */
-  bool unichar_isupper(unichar);
+  bool unicode_isupper(char32_t);
 
   /**
    * Determines whether a character is lower case.
    */
-  bool unichar_islower(unichar);
+  bool unicode_islower(char32_t);
 
   /**
    * Determines whether a character can be part of Plorth word.
    */
-  bool unichar_isword(unichar);
+  bool unicode_isword(char32_t);
 
   /**
    * Converts given Unicode character into upper case.
    */
-  unichar unichar_toupper(unichar);
+  char32_t unicode_toupper(char32_t);
 
   /**
    * Converts given Unicode character into lower case.
    */
-  unichar unichar_tolower(unichar);
+  char32_t unicode_tolower(char32_t);
 
   /**
    * Attempts to determine length (in bytes) of UTF-8 sequence which begins

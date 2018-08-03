@@ -59,7 +59,7 @@ namespace plorth
     return result;
   }
 
-  dictionary::value_type dictionary::find(const unistring& id) const
+  dictionary::value_type dictionary::find(const std::u32string& id) const
   {
     const auto entry = m_words.find(id);
 

@@ -39,9 +39,11 @@ namespace plorth
         explicit custom_output(Context::text_written_signal signal)
           : m_signal(signal) {}
 
-        void write(const unistring& text)
+        void write(const std::u32string& text)
         {
-          m_signal.emit(utils::string_convert<Glib::ustring, unistring>(text));
+          m_signal.emit(utils::string_convert<Glib::ustring, std::u32string>(
+            text
+          ));
         }
 
       private:
@@ -70,8 +72,8 @@ namespace plorth
                           int line)
     {
       auto script = m_context->compile(
-        utils::string_convert<unistring, Glib::ustring>(source_code),
-        utils::string_convert<unistring, Glib::ustring>(file),
+        utils::string_convert<std::u32string, Glib::ustring>(source_code),
+        utils::string_convert<std::u32string, Glib::ustring>(file),
         line
       );
 

@@ -29,15 +29,20 @@ namespace plorth
 {
   std::ostream& operator<<(std::ostream& os, const position& pos)
   {
+    std::string result;
+
     if (pos.filename.empty())
     {
-      os << "<unknown>";
+      result += "<unknown>";
     } else {
-      os << pos.filename;
+      result += utf8_encode(pos.filename);
     }
     if (pos.line > 0)
     {
-      os << ':' << pos.line << ':' << pos.column;
+      result += ':';
+      result += std::to_string(pos.line);
+      result += ':';
+      result += std::to_string(pos.column);
     }
 
     return os;

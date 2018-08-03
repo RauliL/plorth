@@ -28,7 +28,7 @@
 namespace plorth
 {
   error::error(enum code code,
-               const unistring& message,
+               const std::u32string& message,
                const struct position* position)
     : m_code(code)
     , m_message(message)
@@ -42,12 +42,12 @@ namespace plorth
     }
   }
 
-  unistring error::code_description() const
+  std::u32string error::code_description() const
   {
     return code_description(m_code);
   }
 
-  unistring error::code_description(enum code code)
+  std::u32string error::code_description(enum code code)
   {
     switch (code)
     {
@@ -93,9 +93,9 @@ namespace plorth
     return m_code == err->m_code && !m_message.compare(err->m_message);
   }
 
-  unistring error::to_string() const
+  std::u32string error::to_string() const
   {
-    unistring result;
+    std::u32string result;
 
     result += code_description();
     if (!m_message.empty())
@@ -106,14 +106,14 @@ namespace plorth
     return result;
   }
 
-  unistring error::to_source() const
+  std::u32string error::to_source() const
   {
     return U"<" + to_string() + U">";
   }
 
   std::ostream& operator<<(std::ostream& out, enum error::code code)
   {
-    out << error::code_description(code);
+    out << utf8_encode(error::code_description(code));
 
     return out;
   }

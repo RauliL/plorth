@@ -36,13 +36,13 @@
 
 namespace plorth
 {
-  unistring json_stringify(const unistring&);
-  number::int_type to_integer(const unistring&);
-  number::real_type to_real(const unistring&);
-  bool is_number(const unistring&);
-  unistring to_unistring(number::int_type);
-  unistring to_unistring(number::real_type);
-  unistring dirname(const unistring&);
+  std::u32string json_stringify(const std::u32string&);
+  number::int_type to_integer(const std::u32string&);
+  number::real_type to_real(const std::u32string&);
+  bool is_number(const std::u32string&);
+  std::u32string to_unistring(number::int_type);
+  std::u32string to_unistring(number::real_type);
+  std::u32string dirname(const std::u32string&);
 }
 
 #endif /* !PLORTH_UTILS_HPP_GUARD */

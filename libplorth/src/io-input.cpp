@@ -32,7 +32,7 @@ namespace plorth
     class standard_input : public io::input
     {
     public:
-      result read(size_type size, unistring& output, size_type& read)
+      result read(size_type size, std::u32string& output, size_type& read)
       {
         const bool infinite = !size;
         const auto eof = std::char_traits<char>::eof();
@@ -43,19 +43,19 @@ namespace plorth
         while (infinite || size > 0)
         {
           auto byte = std::cin.get();
-          std::size_t unichar_size;
+          std::size_t unicode_size;
 
           if (byte == eof)
           {
             return result::eof;
           }
-          else if (!(unichar_size = utf8_sequence_length(byte)))
+          else if (!(unicode_size = utf8_sequence_length(byte)))
           {
             return result::failure;
           }
           buffer.clear();
           buffer.append(1, byte);
-          for (std::size_t i = 1; i < unichar_size; ++i)
+          for (std::size_t i = 1; i < unicode_size; ++i)
           {
             if ((byte = std::cin.get()) == eof)
             {
@@ -81,7 +81,7 @@ namespace plorth
     class dummy_input : public io::input
     {
     public:
-      result read(size_type size, unistring& output, size_type& read)
+      result read(size_type size, std::u32string& output, size_type& read)
       {
         read = 0;
 

@@ -32,8 +32,8 @@ namespace plorth
     class compiler
     {
     public:
-      explicit compiler(const unistring& source,
-                        const unistring& filename,
+      explicit compiler(const std::u32string& source,
+                        const std::u32string& filename,
                         int line,
                         int column)
         : m_pos(std::begin(source))
@@ -66,9 +66,9 @@ namespace plorth
        * Advances to the next character in source code and returns the current
        * one.
        */
-      inline unichar read()
+      inline char32_t read()
       {
-        const unichar result = *m_pos++;
+        const auto result = *m_pos++;
 
         if (result == '\n')
         {
@@ -85,7 +85,7 @@ namespace plorth
        * Returns next character to be read from the source code without
        * advancing any further.
        */
-      inline unichar peek() const
+      inline char32_t peek() const
       {
         return *m_pos;
       }
@@ -94,7 +94,7 @@ namespace plorth
        * Returns true if next character to be read from the source code equals
        * with one given as argument.
        */
-      inline bool peek(unichar expected) const
+      inline bool peek(char32_t expected) const
       {
         return !eof() && peek() == expected;
       }
@@ -103,7 +103,7 @@ namespace plorth
        * Returns true if next character to be read from the source code matches
        * with given callback function.
        */
-      inline bool peek(bool (*callback)(unichar)) const
+      inline bool peek(bool (*callback)(char32_t)) const
       {
         return !eof() && callback(peek());
       }
@@ -112,7 +112,7 @@ namespace plorth
        * Returns true and advances to next character if next character to be
        * read from the source code equals with one given as argument.
        */
-      inline bool peek_read(unichar expected)
+      inline bool peek_read(char32_t expected)
       {
         if (peek(expected))
         {
@@ -129,7 +129,7 @@ namespace plorth
        * read from the source code equals with one given as argument. Current
        * character will be stored into given slot.
        */
-      inline bool peek_read(unichar expected, unichar& slot)
+      inline bool peek_read(char32_t expected, char32_t& slot)
       {
         if (peek(expected))
         {
@@ -204,7 +204,7 @@ namespace plorth
       std::shared_ptr<symbol> compile_symbol(context* ctx)
       {
         struct position position;
-        unistring buffer;
+        std::u32string buffer;
 
         if (skip_whitespace())
         {
@@ -219,7 +219,7 @@ namespace plorth
 
         position = m_position;
 
-        if (!unichar_isword(peek()))
+        if (!unicode_isword(peek()))
         {
           ctx->error(
             error::code::syntax,
@@ -231,7 +231,7 @@ namespace plorth
         }
 
         buffer.append(1, read());
-        while (peek(unichar_isword))
+        while (peek(unicode_isword))
         {
           buffer.append(1, read());
         }
@@ -365,8 +365,8 @@ namespace plorth
       std::shared_ptr<string> compile_string(context* ctx)
       {
         struct position position;
-        unichar separator;
-        unistring buffer;
+        char32_t separator;
+        std::u32string buffer;
 
         if (skip_whitespace())
         {
@@ -398,7 +398,7 @@ namespace plorth
           {
             ctx->error(
               error::code::syntax,
-              unistring(U"Unterminated string; Missing `") + separator + U"'",
+              std::u32string(U"Unterminated string; Missing `") + separator + U"'",
               &position
             );
 
@@ -592,7 +592,7 @@ namespace plorth
         return ctx->runtime()->object(properties);
       }
 
-      bool compile_escape_sequence(context* ctx, unistring& buffer)
+      bool compile_escape_sequence(context* ctx, std::u32string& buffer)
       {
         struct position position;
 
@@ -640,7 +640,7 @@ namespace plorth
 
         case 'u':
           {
-            unichar result = 0;
+            char32_t result = 0;
 
             for (int i = 0; i < 4; ++i)
             {
@@ -677,7 +677,7 @@ namespace plorth
               }
             }
 
-            if (!unichar_validate(result))
+            if (!unicode_validate(result))
             {
               ctx->error(
                 error::code::syntax,
@@ -743,16 +743,16 @@ namespace plorth
 
     private:
       /** Current position in source code. */
-      unistring::const_iterator m_pos;
+      std::u32string::const_iterator m_pos;
       /** Iterator which marks end of the source code. */
-      const unistring::const_iterator m_end;
+      const std::u32string::const_iterator m_end;
       /** Current source code location information. */
       position m_position;
     };
   }
 
-  std::shared_ptr<quote> context::compile(const unistring& source,
-                                          const unistring& filename,
+  std::shared_ptr<quote> context::compile(const std::u32string& source,
+                                          const std::u32string& filename,
                                           int line,
                                           int column)
   {
