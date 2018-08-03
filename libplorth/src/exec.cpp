@@ -110,7 +110,7 @@ namespace plorth
     // Look for a word from dictionary of current context.
     if (auto word = ctx->dictionary().find(sym))
     {
-      return word->quote()->call(ctx);
+      return word->call(ctx);
     }
 
     // TODO: If not found, see if it's a "fully qualified" name, e.g. a name
@@ -120,7 +120,7 @@ namespace plorth
     // Look from global dictionary.
     if (auto word = ctx->runtime()->dictionary().find(sym))
     {
-      return word->quote()->call(ctx);
+      return word->call(ctx);
     }
 
     // If the name of the word can be converted into number, then do just that.

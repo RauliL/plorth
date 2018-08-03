@@ -67,6 +67,14 @@ namespace plorth
       return m_quote;
     }
 
+    /**
+     * Executes the underlying quote.
+     *
+     * \param ctx Execution context where to execute the underlying word inside
+     *            of.
+     */
+    bool call(const std::shared_ptr<context>& ctx) const;
+
     inline enum type type() const
     {
       return type::word;

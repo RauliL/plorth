@@ -35,6 +35,29 @@ namespace plorth
     , m_quote(quote)
     , m_declaring_context(declaring_context) {}
 
+  bool word::call(const std::shared_ptr<context>& ctx) const
+  {
+    if (m_declaring_context)
+    {
+      const auto saved_error = ctx->error();
+      const auto result = m_quote->call(m_declaring_context);
+
+      if (!result)
+      {
+        ctx->error(m_declaring_context->error());
+        m_declaring_context->clear_error();
+      }
+      if (saved_error)
+      {
+        m_declaring_context->error(saved_error);
+      }
+
+      return result;
+    }
+
+    return m_quote->call(ctx);
+  }
+
   bool word::equals(const std::shared_ptr<value>& that) const
   {
     std::shared_ptr<word> w;
@@ -138,7 +161,7 @@ namespace plorth
 
     if (ctx->pop_word(wrd))
     {
-      wrd->quote()->call(ctx);
+      wrd->call(ctx);
     }
   }
 
