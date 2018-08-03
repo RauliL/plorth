@@ -56,7 +56,7 @@ namespace plorth
        *
        * \param str String to write into the output.
        */
-      virtual void write(const unistring& str) = 0;
+      virtual void write(const std::u32string& str) = 0;
     };
   }
 }

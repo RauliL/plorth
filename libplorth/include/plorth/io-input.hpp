@@ -78,7 +78,7 @@ namespace plorth
        */
       virtual result read(
         size_type size,
-        unistring& output,
+        std::u32string& output,
         size_type& read
       ) = 0;
     };

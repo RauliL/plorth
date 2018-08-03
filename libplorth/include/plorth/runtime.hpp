@@ -44,12 +44,12 @@ namespace plorth
       std::pair<const char32_t*, quote::callback>
     >;
     using module_container = std::unordered_map<
-      unistring,
+      std::u32string,
       std::shared_ptr<class object>
     >;
 #if PLORTH_ENABLE_SYMBOL_CACHE
     using symbol_cache = std::unordered_map<
-      unistring,
+      std::u32string,
       std::shared_ptr<class symbol>
     >;
 #endif
@@ -135,7 +135,7 @@ namespace plorth
      * Returns container for command line arguments provided for the
      * interpreter.
      */
-    inline std::vector<unistring>& arguments()
+    inline std::vector<std::u32string>& arguments()
     {
       return m_arguments;
     }
@@ -144,7 +144,7 @@ namespace plorth
      * Returns container for command line arguments provided for the
      * interpreter.
      */
-    inline const std::vector<unistring>& arguments() const
+    inline const std::vector<std::u32string>& arguments() const
     {
       return m_arguments;
     }
@@ -152,7 +152,7 @@ namespace plorth
     /**
      * Returns container for file system paths where modules are searched from.
      */
-    inline std::vector<unistring>& module_paths()
+    inline std::vector<std::u32string>& module_paths()
     {
       return m_module_paths;
     }
@@ -160,7 +160,7 @@ namespace plorth
     /**
      * Returns container for file system paths where modules are searched from.
      */
-    inline const std::vector<unistring>& module_paths() const
+    inline const std::vector<std::u32string>& module_paths() const
     {
       return m_module_paths;
     }
@@ -194,14 +194,14 @@ namespace plorth
      */
     io::input::result read(
       io::input::size_type size,
-      unistring& output,
+      std::u32string& output,
       io::input::size_type& read
     );
 
     /**
      * Outputs given Unicode string into the output of the interpreter.
      */
-    void print(const unistring& str) const;
+    void print(const std::u32string& str) const;
 
     /**
      * Outputs system specific new line into the output of the interpreter.
@@ -212,7 +212,7 @@ namespace plorth
      * Outputs given Unicode string and system specific new line into the
      * output of the interpreter.
      */
-    void println(const unistring& str) const;
+    void println(const std::u32string& str) const;
 
     /**
      * Constructs integer number from given value.
@@ -237,7 +237,7 @@ namespace plorth
      * \param value Value of the number as text.
      * \return      Reference to the created number value.
      */
-    std::shared_ptr<class number> number(const unistring& value);
+    std::shared_ptr<class number> number(const std::u32string& value);
 
     /**
      * Constructs array value from given elements.
@@ -265,7 +265,7 @@ namespace plorth
      * \param input Unicode string to construct string value from.
      * \return      Reference to the created string value.
      */
-    std::shared_ptr<class string> string(const unistring& input);
+    std::shared_ptr<class string> string(const std::u32string& input);
 
     /**
      * Constructs string value from given pointer of Unicode code points.
@@ -286,7 +286,7 @@ namespace plorth
      * \return         Reference to the created symbol.
      */
     std::shared_ptr<class symbol> symbol(
-      const unistring& id,
+      const std::u32string& id,
       const struct position* position = nullptr
     );
 
@@ -306,7 +306,7 @@ namespace plorth
      * Constructs word from given string and quote.
      */
     std::shared_ptr<class word> word(
-      const unistring& id,
+      const std::u32string& id,
       const std::shared_ptr<class quote>& quote
     );
 
@@ -466,9 +466,9 @@ namespace plorth
     /** Prototype for words. */
     std::shared_ptr<class object> m_word_prototype;
     /** List of command line arguments given for the interpreter. */
-    std::vector<unistring> m_arguments;
+    std::vector<std::u32string> m_arguments;
     /** List of file system paths where to look modules from. */
-    std::vector<unistring> m_module_paths;
+    std::vector<std::u32string> m_module_paths;
     /** Container for already imported modules. */
     module_container m_imported_modules;
 #if PLORTH_ENABLE_SYMBOL_CACHE

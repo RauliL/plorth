@@ -43,7 +43,7 @@ namespace plorth
     : m_runtime(runtime) {}
 
   void context::error(enum error::code code,
-                      const unistring& message,
+                      const std::u32string& message,
                       const struct position* position)
   {
     if (!position && (m_position.filename.empty() || m_position.line > 0))
@@ -73,12 +73,12 @@ namespace plorth
     push(m_runtime->number(value));
   }
 
-  void context::push_number(const unistring& value)
+  void context::push_number(const std::u32string& value)
   {
     push(m_runtime->number(value));
   }
 
-  void context::push_string(const unistring& value)
+  void context::push_string(const std::u32string& value)
   {
     push(m_runtime->string(value.c_str(), value.length()));
   }
@@ -105,7 +105,7 @@ namespace plorth
     push(m_runtime->object(properties));
   }
 
-  void context::push_symbol(const unistring& id)
+  void context::push_symbol(const std::u32string& id)
   {
     push(m_runtime->symbol(id));
   }

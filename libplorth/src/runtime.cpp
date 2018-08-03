@@ -131,7 +131,7 @@ namespace plorth
   }
 
   io::input::result runtime::read(io::input::size_type size,
-                                  unistring& output,
+                                  std::u32string& output,
                                   io::input::size_type& read)
   {
     if (m_input)
@@ -143,7 +143,7 @@ namespace plorth
     return io::input::result::eof;
   }
 
-  void runtime::print(const unistring& str) const
+  void runtime::print(const std::u32string& str) const
   {
     if (m_output)
     {
@@ -154,15 +154,15 @@ namespace plorth
   void runtime::println() const
   {
 #if defined(_WIN32)
-    static const unistring newline = {'\r', '\n'};
+    static const std::u32string newline = {'\r', '\n'};
 #else
-    static const unistring newline = {'\n'};
+    static const std::u32string newline = {'\n'};
 #endif
 
     print(newline);
   }
 
-  void runtime::println(const unistring& str) const
+  void runtime::println(const std::u32string& str) const
   {
     print(str);
     println();

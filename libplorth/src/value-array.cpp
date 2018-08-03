@@ -216,10 +216,10 @@ namespace plorth
     return true;
   }
 
-  unistring array::to_string() const
+  std::u32string array::to_string() const
   {
     const size_type s = size();
-    unistring result;
+    std::u32string result;
 
     for (size_type i = 0; i < s; ++i)
     {
@@ -239,10 +239,10 @@ namespace plorth
     return result;
   }
 
-  unistring array::to_source() const
+  std::u32string array::to_source() const
   {
     const size_type s = size();
-    unistring result;
+    std::u32string result;
 
     result += '[';
     for (size_type i = 0; i < s; ++i)
@@ -765,7 +765,7 @@ namespace plorth
   {
     std::shared_ptr<array> ary;
     std::shared_ptr<string> separator;
-    unistring result;
+    std::u32string result;
 
     if (!ctx->pop_array(ary) || !ctx->pop_string(separator))
     {

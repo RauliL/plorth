@@ -42,7 +42,7 @@ namespace plorth
   public:
     using value_type = std::shared_ptr<word>;
     /** Underlying container type. */
-    using container_type = std::unordered_map<unistring, value_type>;
+    using container_type = std::unordered_map<std::u32string, value_type>;
     using size_type = container_type::size_type;
 
     /**
@@ -85,7 +85,7 @@ namespace plorth
      * string. If no such word is found from the dictionary, null reference
      * will be returned instead.
      */
-    value_type find(const unistring& id) const;
+    value_type find(const std::u32string& id) const;
 
     /**
      * Inserts given word into the dictionary. Existing words with identical

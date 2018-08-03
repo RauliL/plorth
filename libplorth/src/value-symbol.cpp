@@ -27,7 +27,7 @@
 
 namespace plorth
 {
-  symbol::symbol(const unistring& id, const struct position* position)
+  symbol::symbol(const std::u32string& id, const struct position* position)
     : m_id(id)
     , m_position(position ? new struct position(*position) : nullptr)
     , m_hash(0) {}
@@ -51,7 +51,7 @@ namespace plorth
       std::lock_guard<std::mutex> lock(sym->m_mutex);
 #endif
 
-      h = sym->m_hash = std::hash<unistring>()(sym->m_id);
+      h = sym->m_hash = std::hash<std::u32string>()(sym->m_id);
     }
 
     return h;
@@ -67,17 +67,17 @@ namespace plorth
     }
   }
 
-  unistring symbol::to_string() const
+  std::u32string symbol::to_string() const
   {
     return to_source();
   }
 
-  unistring symbol::to_source() const
+  std::u32string symbol::to_source() const
   {
     return m_id;
   }
 
-  std::shared_ptr<class symbol> runtime::symbol(const unistring& id,
+  std::shared_ptr<class symbol> runtime::symbol(const std::u32string& id,
                                     const struct position* position)
   {
 #if PLORTH_ENABLE_SYMBOL_CACHE

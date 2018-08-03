@@ -27,12 +27,12 @@
 
 namespace plorth
 {
-  unistring value::type_description() const
+  std::u32string value::type_description() const
   {
     return type_description(type());
   }
 
-  unistring value::type_description(enum type type)
+  std::u32string value::type_description(enum type type)
   {
     switch (type)
     {

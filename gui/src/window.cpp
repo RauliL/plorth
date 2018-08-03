@@ -113,7 +113,7 @@ namespace plorth
       if (error)
       {
         m_line_display.add_line(
-          utils::string_convert<Glib::ustring, unistring>(
+          utils::string_convert<Glib::ustring, std::u32string>(
             error->to_string()
           ) + '\n',
           LineDisplay::LINE_TYPE_ERROR

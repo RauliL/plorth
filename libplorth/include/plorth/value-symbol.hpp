@@ -47,7 +47,7 @@ namespace plorth
      * \param position Optional position in source code where the symbol was
      *                 encountered.
      */
-    explicit symbol(const unistring& id,
+    explicit symbol(const std::u32string& id,
                     const struct position* position = nullptr);
 
     /**
@@ -58,7 +58,7 @@ namespace plorth
     /**
      * Returns string which acts as identifier for the symbol.
      */
-    inline const unistring& id() const
+    inline const std::u32string& id() const
     {
       return m_id;
     }
@@ -84,12 +84,12 @@ namespace plorth
     }
 
     bool equals(const std::shared_ptr<value>& that) const;
-    unistring to_string() const;
-    unistring to_source() const;
+    std::u32string to_string() const;
+    std::u32string to_source() const;
 
   private:
     /** Identifier of the symbol. */
-    const unistring m_id;
+    const std::u32string m_id;
     /** Position of the symbol in source code. */
     struct position* m_position;
     /** Cached hash code of the symbol. */

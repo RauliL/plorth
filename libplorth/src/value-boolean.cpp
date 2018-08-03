@@ -40,12 +40,12 @@ namespace plorth
     return m_value == std::static_pointer_cast<boolean>(that)->m_value;
   }
 
-  unistring boolean::to_string() const
+  std::u32string boolean::to_string() const
   {
     return m_value ? U"true" : U"false";
   }
 
-  unistring boolean::to_source() const
+  std::u32string boolean::to_source() const
   {
     return to_string();
   }

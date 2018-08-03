@@ -83,8 +83,8 @@ namespace plorth
     }
 
     bool equals(const std::shared_ptr<class value>& that) const;
-    unistring to_string() const;
-    unistring to_source() const;
+    std::u32string to_string() const;
+    std::u32string to_source() const;
   };
 }
 

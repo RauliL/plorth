@@ -64,7 +64,7 @@ namespace plorth
      */
     explicit error(
       enum code code,
-      const unistring& message,
+      const std::u32string& message,
       const struct position* position = nullptr
     );
 
@@ -78,14 +78,14 @@ namespace plorth
     /**
      * Returns textual description of the error code.
      */
-    unistring code_description() const;
+    std::u32string code_description() const;
 
     /**
      * Returns textual description of given error code.
      */
-    static unistring code_description(enum code code);
+    static std::u32string code_description(enum code code);
 
-    inline const unistring& message() const
+    inline const std::u32string& message() const
     {
       return m_message;
     }
@@ -105,14 +105,14 @@ namespace plorth
     }
 
     bool equals(const std::shared_ptr<value>& that) const;
-    unistring to_string() const;
-    unistring to_source() const;
+    std::u32string to_string() const;
+    std::u32string to_source() const;
 
   private:
     /** Error code. */
     const enum code m_code;
     /** Textual description of the error. */
-    const unistring m_message;
+    const std::u32string m_message;
     /** Optional position in source code. */
     struct position* m_position;
   };

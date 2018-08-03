@@ -75,12 +75,12 @@ namespace plorth
     /**
      * Returns textual description of type of the value.
      */
-    unistring type_description() const;
+    std::u32string type_description() const;
 
     /**
      * Returns textual description of given value type.
      */
-    static unistring type_description(enum type type);
+    static std::u32string type_description(enum type type);
 
     /**
      * Tests whether given value is of given type.
@@ -146,13 +146,13 @@ namespace plorth
     /**
      * Constructs string representation of the value.
      */
-    virtual unistring to_string() const = 0;
+    virtual std::u32string to_string() const = 0;
 
     /**
      * Constructs a string that resembles as accurately as possible what this
      * value would look like in source code.
      */
-    virtual unistring to_source() const = 0;
+    virtual std::u32string to_source() const = 0;
   };
 
   bool operator==(const std::shared_ptr<value>&, const std::shared_ptr<value>&);

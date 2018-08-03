@@ -53,14 +53,14 @@ static bool flag_test_syntax = false;
 static bool flag_fork = false;
 static std::string inline_script;
 #if PLORTH_ENABLE_MODULES
-static std::unordered_set<unistring> imported_modules;
+static std::unordered_set<std::u32string> imported_modules;
 #endif
 
 static void scan_arguments(const std::shared_ptr<runtime>&, int, char**);
 static inline bool is_console_interactive();
 static void compile_and_run(const std::shared_ptr<context>&,
                             const std::string&,
-                            const unistring&);
+                            const std::u32string&);
 static void handle_error(const std::shared_ptr<context>&);
 
 namespace plorth
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
   if (script_filename)
   {
-    const unistring decoded_script_filename = utf8_decode(script_filename);
+    const auto decoded_script_filename = utf8_decode(script_filename);
     std::ifstream is(script_filename, std::ios_base::in);
 
     if (is.good())
@@ -243,7 +243,7 @@ static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
       case 'r':
         if (offset < argc)
         {
-          unistring module_path;
+          std::u32string module_path;
 
           if (!utf8_decode_test(argv[offset++], module_path))
           {
@@ -315,9 +315,9 @@ static void handle_error(const std::shared_ptr<context>& ctx)
 
 static void compile_and_run(const std::shared_ptr<context>& ctx,
                             const std::string& input,
-                            const unistring& filename)
+                            const std::u32string& filename)
 {
-  unistring source;
+  std::u32string source;
   std::shared_ptr<quote> script;
 
   if (!utf8_decode_test(input, source))

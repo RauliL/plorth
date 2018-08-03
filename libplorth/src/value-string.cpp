@@ -38,13 +38,13 @@ namespace plorth
     class simple_string : public string
     {
     public:
-      explicit simple_string(const unichar* chars, size_type length)
+      explicit simple_string(const char32_t* chars, size_type length)
         : m_length(length)
-        , m_chars(m_length > 0 ? new unichar[m_length] : nullptr)
+        , m_chars(m_length > 0 ? new char32_t[m_length] : nullptr)
       {
         if (m_length > 0)
         {
-          std::memcpy(m_chars, chars, sizeof(unichar) * m_length);
+          std::memcpy(m_chars, chars, sizeof(char32_t) * m_length);
         }
       }
 
@@ -68,7 +68,7 @@ namespace plorth
 
     private:
       const size_type m_length;
-      unichar* m_chars;
+      char32_t* m_chars;
     };
 
     class concat_string : public string
@@ -178,10 +178,10 @@ namespace plorth
     return true;
   }
 
-  unistring string::to_string() const
+  std::u32string string::to_string() const
   {
     const size_type len = length();
-    unistring result;
+    std::u32string result;
 
     result.reserve(len);
     for (size_type i = 0; i < len; ++i)
@@ -192,7 +192,7 @@ namespace plorth
     return result;
   }
 
-  unistring string::to_source() const
+  std::u32string string::to_source() const
   {
     return json_stringify(to_string());
   }
@@ -245,7 +245,7 @@ namespace plorth
     return m_index != that.m_index;
   }
 
-  std::shared_ptr<string> runtime::string(const unistring& input)
+  std::shared_ptr<string> runtime::string(const std::u32string& input)
   {
     return string(input.c_str(), input.length());
   }
@@ -283,7 +283,7 @@ namespace plorth
   }
 
   static void str_test(const std::shared_ptr<context>& ctx,
-                       bool (*callback)(unichar))
+                       bool (*callback)(char32_t))
   {
     std::shared_ptr<string> str;
 
@@ -640,7 +640,7 @@ namespace plorth
    */
   static void w_is_space(const std::shared_ptr<context>& ctx)
   {
-    str_test(ctx, unichar_isspace);
+    str_test(ctx, unicode_isspace);
   }
 
   /**
@@ -659,7 +659,7 @@ namespace plorth
    */
   static void w_is_lower_case(const std::shared_ptr<context>& ctx)
   {
-    str_test(ctx, unichar_islower);
+    str_test(ctx, unicode_islower);
   }
 
   /**
@@ -678,7 +678,7 @@ namespace plorth
    */
   static void w_is_upper_case(const std::shared_ptr<context>& ctx)
   {
-    str_test(ctx, unichar_isupper);
+    str_test(ctx, unicode_isupper);
   }
 
   /**
@@ -777,7 +777,7 @@ namespace plorth
 
       for (string::size_type i = 0; i < length; ++i)
       {
-        if (unichar_isspace(str->at(i)))
+        if (unicode_isspace(str->at(i)))
         {
           if (end - begin > 0)
           {
@@ -825,7 +825,7 @@ namespace plorth
 
       for (string::size_type i = 0; i < length; ++i)
       {
-        const unichar c = str->at(i);
+        const auto c = str->at(i);
 
         if (i + 1 < length && c == '\r' && str->at(i + 1) == '\n')
         {
@@ -873,14 +873,14 @@ namespace plorth
   }
 
   static void str_convert(const std::shared_ptr<context>& ctx,
-                          unichar (*callback)(unichar))
+                          char32_t (*callback)(char32_t))
   {
     std::shared_ptr<string> str;
 
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
-      unichar result[length];
+      char32_t result[length];
 
       for (string::size_type i = 0; i < length; ++i)
       {
@@ -904,7 +904,7 @@ namespace plorth
    */
   static void w_upper_case(const std::shared_ptr<context>& ctx)
   {
-    str_convert(ctx, unichar_toupper);
+    str_convert(ctx, unicode_toupper);
   }
 
   /**
@@ -921,16 +921,16 @@ namespace plorth
    */
   static void w_lower_case(const std::shared_ptr<context>& ctx)
   {
-    str_convert(ctx, unichar_tolower);
+    str_convert(ctx, unicode_tolower);
   }
 
-  static inline unichar unichar_swapcase(unichar c)
+  static inline char32_t unicode_swapcase(char32_t c)
   {
-    if (unichar_islower(c))
+    if (unicode_islower(c))
     {
-      return unichar_toupper(c);
+      return unicode_toupper(c);
     } else {
-      return unichar_tolower(c);
+      return unicode_tolower(c);
     }
   }
 
@@ -948,7 +948,7 @@ namespace plorth
    */
   static void w_swap_case(const std::shared_ptr<context>& ctx)
   {
-    str_convert(ctx, unichar_swapcase);
+    str_convert(ctx, unicode_swapcase);
   }
 
   /**
@@ -971,17 +971,17 @@ namespace plorth
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
-      unichar output[length];
+      char32_t output[length];
 
       for (string::size_type i = 0; i < length; ++i)
       {
-        unichar c = str->at(i);
+        auto c = str->at(i);
 
         if (i == 0)
         {
-          c = unichar_toupper(c);
+          c = unicode_toupper(c);
         } else {
-          c = unichar_tolower(c);
+          c = unicode_tolower(c);
         }
         output[i] = c;
       }
@@ -1012,14 +1012,14 @@ namespace plorth
 
       for (i = 0; i < length; ++i)
       {
-        if (!unichar_isspace(str->at(i)))
+        if (!unicode_isspace(str->at(i)))
         {
           break;
         }
       }
       for (j = length; j != 0; --j)
       {
-        if (!unichar_isspace(str->at(j - 1)))
+        if (!unicode_isspace(str->at(j - 1)))
         {
           break;
         }
@@ -1056,7 +1056,7 @@ namespace plorth
 
       for (i = 0; i < length; ++i)
       {
-        if (!unichar_isspace(str->at(i)))
+        if (!unicode_isspace(str->at(i)))
         {
           break;
         }
@@ -1093,7 +1093,7 @@ namespace plorth
 
       for (i = length; i != 0; --i)
       {
-        if (!unichar_isspace(str->at(i - 1)))
+        if (!unicode_isspace(str->at(i - 1)))
         {
           break;
         }
@@ -1126,7 +1126,7 @@ namespace plorth
 
     if (ctx->pop_string(a))
     {
-      const unistring str = a->to_string();
+      const auto str = a->to_string();
 
       if (is_number(str))
       {
@@ -1237,7 +1237,7 @@ namespace plorth
     {
       const auto length = str->length();
       number::int_type index = num->as_int();
-      unichar c;
+      char32_t c;
 
       if (index < 0)
       {
@@ -1285,7 +1285,7 @@ namespace plorth
       }
       for (string::size_type i = 0; i < length; ++i)
       {
-        if (!unichar_isword(str->at(i)))
+        if (!unicode_isword(str->at(i)))
         {
           ctx->error(
             error::code::value,

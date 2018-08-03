@@ -36,7 +36,7 @@ namespace plorth
   {
   public:
     using size_type = std::size_t;
-    using value_type = unichar;
+    using value_type = char32_t;
     using pointer = value_type*;
     using const_pointer = const value_type*;
     class iterator;
@@ -65,8 +65,8 @@ namespace plorth
     }
 
     bool equals(const std::shared_ptr<class value>& that) const;
-    unistring to_string() const;
-    unistring to_source() const;
+    std::u32string to_string() const;
+    std::u32string to_source() const;
   };
 
   /**
@@ -76,7 +76,7 @@ namespace plorth
   {
   public:
     using difference_type = int;
-    using value_type = unichar;
+    using value_type = char32_t;
     using pointer = value_type*;
     using reference = value_type&;
     using iterator_category = std::forward_iterator_tag;

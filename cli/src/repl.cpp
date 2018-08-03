@@ -38,7 +38,7 @@ namespace plorth
     void repl_loop(const std::shared_ptr<context>& ctx)
     {
       int line_counter = 0;
-      unistring source;
+      std::u32string source;
       std::stack<char32_t> open_braces;
       char prompt[BUFSIZ];
 

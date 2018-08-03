@@ -90,7 +90,7 @@ namespace plorth
      *                 occurred
      */
     void error(enum error::code code,
-               const unistring& message,
+               const std::u32string& message,
                const struct position* position = nullptr);
 
     /**
@@ -130,8 +130,8 @@ namespace plorth
      * \return         Reference the quote that was compiled from given source,
      *                 or null reference if syntax error was encountered.
      */
-    std::shared_ptr<quote> compile(const unistring& source,
-                                   const unistring& filename = U"",
+    std::shared_ptr<quote> compile(const std::u32string& source,
+                                   const std::u32string& filename = U"",
                                    int line = 1,
                                    int column = 1);
 
@@ -143,7 +143,7 @@ namespace plorth
      * \return     Boolean flag telling whether the import was successfull or
      *             whether some kind of error was occurred.
      */
-    bool import(const unistring& path);
+    bool import(const std::u32string& path);
 
     /**
      * Provides direct access to the data stack.
@@ -217,12 +217,12 @@ namespace plorth
      * Pushes either integer or real number into stack, based on the given text
      * input which is parsed into a number.
      */
-    void push_number(const unistring& value);
+    void push_number(const std::u32string& value);
 
     /**
      * Pushes string value into the data stack.
      */
-    void push_string(const unistring& value);
+    void push_string(const std::u32string& value);
 
     /**
      * Constructs string value from given array of Unicode code points and
@@ -252,7 +252,7 @@ namespace plorth
      * Constructs symbol from given identifier and pushes it onto the data
      * stack.
      */
-    void push_symbol(const unistring& id);
+    void push_symbol(const std::u32string& id);
 
     /**
      * Constructs quote from given sequence of values and pushes it onto the
@@ -402,7 +402,7 @@ namespace plorth
      * Returns optional filename of the context, when the context is executed
      * as module.
      */
-    inline const unistring& filename() const
+    inline const std::u32string& filename() const
     {
       return m_filename;
     }
@@ -411,7 +411,7 @@ namespace plorth
      * Sets optional filename of the context, when the context is executed as
      * module.
      */
-    inline void filename(const unistring& fn)
+    inline void filename(const std::u32string& fn)
     {
       m_filename = fn;
     }
@@ -454,7 +454,7 @@ namespace plorth
     class dictionary m_dictionary;
 #if PLORTH_ENABLE_MODULES
     /** Optional filename of the context, when executed as module. */
-    unistring m_filename;
+    std::u32string m_filename;
 #endif
     /** Current position in source code. */
     struct position m_position;

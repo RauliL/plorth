@@ -69,7 +69,7 @@ namespace plorth
         auto row = *(m_tree_model->append());
 
         row[index_column] = ++index;
-        row[value_column] = utils::string_convert<Glib::ustring, unistring>(
+        row[value_column] = utils::string_convert<Glib::ustring, std::u32string>(
           value ? value->to_source() : U"null"
         );
       }

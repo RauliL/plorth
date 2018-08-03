@@ -35,7 +35,7 @@ namespace plorth
    */
   struct position
   {
-    unistring filename;
+    std::u32string filename;
     int line;
     int column;
   };

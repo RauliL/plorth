@@ -43,7 +43,7 @@ namespace plorth
   {
   public:
     using size_type = std::size_t;
-    using key_type = unistring;
+    using key_type = std::u32string;
     using mapped_type = std::shared_ptr<value>;
     using value_type = std::pair<key_type, mapped_type>;
 
@@ -132,8 +132,8 @@ namespace plorth
     }
 
     bool equals(const std::shared_ptr<value>& that) const;
-    unistring to_string() const;
-    unistring to_source() const;
+    std::u32string to_string() const;
+    std::u32string to_source() const;
   };
 }
 
