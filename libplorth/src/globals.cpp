@@ -1177,6 +1177,69 @@ namespace plorth
   }
 
   /**
+   * Word: export
+   *
+   * Takes:
+   * - array<string|word>
+   *
+   * Exports words out from the local dictionary so that only they (instead of
+   * the whole dictionary) will be imported when the local dictionary is used
+   * as a module. An array of strings (names of the words to export) or words
+   * must be given as an argument.
+   */
+  static void w_export(const std::shared_ptr<context>& ctx)
+  {
+    const auto& runtime = ctx->runtime();
+    auto& dictionary = ctx->dictionary();
+    std::shared_ptr<array> ary;
+    std::vector<std::shared_ptr<value>> result;
+
+    if (!ctx->pop_array(ary))
+    {
+      return;
+    }
+    for (const auto& element : ary)
+    {
+      if (value::is(element, value::type::string))
+      {
+        const auto id = element->to_string();
+        auto word = dictionary.find(id);
+
+        if (!word)
+        {
+          ctx->error(
+            error::code::reference,
+            U"Unrecognized word: `" + id + U"'"
+          );
+          return;
+        }
+        result.push_back(word);
+      }
+      else if (value::is(element, value::type::word))
+      {
+        result.push_back(element);
+      } else {
+        ctx->error(
+          error::code::value,
+          U"Export array must contain only strings or words; " +
+          (element ? element->type_description() : U"null") +
+          U" was encountered instead."
+        );
+        return;
+      }
+    }
+
+    dictionary.insert(runtime->word(
+      runtime->symbol(U"exports"),
+      runtime->compiled_quote({ runtime->array(
+        result.data(),
+        result.size())
+      }),
+      ctx
+    ));
+  }
+
+  /**
    * Word: args
    *
    * Gives:
@@ -1587,6 +1650,7 @@ namespace plorth
         { U"locals", w_locals },
         { U"const", w_const },
         { U"import", w_import },
+        { U"export", w_export },
         { U"args", w_args },
         { U"version", w_version },
 
