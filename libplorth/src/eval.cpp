@@ -40,9 +40,6 @@ namespace plorth
   static bool eval_sym(const std::shared_ptr<context>&,
                        const std::shared_ptr<symbol>&,
                        std::shared_ptr<value>&);
-  static bool eval_wrd(const std::shared_ptr<context>&,
-                       const std::shared_ptr<word>&,
-                       std::shared_ptr<value>&);
 
   bool value::eval(const std::shared_ptr<context>& ctx,
                    const std::shared_ptr<value>& val,
@@ -64,9 +61,6 @@ namespace plorth
 
       case value::type::symbol:
         return eval_sym(ctx, std::static_pointer_cast<symbol>(val), slot);
-
-      case value::type::word:
-        return eval_wrd(ctx, std::static_pointer_cast<word>(val), slot);
 
       default:
         return eval_val(ctx, val, slot);
@@ -162,17 +156,5 @@ namespace plorth
     }
 
     return true;
-  }
-
-  static bool eval_wrd(const std::shared_ptr<context>& ctx,
-                       const std::shared_ptr<word>& wrd,
-                       std::shared_ptr<value>& slot)
-  {
-    ctx->error(
-      error::code::syntax,
-      U"Unexpected word declaration; Missing value."
-    );
-
-    return false;
   }
 }
