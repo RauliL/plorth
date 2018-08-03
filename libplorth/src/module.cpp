@@ -129,20 +129,18 @@ namespace plorth
       return std::shared_ptr<object>();
     }
 
-    // Then attempt to compile it.
-    if (!(compiled_module = ctx->compile(source, path)))
-    {
-      return std::shared_ptr<object>();
-    }
-
-    // Run the module code inside new execution context.
+    // Create an execution context for the new module.
     module_ctx = context::make(ctx->runtime());
     module_ctx->filename(path);
-    if (!compiled_module->call(module_ctx))
+
+    // Then attempt to compile the module and execute it.
+    if (!(compiled_module = quote::compile(module_ctx, source, path))
+        || !compiled_module->call(module_ctx))
     {
-      if (module_ctx->error())
+      if (auto error = module_ctx->error())
       {
-        ctx->error(module_ctx->error());
+        ctx->error(error);
+        module_ctx->clear_error();
       } else {
         ctx->error(error::code::import, U"Module import failed.");
       }

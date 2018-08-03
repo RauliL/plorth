@@ -104,7 +104,7 @@ namespace plorth
 
         // Attempt to compile the source code into a quote and execute it
         // unless syntax errors were encountered.
-        if (auto script = ctx->compile(source, U"<repl>", line_counter))
+        if (auto script = quote::compile(ctx, source, U"<repl>", line_counter))
         {
           script->call(ctx);
         }

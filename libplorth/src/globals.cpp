@@ -1076,15 +1076,13 @@ namespace plorth
   static void w_compile(const std::shared_ptr<context>& ctx)
   {
     std::shared_ptr<string> source;
-    std::shared_ptr<class quote> quote;
 
     if (!ctx->pop_string(source))
     {
       return;
     }
 
-    quote = ctx->compile(source->to_string());
-    if (quote)
+    if (auto quote = quote::compile(ctx, source->to_string()))
     {
       ctx->push(quote);
     }

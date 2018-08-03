@@ -326,7 +326,7 @@ static void compile_and_run(const std::shared_ptr<context>& ctx,
     std::exit(EXIT_FAILURE);
   }
 
-  if (!(script = ctx->compile(source, filename)))
+  if (!(script = quote::compile(ctx, source, filename)))
   {
     handle_error(ctx);
     return;

@@ -118,24 +118,6 @@ namespace plorth
     }
 
     /**
-     * Compiles given source code into a quote.
-     *
-     * \param source   Source code to compile into quote.
-     * \param filename Optional file name information from which the source
-     *                 code was read from.
-     * \param line     Initial line number of the source code. This is for
-     *                 debugging purposes only.
-     * \param column   Initial column number of the source code. This is for
-     *                 debugging purposes only.
-     * \return         Reference the quote that was compiled from given source,
-     *                 or null reference if syntax error was encountered.
-     */
-    std::shared_ptr<quote> compile(const std::u32string& source,
-                                   const std::u32string& filename = U"",
-                                   int line = 1,
-                                   int column = 1);
-
-    /**
      * Imports module from file system and inserts all of it's exported words
      * into dictionary of this execution context.
      *

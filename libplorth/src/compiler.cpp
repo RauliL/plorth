@@ -144,7 +144,7 @@ namespace plorth
       /**
        * Compiles top-level script into quote.
        */
-      std::shared_ptr<quote> compile(context* ctx)
+      std::shared_ptr<quote> compile(const std::shared_ptr<context>& ctx)
       {
         std::vector<std::shared_ptr<class value>> values;
         std::shared_ptr<class value> value;
@@ -165,7 +165,7 @@ namespace plorth
         return ctx->runtime()->compiled_quote(values);
       }
 
-      std::shared_ptr<value> compile_value(context* ctx)
+      std::shared_ptr<value> compile_value(const std::shared_ptr<context>& ctx)
       {
         if (skip_whitespace())
         {
@@ -201,7 +201,7 @@ namespace plorth
         }
       }
 
-      std::shared_ptr<symbol> compile_symbol(context* ctx)
+      std::shared_ptr<symbol> compile_symbol(const std::shared_ptr<context>& ctx)
       {
         struct position position;
         std::u32string buffer;
@@ -239,7 +239,7 @@ namespace plorth
         return ctx->runtime()->symbol(buffer, &position);
       }
 
-      std::shared_ptr<word> compile_word(context* ctx)
+      std::shared_ptr<word> compile_word(const std::shared_ptr<context>& ctx)
       {
         struct position position;
         const auto& runtime = ctx->runtime();
@@ -304,7 +304,7 @@ namespace plorth
         return runtime->word(symbol, runtime->compiled_quote(values));
       }
 
-      std::shared_ptr<quote> compile_quote(context* ctx)
+      std::shared_ptr<quote> compile_quote(const std::shared_ptr<context>& ctx)
       {
         struct position position;
         std::vector<std::shared_ptr<value>> values;
@@ -362,7 +362,7 @@ namespace plorth
         return ctx->runtime()->compiled_quote(values);
       }
 
-      std::shared_ptr<string> compile_string(context* ctx)
+      std::shared_ptr<string> compile_string(const std::shared_ptr<context>& ctx)
       {
         struct position position;
         char32_t separator;
@@ -422,7 +422,7 @@ namespace plorth
         return ctx->runtime()->string(buffer);
       }
 
-      std::shared_ptr<array> compile_array(context* ctx)
+      std::shared_ptr<array> compile_array(const std::shared_ptr<context>& ctx)
       {
         struct position position;
         std::vector<std::shared_ptr<value>> elements;
@@ -492,7 +492,7 @@ namespace plorth
         return ctx->runtime()->array(elements.data(), elements.size());
       }
 
-      std::shared_ptr<object> compile_object(context* ctx)
+      std::shared_ptr<object> compile_object(const std::shared_ptr<context>& ctx)
       {
         struct position position;
         std::vector<object::value_type> properties;
@@ -592,7 +592,8 @@ namespace plorth
         return ctx->runtime()->object(properties);
       }
 
-      bool compile_escape_sequence(context* ctx, std::u32string& buffer)
+      bool compile_escape_sequence(const std::shared_ptr<context>& ctx,
+                                   std::u32string& buffer)
       {
         struct position position;
 
@@ -751,11 +752,12 @@ namespace plorth
     };
   }
 
-  std::shared_ptr<quote> context::compile(const std::u32string& source,
-                                          const std::u32string& filename,
-                                          int line,
-                                          int column)
+  std::shared_ptr<quote> quote::compile(const std::shared_ptr<context>& ctx,
+                                        const std::u32string& source,
+                                        const std::u32string& filename,
+                                        int line,
+                                        int column)
   {
-    return compiler(source, filename, line, column).compile(this);
+    return compiler(source, filename, line, column).compile(ctx);
   }
 }

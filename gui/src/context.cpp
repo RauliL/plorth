@@ -71,7 +71,8 @@ namespace plorth
                           const Glib::ustring& file,
                           int line)
     {
-      auto script = m_context->compile(
+      auto script = quote::compile(
+        m_context,
         utils::string_convert<std::u32string, Glib::ustring>(source_code),
         utils::string_convert<std::u32string, Glib::ustring>(file),
         line
