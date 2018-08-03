@@ -305,7 +305,7 @@ static void handle_error(const std::shared_ptr<context>& ctx)
     {
       std::cerr << *position << ':';
     }
-    std::cerr << err->code() << " - " << err->message();
+    std::cerr << err->code() << " - " << utf8_encode(err->message());
   } else {
     std::cerr << "Unknown error.";
   }

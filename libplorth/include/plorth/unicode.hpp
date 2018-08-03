@@ -36,19 +36,6 @@
 namespace plorth
 {
   /**
-   * Decodes Unicode string into UTF-8 and outputs it into given byte stream.
-   */
-  std::ostream& operator<<(std::ostream&, const std::u32string&);
-
-#if defined(__EMSCRIPTEN__)
-  /**
-   * Decodes Unicode string into UTF-32LE and outputs it into given wide char
-   * stream.
-   */
-  std::wostream& operator<<(std::wostream&, const std::u32string&);
-#endif
-
-  /**
    * Decodes UTF-8 encoded byte string into Unicode string. Encountered encoding
    * errors are ignored.
    */

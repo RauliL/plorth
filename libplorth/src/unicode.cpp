@@ -36,56 +36,6 @@ namespace plorth
   static wchar_t utf32le_encode_char(char32_t);
 #endif
 
-  std::ostream& operator<<(std::ostream& out, const std::u32string& s)
-  {
-    for (const auto& c : s)
-    {
-      if (!unicode_validate(c))
-      {
-        continue;
-      }
-
-      if (c <= 0x7f)
-      {
-        out << static_cast<char>(c);
-      }
-      else if (c <= 0x07ff)
-      {
-        out << static_cast<char>(0xc0 | ((c & 0x7c0) >> 6));
-        out << static_cast<char>(0x80 | (c & 0x3f));
-      }
-      else if (c <= 0xffff)
-      {
-        out << static_cast<char>(0xe0 | ((c & 0xf000)) >> 12);
-        out << static_cast<char>(0x80 | ((c & 0xfc0)) >> 6);
-        out << static_cast<char>(0x80 | (c & 0x3f));
-      } else {
-        out << static_cast<char>(0xf0 | ((c & 0x1c0000) >> 18));
-        out << static_cast<char>(0x80 | ((c & 0x3f000) >> 12));
-        out << static_cast<char>(0x80 | ((c & 0xfc0) >> 6));
-        out << static_cast<char>(0x80 | (c & 0x3f));
-      }
-    }
-
-    return out;
-  }
-
-#if defined(__EMSCRIPTEN__)
-  std::wostream& operator<<(std::wostream& out, const std::u32string& s)
-  {
-    for (const auto& c : s)
-    {
-      if (!unicode_validate(c))
-      {
-        continue;
-      }
-
-      out << utf32le_encode_char(c);
-    }
-    return out;
-  }
-#endif
-
   bool unicode_validate(char32_t c)
   {
     return !(c > 0x10ffff

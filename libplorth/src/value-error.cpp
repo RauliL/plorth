@@ -113,7 +113,7 @@ namespace plorth
 
   std::ostream& operator<<(std::ostream& out, enum error::code code)
   {
-    out << error::code_description(code);
+    out << utf8_encode(error::code_description(code));
 
     return out;
   }
