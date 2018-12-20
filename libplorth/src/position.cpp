@@ -44,6 +44,7 @@ namespace plorth
       result += ':';
       result += std::to_string(pos.column);
     }
+    os << result;
 
     return os;
   }
