@@ -89,9 +89,12 @@ namespace plorth
      * \param position Optional position in the source code where the error
      *                 occurred
      */
-    void error(enum error::code code,
-               const std::u32string& message,
-               const struct position* position = nullptr);
+    void error(
+      enum error::code code,
+      const std::u32string& message,
+      const std::optional<struct position>& position
+        = std::optional<struct position>()
+    );
 
     /**
      * Removes currently uncaught error in the context.

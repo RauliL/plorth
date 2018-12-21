@@ -27,18 +27,11 @@
 
 namespace plorth
 {
-  symbol::symbol(const std::u32string& id, const struct position* position)
+  symbol::symbol(const std::u32string& id,
+                 const std::optional<struct position>& position)
     : m_id(id)
-    , m_position(position ? new struct position(*position) : nullptr)
+    , m_position(position)
     , m_hash(0) {}
-
-  symbol::~symbol()
-  {
-    if (m_position)
-    {
-      delete m_position;
-    }
-  }
 
   std::size_t symbol::hash() const
   {
@@ -77,8 +70,10 @@ namespace plorth
     return m_id;
   }
 
-  std::shared_ptr<class symbol> runtime::symbol(const std::u32string& id,
-                                    const struct position* position)
+  std::shared_ptr<class symbol> runtime::symbol(
+    const std::u32string& id,
+    const std::optional<struct position>& position
+  )
   {
 #if PLORTH_ENABLE_SYMBOL_CACHE
     const auto entry = m_symbol_cache.find(id);

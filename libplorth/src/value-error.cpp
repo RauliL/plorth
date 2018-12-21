@@ -29,18 +29,10 @@ namespace plorth
 {
   error::error(enum code code,
                const std::u32string& message,
-               const struct position* position)
+               const std::optional<struct position>& position)
     : m_code(code)
     , m_message(message)
-    , m_position(position ? new struct position(*position) : nullptr) {}
-
-  error::~error()
-  {
-    if (m_position)
-    {
-      delete m_position;
-    }
-  }
+    , m_position(position) {}
 
   std::u32string error::code_description() const
   {

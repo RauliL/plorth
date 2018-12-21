@@ -26,6 +26,9 @@
 #ifndef PLORTH_VALUE_SYMBOL_HPP_GUARD
 #define PLORTH_VALUE_SYMBOL_HPP_GUARD
 
+#include <optional>
+
+#include <plorth/position.hpp>
 #include <plorth/value.hpp>
 
 #if PLORTH_ENABLE_MUTEXES
@@ -47,13 +50,11 @@ namespace plorth
      * \param position Optional position in source code where the symbol was
      *                 encountered.
      */
-    explicit symbol(const std::u32string& id,
-                    const struct position* position = nullptr);
-
-    /**
-     * Destructor.
-     */
-    ~symbol();
+    explicit symbol(
+      const std::u32string& id,
+      const std::optional<struct position>& position
+        = std::optional<struct position>()
+    );
 
     /**
      * Returns string which acts as identifier for the symbol.
@@ -67,7 +68,7 @@ namespace plorth
      * Returns position of the symbol in source code, or null pointer if no
      * such information is available.
      */
-    inline const struct position* position() const
+    inline const std::optional<struct position>& position() const
     {
       return m_position;
     }
@@ -91,7 +92,7 @@ namespace plorth
     /** Identifier of the symbol. */
     const std::u32string m_id;
     /** Position of the symbol in source code. */
-    struct position* m_position;
+    const std::optional<struct position> m_position;
     /** Cached hash code of the symbol. */
     std::size_t m_hash;
 #if PLORTH_ENABLE_MUTEXES

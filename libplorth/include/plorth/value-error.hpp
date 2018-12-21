@@ -26,6 +26,8 @@
 #ifndef PLORTH_VALUE_ERROR_HPP_GUARD
 #define PLORTH_VALUE_ERROR_HPP_GUARD
 
+#include <optional>
+
 #include <plorth/position.hpp>
 #include <plorth/value.hpp>
 
@@ -65,10 +67,9 @@ namespace plorth
     explicit error(
       enum code code,
       const std::u32string& message,
-      const struct position* position = nullptr
+      const std::optional<struct position>& position
+        = std::optional<struct position>()
     );
-
-    ~error();
 
     inline enum code code() const
     {
@@ -94,7 +95,7 @@ namespace plorth
      * Returns position in the source code where the error occurred or null
      * pointer if no such information is available.
      */
-    inline const struct position* position() const
+    inline const std::optional<struct position>& position() const
     {
       return m_position;
     }
@@ -114,7 +115,7 @@ namespace plorth
     /** Textual description of the error. */
     const std::u32string m_message;
     /** Optional position in source code. */
-    struct position* m_position;
+    const std::optional<struct position> m_position;
   };
 
   std::ostream& operator<<(std::ostream&, enum error::code);

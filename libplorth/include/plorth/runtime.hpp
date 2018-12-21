@@ -287,7 +287,8 @@ namespace plorth
      */
     std::shared_ptr<class symbol> symbol(
       const std::u32string& id,
-      const struct position* position = nullptr
+      const std::optional<struct position>& position
+        = std::optional<struct position>()
     );
 
     /**

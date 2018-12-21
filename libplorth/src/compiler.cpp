@@ -50,7 +50,7 @@ namespace plorth
       {
         error_message = U"Unknown error.";
       }
-      error(error::code::syntax, error_message, &parser.position());
+      error(error::code::syntax, error_message, parser.position());
 
       return std::shared_ptr<quote>();
     }
@@ -134,7 +134,7 @@ namespace plorth
     const std::shared_ptr<token::symbol>& token
   )
   {
-    return runtime->symbol(token->id(), &token->position());
+    return runtime->symbol(token->id(), token->position());
   }
 
   static std::shared_ptr<word> compile_word_token(
