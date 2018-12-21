@@ -176,16 +176,11 @@ namespace plorth
      */
     void reset()
     {
-      if (!m_value)
+      if (m_value)
       {
-        return;
+        m_value->dec_ref_count();
+        m_value = nullptr;
       }
-      m_value->dec_ref_count();
-      if (m_value->reference_count() == 0)
-      {
-        delete m_value;
-      }
-      m_value = nullptr;
     }
 
     /**
@@ -230,8 +225,20 @@ namespace plorth
 
   namespace memory
   {
+#if PLORTH_ENABLE_MEMORY_POOL
     struct pool;
+#endif
     struct slot;
+
+    /**
+     * Represents single generation of garbage collected objects in garbage
+     * collector.
+     */
+    struct generation
+    {
+      slot* head;
+      slot* tail;
+    };
 
     /**
      * Memory manager manages memory pools used by the interpreter and is used
@@ -262,13 +269,22 @@ namespace plorth
        */
       void* allocate(std::size_t size);
 
+      /**
+       * Launches the mark and sweep garbage collection.
+       */
+      void collect();
+
       manager(const manager&) = delete;
       manager(manager&&) = delete;
       void operator=(const manager&) = delete;
       void operator=(manager&&) = delete;
 
-#if PLORTH_ENABLE_MEMORY_POOL
     private:
+      /** How many objects have been allocated since last collection. */
+      int m_allocation_counter;
+      generation m_nursery;
+      generation m_tenured;
+#if PLORTH_ENABLE_MEMORY_POOL
       /** Pointer to the first memory pool used by this manager. */
       pool* m_pool_head;
       /** Pointer to the last memory pool used by this manager. */
@@ -321,6 +337,29 @@ namespace plorth
         --m_reference_count;
       }
 
+      /**
+       * Returns true if the object has been marked as in-use by the garbage
+       * collector, false otherwise.
+       */
+      inline bool marked() const
+      {
+        return m_marked;
+      }
+
+      /**
+       * Marks the object to be used, so that it won't be claimed by the
+       * garbage collector. Classes overriding this class so also override this
+       * method so that they would recursively mark the objects which they are
+       * using.
+       */
+      virtual void mark();
+
+      /**
+       * Used by the garbage collector to remove the marked bit from the
+       * object.
+       */
+      void unmark();
+
       void* operator new(std::size_t size, class manager& manager);
       void operator delete(void* pointer);
 
@@ -332,6 +371,8 @@ namespace plorth
     private:
       /** Number of references to the object. */
       std::size_t m_reference_count;
+      /** Whether the object has been marked or not. */
+      bool m_marked;
     };
 
 #if PLORTH_ENABLE_MEMORY_POOL
@@ -354,9 +395,17 @@ namespace plorth
       /** Pointer to the last used slot in the pool. */
       slot* used_tail;
     };
+#endif
 
     struct slot
     {
+      /** Generation where the slot belongs to. */
+      struct generation* generation;
+      /** Next slot in the generation. */
+      slot* next_in_generation;
+      /** Previous slot in the generation. */
+      slot* prev_in_generation;
+#if PLORTH_ENABLE_MEMORY_POOL
       /** Memory pool where this slot belongs to. */
       struct pool* pool;
       /** Pointer to the next slot in the pool. */
@@ -365,10 +414,10 @@ namespace plorth
       slot* prev;
       /** Size of the slot. */
       std::size_t size;
+#endif
       /** Pointer to the allocated memory. */
       char* memory;
     };
-#endif
   }
 }
 

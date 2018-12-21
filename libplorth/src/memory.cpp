@@ -24,6 +24,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <plorth/context.hpp>
+#if !defined(PLORTH_ALLOCATION_THRESHOLD)
+# define PLORTH_ALLOCATION_THRESHOLD 1024
+#endif
 #if PLORTH_ENABLE_MEMORY_POOL
 # if !defined(PLORTH_MEMORY_POOL_SIZE)
 #  define PLORTH_MEMORY_POOL_SIZE (4096 * 32)
@@ -34,24 +37,40 @@ namespace plorth
 {
   namespace memory
   {
+    static void destroy_generation(generation&);
+    static void add_slot_to_generation(slot*, generation&);
+    static void remove_slot_from_generation(slot*);
+    static void generation_mark(generation&);
+    static void generation_unmark(generation&);
+    static void generation_sweep(generation&, generation&);
 #if PLORTH_ENABLE_MEMORY_POOL
     static pool* pool_create();
     static slot* pool_allocate(pool*, std::size_t);
 #endif
 
     manager::manager()
+      : m_allocation_counter(0)
 #if PLORTH_ENABLE_MEMORY_POOL
-      : m_pool_head(nullptr)
+      , m_pool_head(nullptr)
       , m_pool_tail(nullptr)
 #endif
-      {}
+    {
+      m_nursery.head = nullptr;
+      m_nursery.tail = nullptr;
+      m_tenured.head = nullptr;
+      m_tenured.tail = nullptr;
+    }
 
     manager::~manager()
     {
 #if PLORTH_ENABLE_MEMORY_POOL
       pool* current;
       pool* prev;
+#endif
 
+      destroy_generation(m_nursery);
+      destroy_generation(m_tenured);
+#if PLORTH_ENABLE_MEMORY_POOL
       for (current = m_pool_tail; current; current = prev)
       {
         prev = current->prev;
@@ -66,10 +85,17 @@ namespace plorth
 
     void* manager::allocate(std::size_t size)
     {
+      struct slot* slot;
+
+      if (++m_allocation_counter >= PLORTH_ALLOCATION_THRESHOLD)
+      {
+        m_allocation_counter = 0;
+        collect();
+      }
+
 #if PLORTH_ENABLE_MEMORY_POOL
       const std::size_t remainder = size % 8;
       struct pool* pool;
-      struct slot* slot;
 
       if (remainder)
       {
@@ -113,17 +139,44 @@ namespace plorth
       {
         std::abort();
       }
+#else
+      void* pointer = std::malloc(size);
+
+      if (!pointer)
+      {
+        std::abort();
+      }
+      slot = static_cast<struct slot*>(pointer);
+      slot->memory = static_cast<char*>(pointer) + sizeof(struct slot);
+#endif
+
+      add_slot_to_generation(slot, m_nursery);
 
       return static_cast<void*>(slot->memory);
-#else
-      return std::malloc(size);
-#endif
+    }
+
+    void manager::collect()
+    {
+      generation_mark(m_nursery);
+      generation_sweep(m_nursery, m_tenured);
+      generation_unmark(m_tenured);
     }
 
     managed::managed()
-      : m_reference_count(0) {}
+      : m_reference_count(0)
+      , m_marked(false) {}
 
     managed::~managed() {}
+
+    void managed::mark()
+    {
+      m_marked = true;
+    }
+
+    void managed::unmark()
+    {
+      m_marked = false;
+    }
 
     void* managed::operator new(std::size_t size, class manager& manager)
     {
@@ -132,17 +185,21 @@ namespace plorth
 
     void managed::operator delete(void* pointer)
     {
-#if PLORTH_ENABLE_MEMORY_POOL
       struct slot* slot;
-      struct pool* pool;
 
       if (!pointer)
       {
         return;
       }
 
-      slot = reinterpret_cast<struct slot*>(static_cast<char*>(pointer) - sizeof(struct slot));
-      pool = slot->pool;
+      slot = reinterpret_cast<struct slot*>(
+        static_cast<char*>(pointer) - sizeof(struct slot)
+      );
+
+      remove_slot_from_generation(slot);
+
+#if PLORTH_ENABLE_MEMORY_POOL
+      auto pool = slot->pool;
 
       // Remove the slot from the linked of list of used slots in the pool.
       if (slot->next && slot->prev)
@@ -185,10 +242,143 @@ namespace plorth
         std::free(static_cast<void*>(pool));
       }
 #else
-      if (pointer)
+      std::free(pointer);
+#endif
+    }
+
+    static void destroy_generation(struct generation& generation)
+    {
+      slot* next;
+
+      for (auto slot = generation.head; slot; slot = next)
       {
-        std::free(pointer);
+        next = slot->next_in_generation;
+        delete reinterpret_cast<managed*>(slot->memory);
       }
+    }
+
+    static void add_slot_to_generation(struct slot* slot,
+                                       struct generation& generation)
+    {
+      slot->generation = &generation;
+      slot->next_in_generation = nullptr;
+      if ((slot->prev_in_generation = generation.tail))
+      {
+        generation.tail->next_in_generation = slot;
+      } else {
+        generation.head = slot;
+      }
+      generation.tail = slot;
+    }
+
+    static void remove_slot_from_generation(struct slot* slot)
+    {
+      auto generation = slot->generation;
+
+      if (!generation)
+      {
+        return;
+      }
+      if (slot->next_in_generation && slot->prev_in_generation)
+      {
+        slot->next_in_generation->prev_in_generation =
+          slot->prev_in_generation;
+        slot->prev_in_generation->next_in_generation =
+          slot->next_in_generation;
+      }
+      else if (slot->next_in_generation)
+      {
+        slot->next_in_generation->prev_in_generation = nullptr;
+        generation->head = slot->next_in_generation;
+      }
+      else if (slot->prev_in_generation)
+      {
+        slot->prev_in_generation->next_in_generation = nullptr;
+        generation->tail = slot->prev_in_generation;
+      } else {
+        generation->head = nullptr;
+        generation->tail = nullptr;
+      }
+    }
+
+    static void generation_mark(struct generation& generation)
+    {
+      for (auto slot = generation.head; slot; slot = slot->next_in_generation)
+      {
+        auto object = reinterpret_cast<managed*>(slot->memory);
+
+        if (!object->marked() && object->reference_count() > 0)
+        {
+          object->mark();
+        }
+      }
+    }
+
+    static void generation_unmark(struct generation& generation)
+    {
+      for (auto slot = generation.head; slot; slot = slot->next_in_generation)
+      {
+        auto object = reinterpret_cast<managed*>(slot->memory);
+
+        if (object->marked())
+        {
+          object->unmark();
+        }
+      }
+    }
+
+    static void generation_sweep(generation& young, generation& old)
+    {
+      slot* next;
+      slot* saved_head = nullptr;
+      slot* saved_tail = nullptr;
+#if PLORTH_ENABLE_GC_DEBUG
+      int saved_count = 0;
+      int trashed_count = 0;
+#endif
+
+      for (auto slot = young.head; slot; slot = next)
+      {
+        auto object = reinterpret_cast<managed*>(slot->memory);
+
+        next = slot->next_in_generation;
+        if (object->marked())
+        {
+          slot->next_in_generation = nullptr;
+          if ((slot->prev_in_generation = saved_tail))
+          {
+            saved_tail->next_in_generation = slot;
+          } else {
+            saved_head = slot;
+          }
+          saved_tail = slot;
+#if PLORTH_ENABLE_GC_DEBUG
+          ++saved_count;
+#endif
+        } else {
+          delete object;
+#if PLORTH_ENABLE_GC_DEBUG
+          ++trashed_count;
+#endif
+        }
+      }
+
+      if (saved_head)
+      {
+        if ((saved_head->prev_in_generation = old.tail))
+        {
+          old.tail->next_in_generation = saved_head;
+        }
+        old.tail = saved_tail;
+      }
+
+#if PLORTH_ENABLE_GC_DEBUG
+      std::fprintf(
+        stderr,
+        "GC: Sweep done; %d trashed, %d saved.\n",
+        trashed_count,
+        saved_count
+      );
 #endif
     }
 
