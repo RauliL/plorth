@@ -74,8 +74,7 @@ namespace plorth
     class concat_string : public string
     {
     public:
-      explicit concat_string(const std::shared_ptr<string>& left,
-                             const std::shared_ptr<string>& right)
+      explicit concat_string(const ref<string>& left, const ref<string>& right)
         : m_length(left->length() + right->length())
         , m_left(left)
         , m_right(right) {}
@@ -99,14 +98,14 @@ namespace plorth
 
     private:
       const size_type m_length;
-      const std::shared_ptr<string> m_left;
-      const std::shared_ptr<string> m_right;
+      const ref<string> m_left;
+      const ref<string> m_right;
     };
 
     class substring : public string
     {
     public:
-      explicit substring(const std::shared_ptr<string>& original,
+      explicit substring(const ref<string>& original,
                          size_type offset,
                          size_type length)
         : m_original(original)
@@ -124,7 +123,7 @@ namespace plorth
       }
 
     private:
-      const std::shared_ptr<string> m_original;
+      const ref<string> m_original;
       const size_type m_offset;
       const size_type m_length;
     };
@@ -135,7 +134,7 @@ namespace plorth
     class reversed_string : public string
     {
     public:
-      explicit reversed_string(const std::shared_ptr<string>& original)
+      explicit reversed_string(const ref<string>& original)
         : m_original(original) {}
 
       inline size_type length() const
@@ -149,20 +148,20 @@ namespace plorth
       }
 
     private:
-      const std::shared_ptr<string> m_original;
+      const ref<string> m_original;
     };
   }
 
-  bool string::equals(const std::shared_ptr<class value>& that) const
+  bool string::equals(const ref<class value>& that) const
   {
     const size_type len = length();
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (!is(that, type::string))
     {
       return false;
     }
-    str = std::static_pointer_cast<string>(that);
+    str = that.cast<string>();
     if (len != str->length())
     {
       return false;
@@ -197,8 +196,7 @@ namespace plorth
     return json_stringify(to_string());
   }
 
-  string::iterator::iterator(const std::shared_ptr<string>& str,
-                             string::size_type index)
+  string::iterator::iterator(const ref<string>& str, string::size_type index)
     : m_string(str)
     , m_index(index) {}
 
@@ -245,15 +243,15 @@ namespace plorth
     return m_index != that.m_index;
   }
 
-  std::shared_ptr<string> runtime::string(const std::u32string& input)
+  ref<string> runtime::string(const std::u32string& input)
   {
     return string(input.c_str(), input.length());
   }
 
-  std::shared_ptr<string> runtime::string(string::const_pointer chars,
+  ref<string> runtime::string(string::const_pointer chars,
                                           string::size_type length)
   {
-    return std::shared_ptr<class string>(
+    return ref<class string>(
       new (*m_memory_manager) simple_string(chars, length)
     );
   }
@@ -271,9 +269,9 @@ namespace plorth
    *
    * Returns the length of the string.
    */
-  static void w_length(const std::shared_ptr<context>& ctx)
+  static void w_length(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -282,10 +280,10 @@ namespace plorth
     }
   }
 
-  static void str_test(const std::shared_ptr<context>& ctx,
+  static void str_test(const ref<context>& ctx,
                        bool (*callback)(char32_t))
   {
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (!ctx->pop_string(str))
     {
@@ -323,10 +321,10 @@ namespace plorth
    * Tests whether the topmost string contains contents of the second string,
    * returning true or false as appropriate.
    */
-  static void w_includes(const std::shared_ptr<context>& ctx)
+  static void w_includes(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
-    std::shared_ptr<string> substr;
+    ref<string> str;
+    ref<string> substr;
 
     if (!ctx->pop_string(str) || !ctx->pop_string(substr))
     {
@@ -394,10 +392,10 @@ namespace plorth
    * substring does not exist in the string, null will be returned. Otherwise,
    * first numerical index of the occurrence is returned.
    */
-  static void w_index_of(const std::shared_ptr<context>& ctx)
+  static void w_index_of(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
-    std::shared_ptr<string> substr;
+    ref<string> str;
+    ref<string> substr;
 
     if (!ctx->pop_string(str) || !ctx->pop_string(substr))
     {
@@ -463,10 +461,10 @@ namespace plorth
    * substring does not exist in the string, null will be returned. Otherwise,
    * last numerical index of the occurrence is returned.
    */
-  static void w_last_index_of(const std::shared_ptr<context>& ctx)
+  static void w_last_index_of(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
-    std::shared_ptr<string> substr;
+    ref<string> str;
+    ref<string> substr;
 
     if (!ctx->pop_string(str) || !ctx->pop_string(substr))
     {
@@ -530,10 +528,10 @@ namespace plorth
    * Tests whether beginning of the string is identical with the given
    * substring.
    */
-  static void w_starts_with(const std::shared_ptr<context>& ctx)
+  static void w_starts_with(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
-    std::shared_ptr<string> substr;
+    ref<string> str;
+    ref<string> substr;
 
     if (!ctx->pop_string(str) || !ctx->pop_string(substr))
     {
@@ -584,10 +582,10 @@ namespace plorth
    *
    * Tests whether end of the string is identical with the given substring.
    */
-  static void w_ends_with(const std::shared_ptr<context>& ctx)
+  static void w_ends_with(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
-    std::shared_ptr<string> substr;
+    ref<string> str;
+    ref<string> substr;
 
     if (!ctx->pop_string(str) || !ctx->pop_string(substr))
     {
@@ -638,7 +636,7 @@ namespace plorth
    * Tests whether the string contains only whitespace characters. Empty
    * strings return false.
    */
-  static void w_is_space(const std::shared_ptr<context>& ctx)
+  static void w_is_space(const ref<context>& ctx)
   {
     str_test(ctx, unicode_isspace);
   }
@@ -657,7 +655,7 @@ namespace plorth
    * Tests whether the string contains only lower case characters. Empty
    * strings return false.
    */
-  static void w_is_lower_case(const std::shared_ptr<context>& ctx)
+  static void w_is_lower_case(const ref<context>& ctx)
   {
     str_test(ctx, unicode_islower);
   }
@@ -676,7 +674,7 @@ namespace plorth
    * Tests whether the string contains only upper case characters. Empty strings
    * return false.
    */
-  static void w_is_upper_case(const std::shared_ptr<context>& ctx)
+  static void w_is_upper_case(const ref<context>& ctx)
   {
     str_test(ctx, unicode_isupper);
   }
@@ -695,15 +693,15 @@ namespace plorth
    * Extracts characters from the string and returns them in an array of
    * substrings.
    */
-  static void w_chars(const std::shared_ptr<context>& ctx)
+  static void w_chars(const ref<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
-      std::vector<std::shared_ptr<value>> output;
+      std::vector<ref<value>> output;
 
       output.reserve(length);
       for (const auto c : str)
@@ -729,15 +727,15 @@ namespace plorth
    * Extracts Unicode code points from the string and returns them in an array
    * of numbers.
    */
-  static void w_runes(const std::shared_ptr<context>& ctx)
+  static void w_runes(const ref<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
-      std::vector<std::shared_ptr<value>> output;
+      std::vector<ref<value>> output;
 
       output.reserve(length);
       for (const auto c : str)
@@ -763,17 +761,17 @@ namespace plorth
    * Extracts white space separated words from the string and returns them in
    * an array.
    */
-  static void w_words(const std::shared_ptr<context>& ctx)
+  static void w_words(const ref<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
       string::size_type begin = 0;
       string::size_type end = 0;
-      std::vector<std::shared_ptr<value>> result;
+      std::vector<ref<value>> result;
 
       for (string::size_type i = 0; i < length; ++i)
       {
@@ -811,17 +809,17 @@ namespace plorth
    *
    * Extracts lines from the string and returns them in an array.
    */
-  static void w_lines(const std::shared_ptr<context>& ctx)
+  static void w_lines(const ref<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
       const auto length = str->length();
       string::size_type begin = 0;
       string::size_type end = 0;
-      std::vector<std::shared_ptr<value>> result;
+      std::vector<ref<value>> result;
 
       for (string::size_type i = 0; i < length; ++i)
       {
@@ -862,9 +860,9 @@ namespace plorth
    *
    * Reverses the string.
    */
-  static void w_reverse(const std::shared_ptr<context>& ctx)
+  static void w_reverse(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -872,10 +870,10 @@ namespace plorth
     }
   }
 
-  static void str_convert(const std::shared_ptr<context>& ctx,
+  static void str_convert(const ref<context>& ctx,
                           char32_t (*callback)(char32_t))
   {
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -902,7 +900,7 @@ namespace plorth
    *
    * Converts the string into upper case.
    */
-  static void w_upper_case(const std::shared_ptr<context>& ctx)
+  static void w_upper_case(const ref<context>& ctx)
   {
     str_convert(ctx, unicode_toupper);
   }
@@ -919,7 +917,7 @@ namespace plorth
    *
    * Converts the string into lower case.
    */
-  static void w_lower_case(const std::shared_ptr<context>& ctx)
+  static void w_lower_case(const ref<context>& ctx)
   {
     str_convert(ctx, unicode_tolower);
   }
@@ -946,7 +944,7 @@ namespace plorth
    *
    * Turns lower case characters in the string into upper case and vice versa.
    */
-  static void w_swap_case(const std::shared_ptr<context>& ctx)
+  static void w_swap_case(const ref<context>& ctx)
   {
     str_convert(ctx, unicode_swapcase);
   }
@@ -964,9 +962,9 @@ namespace plorth
    * Converts the first character of the string into upper case and the
    * remaining characters into lower case.
    */
-  static void w_capitalize(const std::shared_ptr<context>& ctx)
+  static void w_capitalize(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -1001,9 +999,9 @@ namespace plorth
    *
    * Strips whitespace from the begining and the end of the string.
    */
-  static void w_trim(const std::shared_ptr<context>& ctx)
+  static void w_trim(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -1045,9 +1043,9 @@ namespace plorth
    *
    * Strips whitespace from the begining of the string.
    */
-  static void w_trim_left(const std::shared_ptr<context>& ctx)
+  static void w_trim_left(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -1082,9 +1080,9 @@ namespace plorth
    *
    * Strips whitespace from the end of the string.
    */
-  static void w_trim_right(const std::shared_ptr<context>& ctx)
+  static void w_trim_right(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {
@@ -1120,9 +1118,9 @@ namespace plorth
    * Converts string into a floating point decimal number, or throws a value
    * error if the number cannot be converted into one.
    */
-  static void w_to_number(const std::shared_ptr<context>& ctx)
+  static void w_to_number(const ref<context>& ctx)
   {
-    std::shared_ptr<string> a;
+    ref<string> a;
 
     if (ctx->pop_string(a))
     {
@@ -1150,10 +1148,10 @@ namespace plorth
    *
    * Concatenates the contents of the two strings and returns the result.
    */
-  static void w_concat(const std::shared_ptr<context>& ctx)
+  static void w_concat(const ref<context>& ctx)
   {
-    std::shared_ptr<string> a;
-    std::shared_ptr<string> b;
+    ref<string> a;
+    ref<string> b;
 
     if (ctx->pop_string(a) && ctx->pop_string(b))
     {
@@ -1183,10 +1181,10 @@ namespace plorth
    *
    * Repeats the string given number of times.
    */
-  static void w_repeat(const std::shared_ptr<context>& ctx)
+  static void w_repeat(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
-    std::shared_ptr<number> num;
+    ref<string> str;
+    ref<number> num;
 
     if (ctx->pop_string(str) && ctx->pop_number(num))
     {
@@ -1195,7 +1193,7 @@ namespace plorth
       if (count > 0)
       {
         const auto& runtime = ctx->runtime();
-        std::shared_ptr<string> result = str;
+        ref<string> result = str;
 
         for (number::int_type i = 1; i < count; ++i)
         {
@@ -1228,10 +1226,10 @@ namespace plorth
    * from the end of the string. If given index is out of bounds, a range error
    * will be thrown.
    */
-  static void w_get(const std::shared_ptr<context>& ctx)
+  static void w_get(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
-    std::shared_ptr<number> num;
+    ref<string> str;
+    ref<number> num;
 
     if (ctx->pop_string(str) && ctx->pop_number(num))
     {
@@ -1270,9 +1268,9 @@ namespace plorth
    * Converts given string into symbol. Value error will be thrown if the string
    * is empty or contains whitespace or non-symbolic characters such as separators.
    */
-  static void w_to_symbol(const std::shared_ptr<context>& ctx)
+  static void w_to_symbol(const ref<context>& ctx)
   {
-    std::shared_ptr<string> str;
+    ref<string> str;
 
     if (ctx->pop_string(str))
     {

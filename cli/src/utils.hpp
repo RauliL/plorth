@@ -34,7 +34,7 @@ namespace plorth
     namespace utils
     {
 #if PLORTH_ENABLE_MODULES
-      void scan_module_path(const std::shared_ptr<runtime>&);
+      void scan_module_path(const ref<runtime>&);
 #endif
 
       template<class StringT>

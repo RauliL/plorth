@@ -43,13 +43,13 @@ namespace plorth
        * Constructs new output which prints everything into the standard output
        * stream (stdout) of the process.
        */
-      static std::shared_ptr<output> standard(memory::manager& memory_manager);
+      static ref<output> standard(memory::manager& memory_manager);
 
       /**
        * Constructs new output which ignores everything that will be written
        * into it.
        */
-      static std::shared_ptr<output> dummy(memory::manager& memory_manager);
+      static ref<output> dummy(memory::manager& memory_manager);
 
       /**
        * Writes given Unicode string into the output.

@@ -58,12 +58,12 @@ namespace plorth
        * Constructs new input which reads from standard input stream (stdin) of
        * the process.
        */
-      static std::shared_ptr<input> standard(memory::manager& memory_manager);
+      static ref<input> standard(memory::manager& memory_manager);
 
       /**
        * Constructs new input which reads nothing.
        */
-      static std::shared_ptr<input> dummy(memory::manager& memory_manager);
+      static ref<input> dummy(memory::manager& memory_manager);
 
       /**
        * Reads Unicode code points from the input and places them into the

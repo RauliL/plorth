@@ -50,11 +50,11 @@ namespace plorth
     return h;
   }
 
-  bool symbol::equals(const std::shared_ptr<value>& that) const
+  bool symbol::equals(const ref<value>& that) const
   {
     if (is(that, type::symbol))
     {
-      return !m_id.compare(std::static_pointer_cast<symbol>(that)->m_id);
+      return !m_id.compare(that.cast<symbol>()->m_id);
     } else {
       return false;
     }
@@ -70,7 +70,7 @@ namespace plorth
     return m_id;
   }
 
-  std::shared_ptr<class symbol> runtime::symbol(
+  ref<class symbol> runtime::symbol(
     const std::u32string& id,
     const std::optional<struct position>& position
   )
@@ -80,7 +80,7 @@ namespace plorth
 
     if (entry == std::end(m_symbol_cache))
     {
-      const auto reference = std::shared_ptr<class symbol>(
+      const auto reference = ref<class symbol>(
         new (*m_memory_manager) class symbol(id)
       );
 
@@ -91,7 +91,7 @@ namespace plorth
 
     return entry->second;
 #else
-    return std::shared_ptr<class symbol>(
+    return ref<class symbol>(
       new (*m_memory_manager) class symbol(id, position)
     );
 #endif
@@ -115,13 +115,13 @@ namespace plorth
    * Position is returnedd as object with `filename`, `line` and `column`
    * properties.
    */
-  static void w_position(const std::shared_ptr<context>& ctx)
+  static void w_position(const ref<context>& ctx)
   {
-    std::shared_ptr<value> sym;
+    ref<value> sym;
 
     if (ctx->pop(sym, value::type::symbol))
     {
-      const auto position = std::static_pointer_cast<symbol>(sym)->position();
+      const auto position = sym.cast<symbol>()->position();
 
       ctx->push(sym);
       if (position)
@@ -151,9 +151,9 @@ namespace plorth
    * symbol does not resolve into any kind of word or value, number conversion
    * is attempted on it. If that also fails, reference error will be thrown.
    */
-  static void w_call(const std::shared_ptr<context>& ctx)
+  static void w_call(const ref<context>& ctx)
   {
-    std::shared_ptr<symbol> sym;
+    ref<symbol> sym;
 
     if (ctx->pop_symbol(sym))
     {

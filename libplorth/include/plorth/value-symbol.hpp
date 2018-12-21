@@ -84,7 +84,7 @@ namespace plorth
       return type::symbol;
     }
 
-    bool equals(const std::shared_ptr<value>& that) const;
+    bool equals(const ref<value>& that) const;
     std::u32string to_string() const;
     std::u32string to_source() const;
 

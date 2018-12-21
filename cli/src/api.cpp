@@ -36,7 +36,7 @@ namespace plorth
      *
      * Exits the interpreter.
      */
-    static void w_quit(const std::shared_ptr<context>&)
+    static void w_quit(const ref<context>&)
     {
       std::exit(EXIT_SUCCESS);
     }
@@ -46,7 +46,7 @@ namespace plorth
      *
      * Displays ten of the top-most values from the data stack.
      */
-    static void w_stack(const std::shared_ptr<context>& ctx)
+    static void w_stack(const ref<context>& ctx)
     {
       const auto& runtime = ctx->runtime();
       const auto& stack = ctx->data();
@@ -70,7 +70,7 @@ namespace plorth
       }
     }
 
-    void initialize_repl_api(const std::shared_ptr<runtime>& runtime)
+    void initialize_repl_api(const ref<runtime>& runtime)
     {
       auto& dictionary = runtime->dictionary();
 

@@ -36,6 +36,198 @@ namespace plorth
   class context;
   class runtime;
 
+  /**
+   * Wrapper class for objects that are managed by the garbage collector. It
+   * automatically increases and decreases reference counter of the wrapped
+   * object and destroys the object when it's reference count reaches to zero.
+   */
+  template<class T>
+  class ref
+  {
+  public:
+    using value_type = T;
+    using pointer = value_type*;
+
+    /**
+     * Constructs null reference.
+     */
+    ref()
+      : m_value(nullptr) {}
+
+    /**
+     * Constructs copy of existing reference.
+     */
+    ref(const ref<T>& that)
+      : m_value(that.m_value)
+    {
+      if (m_value)
+      {
+        m_value->inc_ref_count();
+      }
+    }
+
+    /**
+     * Constructs copy of existing reference.
+     */
+    template<class U>
+    ref(const ref<U>& that)
+      : m_value(that.get())
+    {
+      if (m_value)
+      {
+        m_value->inc_ref_count();
+      }
+    }
+
+    /**
+     * Moves wrapped object from existing reference into new one.
+     */
+    ref(ref<T>&& that)
+      : m_value(that.m_value)
+    {
+      that.m_value = nullptr;
+    }
+
+    /**
+     * Constructs reference from pointer to an referenced counted object.
+     */
+    template<class U>
+    ref(U* value)
+      : m_value(value)
+    {
+      if (m_value)
+      {
+        m_value->inc_ref_count();
+      }
+    }
+
+    /**
+     * Destructor. Decreases reference count of the wrapped object.
+     */
+    ~ref()
+    {
+      reset();
+    }
+
+    /**
+     * Copies wrapped object from another reference into this one.
+     */
+    ref& operator=(const ref<T>& that)
+    {
+      if (m_value != that.m_value)
+      {
+        reset();
+        if ((m_value = that.m_value))
+        {
+          m_value->inc_ref_count();
+        }
+      }
+
+      return *this;
+    }
+
+    /**
+     * Copies wrapped object from another reference into this one.
+     */
+    template<class U>
+    ref& operator=(const ref<U>& that)
+    {
+      auto value = that.get();
+
+      if (m_value != value)
+      {
+        reset();
+        if ((m_value = value))
+        {
+          m_value->inc_ref_count();
+        }
+      }
+
+      return *this;
+    }
+
+    /**
+     * Moves wrapped object from another reference into this one.
+     */
+    ref& operator=(ref<T>&& that)
+    {
+      if (this != &that)
+      {
+        reset();
+        m_value = that.m_value;
+        that.m_value = nullptr;
+      }
+
+      return *this;
+    }
+
+    /**
+     * Statically casts reference into another type.
+     */
+    template<class U>
+    inline ref<U> cast() const
+    {
+      return ref<U>(static_cast<U*>(m_value));
+    }
+
+    /**
+     * Releases refernece to the wrapped object. After this has been called,
+     * this reference will become null reference.
+     */
+    void reset()
+    {
+      if (!m_value)
+      {
+        return;
+      }
+      m_value->dec_ref_count();
+      if (m_value->reference_count() == 0)
+      {
+        delete m_value;
+      }
+      m_value = nullptr;
+    }
+
+    /**
+     * Returns pointer to the wrapped object.
+     */
+    inline pointer get() const
+    {
+      return m_value;
+    }
+
+    /**
+     * Returns pointer to the wrapped object, so that it's members can be
+     * accessed directly.
+     */
+    inline pointer operator->() const
+    {
+      return m_value;
+    }
+
+    /**
+     * Boolean coercion of the wrapped object. Null references will coerce into
+     * false, everything else into true.
+     */
+    inline explicit operator bool() const
+    {
+      return !!m_value;
+    }
+
+    /**
+     * Negated boolean coercion of the wrapped object. Non-null references will
+     * coerce into false, while null references will coerce into true.
+     */
+    inline bool operator!() const
+    {
+      return !m_value;
+    }
+
+  private:
+    /** Pointer to the referenced object. */
+    pointer m_value;
+  };
+
   namespace memory
   {
     struct pool;
@@ -105,6 +297,30 @@ namespace plorth
        */
       virtual ~managed();
 
+      /**
+       * Returns the number of references to the object.
+       */
+      inline std::size_t reference_count() const
+      {
+        return m_reference_count;
+      }
+
+      /**
+       * Increases the reference counter of the object.
+       */
+      inline void inc_ref_count()
+      {
+        ++m_reference_count;
+      }
+
+      /**
+       * Decreases the reference counter of the object.
+       */
+      inline void dec_ref_count()
+      {
+        --m_reference_count;
+      }
+
       void* operator new(std::size_t size, class manager& manager);
       void operator delete(void* pointer);
 
@@ -112,6 +328,10 @@ namespace plorth
       managed(managed&&) = delete;
       void operator=(const managed&) = delete;
       void operator=(managed&&) = delete;
+
+    private:
+      /** Number of references to the object. */
+      std::size_t m_reference_count;
     };
 
 #if PLORTH_ENABLE_MEMORY_POOL

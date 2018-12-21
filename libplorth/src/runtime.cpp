@@ -45,19 +45,17 @@ namespace plorth
     runtime::prototype_definition word_prototype();
   }
 
-  static inline std::shared_ptr<object> make_prototype(
+  static inline ref<object> make_prototype(
     runtime*,
     const char32_t*,
     const runtime::prototype_definition&
   );
 
-  std::shared_ptr<runtime> runtime::make(
-    memory::manager& memory_manager,
-    const std::shared_ptr<io::input>& input,
-    const std::shared_ptr<io::output>& output
-  )
+  ref<runtime> runtime::make(memory::manager& memory_manager,
+                             const ref<io::input>& input,
+                             const ref<io::output>& output)
   {
-    const auto runtime = std::shared_ptr<class runtime>(
+    const auto runtime = ref<class runtime>(
       new (memory_manager) class runtime(&memory_manager)
     );
 
@@ -168,14 +166,14 @@ namespace plorth
     println();
   }
 
-  static inline std::shared_ptr<object> make_prototype(
+  static inline ref<object> make_prototype(
     class runtime* runtime,
     const char32_t* name,
     const runtime::prototype_definition& definition
   )
   {
     std::vector<object::value_type> properties;
-    std::shared_ptr<object> prototype;
+    ref<object> prototype;
 
     for (auto& entry : definition)
     {
@@ -184,7 +182,7 @@ namespace plorth
         runtime->native_quote(entry.second)
       });
     }
-    properties.push_back({ U"__proto__", std::shared_ptr<value>() });
+    properties.push_back({ U"__proto__", ref<value>() });
     prototype = runtime->object(properties);
 
     // Define prototype into global dictionary as constant if name has been

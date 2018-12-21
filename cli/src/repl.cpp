@@ -33,9 +33,9 @@ namespace plorth
 {
   namespace cli
   {
-    void initialize_repl_api(const std::shared_ptr<runtime>&);
+    void initialize_repl_api(const ref<runtime>&);
 
-    void repl_loop(const std::shared_ptr<context>& ctx)
+    void repl_loop(const ref<context>& ctx)
     {
       int line_counter = 0;
       std::u32string source;
@@ -120,7 +120,7 @@ namespace plorth
           {
             std::cout << *position << ':';
           }
-          std::cout << error << std::endl;
+          std::cout << error.get() << std::endl;
           ctx->clear_error();
         }
       }

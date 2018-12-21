@@ -50,7 +50,7 @@ namespace plorth
     protected:
       void on_show();
       void on_line_received(const Glib::ustring& line);
-      void on_error_thrown(const std::shared_ptr<error>& error);
+      void on_error_thrown(const ref<error>& error);
       void on_text_written(const Glib::ustring& text);
       void on_word_activated(
         const Glib::ustring& symbol,

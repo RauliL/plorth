@@ -40,7 +40,7 @@ namespace plorth
   {
   public:
     using size_type = std::size_t;
-    using value_type = std::shared_ptr<value>;
+    using value_type = ref<value>;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -62,7 +62,7 @@ namespace plorth
       return type::array;
     }
 
-    bool equals(const std::shared_ptr<value>& that) const;
+    bool equals(const ref<value>& that) const;
     std::u32string to_string() const;
     std::u32string to_source() const;
   };
@@ -74,12 +74,12 @@ namespace plorth
   {
   public:
     using difference_type = int;
-    using value_type = const std::shared_ptr<value>;
+    using value_type = const ref<value>;
     using pointer = value_type*;
     using reference = value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    iterator(const std::shared_ptr<array>& ary, array::size_type index = 0);
+    iterator(const ref<array>& ary, array::size_type index = 0);
     iterator(const iterator& that);
     iterator& operator=(const iterator& that);
 
@@ -93,17 +93,17 @@ namespace plorth
 
   private:
     /** Reference to array which is being iterated. */
-    std::shared_ptr<array> m_array;
+    ref<array> m_array;
     /** Current offset in the iterated array. */
     array::size_type m_index;
   };
 
-  inline array::iterator begin(const std::shared_ptr<array>& ary)
+  inline array::iterator begin(const ref<array>& ary)
   {
     return array::iterator(ary);
   }
 
-  inline array::iterator end(const std::shared_ptr<array>& ary)
+  inline array::iterator end(const ref<array>& ary)
   {
     return array::iterator(ary, ary->size());
   }

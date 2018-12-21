@@ -70,9 +70,7 @@ namespace plorth
     return U"unknown";
   }
 
-  std::shared_ptr<object> value::prototype(
-    const std::shared_ptr<class runtime>& runtime
-  ) const
+  ref<object> value::prototype(const ref<class runtime>& runtime) const
   {
     switch (type())
     {
@@ -105,15 +103,15 @@ namespace plorth
 
     case type::object:
       {
-        std::shared_ptr<value> slot;
+        ref<value> slot;
 
         if (static_cast<const object*>(this)->own_property(U"__proto__", slot))
         {
           if (is(slot, type::object))
           {
-            return std::static_pointer_cast<object>(slot);
+            return slot.cast<object>();
           } else {
-            return std::shared_ptr<object>();
+            return ref<object>();
           }
         }
 
@@ -122,17 +120,15 @@ namespace plorth
       break;
     }
 
-    return std::shared_ptr<object>(); // Just to make GCC happy.
+    return ref<object>(); // Just to make GCC happy.
   }
 
-  bool operator==(const std::shared_ptr<value>& a,
-                  const std::shared_ptr<value>& b)
+  bool operator==(const ref<value>& a, const ref<value>& b)
   {
     return a ? b && a->equals(b) : !b;
   }
 
-  bool operator!=(const std::shared_ptr<value>& a,
-                  const std::shared_ptr<value>& b)
+  bool operator!=(const ref<value>& a, const ref<value>& b)
   {
     return a ? !b || !a->equals(b) : !!b;
   }

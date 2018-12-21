@@ -64,7 +64,7 @@ namespace plorth
       return type::string;
     }
 
-    bool equals(const std::shared_ptr<class value>& that) const;
+    bool equals(const ref<class value>& that) const;
     std::u32string to_string() const;
     std::u32string to_source() const;
   };
@@ -81,7 +81,7 @@ namespace plorth
     using reference = value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    iterator(const std::shared_ptr<string>& str, string::size_type index = 0);
+    iterator(const ref<string>& str, string::size_type index = 0);
     iterator(const iterator& that);
     iterator& operator=(const iterator& that);
 
@@ -94,17 +94,17 @@ namespace plorth
 
   private:
     /** Reference to string which is being iterated. */
-    std::shared_ptr<string> m_string;
+    ref<string> m_string;
     /** Current offset in the iterated string. */
     array::size_type m_index;
   };
 
-  inline string::iterator begin(const std::shared_ptr<string>& str)
+  inline string::iterator begin(const ref<string>& str)
   {
     return string::iterator(str);
   }
 
-  inline string::iterator end(const std::shared_ptr<string>& str)
+  inline string::iterator end(const ref<string>& str)
   {
     return string::iterator(str, str->length());
   }

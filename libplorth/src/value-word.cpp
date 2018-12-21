@@ -28,20 +28,19 @@
 
 namespace plorth
 {
-  word::word(const std::shared_ptr<class symbol>& symbol,
-             const std::shared_ptr<class quote>& quote)
+  word::word(const ref<class symbol>& symbol, const ref<class quote>& quote)
     : m_symbol(symbol)
     , m_quote(quote) {}
 
-  bool word::equals(const std::shared_ptr<value>& that) const
+  bool word::equals(const ref<value>& that) const
   {
-    std::shared_ptr<word> w;
+    ref<word> w;
 
     if (!is(that, type::word))
     {
       return false;
     }
-    w = std::static_pointer_cast<word>(that);
+    w = that.cast<word>();
 
     return m_symbol->equals(w->m_symbol) && m_quote->equals(w->m_quote);
   }
@@ -56,18 +55,14 @@ namespace plorth
     return U": " + m_symbol->id() + U" " + m_quote->to_string() + U" ;";
   }
 
-  std::shared_ptr<word> runtime::word(
-    const std::u32string& id,
-    const std::shared_ptr<class quote>& quote
-  )
+  ref<word> runtime::word(const std::u32string& id,
+                          const ref<class quote>& quote)
   {
     return word(symbol(id), quote);
   }
 
-  std::shared_ptr<word> runtime::word(
-    const std::shared_ptr<class symbol>& symbol,
-    const std::shared_ptr<class quote>& quote
-  )
+  ref<word> runtime::word(const ref<class symbol>& symbol,
+                          const ref<class quote>& quote)
   {
     return value<class word>(symbol, quote);
   }
@@ -85,9 +80,9 @@ namespace plorth
    *
    * Extracts symbol from the word and places it onto top of the stack.
    */
-  static void w_symbol(const std::shared_ptr<context>& ctx)
+  static void w_symbol(const ref<context>& ctx)
   {
-    std::shared_ptr<word> wrd;
+    ref<word> wrd;
 
     if (ctx->pop_word(wrd))
     {
@@ -110,9 +105,9 @@ namespace plorth
    * Extracts quote which acts as the body of the word and places it onto top
    * of the stack.
    */
-  static void w_quote(const std::shared_ptr<context>& ctx)
+  static void w_quote(const ref<context>& ctx)
   {
-    std::shared_ptr<word> wrd;
+    ref<word> wrd;
 
     if (ctx->pop_word(wrd))
     {
@@ -130,9 +125,9 @@ namespace plorth
    *
    * Executes body of the given word.
    */
-  static void w_call(const std::shared_ptr<context>& ctx)
+  static void w_call(const ref<context>& ctx)
   {
-    std::shared_ptr<word> wrd;
+    ref<word> wrd;
 
     if (ctx->pop_word(wrd))
     {
@@ -149,9 +144,9 @@ namespace plorth
    *
    * Inserts given word into current local dictionary.
    */
-  void w_define(const std::shared_ptr<context>& ctx)
+  void w_define(const ref<context>& ctx)
   {
-    std::shared_ptr<word> wrd;
+    ref<word> wrd;
 
     if (ctx->pop_word(wrd))
     {

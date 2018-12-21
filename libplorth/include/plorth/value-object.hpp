@@ -44,7 +44,7 @@ namespace plorth
   public:
     using size_type = std::size_t;
     using key_type = std::u32string;
-    using mapped_type = std::shared_ptr<value>;
+    using mapped_type = ref<value>;
     using value_type = std::pair<key_type, mapped_type>;
 
     /**
@@ -58,7 +58,7 @@ namespace plorth
      *                not.
      */
     bool has_property(
-      const std::shared_ptr<class runtime>& runtime,
+      const ref<class runtime>& runtime,
       const key_type& key
     ) const;
 
@@ -83,7 +83,7 @@ namespace plorth
      *                or not.
      */
     bool property(
-      const std::shared_ptr<class runtime>& runtime,
+      const ref<class runtime>& runtime,
       const key_type& key,
       mapped_type& slot
     ) const;
@@ -131,7 +131,7 @@ namespace plorth
       return type::object;
     }
 
-    bool equals(const std::shared_ptr<value>& that) const;
+    bool equals(const ref<value>& that) const;
     std::u32string to_string() const;
     std::u32string to_source() const;
   };

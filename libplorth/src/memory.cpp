@@ -120,7 +120,8 @@ namespace plorth
 #endif
     }
 
-    managed::managed() {}
+    managed::managed()
+      : m_reference_count(0) {}
 
     managed::~managed() {}
 

@@ -56,18 +56,18 @@ static std::string inline_script;
 static std::unordered_set<std::u32string> imported_modules;
 #endif
 
-static void scan_arguments(const std::shared_ptr<runtime>&, int, char**);
+static void scan_arguments(const ref<runtime>&, int, char**);
 static inline bool is_console_interactive();
-static void compile_and_run(const std::shared_ptr<context>&,
+static void compile_and_run(const ref<context>&,
                             const std::string&,
                             const std::u32string&);
-static void handle_error(const std::shared_ptr<context>&);
+static void handle_error(const ref<context>&);
 
 namespace plorth
 {
   namespace cli
   {
-    void repl_loop(const std::shared_ptr<context>&);
+    void repl_loop(const ref<context>&);
   }
 }
 
@@ -164,7 +164,7 @@ static void print_usage(std::ostream& out, const char* executable)
   out << std::endl;
 }
 
-static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
+static void scan_arguments(const ref<class runtime>& runtime,
                            int argc,
                            char** argv)
 {
@@ -292,9 +292,9 @@ static inline bool is_console_interactive()
 #endif
 }
 
-static void handle_error(const std::shared_ptr<context>& ctx)
+static void handle_error(const ref<context>& ctx)
 {
-  const std::shared_ptr<error>& err = ctx->error();
+  const auto& err = ctx->error();
 
   if (err)
   {
@@ -313,12 +313,12 @@ static void handle_error(const std::shared_ptr<context>& ctx)
   std::exit(EXIT_FAILURE);
 }
 
-static void compile_and_run(const std::shared_ptr<context>& ctx,
+static void compile_and_run(const ref<context>& ctx,
                             const std::string& input,
                             const std::u32string& filename)
 {
   std::u32string source;
-  std::shared_ptr<quote> script;
+  ref<quote> script;
 
   if (!utf8_decode_test(input, source))
   {

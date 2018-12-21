@@ -106,7 +106,7 @@ namespace plorth
     class set_object : public object
     {
     public:
-      explicit set_object(const std::shared_ptr<class object>& object,
+      explicit set_object(const ref<class object>& object,
                           const key_type& key,
                           const mapped_type& value)
         : m_object(object)
@@ -163,7 +163,7 @@ namespace plorth
       }
 
     private:
-      const std::shared_ptr<object> m_object;
+      const ref<object> m_object;
       const key_type m_key;
       const mapped_type m_value;
     };
@@ -171,7 +171,7 @@ namespace plorth
     class set_object_override : public object
     {
     public:
-      explicit set_object_override(const std::shared_ptr<class object>& object,
+      explicit set_object_override(const ref<class object>& object,
                                    const key_type& key,
                                    const mapped_type& value)
         : m_object(object)
@@ -242,7 +242,7 @@ namespace plorth
       }
 
     private:
-      const std::shared_ptr<object> m_object;
+      const ref<object> m_object;
       const key_type m_key;
       const mapped_type m_value;
     };
@@ -250,7 +250,7 @@ namespace plorth
     class delete_object : public object
     {
     public:
-      explicit delete_object(const std::shared_ptr<class object>& object,
+      explicit delete_object(const ref<class object>& object,
                              const key_type& removed_key)
         : m_object(object)
         , m_removed_key(removed_key) {}
@@ -316,12 +316,12 @@ namespace plorth
       }
 
     private:
-      const std::shared_ptr<object> m_object;
+      const ref<object> m_object;
       const key_type m_removed_key;
     };
   }
 
-  bool object::has_property(const std::shared_ptr<class runtime>& runtime,
+  bool object::has_property(const ref<class runtime>& runtime,
                             const key_type& key) const
   {
     if (!has_own_property(key))
@@ -339,7 +339,7 @@ namespace plorth
     return true;
   }
 
-  bool object::property(const std::shared_ptr<class runtime>& runtime,
+  bool object::property(const ref<class runtime>& runtime,
                         const key_type& key,
                         mapped_type& slot) const
   {
@@ -358,17 +358,17 @@ namespace plorth
     return true;
   }
 
-  bool object::equals(const std::shared_ptr<value>& that) const
+  bool object::equals(const ref<value>& that) const
   {
-    std::shared_ptr<object> obj;
-    std::shared_ptr<value> slot;
+    ref<object> obj;
+    ref<value> slot;
 
     if (!is(that, type::object))
     {
       return false;
     }
 
-    if (this == (obj = std::static_pointer_cast<object>(that)).get())
+    if (this == (obj = that.cast<object>()).get())
     {
       return true;
     }
@@ -443,11 +443,11 @@ namespace plorth
     return result;
   }
 
-  std::shared_ptr<object> runtime::object(
+  ref<object> runtime::object(
     const std::vector<object::value_type>& properties
   )
   {
-    return std::shared_ptr<class object>(
+    return ref<class object>(
       new (*m_memory_manager) simple_object(
         std::begin(properties),
         std::end(properties)
@@ -469,11 +469,11 @@ namespace plorth
    * Retrieves all keys from the object and returns them in an array. Notice
    * that inherited properties are not included in the list.
    */
-  static void w_keys(const std::shared_ptr<context>& ctx)
+  static void w_keys(const ref<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    std::shared_ptr<object> obj;
-    std::vector<std::shared_ptr<value>> result;
+    ref<object> obj;
+    std::vector<ref<value>> result;
 
     if (!ctx->pop_object(obj))
     {
@@ -504,9 +504,9 @@ namespace plorth
    * Retrieves all values from the object and returns them in an array. Notice
    * that inherited properties are not included in the list.
    */
-  static void w_values(const std::shared_ptr<context>& ctx)
+  static void w_values(const ref<context>& ctx)
   {
-    std::shared_ptr<object> obj;
+    ref<object> obj;
 
     if (ctx->pop_object(obj))
     {
@@ -530,11 +530,11 @@ namespace plorth
    * object is represented as an pair (i.e. array containing two elements, one
    * for the key and one for the value).
    */
-  static void w_entries(const std::shared_ptr<context>& ctx)
+  static void w_entries(const ref<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    std::shared_ptr<object> obj;
-    std::vector<std::shared_ptr<value>> result;
+    ref<object> obj;
+    std::vector<ref<value>> result;
 
     if (!ctx->pop_object(obj))
     {
@@ -543,7 +543,7 @@ namespace plorth
 
     for (const auto property : obj->entries())
     {
-      std::shared_ptr<value> pair[2];
+      ref<value> pair[2];
 
       pair[0] = runtime->string(property.first);
       pair[1] = property.second;
@@ -569,10 +569,10 @@ namespace plorth
    * Tests whether the object has property with given identifier. Notice that
    * inherited properties are also included in the search.
    */
-  static void w_has(const std::shared_ptr<context>& ctx)
+  static void w_has(const ref<context>& ctx)
   {
-    std::shared_ptr<object> obj;
-    std::shared_ptr<string> id;
+    ref<object> obj;
+    ref<string> id;
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
@@ -596,10 +596,10 @@ namespace plorth
    * Tests whether the object has own property with given identifier. Inherited
    * properties are not included in the search.
    */
-  static void w_has_own(const std::shared_ptr<context>& ctx)
+  static void w_has_own(const ref<context>& ctx)
   {
-    std::shared_ptr<object> obj;
-    std::shared_ptr<string> id;
+    ref<object> obj;
+    ref<string> id;
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
@@ -623,12 +623,12 @@ namespace plorth
    *
    * Type error will be thrown if the object has no "prototype" property.
    */
-  static void w_new(const std::shared_ptr<context>& ctx)
+  static void w_new(const ref<context>& ctx)
   {
     const auto& runtime = ctx->runtime();
-    std::shared_ptr<object> obj;
-    std::shared_ptr<value> prototype;
-    std::shared_ptr<value> constructor;
+    ref<object> obj;
+    ref<value> prototype;
+    ref<value> constructor;
 
     if (!ctx->pop_object(obj))
     {
@@ -644,12 +644,12 @@ namespace plorth
 
     ctx->push_object({ { U"__proto__", prototype } });
 
-    if (std::static_pointer_cast<object>(prototype)->property(runtime,
-                                                              U"constructor",
-                                                              constructor)
+    if (prototype.cast<object>()->property(runtime,
+                                           U"constructor",
+                                           constructor)
         && value::is(constructor, value::type::quote))
     {
-      std::static_pointer_cast<quote>(constructor)->call(ctx);
+      constructor.cast<quote>()->call(ctx);
     }
   }
 
@@ -669,14 +669,14 @@ namespace plorth
    * object. If the object does not have such a property, range error will be
    * thrown. Notice that inherited properties are also included in the search.
    */
-  static void w_get(const std::shared_ptr<context>& ctx)
+  static void w_get(const ref<context>& ctx)
   {
-    std::shared_ptr<object> obj;
-    std::shared_ptr<string> id;
+    ref<object> obj;
+    ref<string> id;
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
-      std::shared_ptr<value> val;
+      ref<value> val;
 
       ctx->push(obj);
       if (obj->property(ctx->runtime(), id->to_string(), val))
@@ -706,16 +706,16 @@ namespace plorth
    * Constructs a copy of the object with new named property either introduced
    * or replaced.
    */
-  static void w_set(const std::shared_ptr<context>& ctx)
+  static void w_set(const ref<context>& ctx)
   {
-    std::shared_ptr<object> obj;
-    std::shared_ptr<string> id;
-    std::shared_ptr<value> val;
+    ref<object> obj;
+    ref<string> id;
+    ref<value> val;
 
     if (ctx->pop_object(obj) && ctx->pop_string(id) && ctx->pop(val))
     {
       const auto key = id->to_string();
-      std::shared_ptr<object> result;
+      ref<object> result;
 
       if (obj->has_own_property(key))
       {
@@ -740,10 +740,10 @@ namespace plorth
    *
    * Constructs a copy of the object with the named property removed.
    */
-  static void w_delete(const std::shared_ptr<context>& ctx)
+  static void w_delete(const ref<context>& ctx)
   {
-    std::shared_ptr<object> obj;
-    std::shared_ptr<string> id;
+    ref<object> obj;
+    ref<string> id;
 
     if (ctx->pop_object(obj) && ctx->pop_string(id))
     {
@@ -774,15 +774,15 @@ namespace plorth
    * Combines the contents of two objects together and returns the result. If
    * the two objects share keys the second object's values take precedence.
    */
-  static void w_concat(const std::shared_ptr<context>& ctx)
+  static void w_concat(const ref<context>& ctx)
   {
-    std::shared_ptr<object> a;
-    std::shared_ptr<object> b;
+    ref<object> a;
+    ref<object> b;
 
     if (ctx->pop_object(a) && ctx->pop_object(b))
     {
       const auto entries = b->entries();
-      std::unordered_map<std::u32string, std::shared_ptr<value>> properties(
+      std::unordered_map<std::u32string, ref<value>> properties(
         std::begin(entries),
         std::end(entries)
       );

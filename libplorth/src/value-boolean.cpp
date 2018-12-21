@@ -30,14 +30,14 @@ namespace plorth
   boolean::boolean(bool value)
     : m_value(value) {}
 
-  bool boolean::equals(const std::shared_ptr<class value>& that) const
+  bool boolean::equals(const ref<class value>& that) const
   {
     if (!is(that, type::boolean))
     {
       return false;
     }
 
-    return m_value == std::static_pointer_cast<boolean>(that)->m_value;
+    return m_value == that.cast<boolean>()->m_value;
   }
 
   std::u32string boolean::to_string() const
@@ -63,7 +63,7 @@ namespace plorth
    *
    * Logical AND. Returns true if both values are true.
    */
-  static void w_and(const std::shared_ptr<context>& ctx)
+  static void w_and(const ref<context>& ctx)
   {
     bool a;
     bool b;
@@ -87,7 +87,7 @@ namespace plorth
    *
    * Logical OR. Returns true if either one of the values are true.
    */
-  static void w_or(const std::shared_ptr<context>& ctx)
+  static void w_or(const ref<context>& ctx)
   {
     bool a;
     bool b;
@@ -111,7 +111,7 @@ namespace plorth
    *
    * Exclusive OR.
    */
-  static void w_xor(const std::shared_ptr<context>& ctx)
+  static void w_xor(const ref<context>& ctx)
   {
     bool a;
     bool b;
@@ -134,7 +134,7 @@ namespace plorth
    *
    * Negates given boolean value.
    */
-  static void w_not(const std::shared_ptr<context>& ctx)
+  static void w_not(const ref<context>& ctx)
   {
     bool value;
 
@@ -162,10 +162,10 @@ namespace plorth
    *
    *     "greater" "less" 5 6 > ?  #=> "less"
    */
-  static void w_select(const std::shared_ptr<context>& ctx)
+  static void w_select(const ref<context>& ctx)
   {
-    std::shared_ptr<value> true_value;
-    std::shared_ptr<value> false_value;
+    ref<value> true_value;
+    ref<value> false_value;
     bool condition;
 
     if (ctx->pop_boolean(condition) &&

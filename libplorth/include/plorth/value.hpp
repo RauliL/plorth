@@ -85,7 +85,7 @@ namespace plorth
     /**
      * Tests whether given value is of given type.
      */
-    static inline bool is(const std::shared_ptr<value>& val, enum type t)
+    static inline bool is(const ref<value>& val, enum type t)
     {
       return val ? val->is(t) : t == type::null;
     }
@@ -106,16 +106,14 @@ namespace plorth
      * \param runtime Script runtime to use for prototype retrieval.
      * \return        Prototype object of the value.
      */
-    std::shared_ptr<object> prototype(
-      const std::shared_ptr<class runtime>& runtime
-    ) const;
+    ref<object> prototype(const ref<class runtime>& runtime) const;
 
     /**
      * Tests whether two values are equal.
      *
      * \param that Other value to test this one against.
      */
-    virtual bool equals(const std::shared_ptr<value>& that) const = 0;
+    virtual bool equals(const ref<value>& that) const = 0;
 
     /**
      * Executes value as part of compiled quote. Default implementation
@@ -126,8 +124,7 @@ namespace plorth
      * \return    Boolean flag telling whether the execution was successfull or
      *            whether an error was encountered.
      */
-    static bool exec(const std::shared_ptr<context>& ctx,
-                     const std::shared_ptr<value>& val);
+    static bool exec(const ref<context>& ctx, const ref<value>& val);
 
     /**
      * Evaluates value as element of an array or value of object's property.
@@ -139,9 +136,11 @@ namespace plorth
      * \return     Boolean flag telling whether the execution was successful or
      *             whether an error was encountered.
      */
-    static bool eval(const std::shared_ptr<context>& ctx,
-                     const std::shared_ptr<value>& val,
-                     std::shared_ptr<value>& slot);
+    static bool eval(
+      const ref<context>& ctx,
+      const ref<value>& val,
+      ref<value>& slot
+    );
 
     /**
      * Constructs string representation of the value.
@@ -155,8 +154,8 @@ namespace plorth
     virtual std::u32string to_source() const = 0;
   };
 
-  bool operator==(const std::shared_ptr<value>&, const std::shared_ptr<value>&);
-  bool operator!=(const std::shared_ptr<value>&, const std::shared_ptr<value>&);
+  bool operator==(const ref<value>&, const ref<value>&);
+  bool operator!=(const ref<value>&, const ref<value>&);
 
   std::ostream& operator<<(std::ostream&, enum value::type);
   std::ostream& operator<<(std::ostream&, const value*);

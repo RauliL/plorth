@@ -28,19 +28,19 @@
 
 namespace plorth
 {
-  static std::shared_ptr<value> compile_token(
-    const std::shared_ptr<runtime>&,
+  static ref<value> compile_token(
+    const ref<runtime>&,
     const std::shared_ptr<token>&
   );
 
-  std::shared_ptr<quote> context::compile(const std::u32string& source,
-                                          const std::u32string& filename,
-                                          int line,
-                                          int column)
+  ref<quote> context::compile(const std::u32string& source,
+                              const std::u32string& filename,
+                              int line,
+                              int column)
   {
     class parser parser(source, filename, line, column);
     std::vector<std::shared_ptr<token>> result;
-    std::vector<std::shared_ptr<value>> values;
+    std::vector<ref<value>> values;
 
     if (!parser.parse(result))
     {
@@ -52,7 +52,7 @@ namespace plorth
       }
       error(error::code::syntax, error_message, parser.position());
 
-      return std::shared_ptr<quote>();
+      return ref<quote>();
     }
     values.reserve(result.size());
     for (const auto& token : result)
@@ -63,14 +63,14 @@ namespace plorth
     return m_runtime->compiled_quote(values);
   }
 
-  static std::shared_ptr<array> compile_array_token(
-    const std::shared_ptr<class runtime>& runtime,
+  static ref<array> compile_array_token(
+    const ref<class runtime>& runtime,
     const std::shared_ptr<token::array>& token
   )
   {
     const auto& elements = token->elements();
     const auto size = elements.size();
-    std::shared_ptr<value> result[size];
+    ref<value> result[size];
 
     for (std::size_t i = 0; i < size; ++i)
     {
@@ -80,8 +80,8 @@ namespace plorth
     return runtime->array(result, size);
   }
 
-  static std::shared_ptr<object> compile_object_token(
-    const std::shared_ptr<class runtime>& runtime,
+  static ref<object> compile_object_token(
+    const ref<class runtime>& runtime,
     const std::shared_ptr<token::object>& token
   )
   {
@@ -103,14 +103,14 @@ namespace plorth
     return runtime->object(result);
   }
 
-  static std::shared_ptr<quote> compile_quote_token(
-    const std::shared_ptr<class runtime>& runtime,
+  static ref<quote> compile_quote_token(
+    const ref<class runtime>& runtime,
     const std::shared_ptr<token::quote>& token
   )
   {
     const auto& children = token->children();
     const auto size = children.size();
-    std::vector<std::shared_ptr<value>> result;
+    std::vector<ref<value>> result;
 
     result.reserve(size);
     for (std::size_t i = 0; i < size; ++i)
@@ -121,24 +121,24 @@ namespace plorth
     return runtime->compiled_quote(result);
   }
 
-  static std::shared_ptr<string> compile_string_token(
-    const std::shared_ptr<class runtime>& runtime,
+  static ref<string> compile_string_token(
+    const ref<class runtime>& runtime,
     const std::shared_ptr<token::string>& token
   )
   {
     return runtime->string(token->value());
   }
 
-  static std::shared_ptr<symbol> compile_symbol_token(
-    const std::shared_ptr<class runtime>& runtime,
+  static ref<symbol> compile_symbol_token(
+    const ref<class runtime>& runtime,
     const std::shared_ptr<token::symbol>& token
   )
   {
     return runtime->symbol(token->id(), token->position());
   }
 
-  static std::shared_ptr<word> compile_word_token(
-    const std::shared_ptr<class runtime>& runtime,
+  static ref<word> compile_word_token(
+    const ref<class runtime>& runtime,
     const std::shared_ptr<token::word>& token
   )
   {
@@ -148,14 +148,14 @@ namespace plorth
     );
   }
 
-  static std::shared_ptr<value> compile_token(
-    const std::shared_ptr<class runtime>& runtime,
+  static ref<value> compile_token(
+    const ref<class runtime>& runtime,
     const std::shared_ptr<token>& token
   )
   {
     if (!token)
     {
-      return std::shared_ptr<value>();
+      return ref<value>();
     }
     switch (token->type())
     {
@@ -196,6 +196,6 @@ namespace plorth
         );
     }
 
-    return std::shared_ptr<value>();
+    return ref<value>();
   }
 }

@@ -75,8 +75,7 @@ namespace plorth
     class concat_array : public array
     {
     public:
-      concat_array(const std::shared_ptr<array>& left,
-                   const std::shared_ptr<array>& right)
+      concat_array(const ref<array>& left, const ref<array>& right)
         : m_size(left->size() + right->size())
         , m_left(left)
         , m_right(right) {}
@@ -100,8 +99,8 @@ namespace plorth
 
     private:
       const size_type m_size;
-      const std::shared_ptr<array> m_left;
-      const std::shared_ptr<array> m_right;
+      const ref<array> m_left;
+      const ref<array> m_right;
     };
 
     /**
@@ -111,8 +110,8 @@ namespace plorth
     class push_array : public array
     {
     public:
-      explicit push_array(const std::shared_ptr<class array>& array,
-                          const std::shared_ptr<value>& extra)
+      explicit push_array(const ref<class array>& array,
+                          const ref<value>& extra)
         : m_array(array)
         , m_extra(extra) {}
 
@@ -132,8 +131,8 @@ namespace plorth
       }
 
     private:
-      const std::shared_ptr<array> m_array;
-      const std::shared_ptr<value> m_extra;
+      const ref<array> m_array;
+      const ref<value> m_extra;
     };
 
     /**
@@ -142,7 +141,7 @@ namespace plorth
     class subarray : public array
     {
     public:
-      explicit subarray(const std::shared_ptr<class array>& array,
+      explicit subarray(const ref<class array>& array,
                         size_type offset,
                         size_type size)
         : m_array(array)
@@ -160,7 +159,7 @@ namespace plorth
       }
 
     private:
-      const std::shared_ptr<array> m_array;
+      const ref<array> m_array;
       const size_type m_offset;
       const size_type m_size;
     };
@@ -171,7 +170,7 @@ namespace plorth
     class reversed_array : public array
     {
     public:
-      explicit reversed_array(const std::shared_ptr<class array>& array)
+      explicit reversed_array(const ref<class array>& array)
         : m_array(array) {}
 
       inline size_type size() const
@@ -185,20 +184,20 @@ namespace plorth
       }
 
     private:
-      const std::shared_ptr<array> m_array;
+      const ref<array> m_array;
     };
   }
 
-  bool array::equals(const std::shared_ptr<value>& that) const
+  bool array::equals(const ref<value>& that) const
   {
-    std::shared_ptr<array> ary;
+    ref<array> ary;
 
     if (!is(that, type::array))
     {
       return false;
     }
 
-    ary = std::static_pointer_cast<array>(that);
+    ary = that.cast<array>();
 
     if (size() != ary->size())
     {
@@ -266,8 +265,7 @@ namespace plorth
     return result;
   }
 
-  array::iterator::iterator(const std::shared_ptr<array>& ary,
-                            array::size_type index)
+  array::iterator::iterator(const ref<array>& ary, array::size_type index)
     : m_array(ary)
     , m_index(index) {}
 
@@ -319,10 +317,10 @@ namespace plorth
     return m_index != that.m_index;
   }
 
-  std::shared_ptr<class array> runtime::array(array::const_pointer elements,
-                                              array::size_type size)
+  ref<class array> runtime::array(array::const_pointer elements,
+                                  array::size_type size)
   {
-    return std::shared_ptr<class array>(
+    return ref<class array>(
       new (*m_memory_manager) simple_array(size, elements)
     );
   }
@@ -341,9 +339,9 @@ namespace plorth
    * Returns the number of elements in the array, while keeping the array on
    * the stack.
    */
-  static void w_length(const std::shared_ptr<context>& ctx)
+  static void w_length(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
+    ref<array> ary;
 
     if (ctx->pop_array(ary))
     {
@@ -368,10 +366,10 @@ namespace plorth
    *
    *     4 [1, 2, 3] push  #=> [1, 2, 3, 4]
    */
-  static void w_push(const std::shared_ptr<context>& ctx)
+  static void w_push(const ref<context>& ctx)
   {
-    std::shared_ptr<value> val;
-    std::shared_ptr<array> ary;
+    ref<value> val;
+    ref<array> ary;
 
     if (ctx->pop_array(ary) && ctx->pop(val))
     {
@@ -394,9 +392,9 @@ namespace plorth
    *
    *     [1, 2, 3] pop  #=> [1, 2] 3
    */
-  static void w_pop(const std::shared_ptr<context>& ctx)
+  static void w_pop(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
+    ref<array> ary;
 
     if (ctx->pop_array(ary))
     {
@@ -429,10 +427,10 @@ namespace plorth
    * Searches for given value in the array and returns true if it's included
    * and false if it's not.
    */
-  static void w_includes(const std::shared_ptr<context>& ctx)
+  static void w_includes(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<value> val;
+    ref<array> ary;
+    ref<value> val;
 
     if (ctx->pop_array(ary) && ctx->pop(val))
     {
@@ -464,10 +462,10 @@ namespace plorth
    * Searches for given value from the array and returns its index in the array
    * if it's included in the array and null if it's not.
    */
-  static void w_index_of(const std::shared_ptr<context>& ctx)
+  static void w_index_of(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<value> val;
+    ref<array> ary;
+    ref<value> val;
 
     if (ctx->pop_array(ary) && ctx->pop(val))
     {
@@ -501,10 +499,10 @@ namespace plorth
    * Returns the first element from the array that satisfies the provided
    * testing quote. Otherwise null is returned.
    */
-  static void w_find(const std::shared_ptr<context>& ctx)
+  static void w_find(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<quote> quo;
+    ref<array> ary;
+    ref<quote> quo;
 
     if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
@@ -543,10 +541,10 @@ namespace plorth
    * Returns the index of the first element in the array that satisfies the
    * provided testing quote. Otherwise null is returned.
    */
-  static void w_find_index(const std::shared_ptr<context>& ctx)
+  static void w_find_index(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<quote> quo;
+    ref<array> ary;
+    ref<quote> quo;
 
     if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
@@ -587,10 +585,10 @@ namespace plorth
    * Tests whether all elements in the array satisfy the provided testing
    * quote.
    */
-  static void w_every(const std::shared_ptr<context>& ctx)
+  static void w_every(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<quote> quo;
+    ref<array> ary;
+    ref<quote> quo;
 
     if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
@@ -628,10 +626,10 @@ namespace plorth
    *
    * Tests whether any element in the array satisfies the provided quote.
    */
-  static void w_some(const std::shared_ptr<context>& ctx)
+  static void w_some(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<quote> quo;
+    ref<array> ary;
+    ref<quote> quo;
 
     if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
@@ -668,9 +666,9 @@ namespace plorth
    * Reverses the array. The first array element becomes the last and the last
    * array element becomes first.
    */
-  static void w_reverse(const std::shared_ptr<context>& ctx)
+  static void w_reverse(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
+    ref<array> ary;
 
     if (ctx->pop_array(ary))
     {
@@ -690,13 +688,13 @@ namespace plorth
    *
    * Removes duplicate elements from the array.
    */
-  static void w_uniq(const std::shared_ptr<context>& ctx)
+  static void w_uniq(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
+    ref<array> ary;
 
     if (ctx->pop_array(ary))
     {
-      std::vector<std::shared_ptr<value>> result;
+      std::vector<ref<value>> result;
 
       for (const auto& value1 : ary)
       {
@@ -733,9 +731,9 @@ namespace plorth
    *
    * Extracts all values from the array and places them onto the stack.
    */
-  static void w_extract(const std::shared_ptr<context>& ctx)
+  static void w_extract(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
+    ref<array> ary;
 
     if (!ctx->pop_array(ary))
     {
@@ -761,10 +759,10 @@ namespace plorth
    * Concatenates all elements from the array into single string delimited by
    * the given separator string.
    */
-  static void w_join(const std::shared_ptr<context>& ctx)
+  static void w_join(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<string> separator;
+    ref<array> ary;
+    ref<string> separator;
     std::u32string result;
 
     if (!ctx->pop_array(ary) || !ctx->pop_string(separator))
@@ -791,14 +789,14 @@ namespace plorth
     ctx->push_string(result);
   }
 
-  static void do_flatten(const std::shared_ptr<array>& ary,
-                         std::vector<std::shared_ptr<value>>& container)
+  static void do_flatten(const ref<array>& ary,
+                         std::vector<ref<value>>& container)
   {
     for (const auto& value : ary)
     {
       if (value::is(value, value::type::array))
       {
-        do_flatten(std::static_pointer_cast<array>(value), container);
+        do_flatten(value.cast<array>(), container);
       } else {
         container.push_back(value);
       }
@@ -818,13 +816,13 @@ namespace plorth
    * Creates new array with all sub-array elements concatted into it
    * recursively.
    */
-  static void w_flatten(const std::shared_ptr<context>& ctx)
+  static void w_flatten(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
+    ref<array> ary;
 
     if (ctx->pop_array(ary))
     {
-      std::vector<std::shared_ptr<value>> result;
+      std::vector<ref<value>> result;
 
       result.reserve(ary->size());
       do_flatten(ary, result);
@@ -832,8 +830,8 @@ namespace plorth
     }
   }
 
-  static void do_nflatten(const std::shared_ptr<array>& ary,
-                          std::vector<std::shared_ptr<value>>& container,
+  static void do_nflatten(const ref<array>& ary,
+                          std::vector<ref<value>>& container,
                           const number::int_type limit,
                           number::int_type depth)
   {
@@ -842,7 +840,7 @@ namespace plorth
       if (value::is(value, value::type::array) && depth < limit)
       {
         do_nflatten(
-          std::static_pointer_cast<array>(value),
+          value.cast<array>(),
           container,
           limit,
           depth + 1
@@ -867,15 +865,15 @@ namespace plorth
    * Creates new array with all sub-array elements concatted into it
    * recursively up to the given maximum depth.
    */
-  static void w_nflatten(const std::shared_ptr<context>& ctx)
+  static void w_nflatten(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<number> num;
+    ref<array> ary;
+    ref<number> num;
 
     if (ctx->pop_array(ary) && ctx->pop_number(num))
     {
       const auto limit = num->as_int();
-      std::vector<std::shared_ptr<value>> result;
+      std::vector<ref<value>> result;
 
       result.reserve(ary->size());
       do_nflatten(ary, result, limit, 0);
@@ -895,13 +893,13 @@ namespace plorth
    *
    * Converts array into executable quote.
    */
-  static void w_to_quote(const std::shared_ptr<context>& ctx)
+  static void w_to_quote(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
+    ref<array> ary;
 
     if (ctx->pop_array(ary))
     {
-      std::vector<std::shared_ptr<value>> elements;
+      std::vector<ref<value>> elements;
 
       elements.reserve(ary->size());
       for (const auto& element : ary)
@@ -922,10 +920,10 @@ namespace plorth
    *
    * Runs quote once for every element in the array.
    */
-  static void w_for_each(const std::shared_ptr<context>& ctx)
+  static void w_for_each(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<quote> quo;
+    ref<array> ary;
+    ref<quote> quo;
 
     if (!ctx->pop_array(ary) || !ctx->pop_quote(quo))
     {
@@ -954,11 +952,11 @@ namespace plorth
    * Runs quote taking two arguments once for each element pair in the
    * arrays.
    */
-  static void w_2for_each(const std::shared_ptr<context>& ctx)
+  static void w_2for_each(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary_a;
-    std::shared_ptr<array> ary_b;
-    std::shared_ptr<quote> quo;
+    ref<array> ary_a;
+    ref<array> ary_b;
+    ref<quote> quo;
 
     if (ctx->pop_array(ary_b) && ctx->pop_array(ary_a) && ctx->pop_quote(quo))
     {
@@ -992,20 +990,20 @@ namespace plorth
    * Applies quote once for each element in the array and constructs a new
    * array from values returned by the quote.
    */
-  static void w_map(const std::shared_ptr<context>& ctx)
+  static void w_map(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<quote> quo;
+    ref<array> ary;
+    ref<quote> quo;
 
     if (ctx->pop_array(ary) && ctx->pop_quote(quo))
     {
       const auto size = ary->size();
-      std::vector<std::shared_ptr<value>> result;
+      std::vector<ref<value>> result;
 
       result.reserve(size);
       for (array::size_type i = 0; i < size; ++i)
       {
-        std::shared_ptr<value> quote_result;
+        ref<value> quote_result;
 
         ctx->push(ary->at(i));
         if (!quo->call(ctx) || !ctx->pop(quote_result))
@@ -1033,23 +1031,23 @@ namespace plorth
    * Applies quote taking two arguments once for each element pair in the
    * arrays and constructs a new array from values returned by the quote.
    */
-  static void w_2map(const std::shared_ptr<context>& ctx)
+  static void w_2map(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary_a;
-    std::shared_ptr<array> ary_b;
-    std::shared_ptr<quote> quo;
+    ref<array> ary_a;
+    ref<array> ary_b;
+    ref<quote> quo;
 
     if (ctx->pop_array(ary_b) && ctx->pop_array(ary_a) && ctx->pop_quote(quo))
     {
       const auto size_a = ary_a->size();
       const auto size_b = ary_b->size();
       const auto size = std::min(size_a, size_b);
-      std::vector<std::shared_ptr<value>> result;
+      std::vector<ref<value>> result;
 
       result.reserve(size);
       for (array::size_type i = 0; i < size; ++i)
       {
-        std::shared_ptr<value> quote_result;
+        ref<value> quote_result;
 
         ctx->push(ary_a->at(i));
         ctx->push(ary_b->at(i));
@@ -1077,11 +1075,11 @@ namespace plorth
    * Removes elements of the array that do not satisfy the provided testing
    * quote.
    */
-  static void w_filter(const std::shared_ptr<context>& ctx)
+  static void w_filter(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<quote> quo;
-    std::vector<std::shared_ptr<value>> result;
+    ref<array> ary;
+    ref<quote> quo;
+    std::vector<ref<value>> result;
 
     if (!ctx->pop_array(ary) || !ctx->pop_quote(quo))
     {
@@ -1120,11 +1118,11 @@ namespace plorth
    * Applies given quote against an accumulator and each element in the array
    * to reduce it into a single value.
    */
-  static void w_reduce(const std::shared_ptr<context>& ctx)
+  static void w_reduce(const ref<context>& ctx)
   {
-    std::shared_ptr<class array> array;
-    std::shared_ptr<class quote> quote;
-    std::shared_ptr<value> result;
+    ref<class array> array;
+    ref<class quote> quote;
+    ref<value> result;
     array::size_type size;
 
     if (!ctx->pop_array(array) || !ctx->pop_quote(quote))
@@ -1168,10 +1166,10 @@ namespace plorth
    *
    * Concatenates the contents of two arrays and returns the result.
    */
-  static void w_concat(const std::shared_ptr<context>& ctx)
+  static void w_concat(const ref<context>& ctx)
   {
-    std::shared_ptr<array> a;
-    std::shared_ptr<array> b;
+    ref<array> a;
+    ref<array> b;
 
     if (ctx->pop_array(a) && ctx->pop_array(b))
     {
@@ -1192,10 +1190,10 @@ namespace plorth
    *
    * Repeats the array given number of times.
    */
-  static void w_repeat(const std::shared_ptr<context>& ctx)
+  static void w_repeat(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<number> num;
+    ref<array> ary;
+    ref<number> num;
 
     if (ctx->pop_array(ary) && ctx->pop_number(num))
     {
@@ -1204,7 +1202,7 @@ namespace plorth
       if (count > 0)
       {
         const auto& runtime = ctx->runtime();
-        std::shared_ptr<array> result = ary;
+        ref<array> result = ary;
 
         for (number::int_type i = 1; i < count; ++i)
         {
@@ -1235,14 +1233,14 @@ namespace plorth
    * Set intersection: Returns a new array containing unique elements common to
    * the two arrays.
    */
-  static void w_intersect(const std::shared_ptr<context>& ctx)
+  static void w_intersect(const ref<context>& ctx)
   {
-    std::shared_ptr<array> a;
-    std::shared_ptr<array> b;
+    ref<array> a;
+    ref<array> b;
 
     if (ctx->pop_array(a) && ctx->pop_array(b))
     {
-      std::vector<std::shared_ptr<value>> result;
+      std::vector<ref<value>> result;
 
       for (const auto& value1 : b)
       {
@@ -1295,14 +1293,14 @@ namespace plorth
    * Set union: Returns a new array by joining the two given arrays, excluding
    * any duplicates and preserving the order of the given arrays.
    */
-  static void w_union(const std::shared_ptr<context>& ctx)
+  static void w_union(const ref<context>& ctx)
   {
-    std::shared_ptr<array> a;
-    std::shared_ptr<array> b;
+    ref<array> a;
+    ref<array> b;
 
     if (ctx->pop_array(a) && ctx->pop_array(b))
     {
-      std::vector<std::shared_ptr<value>> result;
+      std::vector<ref<value>> result;
 
       for (const auto& value1 : b)
       {
@@ -1362,10 +1360,10 @@ namespace plorth
    * indices count backwards from the end. If the given index is out of bounds,
    * arange error will be thrown.
    */
-  static void w_get(const std::shared_ptr<context>& ctx)
+  static void w_get(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<number> num;
+    ref<array> ary;
+    ref<number> num;
 
     if (ctx->pop_array(ary) && ctx->pop_number(num))
     {
@@ -1405,17 +1403,17 @@ namespace plorth
    * from the end. If the index is larger than the number of elements in the
    * array, the value will be appended as the last element of the array.
    */
-  static void w_set(const std::shared_ptr<context>& ctx)
+  static void w_set(const ref<context>& ctx)
   {
-    std::shared_ptr<array> ary;
-    std::shared_ptr<number> num;
-    std::shared_ptr<value> val;
+    ref<array> ary;
+    ref<number> num;
+    ref<value> val;
 
     if (ctx->pop_array(ary) && ctx->pop_number(num) && ctx->pop(val))
     {
       const auto size = ary->size();
       number::int_type index = num->as_int();
-      std::vector<std::shared_ptr<value>> result;
+      std::vector<ref<value>> result;
 
       if (index < 0)
       {

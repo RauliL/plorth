@@ -40,7 +40,7 @@ namespace plorth
     class Context : public Glib::ObjectBase
     {
     public:
-      using error_thrown_signal = sigc::signal<void, std::shared_ptr<error>>;
+      using error_thrown_signal = sigc::signal<void, ref<error>>;
       using text_written_signal = sigc::signal<void, Glib::ustring>;
 
       explicit Context();
@@ -105,8 +105,8 @@ namespace plorth
 
     private:
       memory::manager m_memory_manager;
-      std::shared_ptr<runtime> m_runtime;
-      std::shared_ptr<context> m_context;
+      ref<runtime> m_runtime;
+      ref<context> m_context;
       error_thrown_signal m_signal_error_thrown;
       text_written_signal m_signal_text_written;
     };
