@@ -29,6 +29,7 @@ namespace plorth
 {
   namespace
   {
+#if PLORTH_ENABLE_STANDARD_IO
     class standard_input : public io::input
     {
     public:
@@ -77,6 +78,7 @@ namespace plorth
         return result::ok;
       }
     };
+#endif
 
     class dummy_input : public io::input
     {
@@ -94,7 +96,11 @@ namespace plorth
   {
     std::shared_ptr<input> input::standard(memory::manager& memory_manager)
     {
+#if PLORTH_ENABLE_STANDARD_IO
       return std::shared_ptr<input>(new (memory_manager) standard_input());
+#else
+      return dummy(memory_manager);
+#endif
     }
 
     std::shared_ptr<input> input::dummy(memory::manager& memory_manager)

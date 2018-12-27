@@ -45,6 +45,12 @@ OPTION(
 )
 
 OPTION(
+  PLORTH_ENABLE_STANDARD_IO
+  "Enable if you want to support standard I/O operations."
+  ON
+)
+
+OPTION(
   PLORTH_ENABLE_MUTEXES
   "Enable if you want to implement thread safety with mutexes."
   ON
