@@ -41,7 +41,8 @@ namespace plorth
     public:
       /**
        * Constructs new output which prints everything into the standard output
-       * stream (stdout) of the process.
+       * stream (stdout) of the process, if standard I/O has been enabled. The
+       * output will be encoded in UTF-8.
        */
       static std::shared_ptr<output> standard(memory::manager& memory_manager);
 

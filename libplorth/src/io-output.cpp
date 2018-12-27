@@ -35,6 +35,7 @@ namespace plorth
       void write(const std::u32string&) {}
     };
 
+#if PLORTH_ENABLE_STANDARD_IO
     class standard_output : public io::output
     {
     public:
@@ -50,13 +51,18 @@ namespace plorth
         );
       }
     };
+#endif
   }
 
   namespace io
   {
     std::shared_ptr<output> output::standard(memory::manager& memory_manager)
     {
+#if PLORTH_ENABLE_STANDARD_IO
       return std::shared_ptr<output>(new (memory_manager) standard_output());
+#else
+      return dummy(memory_manager);
+#endif
     }
 
     std::shared_ptr<output> output::dummy(memory::manager& memory_manager)

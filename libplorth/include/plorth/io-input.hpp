@@ -56,7 +56,8 @@ namespace plorth
 
       /**
        * Constructs new input which reads from standard input stream (stdin) of
-       * the process.
+       * the process, if standard I/O has been enabled. The input is expected
+       * to be UTF-8 encoded.
        */
       static std::shared_ptr<input> standard(memory::manager& memory_manager);
 
