@@ -74,6 +74,8 @@ namespace plorth
     explicit token(const struct position& position)
       : m_position(position) {}
 
+    virtual ~token() {}
+
     /**
      * Returns type of the token.
      */
