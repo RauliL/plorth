@@ -28,7 +28,7 @@
 
 #include <cstring>
 #include <fstream>
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
 # include <unordered_set>
 #endif
 
@@ -52,7 +52,7 @@ static const char* script_filename = nullptr;
 static bool flag_test_syntax = false;
 static bool flag_fork = false;
 static std::string inline_script;
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
 static std::unordered_set<std::u32string> imported_modules;
 #endif
 
@@ -77,16 +77,16 @@ int main(int argc, char** argv)
   auto runtime = runtime::make(memory_manager);
   auto context = context::make(runtime);
 
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
   plorth::cli::utils::scan_module_path(runtime);
 #endif
 
   scan_arguments(runtime, argc, argv);
 
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
   for (const auto& module_path : imported_modules)
   {
-    if (!context->import(module_path))
+    if (!runtime->import(context, module_path))
     {
       handle_error(context);
     }
@@ -107,7 +107,7 @@ int main(int argc, char** argv)
 
       is.close();
       context->clear();
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
       context->filename(decoded_script_filename);
 #endif
       compile_and_run(context, source, decoded_script_filename);
@@ -156,7 +156,7 @@ static void print_usage(std::ostream& out, const char* executable)
   out << "  -e <program> One line of program. (Several -e's allowed, omit "
       << "programfile.)"
       << std::endl;
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
   out << "  -r <path>    Import module before executing script." << std::endl;
 #endif
   out << "  --version    Print the version." << std::endl;
@@ -239,7 +239,7 @@ static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
         flag_fork = true;
         break;
 
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
       case 'r':
         if (offset < argc)
         {

@@ -62,7 +62,7 @@ namespace plorth
       m_runtime->output() = output;
       m_runtime->input() = io::input::dummy(m_memory_manager);
 
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
       plorth::cli::utils::scan_module_path(m_runtime);
 #endif
     }

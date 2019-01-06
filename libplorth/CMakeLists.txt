@@ -11,7 +11,7 @@ CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
 CHECK_FUNCTION_EXISTS(stat HAVE_STAT)
 CHECK_FUNCTION_EXISTS(realpath HAVE_REALPATH)
 
-IF(PLORTH_ENABLE_MODULES)
+IF(PLORTH_ENABLE_FILE_SYSTEM_MODULES)
   IF(NOT ${HAVE_STAT})
     MESSAGE(FATAL_ERROR "Required function stat() is missing.")
   ENDIF()
@@ -21,8 +21,8 @@ IF(PLORTH_ENABLE_MODULES)
 ENDIF()
 
 OPTION(
-  PLORTH_ENABLE_MODULES
-  "Whether modules has been enabled or not."
+  PLORTH_ENABLE_FILE_SYSTEM_MODULES
+  "Whether importing modules from file system should be enabled or not."
   ON
 )
 

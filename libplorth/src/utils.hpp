@@ -28,12 +28,6 @@
 
 #include <plorth/value-number.hpp>
 
-#if defined(_WIN32)
-# define PLORTH_FILE_SEPARATOR '\\'
-#else
-# define PLORTH_FILE_SEPARATOR '/'
-#endif
-
 namespace plorth
 {
   std::u32string json_stringify(const std::u32string&);
@@ -42,7 +36,6 @@ namespace plorth
   bool is_number(const std::u32string&);
   std::u32string to_unistring(number::int_type);
   std::u32string to_unistring(number::real_type);
-  std::u32string dirname(const std::u32string&);
 }
 
 #endif /* !PLORTH_UTILS_HPP_GUARD */

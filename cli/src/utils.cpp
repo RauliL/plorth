@@ -31,7 +31,7 @@ namespace plorth
   {
     namespace utils
     {
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
       void scan_module_path(const std::shared_ptr<runtime>& rt)
       {
 #if defined(_WIN32)
@@ -39,7 +39,7 @@ namespace plorth
 #else
         static const char path_separator = ':';
 #endif
-        auto& module_paths = rt->module_paths();
+        std::vector<std::u32string> module_paths;
         auto begin = std::getenv("PLORTHPATH");
         auto end = begin;
 
@@ -75,6 +75,11 @@ namespace plorth
           module_paths.push_back(PLORTH_RUNTIME_LIBRARY_PATH);
         }
 #endif
+
+        rt->module_manager() = module::manager::file_system(
+          rt->memory_manager(),
+          module_paths
+        );
       }
 #endif
     }

@@ -54,7 +54,8 @@ namespace plorth
   std::shared_ptr<runtime> runtime::make(
     memory::manager& memory_manager,
     const std::shared_ptr<io::input>& input,
-    const std::shared_ptr<io::output>& output
+    const std::shared_ptr<io::output>& output,
+    const std::shared_ptr<module::manager>& module_manager
   )
   {
     const auto runtime = std::shared_ptr<class runtime>(
@@ -63,6 +64,10 @@ namespace plorth
 
     runtime->m_input = input ? input : io::input::standard(memory_manager);
     runtime->m_output = output ? output : io::output::standard(memory_manager);
+    runtime->m_module_manager =
+      module_manager ?
+      module_manager :
+      module::manager::file_system(memory_manager);
 
     return runtime;
   }
