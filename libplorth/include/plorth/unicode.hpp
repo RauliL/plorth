@@ -47,9 +47,21 @@ namespace plorth
   bool utf8_decode_test(const std::string&, std::u32string&);
 
   /**
+   * Encodes given Unicode characters into UTF-8 encoded byte string.
+   *
+   * \param ptr Pointer to array of characters to encode.
+   * \param len Size of the array.
+   * \return    Given Unicode characters encoded into UTF-8 byte string.
+   */
+  std::string utf8_encode(const char32_t*, std::size_t);
+
+  /**
    * Encodes Unicode string into UTF-8 encoded byte string.
    */
-  std::string utf8_encode(const std::u32string&);
+  inline std::string utf8_encode(const std::u32string& input)
+  {
+    return utf8_encode(input.c_str(), input.length());
+  }
 
 #if defined(__EMSCRIPTEN__)
   /**

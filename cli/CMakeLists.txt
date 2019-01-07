@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-PROJECT(plorth-cli C CXX)
+PROJECT(plorth-cli CXX)
 
 INCLUDE(CheckIncludeFile)
 INCLUDE(CheckFunctionExists)
@@ -16,10 +16,10 @@ CONFIGURE_FILE(
 
 ADD_EXECUTABLE(
   plorth-cli
-  ext/linenoise/linenoise.c
   src/api.cpp
   src/main.cpp
   src/repl.cpp
+  src/terminal.cpp
   src/utils.cpp
 )
 

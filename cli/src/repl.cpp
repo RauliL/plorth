@@ -26,7 +26,7 @@
 #include <cstring>
 
 #include <plorth/context.hpp>
-#include <linenoise.h>
+#include <plorth/cli/terminal.hpp>
 #include "./utils.hpp"
 
 namespace plorth
@@ -46,7 +46,7 @@ namespace plorth
 
       for (;;)
       {
-        char* line;
+        std::u32string line;
 
         // First construct the prompt which is shown to the user. It contains
         // text "plorth", current line number, size of the execution context
@@ -62,38 +62,29 @@ namespace plorth
         );
 
         // Read line from the user.
-        if (!(line = ::linenoise(prompt)))
+        if (!terminal::prompt(prompt, line))
         {
           break;
         }
 
         // Skip empty lines.
-        if (!*line)
+        if (line.empty())
         {
-          ::linenoiseFree(line);
           continue;
         }
 
         // Add the line into history.
-        ::linenoiseHistoryAdd(line);
+        terminal::add_to_history(line);
 
-        // And attempt to decode the input as UTF-8.
-        if (!utf8_decode_test(line, source))
-        {
-          std::cout << "Unable to decode given input as UTF-8." << std::endl;
-          ::linenoiseFree(line);
-          continue;
-        }
+        source.append(line);
 
-        // Insert new line into the source code so that the line counter
+        // Insert new line into the source code so that the line counter is
+        // properly increased.
         source.append(1, '\n');
 
         // See whether the line contains special characters such as open braces
         // and so on.
-        utils::count_open_braces(line, std::strlen(line), open_braces);
-
-        // We no longer need the original line, so free it.
-        ::linenoiseFree(line);
+        utils::count_open_braces(line, line.length(), open_braces);
 
         // Do not attempt to compile the source code when it still has unclosed
         // braces.

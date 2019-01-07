@@ -39,7 +39,6 @@
 # include <sysexits.h>
 #endif
 
-#include <linenoise.h>
 #include "./utils.hpp"
 
 #if !defined(EX_USAGE)

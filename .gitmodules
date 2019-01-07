@@ -1,3 +1,0 @@
-[submodule "plorth/ext/linenoise"]
-	path = cli/ext/linenoise
-    url = https://github.com/antirez/linenoise
