@@ -136,16 +136,6 @@ namespace plorth
                                    int column = 1);
 
     /**
-     * Imports module from file system and inserts all of it's exported words
-     * into dictionary of this execution context.
-     *
-     * \param path Module path.
-     * \return     Boolean flag telling whether the import was successfull or
-     *             whether some kind of error was occurred.
-     */
-    bool import(const std::u32string& path);
-
-    /**
      * Provides direct access to the data stack.
      */
     inline container_type& data()
@@ -397,7 +387,7 @@ namespace plorth
      */
     bool pop_word(std::shared_ptr<word>& slot);
 
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
     /**
      * Returns optional filename of the context, when the context is executed
      * as module.
@@ -452,7 +442,7 @@ namespace plorth
     container_type m_data;
     /** Container for words associated with this context. */
     class dictionary m_dictionary;
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
     /** Optional filename of the context, when executed as module. */
     std::u32string m_filename;
 #endif

@@ -33,7 +33,7 @@ namespace plorth
   {
     namespace utils
     {
-#if PLORTH_ENABLE_MODULES
+#if PLORTH_ENABLE_FILE_SYSTEM_MODULES
       void scan_module_path(const std::shared_ptr<runtime>&);
 #endif
 

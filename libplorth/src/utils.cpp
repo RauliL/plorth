@@ -338,34 +338,4 @@ namespace plorth
 
     return number;
   }
-
-  std::u32string dirname(const std::u32string& path)
-  {
-    const auto length = path.length();
-    std::u32string::size_type index;
-
-    if (!length)
-    {
-      return std::u32string();
-    }
-
-    index = path.find_last_of(PLORTH_FILE_SEPARATOR);
-    // No slashes found?
-    if (index == std::u32string::npos)
-    {
-      return U".";
-    }
-    // Slash is the first character?
-    else if (index == 0)
-    {
-      return std::u32string(1, PLORTH_FILE_SEPARATOR);
-    }
-    // Slash is the last character?
-    else if (index == length - 1)
-    {
-      return dirname(path.substr(0, index - 1));
-    } else {
-      return path.substr(0, index);
-    }
-  }
 }

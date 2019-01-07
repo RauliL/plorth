@@ -1173,7 +1173,7 @@ namespace plorth
 
     if (ctx->pop_string(path))
     {
-      ctx->import(path->to_string());
+      ctx->runtime()->import(ctx, path->to_string());
     }
   }
 

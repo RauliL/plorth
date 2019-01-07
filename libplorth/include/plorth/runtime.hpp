@@ -29,10 +29,10 @@
 #include <plorth/dictionary.hpp>
 #include <plorth/io-input.hpp>
 #include <plorth/io-output.hpp>
+#include <plorth/module.hpp>
 #include <plorth/value-array.hpp>
 #include <plorth/value-boolean.hpp>
 #include <plorth/value-number.hpp>
-#include <plorth/value-object.hpp>
 #include <plorth/value-string.hpp>
 
 namespace plorth
@@ -42,10 +42,6 @@ namespace plorth
   public:
     using prototype_definition = std::vector<
       std::pair<const char32_t*, quote::callback>
-    >;
-    using module_container = std::unordered_map<
-      std::u32string,
-      std::shared_ptr<class object>
     >;
 #if PLORTH_ENABLE_SYMBOL_CACHE
     using symbol_cache = std::unordered_map<
@@ -62,12 +58,19 @@ namespace plorth
      *                       input stream of the process will be used.
      * \param output         Output used by the runtime. If omitted, standard
      *                       output stream of the process will be used.
+     * \param module_manager Module manager used for importing modules. If
+     *                       omitted, one that will load modules from file
+     *                       system will be used.
      * \return               Reference to the created runtime.
      */
     static std::shared_ptr<runtime> make(
       memory::manager& memory_manager,
-      const std::shared_ptr<io::input>& input = std::shared_ptr<io::input>(),
-      const std::shared_ptr<io::output>& output = std::shared_ptr<io::output>()
+      const std::shared_ptr<io::input>& input
+        = std::shared_ptr<io::input>(),
+      const std::shared_ptr<io::output>& output
+        = std::shared_ptr<io::output>(),
+      const std::shared_ptr<module::manager>& module_manager
+        = std::shared_ptr<module::manager>()
     );
 
     /**
@@ -111,6 +114,22 @@ namespace plorth
     }
 
     /**
+     * Returns the module manager used to import modules.
+     */
+    inline std::shared_ptr<module::manager>& module_manager()
+    {
+      return m_module_manager;
+    }
+
+    /**
+     * Returns the module manager used to import modules.
+     */
+    inline const std::shared_ptr<module::manager>& module_manager() const
+    {
+      return m_module_manager;
+    }
+
+    /**
      * Returns the global dictionary that contains core word set available to
      * all contexts.
      *
@@ -150,38 +169,6 @@ namespace plorth
     }
 
     /**
-     * Returns container for file system paths where modules are searched from.
-     */
-    inline std::vector<std::u32string>& module_paths()
-    {
-      return m_module_paths;
-    }
-
-    /**
-     * Returns container for file system paths where modules are searched from.
-     */
-    inline const std::vector<std::u32string>& module_paths() const
-    {
-      return m_module_paths;
-    }
-
-    /**
-     * Returns the container which the runtime uses to cache imported modules.
-     */
-    inline module_container& imported_modules()
-    {
-      return m_imported_modules;
-    }
-
-    /**
-     * Returns the container which the runtime uses to cache imported modules.
-     */
-    inline const module_container& imported_modules() const
-    {
-      return m_imported_modules;
-    }
-
-    /**
      * Reads Unicode code points from the input of the interpreter and places
      * them in the string given as argument.
      *
@@ -202,6 +189,22 @@ namespace plorth
      * Outputs given Unicode string into the output of the interpreter.
      */
     void print(const std::u32string& str) const;
+
+    /**
+     * Imports module using runtime's module manager and insert all of it's
+     * exported words into dictionary of given execution context.
+     *
+     * \param context Execution context to which dictionary exported members of
+     *                the module will be inserted into, and where any errors
+     *                thrown during the module import will be placed.
+     * \param path    Path to the module to which will be imported.
+     * \return        Boolean flag telling whether the import was successful or
+     *                whether some kind of error occurred.
+     */
+    bool import(
+      const std::shared_ptr<class context>& context,
+      const std::u32string& path
+    );
 
     /**
      * Outputs system specific new line into the output of the interpreter.
@@ -441,6 +444,8 @@ namespace plorth
     std::shared_ptr<io::input> m_input;
     /** Output which the runtime uses. */
     std::shared_ptr<io::output> m_output;
+    /** Used to import modules. */
+    std::shared_ptr<module::manager> m_module_manager;
     /** Global dictionary available to all contexts. */
     class dictionary m_dictionary;
     /** Shared instance of true boolean value. */
@@ -467,10 +472,6 @@ namespace plorth
     std::shared_ptr<class object> m_word_prototype;
     /** List of command line arguments given for the interpreter. */
     std::vector<std::u32string> m_arguments;
-    /** List of file system paths where to look modules from. */
-    std::vector<std::u32string> m_module_paths;
-    /** Container for already imported modules. */
-    module_container m_imported_modules;
 #if PLORTH_ENABLE_SYMBOL_CACHE
     /** Cache for symbols used by the runtime. */
     symbol_cache m_symbol_cache;
