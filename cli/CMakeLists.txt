@@ -9,6 +9,12 @@ CHECK_INCLUDE_FILE(sysexits.h HAVE_SYSEXITS_H)
 CHECK_FUNCTION_EXISTS(fork HAVE_FORK)
 CHECK_FUNCTION_EXISTS(isatty HAVE_ISATTY)
 
+OPTION(
+  PLORTH_CLI_ENABLE_REPL
+  "Enable if you want to use REPL."
+  ON
+)
+
 CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/cli/config.hpp.in
   ${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/cli/config.hpp

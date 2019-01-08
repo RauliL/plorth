@@ -26,6 +26,9 @@
 #ifndef PLORTH_CLI_CONFIG_HPP_GUARD
 #define PLORTH_CLI_CONFIG_HPP_GUARD
 
+// Optional features.
+#cmakedefine PLORTH_CLI_ENABLE_REPL 1
+
 // Optional headers.
 #cmakedefine HAVE_SYSEXITS_H 1
 

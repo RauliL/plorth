@@ -23,11 +23,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <cstring>
+#include <plorth/cli/config.hpp>
+#if PLORTH_CLI_ENABLE_REPL
+# include <cstring>
 
-#include <plorth/context.hpp>
-#include <plorth/cli/terminal.hpp>
-#include "./utils.hpp"
+# include <plorth/context.hpp>
+# include <plorth/cli/terminal.hpp>
+# include "./utils.hpp"
 
 namespace plorth
 {
@@ -118,3 +120,4 @@ namespace plorth
     }
   }
 }
+#endif /* PLORTH_CLI_ENABLE_REPL */

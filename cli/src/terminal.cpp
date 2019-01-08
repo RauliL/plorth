@@ -102,24 +102,26 @@
  *    Effect: clear the whole screen
  *
  */
-#include <cstdlib>
-#include <cstdio>
-#include <cerrno>
+#include <plorth/cli/config.hpp>
+#if PLORTH_CLI_ENABLE_REPL
+# include <cstdlib>
+# include <cstdio>
+# include <cerrno>
 #include <cstring>
-#include <cctype>
-#include <deque>
+# include <cctype>
+# include <deque>
 
-#include <termios.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
+# include <termios.h>
+# include <unistd.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <sys/ioctl.h>
 
-#include <plorth/unicode.hpp>
-#include <plorth/cli/terminal.hpp>
+# include <plorth/unicode.hpp>
+# include <plorth/cli/terminal.hpp>
 
-#define LINENOISE_DEFAULT_HISTORY_MAX_LEN 100
-#define LINENOISE_MAX_LINE 4096
+# define LINENOISE_DEFAULT_HISTORY_MAX_LEN 100
+# define LINENOISE_MAX_LINE 4096
 
 static const char* unsupported_term[] = {"dumb","cons25","emacs",NULL};
 
@@ -986,3 +988,4 @@ static void linenoiseAtExit()
 {
   disableRawMode(STDIN_FILENO);
 }
+#endif /* !PLORTH_CLI_ENABLE_REPL */
