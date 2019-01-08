@@ -39,7 +39,6 @@
 # include <sysexits.h>
 #endif
 
-#include <linenoise.h>
 #include "./utils.hpp"
 
 #if !defined(EX_USAGE)
@@ -57,11 +56,13 @@ static std::unordered_set<std::u32string> imported_modules;
 #endif
 
 static void scan_arguments(const std::shared_ptr<runtime>&, int, char**);
-static inline bool is_console_interactive();
 static void compile_and_run(const std::shared_ptr<context>&,
                             const std::string&,
                             const std::u32string&);
 static void handle_error(const std::shared_ptr<context>&);
+
+#if PLORTH_CLI_ENABLE_REPL
+static inline bool is_console_interactive();
 
 namespace plorth
 {
@@ -70,6 +71,7 @@ namespace plorth
     void repl_loop(const std::shared_ptr<context>&);
   }
 }
+#endif
 
 int main(int argc, char** argv)
 {
@@ -123,10 +125,12 @@ int main(int argc, char** argv)
   else if (!inline_script.empty())
   {
     compile_and_run(context, inline_script, U"-e");
+#if PLORTH_CLI_ENABLE_REPL
   }
   else if (is_console_interactive())
   {
     plorth::cli::repl_loop(context);
+#endif
   } else {
     compile_and_run(
       context,
@@ -283,6 +287,7 @@ static void scan_arguments(const std::shared_ptr<class runtime>& runtime,
   }
 }
 
+#if PLORTH_CLI_ENABLE_REPL
 static inline bool is_console_interactive()
 {
 #if defined(HAVE_ISATTY)
@@ -291,6 +296,7 @@ static inline bool is_console_interactive()
   return false;
 #endif
 }
+#endif
 
 static void handle_error(const std::shared_ptr<context>& ctx)
 {

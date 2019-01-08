@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018, Rauli Laine
+ * Copyright (c) 2017-2019, Rauli Laine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,17 +23,21 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef PLORTH_CLI_CONFIG_HPP_GUARD
-#define PLORTH_CLI_CONFIG_HPP_GUARD
+#ifndef PLORTH_CLI_TERMINAL_HPP_GUARD
+#define PLORTH_CLI_TERMINAL_HPP_GUARD
 
-// Optional features.
-#cmakedefine PLORTH_CLI_ENABLE_REPL 1
+#include <string>
 
-// Optional headers.
-#cmakedefine HAVE_SYSEXITS_H 1
+namespace plorth
+{
+  namespace cli
+  {
+    namespace terminal
+    {
+      bool prompt(const std::string&, std::u32string&);
+      void add_to_history(const std::u32string&);
+    }
+  }
+}
 
-// Optional functions.
-#cmakedefine HAVE_FORK 1
-#cmakedefine HAVE_ISATTY 1
-
-#endif /* !PLORTH_CLI_CONFIG_HPP_GUARD */
+#endif /* !PLORTH_CLI_TERMINAL_HPP_GUARD */

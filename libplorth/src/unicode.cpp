@@ -44,14 +44,13 @@ namespace plorth
         || (c >= 0xfdd0 && c <= 0xfdef));
   }
 
-  std::string utf8_encode(const std::u32string& input)
+  std::string utf8_encode(const char32_t* ptr, std::size_t len)
   {
-    const auto length = input.length();
     std::string result;
 
-    for (std::string::size_type i = 0; i < length; ++i)
+    for (std::size_t i = 0; i < len; ++i)
     {
-      const auto c = input[i];
+      const auto c = ptr[i];
 
       if (!unicode_validate(c))
       {

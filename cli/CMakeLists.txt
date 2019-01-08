@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
-PROJECT(plorth-cli C CXX)
+PROJECT(plorth-cli CXX)
 
 INCLUDE(CheckIncludeFile)
 INCLUDE(CheckFunctionExists)
@@ -9,6 +9,12 @@ CHECK_INCLUDE_FILE(sysexits.h HAVE_SYSEXITS_H)
 CHECK_FUNCTION_EXISTS(fork HAVE_FORK)
 CHECK_FUNCTION_EXISTS(isatty HAVE_ISATTY)
 
+OPTION(
+  PLORTH_CLI_ENABLE_REPL
+  "Enable if you want to use REPL."
+  ON
+)
+
 CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/cli/config.hpp.in
   ${CMAKE_CURRENT_SOURCE_DIR}/include/plorth/cli/config.hpp
@@ -16,10 +22,10 @@ CONFIGURE_FILE(
 
 ADD_EXECUTABLE(
   plorth-cli
-  ext/linenoise/linenoise.c
   src/api.cpp
   src/main.cpp
   src/repl.cpp
+  src/terminal.cpp
   src/utils.cpp
 )
 
